@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   FlaskConical,
-  LayoutGrid,
   Database,
   ChartNoAxesCombined,
   Plus,
@@ -11,7 +10,6 @@ import {
   FolderOpen,
   Upload,
   FileSpreadsheet,
-  ChevronDown,
   Activity,
   Layers,
   Check,
@@ -25,6 +23,7 @@ import { api, send, type Project, type Dataset } from "./lib/api";
 import { Button } from "./components/ui/button";
 import { Dialog } from "./components/ui/dialog";
 import { DataTable } from "./components/DataTable";
+import { PLATES } from "./components/Plates";
 const Editor = lazy(() => import("./editor/Editor"));
 type Page = "home" | "experiments" | "data" | "editor";
 const FEATURES = [
@@ -165,89 +164,84 @@ export default function App() {
   };
   return (
     <div className="app-shell">
-      <aside className="rail">
-        <a
-          className="brand"
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("home");
-          }}
-          title="LabFlow 首页"
-        >
-          <FlaskConical size={25} />
-        </a>
-        <div className="rail-nav">
-          {(
-            [
-              ["home", LayoutGrid, "项目概览"],
-              ["experiments", FlaskConical, "实验记录"],
-              ["data", Database, "数据管理"],
-              ["editor", ChartNoAxesCombined, "科研绘图"],
-            ] as const
-          ).map(([id, Icon, label]) => (
-            <button
-              key={id}
-              className={page === id ? "rail-button active" : "rail-button"}
-              title={label}
-              aria-label={label}
-              onClick={() => navigate(id)}
-            >
-              <Icon size={21} />
-              <span>{label.slice(0, 2)}</span>
-            </button>
-          ))}
-        </div>
-        <div className="local-dot" title="本地单用户工作区">
-          <span />
-          LOCAL
-        </div>
-        <div className="avatar">L</div>
-      </aside>
       <div className="main-shell">
-        <header className="global-header">
-          <div className="wordmark">
-            LabFlow<span> / </span>
-            <span className="muted">Research workspace</span>
-          </div>
-          <div className="global-right">
-            <span className="local-badge">
-              <span /> 本地工作区
-            </span>
-            <select
-              aria-label="当前项目"
-              value={project}
-              onChange={(e) => {
-                if (
-                  dirty.current &&
-                  !window.confirm("切换项目将丢弃未保存修改，继续？")
-                )
-                  return;
-                dirty.current = false;
-                setProject(Number(e.target.value));
-                setChart(null);
-                setDataset(0);
-                setPage("home");
+        <header className="masthead">
+          <div className="masthead-bar">
+            <a
+              className="brand"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("home");
               }}
+              title="LabFlow 首页"
             >
-              <option value={0} disabled>
-                选择项目
-              </option>
-              {projects.data?.map((p) => (
-                <option value={p.id} key={p.id}>
-                  {p.name}
+              <FlaskConical size={17} />
+              <span>LabFlow</span>
+            </a>
+            <span className="masthead-meta">Research workspace · Vol. 01</span>
+            <div className="global-right">
+              <span className="local-badge">
+                <span /> 本地工作区
+              </span>
+              <select
+                aria-label="当前项目"
+                value={project}
+                onChange={(e) => {
+                  if (
+                    dirty.current &&
+                    !window.confirm("切换项目将丢弃未保存修改，继续？")
+                  )
+                    return;
+                  dirty.current = false;
+                  setProject(Number(e.target.value));
+                  setChart(null);
+                  setDataset(0);
+                  setPage("home");
+                }}
+              >
+                <option value={0} disabled>
+                  选择项目
                 </option>
-              ))}
-            </select>
-            <Button
-              variant="ghost"
-              size="icon"
-              title="新建项目"
-              onClick={() => setModal(true)}
-            >
-              <Plus size={16} />
-            </Button>
+                {projects.data?.map((p) => (
+                  <option value={p.id} key={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant="ghost"
+                size="icon"
+                title="新建项目"
+                onClick={() => setModal(true)}
+              >
+                <Plus size={15} />
+              </Button>
+            </div>
           </div>
+          <nav className="site-nav" aria-label="主导航">
+            {(
+              [
+                ["home", "项目概览", "01"],
+                ["experiments", "实验记录", "02"],
+                ["data", "数据管理", "03"],
+                ["editor", "科研绘图", "04"],
+              ] as const
+            ).map(([id, label, index]) => (
+              <button
+                key={id}
+                className={page === id ? "nav-link active" : "nav-link"}
+                aria-label={label}
+                title={label}
+                onClick={() => navigate(id)}
+              >
+                <span className="nav-index">{index}</span>
+                {label}
+              </button>
+            ))}
+            <span className="nav-spacer" />
+            <span className="nav-note">Local · single user</span>
+          </nav>
         </header>
         {message && (
           <div className="toast" role="status">
@@ -304,24 +298,80 @@ export default function App() {
           <main className="page-content">
             {page === "home" || !project ? (
               <>
-                <div className="page-eyebrow">YOUR RESEARCH, CONNECTED</div>
-                <div className="page-heading">
-                  <div>
-                    <h1>
-                      让每一次实验，都有迹可循<span className="accent">.</span>
-                    </h1>
-                    <p>整理实验数据，在同一个工作区完成可复现的科研绘图。</p>
-                    <div className="hero-badges">
-                      <span>Java 21 · Spring Boot 3</span>
-                      <span>MySQL 8 · 本地闭环</span>
-                      <span>无需代码 · 无需 API Key</span>
+                <section className="hero">
+                  <div className="hero-grid">
+                    <div className="hero-main">
+                      <p className="kicker">Research workspace — Issue 01</p>
+                      <h1>
+                        让每一次实验，
+                        <br />
+                        <em>都有迹可循</em>。
+                      </h1>
+                      <p className="lede">
+                        从原始数据到论文图版，LabFlow
+                        把实验记录、不可变数据版本与绘图配置留在同一条可复现的链路上。
+                      </p>
+                      <div className="hero-actions">
+                        <Button onClick={() => setModal(true)}>
+                          新建项目 <ArrowRight size={15} />
+                        </Button>
+                        <button
+                          className="link-arrow"
+                          disabled={!project || busy}
+                          onClick={() => chooseUpload()}
+                        >
+                          上传第一份数据 <ArrowUpRight size={15} />
+                        </button>
+                      </div>
                     </div>
+                    <aside className="hero-side">
+                      <p className="kicker">Contents</p>
+                      <ol className="hero-toc">
+                        {(
+                          [
+                            ["Overview", "研究项目与最近图版", "home"],
+                            ["Notebook", "参数、指标与实验备注", "experiments"],
+                            ["Data library", "不可变版本与字段预览", "data"],
+                            ["Figure editor", "论文级图版编辑与导出", "editor"],
+                          ] as const
+                        ).map(([title, desc, target], i) => (
+                          <li key={title}>
+                            <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigate(target);
+                              }}
+                            >
+                              <span className="toc-no">
+                                {String(i + 1).padStart(2, "0")}
+                              </span>
+                              <span>
+                                <b>{title}</b>
+                                <small>{desc}</small>
+                              </span>
+                              <ArrowUpRight size={14} />
+                            </a>
+                          </li>
+                        ))}
+                      </ol>
+                    </aside>
                   </div>
-                  <Button onClick={() => setModal(true)}>
-                    <Plus size={16} />
-                    新建项目
-                  </Button>
-                </div>
+                  <dl className="hero-meta">
+                    <div>
+                      <dt>Stack</dt>
+                      <dd>Java 21 · Spring Boot 3 · MySQL 8</dd>
+                    </div>
+                    <div>
+                      <dt>Figures</dt>
+                      <dd>SVG 矢量 · 2× PNG</dd>
+                    </div>
+                    <div>
+                      <dt>Dependencies</dt>
+                      <dd>无代码 · 无 API Key</dd>
+                    </div>
+                  </dl>
+                </section>
                 <div className="stat-strip">
                   <Stat
                     icon={<FolderOpen />}
@@ -354,23 +404,57 @@ export default function App() {
                     }
                   />
                 </div>
-                <section className="feature-band" aria-label="主要功能">
-                  <div className="section-heading">
-                    <h2>
-                      从实验记录到论文成图 <span>WORKFLOW</span>
-                    </h2>
-                    <span className="muted">一条链路，不留断点</span>
+                <section className="section plates-section" aria-label="图版示例">
+                  <div className="section-head">
+                    <div>
+                      <p className="kicker">Plates</p>
+                      <h2>按期刊规范渲染的图版</h2>
+                    </div>
+                    <p className="section-note">
+                      单栏 89 mm、5–7 pt 字号、a–d 面板字母、Okabe–Ito
+                      色盲安全配色；图版由 LabFlow 用合成数据渲染，可直接作为绘图模板。
+                    </p>
                   </div>
-                  <div className="feature-grid">
-                    {FEATURES.map((f) => (
-                      <article className="feature-card" key={f.tag}>
-                        <span className="feature-icon">{f.icon}</span>
-                        <h3>{f.title}</h3>
-                        <p>{f.desc}</p>
-                        <span className="feature-tag">{f.tag}</span>
-                      </article>
+                  <div className="plate-grid">
+                    {PLATES.map((plate) => (
+                      <figure className="plate" key={plate.no}>
+                        <div className="plate-canvas">{plate.svg}</div>
+                        <figcaption className="plate-caption">
+                          <div className="plate-head">
+                            <span className="plate-no">Fig. {plate.no}</span>
+                            <span className="plate-spec">{plate.spec}</span>
+                          </div>
+                          <h3>{plate.title}</h3>
+                          <p>{plate.note}</p>
+                        </figcaption>
+                      </figure>
                     ))}
                   </div>
+                </section>
+                <section className="section" aria-label="主要功能">
+                  <div className="section-head">
+                    <div>
+                      <p className="kicker">Capabilities</p>
+                      <h2>从记录到成图，六个环节</h2>
+                    </div>
+                    <p className="section-note">
+                      每一环都写入本地 MySQL，不依赖任何外部服务。
+                    </p>
+                  </div>
+                  <ol className="cap-list">
+                    {FEATURES.map((f, i) => (
+                      <li className="cap-item" key={f.tag}>
+                        <span className="cap-no">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <div>
+                          <h3>{f.title}</h3>
+                          <p>{f.desc}</p>
+                        </div>
+                        <span className="cap-tag">{f.tag}</span>
+                      </li>
+                    ))}
+                  </ol>
                 </section>
                 <div className="home-columns">
                   <section>

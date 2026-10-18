@@ -56,43 +56,47 @@ SVG 检查：有文本标签，无嵌入 `<image>`；热力图色块为矢量路
 
 导出示例均为合成数据： [SVG](exports/learning-dynamics.svg)、[PNG](exports/learning-dynamics.png)、[热力图 SVG](exports/heatmap.svg)。
 
-## 第二阶段：视觉重构验收（2026-10-18）
+## 第二阶段：视觉重构验收（杂志版，2026-10-18）
 
-背景：第二次视觉重构由另一模型执行，因上游 API 余额不足（`402`）与上下文压缩中断，只写入了半套设计令牌、未覆盖既有布局类，页面处于破版状态。本次接管从设计系统开始重写并完成全部四步。
+背景：第二次视觉重构由另一模型执行，因上游 API 余额不足（`402`）与上下文压缩中断，只写入半套设计令牌、未覆盖既有布局类，页面破版；随后一版「深色玻璃 + 极光渐变」方案经评审否决。最终采用编辑 / 杂志风格：暖纸底色、衬线标题、1px 发丝线、单一陶土强调色，并加入按期刊规范渲染的示例图版。
 
 ### 变更范围
 
 | 文件 | 变更 |
 |---|---|
-| `frontend/src/styles.css` | 全量重写：深色玻璃外壳、极光渐变、辉光层次、动效；覆盖外壳/首页/实验/数据/编辑器全部既有类名；编辑器工作台保留白纸画布 |
-| `frontend/src/App.tsx` | 首页新增六项主要能力卡片、Hero 技术标签；保留全部可访问名称与 E2E 依赖 |
-| `frontend/src/main.tsx` | 引入 Inter Variable 与 JetBrains Mono Variable |
-| `frontend/index.html` | `theme-color` 改为 `#05070d`，新增内联 SVG favicon（消除 404 噪声） |
-| `frontend/playwright.config.ts` | 默认使用系统 Chrome（`PLAYWRIGHT_CHANNEL` 可覆盖），不再依赖浏览器二进制下载 |
-| `frontend/e2e/capture.mjs` | 截图前等待入场动画结束（900ms），避免截到过渡帧 |
+| `frontend/src/styles.css` | 全量重写：暖纸 `#f7f4ee` + 卡片 `#fffdf9` + 陶土 `#b65c3a`；报头 / 目录导航替代左侧导轨；双列 PLATES 图版区、双列能力条目；编辑器改为纸色外壳 + 白纸画布 |
+| `frontend/src/components/Plates.tsx` | **新增**：6 幅手绘 SVG 图版，按 Nature / Science / Cell / NeurIPS / eLife 规范渲染（89 mm 单栏、5–7 pt、a–d 面板字母、Okabe–Ito 配色、误差棒、箱线 + 抖动散点） |
+| `frontend/src/App.tsx` | 报头 + 目录导航；Hero（衬线大标 + 陶土斜体行 + Contents 目录 + 规格行）；图版区与能力条目替换原能力卡片 |
+| `frontend/src/main.tsx` | 引入 Inter / Newsreader / JetBrains Mono 三款可变字体 |
+| `frontend/package.json` | 新增 `@fontsource-variable/newsreader` |
+| `frontend/index.html` | `theme-color` 改为 `#f7f4ee` |
+| `frontend/playwright.config.ts` | 默认使用系统 Chrome（`PLAYWRIGHT_CHANNEL` 可覆盖） |
+| `frontend/e2e/capture.mjs` | 截图前等待入场动画结束（900ms） |
 
 ### 自动化结果
 
 | 项目 | 实际结果 |
 |---|---|
 | TypeScript 项目构建 | **0 错误**（`tsc -b --force`） |
-| Vite 生产构建 | **通过**；CSS 51.6 kB、主包 392 kB、绘图按需包 4.66 MB |
+| Vite 生产构建 | **通过**；CSS 51.0 kB、主包约 393 kB、绘图按需包 4.66 MB |
 | Vitest 单元/组件测试 | **8 / 8 通过** |
-| Playwright Chromium/Chrome E2E | **3 / 3 通过（20.1s）**：完整主流程 + 配置/历史 + 实验记录与坏 CSV |
-| 浏览器控制台 | 无 error（此前仅有 favicon 404，已修复） |
+| Playwright Chromium/Chrome E2E | **3 / 3 通过（11.7s）**：完整主流程 + 配置/历史 + 实验记录与坏 CSV |
+| 浏览器控制台 | 无 error |
 
 ### 视觉检查
 
-1560×1000 与 1280×800 真实浏览器截图为本轮重新生成（2026-10-18 14:48），数据来自真实 MySQL 演示项目：
+1560×1000 与 1280×800 真实浏览器截图为本轮重新生成（2026-10-18 15:00），数据来自真实 MySQL 演示项目：
 
-- [项目首页](screenshots/home.png) · 六项能力卡片与统计条
+- [项目首页](screenshots/home.png) · Hero、Contents、统计条、六幅图版、能力条目
 - [实验记录](screenshots/experiments.png)
-- [数据管理](screenshots/data.png) · 深色表格与哈希元信息
+- [数据管理](screenshots/data.png)
 - [绘图编辑器 · 1560px](screenshots/editor.png)
 - [绘图编辑器 · 1280px](screenshots/editor-1280.png)
 - [热力图](screenshots/heatmap.png)
 
-另外人工核对了尚未纳入截图的新建项目弹窗、实验记录弹窗、导出弹窗、版本历史弹窗与编辑器底部数据面板，均无布局溢出或文字截断。
+另人工核对了新建项目、实验记录、导出、版本历史四个弹窗与编辑器底部数据面板，均无溢出或截断；1280px 下 Hero、图版与编辑器三栏布局均正常。
+
+图版规格依据：[Nature · Building and exporting figure panels](https://research-figure-guide.nature.com/figures/building-and-exporting-figure-panels/)（89 / 183 mm、5–7 pt、Arial、Okabe–Ito 配色）、Science / AAAS 图件要求、NeurIPS 与 eLife 常见图式。图版数值取自 `samples/` 合成数据，由 LabFlow 自行渲染，未嵌入任何受版权保护的论文图形。
 
 ### 数据清理
 
@@ -100,6 +104,7 @@ E2E 生成的 3 个测试项目（`配置交互验收`、`实验记录验收`、
 
 ### 已知边界
 
-- E2E 依赖本机 Chrome；未下载 Playwright 自带 Chromium（CDN 下载在本机超时），`PLAYWRIGHT_CHANNEL` 可切换到其他 channel。
-- 仍未覆盖 Firefox、Safari、移动端与百万行数据；大包体积提示仍在（绘图引擎按需加载）。
-- 视觉层面只保证 1280–1680px 桌面视口；<1200px 时布局按 1120px 最小宽度横向滚动。
+- E2E 依赖本机 Chrome；未下载 Playwright 自带 Chromium（CDN 下载在本机超时），`PLAYWRIGHT_CHANNEL` 可切换。
+- 图版为规范复刻的示例，不代表期刊对投稿的实际裁切与色值要求；如需真实论文图，应替换为 CC-BY 图件并保留署名。
+- 仍未覆盖 Firefox、Safari、移动端与百万行数据；绘图引擎按需加载的体积提示仍在。
+- 视觉层面覆盖 1280–1560px 桌面视口；<1120px 时布局横向滚动。
