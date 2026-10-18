@@ -1,0 +1,11 @@
+node_modules/
+dist/
+target/
+.runtime/
+test-results/
+playwright-report/
+*.log
+.env
+*.tsbuildinfo
+
+.claude/

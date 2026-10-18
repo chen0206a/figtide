@@ -1,0 +1,277 @@
+package dev.labflow.service;
+
+import com.fasterxml.jackson.databind.*;
+import dev.labflow.api.ApiException;
+import dev.labflow.importer.DataImporter;
+import dev.labflow.repository.WorkspaceRepository;
+import java.security.MessageDigest;
+import java.util.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class WorkspaceService {
+  private final WorkspaceRepository db;
+  private final ObjectMapper json;
+  private final DataImporter importer;
+
+  public WorkspaceService(WorkspaceRepository db, ObjectMapper json, DataImporter importer) {
+    this.db = db;
+    this.json = json;
+    this.importer = importer;
+  }
+
+  private String encode(Object o) {
+    try {
+      return json.writeValueAsString(o);
+    } catch (Exception e) {
+      throw ApiException.bad("无效 JSON");
+    }
+  }
+
+  private Object decode(Object o) {
+    try {
+      return json.readValue(o.toString(), Object.class);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  private Map<String, Object> unpack(Map<String, Object> row) {
+    var result = new LinkedHashMap<>(row);
+    for (String key :
+        List.of(
+            "config_json", "fields_json", "rows_json", "warnings_json", "parameters", "metrics")) {
+      if (result.containsKey(key)) result.put(key.replace("_json", ""), decode(result.remove(key)));
+    }
+    return result;
+  }
+
+  private List<Map<String, Object>> unpackAll(List<Map<String, Object>> list) {
+    return list.stream().map(this::unpack).toList();
+  }
+
+  public void project(long p) {
+    db.one("SELECT id FROM projects WHERE id=?", p);
+  }
+
+  public List<Map<String, Object>> projects() {
+    return db.query(
+        "SELECT p.*, (SELECT COUNT(*) FROM experiments e WHERE e.project_id=p.id)"
+            + " experiment_count,(SELECT COUNT(*) FROM charts c WHERE c.project_id=p.id)"
+            + " chart_count,(SELECT COUNT(*) FROM datasets d WHERE d.project_id=p.id) dataset_count"
+            + " FROM projects p ORDER BY p.id DESC");
+  }
+
+  public Map<String, Object> createProject(String name, String description) {
+    long id =
+        db.insert("INSERT INTO projects(name,description) VALUES(?,?)", name.trim(), description);
+    return db.one("SELECT * FROM projects WHERE id=?", id);
+  }
+
+  public List<Map<String, Object>> experiments(long p) {
+    project(p);
+    return unpackAll(db.query("SELECT * FROM experiments WHERE project_id=? ORDER BY id DESC", p));
+  }
+
+  public Map<String, Object> saveExperiment(
+      long p, Long id, String name, JsonNode parameters, JsonNode metrics, String notes) {
+    project(p);
+    if (!parameters.isObject() || !metrics.isObject()) throw ApiException.bad("参数和指标必须为 JSON 对象");
+    if (id == null)
+      id =
+          db.insert(
+              "INSERT INTO experiments(project_id,name,parameters,metrics,notes) VALUES(?,?,?,?,?)",
+              p,
+              name,
+              encode(parameters),
+              encode(metrics),
+              notes);
+    else if (db.update(
+            "UPDATE experiments SET name=?,parameters=?,metrics=?,notes=? WHERE id=? AND"
+                + " project_id=?",
+            name,
+            encode(parameters),
+            encode(metrics),
+            notes,
+            id,
+            p)
+        == 0) throw new ApiException(404, "实验不存在");
+    return unpack(db.one("SELECT * FROM experiments WHERE id=? AND project_id=?", id, p));
+  }
+
+  public List<Map<String, Object>> datasets(long p) {
+    project(p);
+    return unpackAll(
+        db.query(
+            "SELECT"
+                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.warnings_json,v.created_at,d.name"
+                + " FROM dataset_versions v JOIN datasets d ON d.id=v.dataset_id WHERE"
+                + " d.project_id=? ORDER BY v.id DESC",
+            p));
+  }
+
+  @Transactional
+  public Map<String, Object> upload(long p, Long datasetId, String filename, byte[] bytes) {
+    project(p);
+    if (filename == null
+        || filename.length() > 255
+        || filename.contains("/")
+        || filename.contains("\\")
+        || filename.contains("\u0000")) throw ApiException.bad("无效文件名");
+    var parsed = importer.parse(filename, bytes);
+    int version = 1;
+    if (datasetId == null)
+      datasetId = db.insert("INSERT INTO datasets(project_id,name) VALUES(?,?)", p, filename);
+    else {
+      db.one("SELECT id FROM datasets WHERE id=? AND project_id=? FOR UPDATE", datasetId, p);
+      version =
+          ((Number)
+                  db.one(
+                          "SELECT COALESCE(MAX(version),0)+1 n FROM dataset_versions WHERE"
+                              + " dataset_id=?",
+                          datasetId)
+                      .get("n"))
+              .intValue();
+    }
+    String hash;
+    try {
+      hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+    long id =
+        db.insert(
+            "INSERT INTO"
+                + " dataset_versions(dataset_id,version,filename,sha256,original_file,fields_json,rows_json,warnings_json,row_count)"
+                + " VALUES(?,?,?,?,?,?,?,?,?)",
+            datasetId,
+            version,
+            filename,
+            hash,
+            bytes,
+            encode(parsed.fields()),
+            encode(parsed.rows()),
+            encode(parsed.warnings()),
+            parsed.rows().size());
+    return data(p, id);
+  }
+
+  public Map<String, Object> data(long p, long id) {
+    return unpack(
+        db.one(
+            "SELECT"
+                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.rows_json,v.warnings_json,v.created_at"
+                + " FROM dataset_versions v JOIN datasets d ON d.id=v.dataset_id WHERE v.id=? AND"
+                + " d.project_id=?",
+            id,
+            p));
+  }
+
+  public Map<String, Object> original(long p, long id) {
+    return db.one(
+        "SELECT v.filename,v.original_file FROM dataset_versions v JOIN datasets d ON"
+            + " d.id=v.dataset_id WHERE v.id=? AND d.project_id=?",
+        id,
+        p);
+  }
+
+  public List<Map<String, Object>> charts(long p) {
+    project(p);
+    return db.query("SELECT * FROM charts WHERE project_id=? ORDER BY updated_at DESC", p);
+  }
+
+  public Map<String, Object> chart(long p, long id) {
+    return unpack(
+        db.one(
+            "SELECT c.*,v.config_json,v.dataset_version_id FROM charts c JOIN chart_versions v ON"
+                + " v.chart_id=c.id AND v.version=c.revision WHERE c.id=? AND c.project_id=?",
+            id,
+            p));
+  }
+
+  public List<Map<String, Object>> versions(long p, long id) {
+    chart(p, id);
+    return unpackAll(
+        db.query(
+            "SELECT version,config_json,created_at FROM chart_versions WHERE chart_id=? ORDER BY"
+                + " version DESC",
+            id));
+  }
+
+  @Transactional
+  public Map<String, Object> saveChart(
+      long p, Long id, String name, Integer revision, JsonNode config) {
+    project(p);
+    validate(p, config);
+    if (id == null) {
+      id = db.insert("INSERT INTO charts(project_id,name) VALUES(?,?)", p, name);
+      revision = 0;
+    }
+    if (revision == null) throw ApiException.bad("缺少 revision");
+    if (db.update(
+            "UPDATE charts SET name=?,revision=revision+1 WHERE id=? AND project_id=? AND"
+                + " revision=?",
+            name,
+            id,
+            p,
+            revision)
+        != 1) throw new ApiException(409, "图表已被更新，请重新打开最新版本后再保存");
+    db.insert(
+        "INSERT INTO chart_versions(chart_id,dataset_version_id,version,schema_version,config_json)"
+            + " VALUES(?,?,?,?,?)",
+        id,
+        config.path("datasetVersionId").asLong(),
+        revision + 1,
+        1,
+        encode(config));
+    return chart(p, id);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void validate(long p, JsonNode c) {
+    if (c == null || c.path("schema_version").asInt() != 1)
+      throw ApiException.bad("不支持的配置 schema_version");
+    ConfigValidator.validate(c);
+    if (encode(c).length() > 200000) throw ApiException.bad("配置过大");
+    if (!Set.of("line", "bar", "scatter", "heatmap").contains(c.path("type").asText()))
+      throw ApiException.bad("无效图表类型");
+    var data = data(p, c.path("datasetVersionId").asLong());
+    var fields = (List<Map<String, Object>>) data.get("fields");
+    Set<String> names = new HashSet<>(), numeric = new HashSet<>();
+    for (var f : fields) {
+      names.add(f.get("name").toString());
+      if (f.get("type").equals("number")) numeric.add(f.get("name").toString());
+    }
+    if (!names.contains(c.path("x").asText())) throw ApiException.bad("请选择有效的 X 字段");
+    if (!c.path("group").asText("").isEmpty() && !names.contains(c.path("group").asText()))
+      throw ApiException.bad("分组字段不存在");
+    if (!c.path("series").isArray() || c.path("series").isEmpty() || c.path("series").size() > 20)
+      throw ApiException.bad("需要 1–20 条序列");
+    for (JsonNode s : c.path("series")) {
+      if (!numeric.contains(s.path("y").asText())) throw ApiException.bad("Y 字段必须为数值列");
+      String err = s.path("error").asText("");
+      if (!err.isEmpty()) {
+        if (!numeric.contains(err)) throw ApiException.bad("误差棒必须引用数值字段");
+        for (var row : (List<Map<String, Object>>) data.get("rows"))
+          if (row.get(err) instanceof Number n && n.doubleValue() < 0)
+            throw ApiException.bad("误差值不能为负数");
+      }
+    }
+    if (!c.path("transforms").isArray()) throw ApiException.bad("缺少数据转换步骤");
+    for (JsonNode t : c.path("transforms")) {
+      if (!t.path("op").asText().equals("filter")
+          || !names.contains(t.path("field").asText())
+          || !Set.of("eq", "gte", "lte").contains(t.path("operator").asText()))
+        throw ApiException.bad("无效过滤步骤");
+    }
+    if (c.path("type").asText().equals("heatmap")
+        && (!names.contains(c.path("heatY").asText())
+            || !numeric.contains(c.path("heatZ").asText())))
+      throw ApiException.bad("热力图需选择 Y 分类和 Z 数值字段");
+    for (String key : List.of("width", "height")) {
+      int n = c.path("style").path(key).asInt();
+      if (n < 250 || n > 2400) throw ApiException.bad("图表尺寸须为 250–2400 px");
+    }
+  }
+}

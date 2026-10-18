@@ -1,0 +1,10 @@
+model,dataset,accuracy
+Baseline,CIFAR-10,87.1
+Baseline,CIFAR-100,62.5
+Baseline,Tiny-ImageNet,52.1
+Proposed,CIFAR-10,92.8
+Proposed,CIFAR-100,70.4
+Proposed,Tiny-ImageNet,59.3
+Ablation,CIFAR-10,84.6
+Ablation,CIFAR-100,59.2
+Ablation,Tiny-ImageNet,48.7

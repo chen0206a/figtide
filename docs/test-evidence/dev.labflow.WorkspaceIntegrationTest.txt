@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: dev.labflow.WorkspaceIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.694 s -- in dev.labflow.WorkspaceIntegrationTest

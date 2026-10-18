@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: labflow
+      MYSQL_USER: labflow
+      MYSQL_PASSWORD: labflow-local
+      MYSQL_ROOT_PASSWORD: labflow-root-local
+    ports:
+      - "127.0.0.1:33316:3306"
+    volumes:
+      - labflow-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 20
+volumes:
+  labflow-mysql:

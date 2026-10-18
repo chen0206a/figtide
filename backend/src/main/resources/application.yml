@@ -1,0 +1,16 @@
+server:
+  address: 127.0.0.1
+  port: ${LABFLOW_PORT:8086}
+spring:
+  datasource:
+    url: ${LABFLOW_DB_URL:jdbc:mysql://127.0.0.1:33316/labflow?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&forceConnectionTimeZoneToSession=true}
+    username: ${LABFLOW_DB_USER:labflow}
+    password: ${LABFLOW_DB_PASSWORD:labflow-local}
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+  jackson:
+    time-zone: UTC
+  flyway:
+    enabled: true

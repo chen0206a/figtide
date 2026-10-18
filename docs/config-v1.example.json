@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "datasetVersionId": 1,
+  "type": "line",
+  "x": "epoch",
+  "group": "",
+  "heatY": "epoch",
+  "heatZ": "accuracy",
+  "series": [
+    {
+      "id": "s1",
+      "y": "accuracy",
+      "name": "Accuracy",
+      "error": "error",
+      "color": "#6758ce",
+      "opacity": 1,
+      "width": 2.5,
+      "dash": "solid",
+      "symbol": "circle",
+      "size": 6,
+      "visible": true
+    }
+  ],
+  "axes": {
+    "x": {
+      "title": "Epoch",
+      "min": "",
+      "max": "",
+      "log": false,
+      "grid": false,
+      "dtick": ""
+    },
+    "y": {
+      "title": "Accuracy",
+      "min": "",
+      "max": "",
+      "log": false,
+      "grid": true,
+      "dtick": ""
+    }
+  },
+  "style": {
+    "title": "Accuracy",
+    "font": "Arial",
+    "fontSize": 14,
+    "bold": false,
+    "width": 760,
+    "height": 500,
+    "background": "#ffffff",
+    "top": 70,
+    "bottom": 70,
+    "left": 75,
+    "right": 35,
+    "preset": "Clean Academic"
+  },
+  "legend": {
+    "show": true,
+    "position": "top",
+    "orientation": "h"
+  },
+  "annotations": [],
+  "transforms": []
+}
