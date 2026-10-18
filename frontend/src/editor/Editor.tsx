@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer, useRef, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Plotly from "plotly.js-dist-min";
 import {
   ArrowLeft,
@@ -35,7 +35,7 @@ import {
   Palette,
   MousePointer2,
 } from "lucide-react";
-import { api, send, type Dataset } from "../lib/api";
+import { ApiError, api, send, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
 import { Dialog } from "../components/ui/dialog";
 import { DataTable } from "../components/DataTable";
@@ -47,6 +47,7 @@ import {
   type Config,
   type Series,
 } from "./model";
+import { useConfirm } from "../components/useConfirm";
 import { buildPlot } from "./plot";
 type Props = {
   project: number;
@@ -123,6 +124,112 @@ export default function Editor(p: Props) {
 function Workbench(
   p: Props & { data: Dataset; original: any; onDataset: (id: number) => void },
 ) {
+  const queryClient = useQueryClient();
+  const { confirm, dialog: confirmDialog } = useConfirm();
+  const [widths, setWidths] = useState(() => {
+    try {
+      const w = JSON.parse(
+        localStorage.getItem("labflow-panel-widths") || "{}",
+      );
+      return {
+        left: Math.min(340, Math.max(180, Number(w.left) || 236)),
+        right: Math.min(420, Math.max(240, Number(w.right) || 292)),
+      };
+    } catch {
+      return { left: 236, right: 292 };
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem("labflow-panel-widths", JSON.stringify(widths));
+    } catch {}
+  }, [widths]);
+  function resizer(side: "left" | "right") {
+    return (
+      <div
+        className={`panel-resize resize-${side}`}
+        role="separator"
+        aria-label={side === "left" ? "调整数据栏宽度" : "调整属性栏宽度"}
+        aria-orientation="vertical"
+        aria-valuenow={widths[side]}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            e.preventDefault();
+            const step = e.key === "ArrowRight" ? 10 : -10;
+            setWidths((w) => ({
+              ...w,
+              [side]: Math.min(
+                side === "left" ? 340 : 420,
+                Math.max(side === "left" ? 180 : 240, w[side] + step),
+              ),
+            }));
+          }
+        }}
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          e.currentTarget.dataset.x = String(e.clientX);
+          e.currentTarget.dataset.width = String(widths[side]);
+        }}
+        onPointerMove={(e) => {
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+            const delta = e.clientX - Number(e.currentTarget.dataset.x);
+            const width =
+              Number(e.currentTarget.dataset.width) +
+              (side === "left" ? delta : -delta);
+            setWidths((w) => ({
+              ...w,
+              [side]: Math.min(
+                side === "left" ? 340 : 420,
+                Math.max(side === "left" ? 180 : 240, width),
+              ),
+            }));
+          }
+        }}
+        onPointerUp={(e) => e.currentTarget.releasePointerCapture(e.pointerId)}
+      />
+    );
+  }
+  const draftKey = `labflow-draft-v1:${p.project}:${p.chartId ?? "new"}`;
+  const [recovery, setRecovery] = useState<{
+    config: Config;
+    name: string;
+    revision: number;
+    at: string;
+  } | null>(() => {
+    try {
+      const d = JSON.parse(localStorage.getItem(draftKey) || "null");
+      return d?.config?.schema_version === 1 &&
+        typeof d.name === "string" &&
+        Number.isInteger(d.revision) &&
+        p.datasets.some((v) => v.id === d.config.datasetVersionId)
+        ? d
+        : null;
+    } catch {
+      return null;
+    }
+  });
+  const [draftStatus, setDraftStatus] = useState("");
+  const [conflict, setConflict] = useState(false);
+  const [panels, setPanels] = useState(() => {
+    try {
+      return (
+        JSON.parse(localStorage.getItem("labflow-panels") || "null") || {
+          left: true,
+          right: true,
+        }
+      );
+    } catch {
+      return { left: true, right: true };
+    }
+  });
+  function togglePanel(side: "left" | "right") {
+    const next = { ...panels, [side]: !panels[side] };
+    setPanels(next);
+    try {
+      localStorage.setItem("labflow-panels", JSON.stringify(next));
+    } catch {}
+  }
   const [history, dispatch] = useReducer(historyReducer, {
     past: [],
     present: p.original?.config || defaults(p.data),
@@ -166,6 +273,28 @@ function Workbench(
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [dirty]);
+  useEffect(() => {
+    if (recovery) return;
+    try {
+      if (dirty) {
+        localStorage.setItem(
+          draftKey,
+          JSON.stringify({
+            config: c,
+            name,
+            revision,
+            at: new Date().toISOString(),
+          }),
+        );
+        setDraftStatus("本机草稿已保存");
+      } else {
+        localStorage.removeItem(draftKey);
+        setDraftStatus("");
+      }
+    } catch {
+      setDraftStatus("本机草稿保存失败，请正式保存图表");
+    }
+  }, [c, name, revision, dirty, draftKey, recovery]);
   const change = (value: Config) => dispatch({ type: "edit", value });
   const patch = (value: Partial<Config>) => change({ ...c, ...value });
   const style = (value: Partial<Config["style"]>) =>
@@ -234,20 +363,27 @@ function Workbench(
     },
     [],
   );
-  async function save() {
+  async function save(asCopy = false) {
     if (saving || c.datasetVersionId !== p.data.id) return;
     setSaving(true);
     const snapshot = c,
-      saveName = name;
+      saveName = asCopy ? `${name.slice(0, 115)} · 副本` : name;
+    const saveId = asCopy ? null : id;
     try {
       const result = await api(
-        `/projects/${p.project}/charts${id ? "/" + id : ""}`,
-        send(id ? "PUT" : "POST", {
+        `/projects/${p.project}/charts${saveId ? "/" + saveId : ""}`,
+        send(saveId ? "PUT" : "POST", {
           name: saveName,
           revision,
           config: snapshot,
         }),
       );
+      queryClient.setQueryData(["chart", p.project, result.id], result);
+      if (!asCopy)
+        try {
+          localStorage.removeItem(draftKey);
+        } catch {}
+      setConflict(false);
       setId(result.id);
       setRevision(result.revision);
       setBaseline(JSON.stringify({ config: snapshot, name: saveName }));
@@ -255,6 +391,7 @@ function Workbench(
       p.notify(`图表已保存 · v${result.revision}`);
       p.onSaved(result.id);
     } catch (e) {
+      if (e instanceof ApiError && e.status === 409) setConflict(true);
       p.notify((e as Error).message);
     } finally {
       setSaving(false);
@@ -262,6 +399,14 @@ function Workbench(
   }
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (saving) {
+        if (
+          (e.ctrlKey || e.metaKey) &&
+          ["s", "z"].includes(e.key.toLowerCase())
+        )
+          e.preventDefault();
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
         e.preventDefault();
         void save();
@@ -323,7 +468,9 @@ function Workbench(
     });
   };
   return (
-    <div className={`editor ${preview ? "preview-mode" : ""}`}>
+    <div
+      className={`editor ${preview ? "preview-mode" : ""} ${!panels.left ? "hide-left" : ""} ${!panels.right ? "hide-right" : ""}`}
+    >
       <div className="editor-toolbar">
         <div className="figure-info">
           <span className="figure-icon">
@@ -332,6 +479,7 @@ function Workbench(
           <div>
             <input
               aria-label="图表名称"
+              disabled={saving}
               value={name}
               maxLength={120}
               onChange={(e) => setName(e.target.value)}
@@ -346,7 +494,7 @@ function Workbench(
             {saving ? (
               "保存中…"
             ) : dirty ? (
-              "● 未保存"
+              draftStatus || "● 未保存"
             ) : (
               <>
                 <Check size={12} /> 已保存 v{revision}
@@ -357,10 +505,36 @@ function Workbench(
         <div className="toolbar-actions">
           <Button
             variant="ghost"
+            size="sm"
+            aria-pressed={panels.left}
+            onClick={() => togglePanel("left")}
+          >
+            数据栏
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-pressed={panels.right}
+            onClick={() => togglePanel("right")}
+          >
+            属性栏
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={
+              saving || !name.trim() || c.datasetVersionId !== p.data.id
+            }
+            onClick={() => save(true)}
+          >
+            另存副本
+          </Button>
+          <Button
+            variant="ghost"
             size="icon"
             title="撤销 Ctrl+Z"
             aria-label="撤销"
-            disabled={!history.past.length}
+            disabled={saving || !history.past.length}
             onClick={() => dispatch({ type: "undo" })}
           >
             <Undo2 size={17} />
@@ -370,7 +544,7 @@ function Workbench(
             size="icon"
             title="重做 Ctrl+Shift+Z"
             aria-label="重做"
-            disabled={!history.future.length}
+            disabled={saving || !history.future.length}
             onClick={() => dispatch({ type: "redo" })}
           >
             <Redo2 size={17} />
@@ -393,7 +567,7 @@ function Workbench(
               !dirty ||
               c.datasetVersionId !== p.data.id
             }
-            onClick={save}
+            onClick={() => save()}
           >
             <Save size={14} />
             保存
@@ -413,8 +587,8 @@ function Workbench(
           </Button>
         </div>
       </div>
-      <div className="editor-body">
-        <aside className="editor-left">
+      <div className="editor-body" inert={saving}>
+        <aside className="editor-left" style={{ width: widths.left }}>
           <div className="panel-title">
             <Database size={14} />
             数据与图层
@@ -581,6 +755,7 @@ function Workbench(
             原始实验数据始终保持不变
           </div>
         </aside>
+        {resizer("left")}
         <section className="canvas-column">
           <div className="canvas-toolbar">
             <span>
@@ -755,7 +930,8 @@ function Workbench(
             </div>
           )}
         </section>
-        <aside className="editor-right">
+        {resizer("right")}
+        <aside className="editor-right" style={{ width: widths.right }}>
           <div className="panel-title">
             <SlidersHorizontal size={14} />
             属性
@@ -1300,8 +1476,8 @@ function Workbench(
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  if (window.confirm("恢复默认配置？可通过撤销恢复。"))
+                onClick={async () => {
+                  if (await confirm("恢复默认配置？可通过撤销恢复。"))
                     change(defaults(p.data));
                 }}
               >
@@ -1323,6 +1499,54 @@ function Workbench(
           本地工作区
         </span>
       </div>
+      {confirmDialog}
+      <Dialog
+        open={!!recovery}
+        onOpenChange={() => {}}
+        title="发现未完成的草稿"
+        description={`本机保存时间：${recovery?.at ? new Date(recovery.at).toLocaleString() : ""}。恢复后仍需正式保存到图表版本。`}
+      >
+        <div className="dialog-actions">
+          <Button
+            variant="outline"
+            onClick={() => {
+              try {
+                localStorage.removeItem(draftKey);
+              } catch {}
+              setRecovery(null);
+            }}
+          >
+            丢弃草稿
+          </Button>
+          <Button
+            onClick={() => {
+              if (recovery) {
+                change(recovery.config);
+                setName(recovery.name);
+                setRevision(recovery.revision);
+                setRecovery(null);
+              }
+            }}
+          >
+            恢复草稿
+          </Button>
+        </div>
+      </Dialog>
+      <Dialog
+        open={conflict}
+        onOpenChange={setConflict}
+        title="图表已有更新版本"
+        description="当前修改仍保留在本机草稿中。可以另存为新图表，避免覆盖另一个窗口保存的版本。"
+      >
+        <div className="dialog-actions">
+          <Button variant="outline" onClick={() => setConflict(false)}>
+            继续编辑
+          </Button>
+          <Button disabled={saving} onClick={() => save(true)}>
+            另存副本
+          </Button>
+        </div>
+      </Dialog>
       <Dialog
         open={exportOpen}
         onOpenChange={setExportOpen}

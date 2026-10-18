@@ -1,17 +1,33 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
 import type { Dataset } from "../lib/api";
 import { Button } from "./ui/button";
 export function DataTable({ data }: { data: Dataset }) {
+  const [search, setSearch] = useState("");
+  const [missingOnly, setMissingOnly] = useState(false);
+  const viewed = useMemo(
+    () =>
+      missingOnly
+        ? data.rows.filter((r) => data.fields.some((f) => r[f.name] === null))
+        : data.rows,
+    [data, missingOnly],
+  );
   const columns = useMemo(
     () =>
       data.fields.map((f) => ({
-        accessorKey: f.name,
+        id: f.name,
+        accessorFn: (row: Record<string, string | number | null>) =>
+          row[f.name],
+        size: 160,
+        minSize: 90,
+        maxSize: 500,
         header: () => (
           <>
             <span className="field-type">
@@ -21,12 +37,22 @@ export function DataTable({ data }: { data: Dataset }) {
           </>
         ),
         cell: (info: any) =>
-          info.getValue() ?? <span className="null-cell">null</span>,
+          info.getValue() ?? <span className="null-cell">缺失</span>,
       })),
     [data.fields],
   );
   const table = useReactTable({
-    data: data.rows,
+    data: viewed,
+    state: { globalFilter: search },
+    onGlobalFilterChange: setSearch,
+    getColumnCanGlobalFilter: () => true,
+    globalFilterFn: (row, column, value) =>
+      String(row.getValue(column) ?? "")
+        .toLowerCase()
+        .includes(String(value).toLowerCase()),
+    columnResizeMode: "onChange",
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -34,6 +60,42 @@ export function DataTable({ data }: { data: Dataset }) {
   });
   return (
     <div className="data-table">
+      <div className="table-tools">
+        <input
+          aria-label="搜索数据"
+          placeholder="搜索当前数据集…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <label>
+          <input
+            type="checkbox"
+            checked={missingOnly}
+            onChange={(e) => setMissingOnly(e.target.checked)}
+          />
+          仅看缺失行
+        </label>
+        <details>
+          <summary>显示字段</summary>
+          <div className="column-options">
+            {table.getAllLeafColumns().map((c) => (
+              <label key={c.id}>
+                <input
+                  type="checkbox"
+                  checked={c.getIsVisible()}
+                  disabled={
+                    c.getIsVisible() &&
+                    table.getVisibleLeafColumns().length === 1
+                  }
+                  onChange={c.getToggleVisibilityHandler()}
+                />
+                {c.id}
+              </label>
+            ))}
+          </div>
+        </details>
+        <span>仅影响表格查看，不改变图表或原数据</span>
+      </div>
       <div className="table-scroll">
         <table>
           <thead>
@@ -41,8 +103,35 @@ export function DataTable({ data }: { data: Dataset }) {
               <tr key={g.id}>
                 <th className="row-number">行</th>
                 {g.headers.map((h) => (
-                  <th key={h.id}>
-                    {flexRender(h.column.columnDef.header, h.getContext())}
+                  <th
+                    key={h.id}
+                    style={{
+                      width: h.getSize(),
+                      minWidth: h.getSize(),
+                      position: "relative",
+                    }}
+                    aria-sort={
+                      h.column.getIsSorted() === "asc"
+                        ? "ascending"
+                        : h.column.getIsSorted() === "desc"
+                          ? "descending"
+                          : "none"
+                    }
+                  >
+                    <button onClick={h.column.getToggleSortingHandler()}>
+                      {flexRender(h.column.columnDef.header, h.getContext())}{" "}
+                      {h.column.getIsSorted() === "asc"
+                        ? "↑"
+                        : h.column.getIsSorted() === "desc"
+                          ? "↓"
+                          : "↕"}
+                    </button>
+                    <span
+                      className="column-resize"
+                      onMouseDown={h.getResizeHandler()}
+                      onTouchStart={h.getResizeHandler()}
+                      onDoubleClick={() => h.column.resetSize()}
+                    />
                   </th>
                 ))}
               </tr>
@@ -53,7 +142,10 @@ export function DataTable({ data }: { data: Dataset }) {
               <tr key={r.id}>
                 <td className="row-number">{r.index + 1}</td>
                 {r.getVisibleCells().map((c) => (
-                  <td key={c.id}>
+                  <td
+                    key={c.id}
+                    className={c.getValue() === null ? "missing-cell" : ""}
+                  >
                     {flexRender(c.column.columnDef.cell, c.getContext())}
                   </td>
                 ))}
@@ -64,7 +156,8 @@ export function DataTable({ data }: { data: Dataset }) {
       </div>
       <div className="table-footer">
         <span>
-          {data.row_count} 行 · {data.fields.length} 个字段 · 原始数据只读
+          查看 {table.getFilteredRowModel().rows.length} / {data.row_count} 行 ·{" "}
+          {data.fields.length} 个字段 · 原始数据只读
         </span>
         <div>
           <Button

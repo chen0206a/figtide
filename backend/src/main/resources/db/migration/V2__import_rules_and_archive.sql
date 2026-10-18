@@ -1,0 +1,2 @@
+ALTER TABLE dataset_versions ADD COLUMN parse_rules_json JSON NULL;
+ALTER TABLE projects ADD COLUMN archived BOOLEAN NOT NULL DEFAULT FALSE;

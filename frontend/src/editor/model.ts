@@ -73,18 +73,31 @@ export const makeSeries = (y: string, i = 0): Series => ({
 });
 export function defaults(d: Dataset): Config {
   const nums = d.fields.filter((f) => f.type === "number").map((f) => f.name);
+  const x =
+    d.fields.find((f) => f.role === "x")?.name || d.fields[0]?.name || "";
+  const ys = d.fields
+    .filter((f) => f.role === "y" && f.type === "number")
+    .map((f) => f.name);
+  const error =
+    d.fields.find((f) => f.role === "error" && f.type === "number")?.name || "";
   return {
     schema_version: 1,
     datasetVersionId: d.id,
     type: "line",
-    x: d.fields[0]?.name || "",
-    group: "",
+    x,
+    group: d.fields.find((f) => f.role === "group")?.name || "",
     heatY: d.fields[1]?.name || "",
     heatZ: nums.at(-1) || "",
-    series: [makeSeries(nums[1] || nums[0] || "")],
+    series: (ys.length
+      ? ys
+      : [nums.find((n) => n !== x && n !== error) || nums[0] || ""]
+    ).map((y, i) => ({
+      ...makeSeries(y, i),
+      error: ys.length === 1 ? error : "",
+    })),
     axes: {
       x: {
-        title: d.fields[0]?.name || "X",
+        title: x || "X",
         min: "",
         max: "",
         log: false,
@@ -92,7 +105,8 @@ export function defaults(d: Dataset): Config {
         dtick: "",
       },
       y: {
-        title: nums[1] || nums[0] || "Y",
+        title:
+          ys[0] || nums.find((n) => n !== x && n !== error) || nums[0] || "Y",
         min: "",
         max: "",
         log: false,

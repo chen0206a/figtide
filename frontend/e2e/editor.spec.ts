@@ -143,5 +143,5 @@ test("experiment creation, editing and malformed CSV feedback", async ({
     mimeType: "text/csv",
     buffer: Buffer.from("same,same\n1,2"),
   });
-  await expect(page.getByRole("status")).toContainText("表头必须唯一");
+  await expect(page.getByRole("alert")).toContainText("表头必须唯一");
 });

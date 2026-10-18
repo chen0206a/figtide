@@ -19,10 +19,17 @@ import { Dialog } from "./components/ui/dialog";
 import { DataTable } from "./components/DataTable";
 import { HomePage } from "./components/HomePage";
 import { LabFlowMark } from "./components/LabFlowMark";
+import { UploadDialog } from "./components/UploadDialog";
+import { ProjectManager } from "./components/ProjectManager";
+import { useConfirm } from "./components/useConfirm";
+import "./components/refinements.css";
 const Editor = lazy(() => import("./editor/Editor"));
 type Page = "home" | "experiments" | "data" | "editor";
 export default function App() {
   const qc = useQueryClient();
+  const { confirm, dialog: confirmDialog } = useConfirm();
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [manage, setManage] = useState(false);
   const [page, setPage] = useState<Page>("home"),
     [project, setProject] = useState(
       Number(localStorage.getItem("labflow-project")) || 0,
@@ -52,16 +59,23 @@ export default function App() {
     enabled: !!project,
   });
   useEffect(() => {
-    if (!project && projects.data?.length) setProject(projects.data[0].id);
+    if (
+      projects.data &&
+      !projects.data.some((p) => p.id === project && !p.archived)
+    ) {
+      setProject(projects.data.find((p) => !p.archived)?.id || 0);
+      setChart(null);
+      setDataset(0);
+    }
   }, [projects.data, project]);
   useEffect(() => {
     localStorage.setItem("labflow-project", String(project));
   }, [project]);
   const current = projects.data?.find((p) => p.id === project);
-  const navigate = (p: Page, id?: number) => {
+  const navigate = async (p: Page, id?: number) => {
     if (
       dirty.current &&
-      !window.confirm("当前图表尚未保存，离开将丢弃这些修改。继续？")
+      !(await confirm("当前图表尚未正式保存，离开后可从本机草稿恢复。继续？"))
     )
       return;
     dirty.current = false;
@@ -93,36 +107,24 @@ export default function App() {
       setBusy(false);
     }
   }
-  async function importFile(file: File) {
-    if (!project) return;
-    setBusy(true);
-    try {
-      const form = new FormData();
-      form.append("file", file);
-      const d = await api<Dataset>(
-        `/projects/${project}/datasets${uploadVersion ? `/${uploadVersion}/versions` : ""}`,
-        { method: "POST", body: form },
-      );
-      setDataset(d.id);
-      refresh();
-      navigate("data");
-      setMessage(`已导入 ${d.row_count} 行，原始文件已归档`);
-    } catch (e) {
-      setMessage((e as Error).message);
-    } finally {
-      setBusy(false);
-      setUploadVersion(null);
-      if (upload.current) upload.current.value = "";
-    }
+  function importFile(file: File) {
+    if (project) setPendingFile(file);
+  }
+  function imported(d: Dataset) {
+    setPendingFile(null);
+    setUploadVersion(null);
+    setDataset(d.id);
+    refresh();
+    void navigate("data");
+    setMessage(`已导入 ${d.row_count} 行，原始文件与解析规则已归档`);
+    if (upload.current) upload.current.value = "";
   }
   const chooseUpload = (id: number | null = null) => {
     setUploadVersion(id);
     upload.current?.click();
   };
   return (
-    <div
-      className={`app-shell ${page === "home" || !project ? "home-shell" : ""}`}
-    >
+    <div className="app-shell home-shell refined-shell">
       <div className="main-shell">
         <header className="masthead">
           <div className="masthead-bar">
@@ -146,14 +148,17 @@ export default function App() {
               <select
                 aria-label="当前项目"
                 value={project}
-                onChange={(e) => {
+                onChange={async (e) => {
+                  const nextProject = Number(e.target.value);
                   if (
                     dirty.current &&
-                    !window.confirm("切换项目将丢弃未保存修改，继续？")
+                    !(await confirm(
+                      "切换项目后，未正式保存的图表可从本机草稿恢复。继续？",
+                    ))
                   )
                     return;
                   dirty.current = false;
-                  setProject(Number(e.target.value));
+                  setProject(nextProject);
                   setChart(null);
                   setDataset(0);
                   setPage("home");
@@ -162,12 +167,17 @@ export default function App() {
                 <option value={0} disabled>
                   选择项目
                 </option>
-                {projects.data?.map((p) => (
-                  <option value={p.id} key={p.id}>
-                    {p.name}
-                  </option>
-                ))}
+                {projects.data
+                  ?.filter((p) => !p.archived)
+                  .map((p) => (
+                    <option value={p.id} key={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
               </select>
+              <Button variant="ghost" onClick={() => setManage(true)}>
+                管理项目
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"
@@ -259,7 +269,7 @@ export default function App() {
           >
             {page === "home" || !project ? (
               <HomePage
-                projects={projects.data || []}
+                projects={projects.data?.filter((p) => !p.archived) || []}
                 currentId={project}
                 charts={charts.data || []}
                 chartsLoading={charts.isPending}
@@ -307,6 +317,27 @@ export default function App() {
           </main>
         )}
       </div>
+      {confirmDialog}
+      {manage && (
+        <ProjectManager
+          projects={projects.data || []}
+          onClose={() => setManage(false)}
+          onUpdated={refresh}
+        />
+      )}
+      {pendingFile && (
+        <UploadDialog
+          file={pendingFile}
+          project={project}
+          version={uploadVersion}
+          onImported={imported}
+          onClose={() => {
+            setPendingFile(null);
+            setUploadVersion(null);
+            if (upload.current) upload.current.value = "";
+          }}
+        />
+      )}
       <Dialog
         open={modal}
         onOpenChange={setModal}

@@ -97,3 +97,19 @@ describe("reproducible plot model", () => {
     expect(b.traces[0].marker.color).toBe("#ff0000");
   });
 });
+
+it("initializes confirmed field roles and leaves input metadata unchanged", () => {
+  const input: Dataset = {
+    ...d,
+    fields: d.fields.map((f) => ({
+      ...f,
+      role: f.name === "epoch" ? "x" : f.name === "accuracy" ? "y" : "error",
+    })),
+  };
+  const before = JSON.stringify(input);
+  const c = defaults(input);
+  expect(c.x).toBe("epoch");
+  expect(c.series[0].y).toBe("accuracy");
+  expect(c.series[0].error).toBe("error");
+  expect(JSON.stringify(input)).toBe(before);
+});

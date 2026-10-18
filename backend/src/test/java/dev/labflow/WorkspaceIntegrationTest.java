@@ -118,4 +118,66 @@ class WorkspaceIntegrationTest {
                 .content("{\"name\":\"Bad\",\"config\":{\"schema_version\":2}}"))
         .andExpect(status().isBadRequest());
   }
+
+  @Test
+  void previewCommitRulesAndArchiveRoundtrip() throws Exception {
+    long p =
+        request("/api/projects", "{\"name\":\"Import contract\",\"description\":\"test\"}")
+            .path("id")
+            .asLong();
+    String root = "/api/projects/" + p;
+    var file =
+        new MockMultipartFile(
+            "file",
+            "规则.csv",
+            "text/csv",
+            "epoch;score\n1;NA\n2;92".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    String rules =
+        "{\"schema_version\":1,\"delimiter\":\";\",\"sheet\":0,\"missingValues\":[\"NA\"],\"types\":{\"score\":\"number\"},\"roles\":{\"epoch\":\"x\",\"score\":\"y\"}}";
+    var preview =
+        json.readTree(
+            mvc.perform(multipart(root + "/datasets/preview").file(file).param("rules", rules))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString());
+    mvc.perform(get(root + "/datasets")).andExpect(jsonPath("$.length()").value(0));
+    var saved =
+        json.readTree(
+            mvc.perform(multipart(root + "/datasets").file(file).param("rules", rules))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString());
+    assertEquals(preview.path("fields"), saved.path("fields"));
+    assertEquals(preview.path("rows"), saved.path("rows"));
+    assertEquals(json.readTree(rules), saved.path("parse_rules"));
+    mvc.perform(get(root + "/data/" + saved.path("id").asLong() + "/original"))
+        .andExpect(content().bytes(file.getBytes()));
+    mvc.perform(
+            put(root)
+                .contentType("application/json")
+                .content("{\"name\":\"Renamed\",\"description\":\"test\",\"archived\":true}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.archived").value(true));
+    mvc.perform(get(root + "/data/" + saved.path("id").asLong())).andExpect(status().isOk());
+  }
+
+  @Test
+  void invalidPreviewCannotCommit() throws Exception {
+    long p =
+        request("/api/projects", "{\"name\":\"Bad import\",\"description\":\"test\"}")
+            .path("id")
+            .asLong();
+    String root = "/api/projects/" + p;
+    var file = new MockMultipartFile("file", "bad.csv", "text/csv", "score\n<0.01".getBytes());
+    String rules =
+        "{\"schema_version\":1,\"delimiter\":\",\",\"sheet\":0,\"missingValues\":[],\"types\":{\"score\":\"number\"},\"roles\":{}}";
+    mvc.perform(multipart(root + "/datasets/preview").file(file).param("rules", rules))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.issues[0].row").value(2));
+    mvc.perform(multipart(root + "/datasets").file(file).param("rules", rules))
+        .andExpect(status().isBadRequest());
+    mvc.perform(get(root + "/datasets")).andExpect(jsonPath("$.length()").value(0));
+  }
 }

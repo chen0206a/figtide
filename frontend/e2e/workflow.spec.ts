@@ -20,6 +20,7 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
   await page
     .getByTestId("file-upload")
     .setInputFiles(path.resolve("../samples/demo-learning-curves.csv"));
+  await page.getByRole("button", { name: "确认导入", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "demo-learning-curves.csv" }),
   ).toBeVisible();

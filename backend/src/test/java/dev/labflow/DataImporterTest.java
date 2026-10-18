@@ -92,4 +92,62 @@ class DataImporterTest {
             .collect(java.util.stream.Collectors.joining(","));
     assertThrows(ApiException.class, () -> parser.parse("a.csv", (h + "\n" + h).getBytes()));
   }
+
+  @Test
+  void explicitImportRulesDoNotSilentlyConvertText() {
+    var rules =
+        new dev.labflow.importer.ImportRules(
+            1,
+            ";",
+            0,
+            java.util.List.of("NA"),
+            java.util.Map.of("score", "number"),
+            java.util.Map.of("epoch", "x", "score", "y"));
+    var parsed =
+        parser.parse(
+            "demo.csv", "epoch;score\n1;NA\n2;<0.01".getBytes(StandardCharsets.UTF_8), rules);
+    assertNull(parsed.rows().getFirst().get("score"));
+    assertEquals(1, parsed.issues().size());
+    assertEquals(3, parsed.issues().getFirst().get("row"));
+    assertEquals("y", parsed.fields().get(1).get("role"));
+    assertEquals("string", parsed.fields().get(1).get("inferredType"));
+  }
+
+  @Test
+  void supportsWorksheetSelectionAndRetainsWorkbook() throws Exception {
+    try (var book = new XSSFWorkbook();
+        var out = new ByteArrayOutputStream()) {
+      for (String sheet : java.util.List.of("第一张", "结果")) {
+        var sh = book.createSheet(sheet);
+        sh.createRow(0).createCell(0).setCellValue("score");
+        sh.createRow(1).createCell(0).setCellValue(sheet.equals("结果") ? 92 : 11);
+      }
+      book.write(out);
+      var parsed =
+          parser.parse(
+              "s.xlsx",
+              out.toByteArray(),
+              new dev.labflow.importer.ImportRules(
+                  1, ",", 1, java.util.List.of(), java.util.Map.of(), java.util.Map.of()));
+      assertEquals(92d, parsed.rows().getFirst().get("score"));
+      assertEquals(2, parsed.sheets().size());
+    }
+  }
+
+  @Test
+  void rejectsUnknownFieldAndDuplicateRoles() {
+    var rules =
+        new dev.labflow.importer.ImportRules(
+            1, ",", 0, java.util.List.of(), java.util.Map.of(), java.util.Map.of("missing", "x"));
+    assertThrows(ApiException.class, () -> parser.parse("x.csv", "x,y\n1,2".getBytes(), rules));
+    var duplicate =
+        new dev.labflow.importer.ImportRules(
+            1,
+            ",",
+            0,
+            java.util.List.of(),
+            java.util.Map.of(),
+            java.util.Map.of("x", "x", "y", "x"));
+    assertThrows(ApiException.class, duplicate::validate);
+  }
 }

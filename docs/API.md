@@ -52,3 +52,33 @@
 400 输入/配置/解析错误；403 非本地浏览器来源写入；404 不存在或不属于当前项目；409 并发版本冲突；413 超过上传大小；500 内部错误（不给客户端泄露 SQL 或栈）。
 
 本地模式只限制来源与网络监听，不提供身份认证。不要通过反向代理直接公开此 API。
+
+## 第一批增量协议（2026-10-18）
+
+`PUT /projects/{p}` 接收 `{name, description, archived}`，更新名称、简介和归档状态。`GET /projects` 仍返回全部项目，新增布尔字段 `archived`；前端工作区隐藏归档项目，管理弹窗可恢复。归档不删除资源。
+
+`POST /projects/{p}/datasets/preview` 接收 multipart `file` 和可选文本字段 `rules`（JSON 字符串）。原有创建数据集、追加版本接口也接受同一 `rules`。省略时采用默认解析规则，兼容旧客户端。
+
+```json
+{
+  "schema_version": 1,
+  "delimiter": ",",
+  "sheet": 0,
+  "missingValues": ["NA"],
+  "types": {"score":"number"},
+  "roles": {"epoch":"x","score":"y","std":"error"}
+}
+```
+
+- delimiter 允许逗号、分号、制表符；sheet 为从 0 开始的工作表索引。
+- types 值为 `number|string`；没有覆盖的字段仍自动推断。
+- roles 值为 `none|x|y|group|error`。x/group/error 各最多一个，y 可多个；y/error 必须为数值字段。无角色不代表删除列。
+- missingValues 为区分大小写的显式标记，最多 30 个；原始文件完整保留。不自动解释 `<0.01` 或 `-999`。
+- 预览返回 `filename,row_count,fields,rows,warnings,sheets,issues,parse_rules`。rows 最多 20 行，row_count 是完整解析行数；不写入数据表。结构不可解析时通常返回 400；可读 XLSX 即使当前工作表不可解析，仍返回 sheets 与 issues 供切换。
+- issues 含 `{row,field,value,message}`，数值转换问题最多返回 100 条。row 是包含表头的逻辑记录序号，CSV 多行引号内容不按物理行计数。有任何 issue 时服务端拒绝正式提交。
+- fields 保留原有 `name,type,missing`，增加 `inferredType,role,suggestedRole,unique,samples,constant`；数值列有有效值时包含 min/max。建议仅供参考，前端不自动选中。
+- 提交时仍上传原文件与规则，由服务器重新解析，拒绝客户端提供替换后的数据行。
+- 数据版本新增 `parse_rules`（MySQL `parse_rules_json`）；旧版本为 null。原有 chart schema_version 仍为 1，不修改历史图表。新图表默认读取字段角色，单个 Y 时预填误差列；多个 Y 时用户逐序列指定误差来源。
+- 图表复制复用现有 `POST /charts`，不增加重复接口；409 冲突仍通过现有 revision 检测，界面支持另存副本。
+
+前端草稿仅保存配置、名称、原 revision 和时间，不保存原数据。localStorage 键按项目/图表区分；正式保存成功后清理对应草稿。恢复旧 revision 的草稿不会绕过服务器并发校验。

@@ -3,6 +3,7 @@ package dev.labflow.service;
 import com.fasterxml.jackson.databind.*;
 import dev.labflow.api.ApiException;
 import dev.labflow.importer.DataImporter;
+import dev.labflow.importer.ImportRules;
 import dev.labflow.repository.WorkspaceRepository;
 import java.security.MessageDigest;
 import java.util.*;
@@ -41,8 +42,17 @@ public class WorkspaceService {
     var result = new LinkedHashMap<>(row);
     for (String key :
         List.of(
-            "config_json", "fields_json", "rows_json", "warnings_json", "parameters", "metrics")) {
-      if (result.containsKey(key)) result.put(key.replace("_json", ""), decode(result.remove(key)));
+            "config_json",
+            "fields_json",
+            "rows_json",
+            "warnings_json",
+            "parse_rules_json",
+            "parameters",
+            "metrics")) {
+      if (result.containsKey(key)) {
+        Object value = result.remove(key);
+        result.put(key.replace("_json", ""), value == null ? null : decode(value));
+      }
     }
     return result;
   }
@@ -61,6 +71,88 @@ public class WorkspaceService {
             + " experiment_count,(SELECT COUNT(*) FROM charts c WHERE c.project_id=p.id)"
             + " chart_count,(SELECT COUNT(*) FROM datasets d WHERE d.project_id=p.id) dataset_count"
             + " FROM projects p ORDER BY p.id DESC");
+  }
+
+  public Map<String, Object> updateProject(
+      long p, String name, String description, boolean archived) {
+    project(p);
+    db.update(
+        "UPDATE projects SET name=?,description=?,archived=? WHERE id=?",
+        name.trim(),
+        description,
+        archived,
+        p);
+    return db.one("SELECT * FROM projects WHERE id=?", p);
+  }
+
+  public ImportRules importRules(String value) {
+    if (value == null || value.isBlank()) return ImportRules.defaults();
+    try {
+      var rules = json.readValue(value, ImportRules.class);
+      rules.validate();
+      return rules;
+    } catch (Exception e) {
+      throw ApiException.bad("导入规则格式无效：" + e.getMessage());
+    }
+  }
+
+  public Map<String, Object> preview(long p, String filename, byte[] bytes, ImportRules rules) {
+    project(p);
+    if (filename == null
+        || filename.length() > 255
+        || filename.contains("/")
+        || filename.contains("\\")
+        || filename.contains("\u0000")) throw ApiException.bad("无效文件名");
+    DataImporter.Parsed parsed;
+    try {
+      parsed = importer.parse(filename, bytes, rules);
+    } catch (ApiException e) {
+      var sheets = importer.sheetNames(filename, bytes);
+      if (sheets.isEmpty()) throw e;
+      return Map.of(
+          "filename",
+          filename,
+          "row_count",
+          0,
+          "fields",
+          List.of(),
+          "rows",
+          List.of(),
+          "warnings",
+          List.of(),
+          "sheets",
+          sheets,
+          "issues",
+          List.of(
+              Map.of(
+                  "row",
+                  1,
+                  "field",
+                  "工作表",
+                  "value",
+                  sheets.get(Math.min(rules.sheet(), sheets.size() - 1)),
+                  "message",
+                  e.getMessage())),
+          "parse_rules",
+          rules);
+    }
+    return Map.of(
+        "filename",
+        filename,
+        "row_count",
+        parsed.rows().size(),
+        "fields",
+        parsed.fields(),
+        "rows",
+        parsed.rows().stream().limit(20).toList(),
+        "warnings",
+        parsed.warnings(),
+        "sheets",
+        parsed.sheets(),
+        "issues",
+        parsed.issues(),
+        "parse_rules",
+        rules);
   }
 
   public Map<String, Object> createProject(String name, String description) {
@@ -105,7 +197,7 @@ public class WorkspaceService {
     return unpackAll(
         db.query(
             "SELECT"
-                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.warnings_json,v.created_at,d.name"
+                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.warnings_json,v.parse_rules_json,v.created_at,d.name"
                 + " FROM dataset_versions v JOIN datasets d ON d.id=v.dataset_id WHERE"
                 + " d.project_id=? ORDER BY v.id DESC",
             p));
@@ -113,13 +205,20 @@ public class WorkspaceService {
 
   @Transactional
   public Map<String, Object> upload(long p, Long datasetId, String filename, byte[] bytes) {
+    return upload(p, datasetId, filename, bytes, ImportRules.defaults());
+  }
+
+  @Transactional
+  public Map<String, Object> upload(
+      long p, Long datasetId, String filename, byte[] bytes, ImportRules rules) {
     project(p);
     if (filename == null
         || filename.length() > 255
         || filename.contains("/")
         || filename.contains("\\")
         || filename.contains("\u0000")) throw ApiException.bad("无效文件名");
-    var parsed = importer.parse(filename, bytes);
+    var parsed = importer.parse(filename, bytes, rules);
+    if (!parsed.issues().isEmpty()) throw ApiException.bad("存在未解决的解析问题，请先预览并修正导入规则");
     int version = 1;
     if (datasetId == null)
       datasetId = db.insert("INSERT INTO datasets(project_id,name) VALUES(?,?)", p, filename);
@@ -143,8 +242,8 @@ public class WorkspaceService {
     long id =
         db.insert(
             "INSERT INTO"
-                + " dataset_versions(dataset_id,version,filename,sha256,original_file,fields_json,rows_json,warnings_json,row_count)"
-                + " VALUES(?,?,?,?,?,?,?,?,?)",
+                + " dataset_versions(dataset_id,version,filename,sha256,original_file,fields_json,rows_json,warnings_json,row_count,parse_rules_json)"
+                + " VALUES(?,?,?,?,?,?,?,?,?,?)",
             datasetId,
             version,
             filename,
@@ -153,7 +252,8 @@ public class WorkspaceService {
             encode(parsed.fields()),
             encode(parsed.rows()),
             encode(parsed.warnings()),
-            parsed.rows().size());
+            parsed.rows().size(),
+            encode(rules));
     return data(p, id);
   }
 
@@ -161,7 +261,7 @@ public class WorkspaceService {
     return unpack(
         db.one(
             "SELECT"
-                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.rows_json,v.warnings_json,v.created_at"
+                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.rows_json,v.warnings_json,v.parse_rules_json,v.created_at"
                 + " FROM dataset_versions v JOIN datasets d ON d.id=v.dataset_id WHERE v.id=? AND"
                 + " d.project_id=?",
             id,

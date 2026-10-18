@@ -44,6 +44,26 @@ public class WorkspaceController {
     return service.createProject(in.name(), in.description());
   }
 
+  public record ProjectUpdate(
+      @NotBlank @Size(max = 120) String name,
+      @NotNull @Size(max = 10000) String description,
+      boolean archived) {}
+
+  @PutMapping("/projects/{p}")
+  Object updateProject(@PathVariable long p, @Valid @RequestBody ProjectUpdate in) {
+    return service.updateProject(p, in.name(), in.description(), in.archived());
+  }
+
+  @PostMapping("/projects/{p}/datasets/preview")
+  Object preview(
+      @PathVariable long p,
+      @RequestPart MultipartFile file,
+      @RequestParam(required = false) String rules)
+      throws Exception {
+    return service.preview(
+        p, file.getOriginalFilename(), file.getBytes(), service.importRules(rules));
+  }
+
   @GetMapping("/projects/{p}/experiments")
   Object experiments(@PathVariable long p) {
     return service.experiments(p);
@@ -66,14 +86,24 @@ public class WorkspaceController {
   }
 
   @PostMapping("/projects/{p}/datasets")
-  Object upload(@PathVariable long p, @RequestPart MultipartFile file) throws Exception {
-    return service.upload(p, null, file.getOriginalFilename(), file.getBytes());
+  Object upload(
+      @PathVariable long p,
+      @RequestPart MultipartFile file,
+      @RequestParam(required = false) String rules)
+      throws Exception {
+    return service.upload(
+        p, null, file.getOriginalFilename(), file.getBytes(), service.importRules(rules));
   }
 
   @PostMapping("/projects/{p}/datasets/{id}/versions")
-  Object uploadVersion(@PathVariable long p, @PathVariable long id, @RequestPart MultipartFile file)
+  Object uploadVersion(
+      @PathVariable long p,
+      @PathVariable long id,
+      @RequestPart MultipartFile file,
+      @RequestParam(required = false) String rules)
       throws Exception {
-    return service.upload(p, id, file.getOriginalFilename(), file.getBytes());
+    return service.upload(
+        p, id, file.getOriginalFilename(), file.getBytes(), service.importRules(rules));
   }
 
   @GetMapping("/projects/{p}/data/{id}")
