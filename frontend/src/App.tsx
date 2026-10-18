@@ -36,7 +36,7 @@ const FEATURES = [
   {
     icon: <Database size={20} />,
     title: "不可变数据版本",
-    desc: "原始文件只读归档并记录 SHA-256，新版本追加而非覆盖。",
+    desc: "原始文件只读归档并生成内容指纹，新版本追加而非覆盖。",
     tag: "IMMUTABLE",
   },
   {
@@ -179,7 +179,7 @@ export default function App() {
               <FlaskConical size={17} />
               <span>LabFlow</span>
             </a>
-            <span className="masthead-meta">Research workspace · Vol. 01</span>
+            <span className="masthead-meta">Research data · Figure plates</span>
             <div className="global-right">
               <span className="local-badge">
                 <span /> 本地工作区
@@ -240,7 +240,7 @@ export default function App() {
               </button>
             ))}
             <span className="nav-spacer" />
-            <span className="nav-note">Local · single user</span>
+            <span className="nav-note">本地运行 · 数据不外传</span>
           </nav>
         </header>
         {message && (
@@ -301,7 +301,7 @@ export default function App() {
                 <section className="hero">
                   <div className="hero-grid">
                     <div className="hero-main">
-                      <p className="kicker">Research workspace — Issue 01</p>
+                      <p className="kicker">From experiment to figure</p>
                       <h1>
                         让每一次实验，
                         <br />
@@ -359,16 +359,16 @@ export default function App() {
                   </div>
                   <dl className="hero-meta">
                     <div>
-                      <dt>Stack</dt>
-                      <dd>Java 21 · Spring Boot 3 · MySQL 8</dd>
+                      <dt>Data</dt>
+                      <dd>不可变版本 · 内容指纹</dd>
                     </div>
                     <div>
                       <dt>Figures</dt>
                       <dd>SVG 矢量 · 2× PNG</dd>
                     </div>
                     <div>
-                      <dt>Dependencies</dt>
-                      <dd>无代码 · 无 API Key</dd>
+                      <dt>Runtime</dt>
+                      <dd>本地单机 · 无需账号</dd>
                     </div>
                   </dl>
                 </section>
@@ -598,13 +598,13 @@ export default function App() {
                     </Button>
                     <div className="guide-note">
                       <BookOpen size={15} />
-                      无需代码，无需 AI API
+                      无需编程 · 全部在本地完成
                     </div>
                   </aside>
                 </div>
                 <footer className="page-footer">
                   <span>LabFlow / v0.1 · 为研究过程而设计</span>
-                  <span>本地模式 · 请勿直接公开部署</span>
+                  <span>数据保存在本机 · 不上传云端</span>
                 </footer>
               </>
             ) : page === "data" ? (
@@ -785,7 +785,7 @@ function DataPage({
                     <div>
                       <h2>{detail.data.filename}</h2>
                       <span className="muted">
-                        版本 {detail.data.version} · SHA-256{" "}
+                        版本 {detail.data.version} · 内容指纹{" "}
                         {detail.data.sha256.slice(0, 12)}…
                       </span>
                     </div>
@@ -817,8 +817,8 @@ function DataPage({
                         <b>{f.type === "number" ? "#" : "Aa"}</b>
                         {f.name}
                         <small>
-                          {f.type}
-                          {f.missing ? ` · ${f.missing} 缺失` : ""}
+                          {f.type === "number" ? "数值" : "文本"}
+                          {f.missing ? ` · ${f.missing} 个空值` : ""}
                         </small>
                       </span>
                     ))}

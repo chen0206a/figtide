@@ -74,7 +74,7 @@ function Frame({
     <>
       <rect x={0} y={0} width={W} height={H} fill="#fffefb" />
       {letter && (
-        <text x={6} y={12} fontFamily="Inter, Helvetica, Arial" fontWeight={700} fontSize={8.5} fill={INK}>
+        <text x={6} y={12} fontFamily="Inter, Helvetica, Arial" fontWeight={700} fontSize={9.6} fill={INK}>
           {letter}
         </text>
       )}
@@ -88,7 +88,7 @@ function Frame({
               y={yy + 1.8}
               textAnchor="end"
               fontFamily="Inter, Helvetica, Arial"
-              fontSize={5.6}
+              fontSize={6.8}
               fill={MUTED}
             >
               {t}
@@ -106,7 +106,7 @@ function Frame({
               y={H - PAD.b + 11}
               textAnchor="middle"
               fontFamily="Inter, Helvetica, Arial"
-              fontSize={5.6}
+              fontSize={6.8}
               fill={MUTED}
             >
               {t}
@@ -121,7 +121,7 @@ function Frame({
         y={H - 6}
         textAnchor="middle"
         fontFamily="Inter, Helvetica, Arial"
-        fontSize={6}
+        fontSize={7.2}
         fill={INK}
       >
         {xlab}
@@ -130,7 +130,7 @@ function Frame({
         transform={`translate(11 ${(PAD.t + H - PAD.b) / 2}) rotate(-90)`}
         textAnchor="middle"
         fontFamily="Inter, Helvetica, Arial"
-        fontSize={6}
+        fontSize={7.2}
         fill={INK}
       >
         {ylab}
@@ -149,12 +149,12 @@ function Legend({ items, x0, y0 }: { items: [string, string][]; x0: number; y0: 
           <g key={label}>
             <line x1={cx} x2={cx + 9} y1={y0} y2={y0} stroke={colour} strokeWidth={1.2} />
             <circle cx={cx + 4.5} cy={y0} r={1.5} fill={colour} />
-            <text x={cx + 12} y={y0 + 2} fontFamily="Inter, Helvetica, Arial" fontSize={5.4} fill={MUTED}>
+            <text x={cx + 12} y={y0 + 2} fontFamily="Inter, Helvetica, Arial" fontSize={6.6} fill={MUTED}>
               {label}
             </text>
           </g>
         );
-        cx += 13 + label.length * 3.1;
+        cx += 14 + label.length * 3.6;
         return g;
       })}
     </g>
@@ -280,13 +280,13 @@ function PlateBars() {
                   </g>
                 );
               })}
-              <text x={cx} y={H - PAD.b + 11} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={5.2} fill={MUTED}>
+              <text x={cx} y={H - PAD.b + 11} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={6.4} fill={MUTED}>
                 {g}
               </text>
             </g>
           );
         })}
-        <text x={(PAD.l + W - PAD.r) / 2} y={H - 6} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={6} fill={INK}>
+        <text x={(PAD.l + W - PAD.r) / 2} y={H - 6} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={7.2} fill={INK}>
           Evaluation dataset
         </text>
       </Frame>
@@ -322,7 +322,7 @@ function PlateHeat() {
   return (
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Cross-dataset accuracy heatmap">
       <rect x={0} y={0} width={W} height={H} fill="#fffefb" />
-      <text x={6} y={12} fontFamily="Inter, Helvetica, Arial" fontWeight={700} fontSize={8.5} fill={INK}>
+      <text x={6} y={12} fontFamily="Inter, Helvetica, Arial" fontWeight={700} fontSize={9.6} fill={INK}>
         c
       </text>
       {values.map((row, r) =>
@@ -334,7 +334,7 @@ function PlateHeat() {
               y={y0 + r * ch + ch / 2 + 1.5}
               textAnchor="middle"
               fontFamily="Inter, Helvetica, Arial"
-              fontSize={7}
+              fontSize={8.2}
               fill={v > 68 ? "#fffefb" : INK}
             >
               {v.toFixed(1)}
@@ -349,7 +349,7 @@ function PlateHeat() {
           y={y0 + i * ch + ch / 2 + 2}
           textAnchor="end"
           fontFamily="Inter, Helvetica, Arial"
-          fontSize={6}
+          fontSize={7.2}
           fill={MUTED}
         >
           {r}
@@ -362,16 +362,16 @@ function PlateHeat() {
           y={y0 - 7}
           textAnchor="middle"
           fontFamily="Inter, Helvetica, Arial"
-          fontSize={6}
+          fontSize={7.2}
           fill={MUTED}
         >
           {c}
         </text>
       ))}
-      <text x={(x0 + x0 + 3 * cw) / 2} y={H - 22} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={6.2} fill={INK}>
+      <text x={(x0 + x0 + 3 * cw) / 2} y={H - 22} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={7.4} fill={INK}>
         Evaluation dataset
       </text>
-      <text x={(x0 + x0 + 3 * cw) / 2} y={H - 8} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={6.2} fill={INK}>
+      <text x={(x0 + x0 + 3 * cw) / 2} y={H - 8} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={7.4} fill={INK}>
         Accuracy (%)
       </text>
       <g>
@@ -382,7 +382,7 @@ function PlateHeat() {
             x={x0 + 3 * cw + 24}
             y={y0 + (3 * ch - 2) - (i * (3 * ch - 2)) / 2 + 2}
             fontFamily="Inter, Helvetica, Arial"
-            fontSize={5.4}
+            fontSize={6.6}
             fill={MUTED}
           >
             {v}
@@ -448,7 +448,7 @@ function PlateScatter() {
         {pts.map(([a, b]) => (
           <circle key={a} cx={x(a, 0, 100)} cy={y(b, 55, 95)} r={1.9} fill="#fffefb" stroke={INK} strokeWidth={0.8} />
         ))}
-        <text x={PAD.l + 8} y={PAD.t + 8} fontFamily="Inter, Helvetica, Arial" fontSize={5.4} fill={MUTED}>
+        <text x={PAD.l + 8} y={PAD.t + 8} fontFamily="Inter, Helvetica, Arial" fontSize={6.6} fill={MUTED}>
           r² = 0.96
         </text>
       </Frame>
@@ -517,13 +517,13 @@ function PlateMultiples() {
                 <circle cx={sx(k)} cy={sy(b)} r={1.1} fill={OI.vermillion} />
               </g>
             ))}
-            <text x={ox + 1} y={oy + 9} fontFamily="Inter, Helvetica, Arial" fontWeight={700} fontSize={7} fill={INK}>
+            <text x={ox + 1} y={oy + 9} fontFamily="Inter, Helvetica, Arial" fontWeight={700} fontSize={8.2} fill={INK}>
               {letters[i]}
             </text>
           </g>
         );
       })}
-      <text x={PAD.l} y={H - 6} fontFamily="Inter, Helvetica, Arial" fontSize={5.4} fill={MUTED}>
+      <text x={PAD.l} y={H - 6} fontFamily="Inter, Helvetica, Arial" fontSize={6.6} fill={MUTED}>
         Solid: baseline · dashed: proposed
       </text>
     </svg>
@@ -592,13 +592,13 @@ function PlateBox() {
                   strokeWidth={0.65}
                 />
               ))}
-              <text x={cx} y={H - PAD.b + 11} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={5.4} fill={MUTED}>
+              <text x={cx} y={H - PAD.b + 11} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={6.6} fill={MUTED}>
                 {label}
               </text>
             </g>
           );
         })}
-        <text x={(PAD.l + W - PAD.r) / 2} y={H - 6} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={6} fill={INK}>
+        <text x={(PAD.l + W - PAD.r) / 2} y={H - 6} textAnchor="middle" fontFamily="Inter, Helvetica, Arial" fontSize={7.2} fill={INK}>
           Model variant (n = 8 seeds)
         </text>
       </Frame>

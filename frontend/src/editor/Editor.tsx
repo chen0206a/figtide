@@ -92,7 +92,7 @@ export default function Editor(p: Props) {
         <div className="empty-art">
           <ChartNoAxesCombined size={64} />
         </div>
-        <span className="page-eyebrow">YOUR NEXT FIGURE STARTS HERE</span>
+        <span className="page-eyebrow">从第一份数据开始</span>
         <h1>从数据，走向发现。</h1>
         <p>导入实验结果，开始构建你的第一张科研图表。</p>
         <Button onClick={p.onUpload}>
@@ -338,8 +338,8 @@ function Workbench(
             />
             <small>
               {p.projectName}
-              <ChevronRight size={10} /> Figure{" "}
-              {id ? String(id).padStart(2, "0") : "draft"}
+              <ChevronRight size={10} /> 图版{" "}
+              {id ? String(id).padStart(2, "0") : "草稿"}
             </small>
           </div>
           <span className={`save-state ${dirty ? "unsaved" : ""}`}>
@@ -417,7 +417,7 @@ function Workbench(
         <aside className="editor-left">
           <div className="panel-title">
             <Database size={14} />
-            数据与图层<span className="tiny-badge">SOURCE</span>
+            数据与图层
           </div>
           <section className="left-section">
             <div className="section-label">
@@ -468,7 +468,7 @@ function Workbench(
           </section>
           <section className="left-section">
             <div className="section-label">
-              图表类型<span className="tiny-label">4 TYPES</span>
+              图表类型<span className="tiny-label">4 种</span>
             </div>
             <div className="chart-type-grid">
               {(
@@ -495,7 +495,7 @@ function Workbench(
           </section>
           <section className="left-section">
             <div className="section-label">
-              图层 / SERIES{" "}
+              图层 / 序列{" "}
               <button
                 aria-label="添加序列"
                 title="添加序列"
@@ -758,7 +758,7 @@ function Workbench(
         <aside className="editor-right">
           <div className="panel-title">
             <SlidersHorizontal size={14} />
-            属性<span className="tiny-badge">INSPECTOR</span>
+            属性
           </div>
           <div className="inspector-tabs">
             {[
@@ -1314,10 +1314,10 @@ function Workbench(
       </div>
       <div className="editor-statusbar">
         <span>
-          LabFlow <span className="muted">/</span> Research figure editor
+          LabFlow <span className="muted">/</span> 科研绘图工作台
         </span>
         <span>
-          schema v1 · {p.data.filename} @ v{p.data.version}{" "}
+          {p.data.filename} · 数据版本 v{p.data.version}{" "}
           <span className="status-separator">|</span>{" "}
           <span className="green-dot" />
           本地工作区

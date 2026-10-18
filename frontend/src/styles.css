@@ -41,7 +41,7 @@
   --font-serif: "Newsreader Variable", Georgia, "Songti SC", serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--ink);
   background: var(--paper);
@@ -131,7 +131,7 @@ svg {
 }
 .kicker {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -222,7 +222,7 @@ input[type="color"]::-webkit-color-swatch {
 label {
   display: block;
   margin-bottom: 14px;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--ink-3);
 }
@@ -235,7 +235,7 @@ label > .color-input {
 label input,
 label select,
 label textarea {
-  font-size: 12.5px !important;
+  font-size: 13.5px !important;
 }
 .color-input {
   display: flex;
@@ -249,12 +249,12 @@ label textarea {
 }
 .color-input span {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--ink-3);
 }
 .code-input {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.75;
 }
 
@@ -266,7 +266,7 @@ label textarea {
   gap: 7px;
   min-height: 38px;
   padding: 9px 16px;
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 500;
   letter-spacing: 0.005em;
   line-height: 1.2;
@@ -316,7 +316,7 @@ label textarea {
 .btn-small {
   min-height: 32px;
   padding: 6px 11px;
-  font-size: 11.5px;
+  font-size: 13px;
 }
 .button-row {
   display: flex;
@@ -329,7 +329,7 @@ label textarea {
   gap: 6px;
   padding: 0 0 2px;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-2);
@@ -390,7 +390,7 @@ label textarea {
 }
 .masthead-meta {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -408,7 +408,7 @@ label textarea {
   min-height: 32px;
   padding: 0 30px 0 10px;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--ink-2);
   background-color: transparent;
   border: 1px solid var(--line-2);
@@ -421,7 +421,7 @@ label textarea {
   gap: 7px;
   padding: 5px 10px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -457,7 +457,7 @@ label textarea {
   height: 40px;
   padding: 0;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -479,7 +479,7 @@ label textarea {
   background: var(--ink);
 }
 .nav-index {
-  font-size: 8.5px;
+  font-size: 11.5px;
   color: var(--clay);
   letter-spacing: 0.08em;
 }
@@ -488,7 +488,7 @@ label textarea {
 }
 .nav-note {
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #a9a094;
@@ -506,7 +506,7 @@ label textarea {
 .page-eyebrow {
   margin-bottom: 14px;
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -540,7 +540,7 @@ label textarea {
 }
 .page-heading p {
   max-width: 560px;
-  font-size: 13.5px;
+  font-size: 14.5px;
   line-height: 1.8;
   color: var(--ink-2);
 }
@@ -550,7 +550,7 @@ label textarea {
   margin-top: 72px;
   padding: 18px 0 26px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -625,7 +625,7 @@ label textarea {
 }
 .toc-no {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--clay);
   letter-spacing: 0.08em;
 }
@@ -640,7 +640,7 @@ label textarea {
 .hero-toc small {
   display: block;
   margin-top: 2px;
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--ink-3);
 }
 .hero-toc a > svg {
@@ -662,14 +662,14 @@ label textarea {
 }
 .hero-meta dt {
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-3);
 }
 .hero-meta dd {
   margin-top: 6px;
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: var(--ink-2);
 }
 
@@ -719,7 +719,7 @@ label textarea {
 }
 .stat > div > span {
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -750,7 +750,7 @@ label textarea {
 .section-note {
   max-width: 360px;
   padding-bottom: 4px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.8;
   color: var(--ink-3);
   text-align: right;
@@ -789,16 +789,16 @@ label textarea {
 }
 .plate-no {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--clay);
 }
 .plate-spec {
   font-family: var(--font-mono);
-  font-size: 8px;
-  letter-spacing: 0.06em;
-  color: #a9a094;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
   text-align: right;
 }
 .plate-caption h3 {
@@ -810,7 +810,7 @@ label textarea {
   color: var(--ink);
 }
 .plate-caption p {
-  font-size: 11.5px;
+  font-size: 13px;
   line-height: 1.7;
   color: var(--ink-3);
 }
@@ -832,7 +832,7 @@ label textarea {
 }
 .cap-no {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   color: var(--clay);
 }
@@ -845,7 +845,7 @@ label textarea {
 }
 .cap-item p {
   margin-top: 5px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.75;
   color: var(--ink-3);
 }
@@ -853,7 +853,7 @@ label textarea {
   align-self: start;
   padding: 3px 7px;
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: 11.5px;
   letter-spacing: 0.12em;
   color: var(--ink-3);
   border: 1px solid var(--line);
@@ -887,13 +887,13 @@ label textarea {
 }
 .section-heading h2 > span {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: var(--ink-3);
 }
 .section-heading > .muted {
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -965,7 +965,7 @@ label textarea {
 .project-card p {
   max-width: 340px;
   overflow: hidden;
-  font-size: 11.5px;
+  font-size: 13px;
   line-height: 1.7;
   color: var(--ink-3);
   text-overflow: ellipsis;
@@ -977,14 +977,14 @@ label textarea {
   gap: 14px;
   margin-top: 18px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-3);
 }
 .selected-label {
   margin-left: auto;
-  font-size: 8px;
+  font-size: 11.5px;
   letter-spacing: 0.14em;
   color: var(--clay);
 }
@@ -1004,10 +1004,10 @@ label textarea {
   background: var(--paper-2);
 }
 .new-project-card span {
-  font-size: 12px;
+  font-size: 13px;
 }
 .new-project-card small {
-  font-size: 10px;
+  font-size: 11.5px;
   color: #a9a094;
 }
 .home-guide {
@@ -1028,7 +1028,7 @@ label textarea {
 }
 .home-guide .page-eyebrow {
   margin-bottom: 10px;
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.16em;
 }
 .home-guide .page-eyebrow::before {
@@ -1045,7 +1045,7 @@ label textarea {
 }
 .home-guide > p {
   margin-bottom: 22px;
-  font-size: 11.5px;
+  font-size: 13px;
   line-height: 1.8;
   color: var(--ink-3);
 }
@@ -1059,19 +1059,19 @@ label textarea {
 .guide-step > span {
   padding-top: 1px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--clay);
 }
 .guide-step b {
   display: block;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--ink);
 }
 .guide-step small {
   display: block;
   margin-top: 3px;
-  font-size: 10px;
+  font-size: 11.5px;
   color: var(--ink-3);
 }
 .home-guide > .btn {
@@ -1085,7 +1085,7 @@ label textarea {
   gap: 6px;
   margin-top: 12px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.08em;
   color: #a9a094;
 }
@@ -1120,14 +1120,14 @@ label textarea {
   display: block;
   margin-top: 4px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.06em;
   color: var(--ink-3);
 }
 .chart-list .muted {
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   color: #a9a094;
 }
 .mini-chart {
@@ -1152,7 +1152,7 @@ label textarea {
   justify-content: center;
   gap: 12px;
   padding: 40px 24px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ink-3);
   text-align: center;
   border: 1px dashed var(--line-2);
@@ -1167,7 +1167,7 @@ label textarea {
   justify-content: center;
   gap: 14px;
   min-height: 60vh;
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: var(--ink-3);
   text-align: center;
 }
@@ -1187,7 +1187,7 @@ label textarea {
 }
 .empty-state p {
   max-width: 420px;
-  font-size: 12.5px;
+  font-size: 13.5px;
   line-height: 1.8;
   color: var(--ink-2);
 }
@@ -1200,7 +1200,7 @@ label textarea {
   margin-bottom: 0;
 }
 .empty-state small {
-  font-size: 10px;
+  font-size: 11.5px;
   color: var(--ink-3);
 }
 .empty-art {
@@ -1238,7 +1238,7 @@ label textarea {
   max-width: 80vw;
   padding: 11px 16px;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12px;
   letter-spacing: 0.04em;
   color: var(--paper);
   background: var(--ink);
@@ -1308,7 +1308,7 @@ label textarea {
 }
 .dialog-content > p {
   margin-bottom: 24px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.75;
   color: var(--ink-3);
 }
@@ -1346,7 +1346,7 @@ label textarea {
 .dataset-list h3 {
   padding: 0 8px 14px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -1393,7 +1393,7 @@ label textarea {
   display: block;
   margin-top: 3px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.04em;
   color: var(--ink-3);
 }
@@ -1419,7 +1419,7 @@ label textarea {
 }
 .data-title .muted {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.04em;
 }
 .field-pills {
@@ -1434,23 +1434,23 @@ label textarea {
   align-items: center;
   gap: 7px;
   padding: 5px 9px;
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--ink-2);
   border: 1px solid var(--line);
   border-radius: var(--r-xs);
 }
 .field-pills b {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--clay);
 }
 .field-pills small {
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   color: #a9a094;
 }
 .data-table {
-  font-size: 11.5px;
+  font-size: 13px;
 }
 .table-scroll {
   max-height: 480px;
@@ -1473,7 +1473,7 @@ th {
   top: 0;
   z-index: 1;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -1490,13 +1490,13 @@ tbody tr:hover {
 .field-type {
   margin-right: 6px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   color: var(--clay);
 }
 .row-number {
   width: 44px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   color: #b3a99a;
   text-align: center;
 }
@@ -1510,7 +1510,7 @@ tbody tr:hover {
   justify-content: space-between;
   padding: 10px 16px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.06em;
   color: var(--ink-3);
   background: #fbf8f2;
@@ -1524,7 +1524,7 @@ tbody tr:hover {
 .warning {
   margin: 12px;
   padding: 11px 13px;
-  font-size: 11px;
+  font-size: 12.5px;
   line-height: 1.7;
   color: #7a5a1f;
   background: #fdf3e0;
@@ -1569,7 +1569,7 @@ tbody tr:hover {
   color: var(--ink);
 }
 .experiment-list p {
-  font-size: 11.5px;
+  font-size: 13px;
   line-height: 1.75;
   color: var(--ink-3);
   white-space: pre-wrap;
@@ -1597,7 +1597,7 @@ tbody tr:hover {
 .metric-pills span {
   padding: 4px 9px;
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   color: var(--ink-3);
   border: 1px solid var(--line);
   border-radius: var(--r-xs);
@@ -1665,7 +1665,7 @@ tbody tr:hover {
   gap: 5px;
   margin-top: 2px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.04em;
   color: var(--ink-3);
 }
@@ -1675,7 +1675,7 @@ tbody tr:hover {
   gap: 5px;
   margin-left: 12px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.06em;
   color: var(--sage);
 }
@@ -1722,7 +1722,7 @@ tbody tr:hover {
   gap: 8px;
   height: 42px;
   padding: 0 16px;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--ink);
   border-bottom: 1px solid var(--line);
@@ -1730,7 +1730,7 @@ tbody tr:hover {
 .tiny-badge {
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 7.5px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   color: #b3a99a;
 }
@@ -1747,7 +1747,7 @@ tbody tr:hover {
   justify-content: space-between;
   margin-bottom: 11px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -1764,13 +1764,13 @@ tbody tr:hover {
 }
 .tiny-label {
   font-family: var(--font-mono);
-  font-size: 7.5px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: #b3a99a;
 }
 .left-section select {
   padding: 7px 9px;
-  font-size: 10.5px !important;
+  font-size: 12px !important;
 }
 .dataset-meta {
   display: flex;
@@ -1778,7 +1778,7 @@ tbody tr:hover {
   gap: 7px;
   margin: 9px 0;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   color: var(--ink-3);
 }
 .version-tag {
@@ -1798,7 +1798,7 @@ tbody tr:hover {
   gap: 9px;
   padding: 5px 0;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11.5px;
   color: var(--ink-2);
   border-bottom: 1px solid rgba(228, 221, 209, 0.7);
 }
@@ -1807,19 +1807,19 @@ tbody tr:hover {
 }
 .field-list small {
   margin-left: auto;
-  font-size: 8px;
+  font-size: 11.5px;
   color: #b3a99a;
 }
 .number-symbol,
 .string-symbol {
   width: 14px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12.5px;
   color: var(--clay);
   text-align: center;
 }
 .string-symbol {
-  font-size: 8.5px;
+  font-size: 11.5px;
   color: var(--sage);
 }
 .chart-type-grid {
@@ -1834,7 +1834,7 @@ tbody tr:hover {
   justify-content: center;
   gap: 6px;
   height: 56px;
-  font-size: 8px;
+  font-size: 11.5px;
   color: var(--ink-3);
   background: var(--card);
   border: 1px solid var(--line);
@@ -1854,7 +1854,7 @@ tbody tr:hover {
   border-color: var(--ink);
 }
 .chart-type-grid button span {
-  font-size: 8px;
+  font-size: 11.5px;
 }
 .layer-item {
   display: flex;
@@ -1864,7 +1864,7 @@ tbody tr:hover {
   min-height: 32px;
   margin-bottom: 2px;
   padding: 8px 8px;
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--ink-2);
   text-align: left;
   border-radius: var(--r-xs);
@@ -1889,7 +1889,7 @@ tbody tr:hover {
 }
 .layer-item small {
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: 11.5px;
   color: #b3a99a;
 }
 .series-line {
@@ -1921,7 +1921,7 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 9.5px;
+  font-size: 11px;
   color: var(--ink-2);
 }
 .swatches {
@@ -1936,7 +1936,7 @@ tbody tr:hover {
 }
 .tiny-note {
   margin: 6px 0;
-  font-size: 8.5px;
+  font-size: 11.5px;
   line-height: 1.7;
   color: #a9a094;
 }
@@ -1947,7 +1947,7 @@ tbody tr:hover {
   margin-top: auto;
   padding: 12px 16px;
   font-family: var(--font-mono);
-  font-size: 7.5px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   color: #a9a094;
   border-top: 1px solid var(--line);
@@ -1969,7 +1969,7 @@ tbody tr:hover {
   height: 38px;
   padding: 0 16px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.06em;
   color: var(--ink-3);
   background: rgba(255, 253, 249, 0.7);
@@ -1996,7 +1996,7 @@ tbody tr:hover {
   margin-left: 6px;
   padding: 1px 5px;
   font-family: var(--font-mono);
-  font-size: 7.5px;
+  font-size: 11px;
   color: var(--ink-3);
   border: 1px solid var(--line-2);
   border-radius: 1px;
@@ -2004,7 +2004,7 @@ tbody tr:hover {
 .zoom-value {
   min-width: 34px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
 }
 .canvas-stage {
   position: relative;
@@ -2024,7 +2024,7 @@ tbody tr:hover {
   display: grid;
   place-items: center;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.08em;
   color: var(--ink-3);
   background: rgba(239, 234, 225, 0.9);
@@ -2034,7 +2034,7 @@ tbody tr:hover {
   top: 12px;
   left: 12px;
   padding: 10px 12px;
-  font-size: 10.5px;
+  font-size: 12px;
   color: #8c3529;
   background: #fbedea;
   border: 1px solid #eccfc8;
@@ -2049,7 +2049,7 @@ tbody tr:hover {
   justify-content: space-between;
   margin-bottom: 12px;
   font-family: var(--font-mono);
-  font-size: 7.5px;
+  font-size: 11px;
   letter-spacing: 0.12em;
   color: #a9a094;
   text-transform: uppercase;
@@ -2078,7 +2078,7 @@ tbody tr:hover {
   justify-content: space-between;
   margin-top: 12px;
   font-family: var(--font-mono);
-  font-size: 7.5px;
+  font-size: 11px;
   letter-spacing: 0.04em;
   color: #a9a094;
 }
@@ -2106,7 +2106,7 @@ tbody tr:hover {
   height: 100%;
   padding: 0 1px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -2122,7 +2122,7 @@ tbody tr:hover {
 }
 .bottom-tabs button > span {
   padding: 1px 5px;
-  font-size: 8px;
+  font-size: 11.5px;
   color: var(--ink-3);
   background: var(--paper-2);
   border-radius: 1px;
@@ -2137,7 +2137,7 @@ tbody tr:hover {
   gap: 6px;
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: 11.5px;
   letter-spacing: 0.06em;
   color: var(--ink-3);
 }
@@ -2157,7 +2157,7 @@ tbody tr:hover {
 .bottom-content th,
 .bottom-content td {
   padding: 6px 15px;
-  font-size: 9.5px;
+  font-size: 11px;
 }
 .bottom-content .table-footer {
   padding: 4px 15px;
@@ -2168,7 +2168,7 @@ tbody tr:hover {
   gap: 8px;
   padding: 11px 20px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--ink-3);
   border-bottom: 1px solid var(--line);
 }
@@ -2191,7 +2191,7 @@ tbody tr:hover {
 }
 .inspector-tabs button {
   padding: 0 8px;
-  font-size: 10px;
+  font-size: 11.5px;
   color: var(--ink-3);
   border-bottom: 1.5px solid transparent;
   transition: color 0.15s var(--ease);
@@ -2216,7 +2216,7 @@ tbody tr:hover {
   align-items: center;
   gap: 7px;
   margin-bottom: 14px;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.02em;
   color: var(--ink);
@@ -2226,14 +2226,14 @@ tbody tr:hover {
 }
 .property-section label {
   margin-bottom: 11px;
-  font-size: 9.5px;
+  font-size: 11px;
   color: var(--ink-3);
 }
 .property-section input:not([type="range"]):not([type="color"]):not([type="checkbox"]),
 .property-section select {
   min-height: 31px;
   padding: 6px 9px;
-  font-size: 10.5px !important;
+  font-size: 12px !important;
 }
 .property-section label:last-child {
   margin-bottom: 0;
@@ -2290,7 +2290,7 @@ tbody tr:hover {
 }
 .inspector-footer .btn {
   padding: 5px 9px;
-  font-size: 9.5px;
+  font-size: 11px;
 }
 .transform,
 .annotation-item {
@@ -2317,13 +2317,13 @@ tbody tr:hover {
   display: block;
   margin-top: 4px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 11.5px;
   color: var(--ink-3);
 }
 .export-summary {
   margin-top: 18px;
   padding: 14px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ink-2);
   background: var(--paper-2);
   border: 1px solid var(--line);
@@ -2332,7 +2332,7 @@ tbody tr:hover {
 .export-summary small {
   display: block;
   margin-top: 7px;
-  font-size: 9px;
+  font-size: 11px;
   color: var(--ink-3);
 }
 .editor-statusbar {
@@ -2343,7 +2343,7 @@ tbody tr:hover {
   height: 26px;
   padding: 0 17px;
   font-family: var(--font-mono);
-  font-size: 7.5px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   color: #a9a094;
   background: var(--paper-2);
