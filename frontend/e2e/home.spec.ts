@@ -1,0 +1,111 @@
+import { test, expect } from "@playwright/test";
+async function openHome(page: any, request: any) {
+  const projects = await (await request.get("/api/projects")).json();
+  const p =
+    projects.find((p: any) => p.name === "视觉模型泛化研究 · 合成演示") ||
+    projects[0];
+  expect(p).toBeTruthy();
+  await page.addInitScript(
+    (id: number) => localStorage.setItem("labflow-project", String(id)),
+    p.id,
+  );
+  await page.goto("/");
+  await page.locator(".launch-home").waitFor();
+}
+test("brand entrance is sequenced, real navigation works, return skips intro", async ({
+  page,
+  request,
+}) => {
+  await openHome(page, request);
+  expect(
+    await page
+      .locator(".launch-logo")
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe("mark-arrive");
+  expect(
+    await page
+      .locator(".launch-brand h1")
+      .evaluate((el) => getComputedStyle(el).animationDelay),
+  ).toBe("0.3s");
+  expect(
+    await page
+      .locator(".launch-tool")
+      .first()
+      .evaluate((el) => getComputedStyle(el).animationDelay),
+  ).toBe("0.72s");
+  await page.evaluate(() =>
+    Promise.all(
+      document.getAnimations().map((a) => a.finished.catch(() => {})),
+    ),
+  );
+  await expect(page.getByRole("heading", { name: "LabFlow." })).toBeVisible();
+  await page.screenshot({
+    path: "../docs/screenshots/home.png",
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: /^实验笔记/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "把探索，沉淀为记录。" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "项目概览", exact: true }).click();
+  await expect(page.locator(".launch-home")).toHaveClass(/intro-seen/);
+  await page.getByRole("button", { name: /^数据资料库/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "每一份数据，都有来源。" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "项目概览", exact: true }).click();
+  const chooser = page.waitForEvent("filechooser");
+  await page.getByRole("button", { name: /^导入数据/ }).click();
+  expect(await chooser).toBeTruthy();
+  await page.getByRole("button", { name: /^绘图工作台/ }).click();
+  await expect(
+    page.getByRole("button", { name: "折线图", exact: true }),
+  ).toBeVisible();
+});
+test("reduced motion disables entrance and preserves keyboard access", async ({
+  page,
+  request,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await openHome(page, request);
+  expect(
+    await page
+      .locator(".launch-logo")
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe("none");
+  expect(
+    await page
+      .locator(".launch-tool")
+      .first()
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe("none");
+  await page.locator(".launch-secondary").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).not.toBeVisible();
+});
+test("1280px workspace remains accessible without horizontal overflow", async ({
+  page,
+  request,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openHome(page, request);
+  await page.evaluate(() =>
+    Promise.all(
+      document.getAnimations().map((a) => a.finished.catch(() => {})),
+    ),
+  );
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await expect(
+    page.getByRole("heading", { name: "最近图表", exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "../docs/screenshots/home-1280.png",
+    fullPage: true,
+  });
+});

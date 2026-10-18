@@ -7,63 +7,20 @@ import {
   Plus,
   ArrowUpRight,
   ArrowRight,
-  FolderOpen,
   Upload,
   FileSpreadsheet,
-  Activity,
   Layers,
   Check,
   AlertCircle,
-  BookOpen,
-  Palette,
-  History,
-  FileDown,
 } from "lucide-react";
 import { api, send, type Project, type Dataset } from "./lib/api";
 import { Button } from "./components/ui/button";
 import { Dialog } from "./components/ui/dialog";
 import { DataTable } from "./components/DataTable";
-import { PLATES } from "./components/Plates";
+import { HomePage } from "./components/HomePage";
+import { LabFlowMark } from "./components/LabFlowMark";
 const Editor = lazy(() => import("./editor/Editor"));
 type Page = "home" | "experiments" | "data" | "editor";
-const FEATURES = [
-  {
-    icon: <FlaskConical size={20} />,
-    title: "实验记录",
-    desc: "参数、指标与观察写在同一处，随时回到任何一次探索。",
-    tag: "NOTEBOOK",
-  },
-  {
-    icon: <Database size={20} />,
-    title: "不可变数据版本",
-    desc: "原始文件只读归档并生成内容指纹，新版本追加而非覆盖。",
-    tag: "IMMUTABLE",
-  },
-  {
-    icon: <ChartNoAxesCombined size={20} />,
-    title: "论文级绘图",
-    desc: "折线、柱状、散点与热力图，字段映射后即时预览。",
-    tag: "FIGURE",
-  },
-  {
-    icon: <Palette size={20} />,
-    title: "样式与预设",
-    desc: "字体、配色、坐标轴、误差棒与注释，一次调整全局生效。",
-    tag: "STYLE",
-  },
-  {
-    icon: <History size={20} />,
-    title: "版本回溯",
-    desc: "每次保存都是完整快照，历史版本可对比、可恢复。",
-    tag: "SNAPSHOT",
-  },
-  {
-    icon: <FileDown size={20} />,
-    title: "矢量导出",
-    desc: "SVG 矢量与 2× 高清 PNG，文本仍是文本，可直接投稿。",
-    tag: "EXPORT",
-  },
-] as const;
 export default function App() {
   const qc = useQueryClient();
   const [page, setPage] = useState<Page>("home"),
@@ -163,7 +120,9 @@ export default function App() {
     upload.current?.click();
   };
   return (
-    <div className="app-shell">
+    <div
+      className={`app-shell ${page === "home" || !project ? "home-shell" : ""}`}
+    >
       <div className="main-shell">
         <header className="masthead">
           <div className="masthead-bar">
@@ -176,7 +135,7 @@ export default function App() {
               }}
               title="LabFlow 首页"
             >
-              <FlaskConical size={17} />
+              <LabFlowMark size={29} />
               <span>LabFlow</span>
             </a>
             <span className="masthead-meta">Research data · Figure plates</span>
@@ -295,318 +254,33 @@ export default function App() {
             />
           </Suspense>
         ) : (
-          <main className="page-content">
+          <main
+            className={`page-content ${page === "home" || !project ? "home-page" : ""}`}
+          >
             {page === "home" || !project ? (
-              <>
-                <section className="hero">
-                  <div className="hero-grid">
-                    <div className="hero-main">
-                      <p className="kicker">From experiment to figure</p>
-                      <h1>
-                        让每一次实验，
-                        <br />
-                        <em>都有迹可循</em>。
-                      </h1>
-                      <p className="lede">
-                        从原始数据到论文图版，LabFlow
-                        把实验记录、不可变数据版本与绘图配置留在同一条可复现的链路上。
-                      </p>
-                      <div className="hero-actions">
-                        <Button onClick={() => setModal(true)}>
-                          新建项目 <ArrowRight size={15} />
-                        </Button>
-                        <button
-                          className="link-arrow"
-                          disabled={!project || busy}
-                          onClick={() => chooseUpload()}
-                        >
-                          上传第一份数据 <ArrowUpRight size={15} />
-                        </button>
-                      </div>
-                    </div>
-                    <aside className="hero-side">
-                      <p className="kicker">Contents</p>
-                      <ol className="hero-toc">
-                        {(
-                          [
-                            ["Overview", "研究项目与最近图版", "home"],
-                            ["Notebook", "参数、指标与实验备注", "experiments"],
-                            ["Data library", "不可变版本与字段预览", "data"],
-                            ["Figure editor", "论文级图版编辑与导出", "editor"],
-                          ] as const
-                        ).map(([title, desc, target], i) => (
-                          <li key={title}>
-                            <a
-                              href="#"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                navigate(target);
-                              }}
-                            >
-                              <span className="toc-no">
-                                {String(i + 1).padStart(2, "0")}
-                              </span>
-                              <span>
-                                <b>{title}</b>
-                                <small>{desc}</small>
-                              </span>
-                              <ArrowUpRight size={14} />
-                            </a>
-                          </li>
-                        ))}
-                      </ol>
-                    </aside>
-                  </div>
-                  <dl className="hero-meta">
-                    <div>
-                      <dt>Data</dt>
-                      <dd>不可变版本 · 内容指纹</dd>
-                    </div>
-                    <div>
-                      <dt>Figures</dt>
-                      <dd>SVG 矢量 · 2× PNG</dd>
-                    </div>
-                    <div>
-                      <dt>Runtime</dt>
-                      <dd>本地单机 · 无需账号</dd>
-                    </div>
-                  </dl>
-                </section>
-                <div className="stat-strip">
-                  <Stat
-                    icon={<FolderOpen />}
-                    label="研究项目"
-                    value={projects.data?.length || 0}
-                  />
-                  <Stat
-                    icon={<FlaskConical />}
-                    label="实验记录"
-                    value={
-                      projects.data?.reduce(
-                        (s, p) => s + p.experiment_count,
-                        0,
-                      ) || 0
-                    }
-                  />
-                  <Stat
-                    icon={<ChartNoAxesCombined />}
-                    label="科研图表"
-                    value={
-                      projects.data?.reduce((s, p) => s + p.chart_count, 0) || 0
-                    }
-                  />
-                  <Stat
-                    icon={<Database />}
-                    label="数据集"
-                    value={
-                      projects.data?.reduce((s, p) => s + p.dataset_count, 0) ||
-                      0
-                    }
-                  />
-                </div>
-                <section className="section plates-section" aria-label="图版示例">
-                  <div className="section-head">
-                    <div>
-                      <p className="kicker">Plates</p>
-                      <h2>按期刊规范渲染的图版</h2>
-                    </div>
-                    <p className="section-note">
-                      单栏 89 mm、5–7 pt 字号、a–d 面板字母、Okabe–Ito
-                      色盲安全配色；图版由 LabFlow 用合成数据渲染，可直接作为绘图模板。
-                    </p>
-                  </div>
-                  <div className="plate-grid">
-                    {PLATES.map((plate) => (
-                      <figure className="plate" key={plate.no}>
-                        <div className="plate-canvas">{plate.svg}</div>
-                        <figcaption className="plate-caption">
-                          <div className="plate-head">
-                            <span className="plate-no">Fig. {plate.no}</span>
-                            <span className="plate-spec">{plate.spec}</span>
-                          </div>
-                          <h3>{plate.title}</h3>
-                          <p>{plate.note}</p>
-                        </figcaption>
-                      </figure>
-                    ))}
-                  </div>
-                </section>
-                <section className="section" aria-label="主要功能">
-                  <div className="section-head">
-                    <div>
-                      <p className="kicker">Capabilities</p>
-                      <h2>从记录到成图，六个环节</h2>
-                    </div>
-                    <p className="section-note">
-                      每一环都写入本地 MySQL，不依赖任何外部服务。
-                    </p>
-                  </div>
-                  <ol className="cap-list">
-                    {FEATURES.map((f, i) => (
-                      <li className="cap-item" key={f.tag}>
-                        <span className="cap-no">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <div>
-                          <h3>{f.title}</h3>
-                          <p>{f.desc}</p>
-                        </div>
-                        <span className="cap-tag">{f.tag}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </section>
-                <div className="home-columns">
-                  <section>
-                    <div className="section-heading">
-                      <h2>
-                        研究项目 <span>{projects.data?.length || 0}</span>
-                      </h2>
-                      <span className="muted">最近创建</span>
-                    </div>
-                    <div className="project-grid">
-                      {projects.data?.map((p, i) => (
-                        <button
-                          className={`project-card ${p.id === project ? "selected" : ""}`}
-                          key={p.id}
-                          onClick={() => {
-                            setProject(p.id);
-                            setDataset(0);
-                            setChart(null);
-                          }}
-                        >
-                          <div className="project-card-top">
-                            <div className={`project-icon p${i % 3}`}>
-                              <FolderOpen size={21} />
-                            </div>
-                            <ArrowUpRight size={17} />
-                          </div>
-                          <h3>{p.name}</h3>
-                          <p>
-                            {p.description ||
-                              "一个新的研究探索，从第一份数据开始。"}
-                          </p>
-                          <div className="project-meta">
-                            <span>{p.experiment_count} 个实验</span>
-                            <span>{p.chart_count} 张图表</span>
-                            {p.id === project && (
-                              <span className="selected-label">当前项目</span>
-                            )}
-                          </div>
-                        </button>
-                      ))}
-                      <button
-                        className="new-project-card"
-                        onClick={() => setModal(true)}
-                      >
-                        <Plus size={24} />
-                        <span>开始一项新研究</span>
-                        <small>独立管理实验、数据和图表</small>
-                      </button>
-                    </div>
-                    <div className="section-heading spaced">
-                      <h2>最近图表</h2>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        disabled={!project}
-                        onClick={() => {
-                          setChart(null);
-                          navigate("editor");
-                        }}
-                      >
-                        新建图表 <Plus size={14} />
-                      </Button>
-                    </div>
-                    {charts.data?.length ? (
-                      <div className="chart-list">
-                        {charts.data.map((c) => (
-                          <button
-                            key={c.id}
-                            onClick={() => navigate("editor", c.id)}
-                          >
-                            <span className="mini-chart">
-                              <ChartNoAxesCombined size={24} />
-                            </span>
-                            <span>
-                              <strong>{c.name}</strong>
-                              <small>
-                                {current?.name} · 版本 {c.revision}
-                              </small>
-                            </span>
-                            <span className="muted">
-                              {new Date(c.updated_at).toLocaleDateString()}
-                            </span>
-                            <ArrowRight size={16} />
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="empty-inline">
-                        <ChartNoAxesCombined size={25} />
-                        <p>第一张图表，从你的实验数据开始。</p>
-                        <Button
-                          variant="outline"
-                          disabled={!project}
-                          onClick={() => navigate("editor")}
-                        >
-                          打开绘图工作台
-                        </Button>
-                      </div>
-                    )}
-                  </section>
-                  <aside className="home-guide">
-                    <div className="guide-icon">
-                      <Activity size={23} />
-                    </div>
-                    <span className="page-eyebrow">FROM DATA TO DISCOVERY</span>
-                    <h2>
-                      数据有依据，
-                      <br />
-                      图表可复现。
-                    </h2>
-                    <p>
-                      让研究过程和最终图表保持连接。每一次保存，都记录数据版本与完整绘图配置。
-                    </p>
-                    <div className="guide-step">
-                      <span>01</span>
-                      <div>
-                        <b>导入实验数据</b>
-                        <small>CSV / XLSX · 不可变版本</small>
-                      </div>
-                    </div>
-                    <div className="guide-step">
-                      <span>02</span>
-                      <div>
-                        <b>构建你的图表</b>
-                        <small>字段映射 · 即时样式调整</small>
-                      </div>
-                    </div>
-                    <div className="guide-step">
-                      <span>03</span>
-                      <div>
-                        <b>将成果带入论文</b>
-                        <small>SVG 矢量 / 高清 PNG</small>
-                      </div>
-                    </div>
-                    <Button
-                      disabled={!project || busy}
-                      onClick={() => chooseUpload()}
-                    >
-                      <Upload size={15} />
-                      {busy ? "正在导入…" : "上传第一份数据"}
-                    </Button>
-                    <div className="guide-note">
-                      <BookOpen size={15} />
-                      无需编程 · 全部在本地完成
-                    </div>
-                  </aside>
-                </div>
-                <footer className="page-footer">
-                  <span>LabFlow / v0.1 · 为研究过程而设计</span>
-                  <span>数据保存在本机 · 不上传云端</span>
-                </footer>
-              </>
+              <HomePage
+                projects={projects.data || []}
+                currentId={project}
+                charts={charts.data || []}
+                chartsLoading={charts.isPending}
+                chartsError={charts.error?.message}
+                busy={busy}
+                onCreate={() => setModal(true)}
+                onProject={(id) => {
+                  setProject(id);
+                  setDataset(0);
+                  setChart(null);
+                }}
+                onPlot={() => {
+                  setChart(null);
+                  navigate("editor");
+                }}
+                onUpload={() => chooseUpload()}
+                onExperiments={() => navigate("experiments")}
+                onData={() => navigate("data")}
+                onChart={(id) => navigate("editor", id)}
+                onRetry={() => charts.refetch()}
+              />
             ) : page === "data" ? (
               <DataPage
                 project={project}
@@ -674,25 +348,6 @@ export default function App() {
           </div>
         </form>
       </Dialog>
-    </div>
-  );
-}
-function Stat({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-}) {
-  return (
-    <div className="stat">
-      <span className="stat-icon">{icon}</span>
-      <div>
-        <span>{label}</span>
-        <strong>{String(value).padStart(2, "0")}</strong>
-      </div>
     </div>
   );
 }
