@@ -8,3 +8,5 @@
 `synthetic-classification.csv` 为 22 行人工设定的二分类样本，label=1 为正类；model_a_score/model_b_score 为两组预测分数。最后两行演示缺失分数和标签；每个模型的有效样本数可能不同。使用 ROC/PR 时明确选择 label 和正类 1，再将两个分数列分别加入序列。所有数值只是功能演示，不来自实际模型。
 
 `synthetic-intervals.csv` 为 8 个 epoch 的合成准确率与人工设定上下界，第四行故意缺失区间。设置 X=epoch、Y=accuracy、区间下界=lower、上界=upper。这里的上下界没有统计置信含义，不可称作真实 SD/SEM/CI；系统不会补全第四行的区间。
+
+`synthetic-grouped-runs.csv` 为 17 行人工合成逐次观测（2 个模型 × 3 个 epoch）。按 model+epoch 分组，以 seed 校验重复标识，accuracy 为指标，X=epoch、类别=model，并明确按 model、epoch 升序排序。第一组含一条缺失值；Method A 的最后一组只有一次有效运行，均值可展示，SD/SEM 和区间必须缺失。计算出的 SD/SEM 只是合成数值的汇总，不能据此作模型结论。

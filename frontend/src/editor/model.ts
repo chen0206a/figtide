@@ -219,6 +219,13 @@ export const makeSeries = (y: string, i = 0): Series => ({
   visible: true,
 });
 export function defaults(d: Dataset): Config {
+  const comparison =
+    d.source_meta?.kind === "experiment_comparison" ? d.source_meta : undefined;
+  const processing =
+    d.source_meta?.kind === "data_processing" &&
+    d.source_meta.rules.mode === "aggregate"
+      ? d.source_meta
+      : undefined;
   const nums = d.fields.filter((f) => f.type === "number").map((f) => f.name);
   const x =
     d.fields.find((f) => f.role === "x")?.name || d.fields[0]?.name || "";
@@ -227,30 +234,76 @@ export function defaults(d: Dataset): Config {
     .map((f) => f.name);
   const error =
     d.fields.find((f) => f.role === "error" && f.type === "number")?.name || "";
+  const group = d.fields.find((f) => f.role === "group")?.name || "";
+  const extra =
+    processing?.rules.groupBy.filter(
+      (f) =>
+        f !== x &&
+        f !== group &&
+        new Set(d.rows.map((r) => JSON.stringify(r[f]))).size > 1,
+    ) || [];
   return {
     schema_version: 1,
     datasetVersionId: d.id,
-    type: d.source_meta?.chart_type || "line",
+    type:
+      comparison?.chart_type ||
+      (processing && d.fields.find((f) => f.name === x)?.type !== "number"
+        ? "bar"
+        : "line"),
     distribution: { ...defaultDistribution },
-    facet: { ...defaultFacet, titles: {} },
+    facet: {
+      ...defaultFacet,
+      ...(extra.length === 1
+        ? { mode: "field" as const, field: extra[0] }
+        : {}),
+      titles: {},
+    },
     publication: { ...defaultPublication },
     empirical: { ...defaultEmpirical },
     heatmap: { ...defaultHeatmap },
     x,
-    group: d.fields.find((f) => f.role === "group")?.name || "",
+    group,
     heatY: d.fields[1]?.name || "",
     heatZ: nums.at(-1) || "",
     series: (ys.length
       ? ys
       : [nums.find((n) => n !== x && n !== error) || nums[0] || ""]
-    ).map((y, i) => ({
-      ...makeSeries(y, i),
-      name: d.source_meta?.metric || y,
-      error: ys.length === 1 ? error : "",
-    })),
+    ).map((y, i) => {
+      const stat = processing?.statistics.find((s) => s.columns.mean === y);
+      const interval =
+        processing && processing.rules.error !== "none" && stat
+          ? stat.columns[processing.rules.error]
+          : "";
+      return {
+        ...makeSeries(y, i),
+        name:
+          comparison?.metric ||
+          (stat
+            ? `${stat.metric} · mean${interval ? ` ± ${processing!.rules.error.toUpperCase()}` : ""}`
+            : y),
+        error: processing
+          ? processing.rules.display === "bars"
+            ? interval
+            : ""
+          : ys.length === 1
+            ? error
+            : "",
+        ...(processing?.rules.display === "band" && interval && stat
+          ? {
+              band: {
+                ...defaultBand,
+                enabled: true,
+                lower: stat.columns.lower,
+                upper: stat.columns.upper,
+                label: `${stat.metric} · mean ± ${processing.rules.error.toUpperCase()}`,
+              },
+            }
+          : {}),
+      };
+    }),
     axes: {
       x: {
-        title: d.source_meta ? "实验" : x || "X",
+        title: comparison ? "实验" : x || "X",
         min: "",
         max: "",
         log: false,
@@ -259,7 +312,8 @@ export function defaults(d: Dataset): Config {
       },
       y: {
         title:
-          d.source_meta?.metric ||
+          comparison?.metric ||
+          processing?.statistics[0]?.metric ||
           ys[0] ||
           nums.find((n) => n !== x && n !== error) ||
           nums[0] ||
@@ -272,9 +326,11 @@ export function defaults(d: Dataset): Config {
       },
     },
     style: {
-      title: d.source_meta
-        ? `${d.source_meta.metric} · 实验对比`
-        : "Model performance",
+      title: comparison
+        ? `${comparison.metric} · 实验对比`
+        : processing
+          ? `Grouped means${processing.rules.error !== "none" ? ` ± ${processing.rules.error.toUpperCase()}` : ""}`
+          : "Model performance",
       font: "Arial",
       fontSize: 14,
       bold: false,

@@ -1,0 +1,117 @@
+.processing-source {
+  padding: 12px 14px;
+  background: #f3f6fa;
+  border: 1px solid #e4e8ef;
+  border-radius: 8px;
+  margin: 18px 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.processing-form {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.processing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.processing-form section {
+  margin: 14px 0;
+}
+.processing-form h3 {
+  font-size: 15px;
+  margin: 0 0 10px;
+}
+.processing-form h3 small {
+  font-weight: 400;
+  font-size: 12px;
+  color: #687384;
+  margin-left: 8px;
+}
+.processing-form p,
+.processing-preview > p {
+  font-size: 13px;
+  color: #566274;
+  line-height: 1.7;
+}
+.processing-field-list {
+  max-height: 155px;
+  overflow: auto;
+  padding: 10px;
+  background: #f8fafc;
+  border: 1px solid #e4e8ef;
+  border-radius: 6px;
+}
+.processing-field-list label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.processing-field-list input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.processing-rule {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.processing-rule label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.processing-rule button {
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+.processing-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 0;
+  border-top: 1px solid #e4e8ef;
+  margin-top: 20px;
+}
+.processing-actions > span {
+  flex: 1;
+  font-size: 12px;
+  color: #687384;
+}
+.processing-error {
+  color: #a33232;
+  background: #fff1f0;
+  padding: 12px;
+  border-radius: 6px;
+}
+.processing-counts {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+  font-size: 14px;
+}
+.processing-counts span {
+  color: #687384;
+}
+.processing-preview .table-scroll {
+  max-height: 380px;
+}
+@media (max-width: 760px) {
+  .processing-grid {
+    grid-template-columns: 1fr;
+  }
+  .processing-rule {
+    flex-wrap: wrap;
+  }
+}

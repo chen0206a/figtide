@@ -2,6 +2,31 @@
 
 本地基址 `http://127.0.0.1:8086/api`。UTF-8 JSON。当前返回创建资源 HTTP 200。上传为 `multipart/form-data`，字段名 `file`。数据库 ID 为整数。
 
+## 第六批增量协议：数据处理与重复实验汇总（2026-10-19）
+
+`POST /projects/{p}/data/{id}/process/preview` 与 `/process` 接收同一请求。id 为固定源版本，必须属于 p；所有分组、过滤、指标、重复标识均验证源字段归属。客户端只提交规则，不接受替换行数据。
+
+```json
+{"name":"模型均值 SEM","rules":{
+  "schema_version":1,"mode":"aggregate","groupBy":["model","epoch"],"metrics":["accuracy"],
+  "filters":[],"sort":[{"field":"model","direction":"asc"},{"field":"epoch","direction":"asc"}],
+  "missingGroup":"include","error":"sem","observationUnit":"同一模型与 epoch 的独立 seed 运行",
+  "replicate":"seed","x":"epoch","group":"model","display":"band"
+}}
+```
+
+- name 为 1–120 字符，提交保存时拒绝路径/控制字符。schema_version 固定 1，mode=aggregate/sort。groupBy 最多 4 列、metrics 最多 5 个数值字段，均不得重复。aggregate 要求 metrics 非空且 observationUnit 非空（最多 120 字符）；未分组时生成 __summary=全部，汇总全体符合过滤的观测。
+- filters 最多 8 条，格式 `{field,operator,value}`；operator=eq/gte/lte/missing，均按 AND 组合。数值列 eq 按十进制数值比较；文本 eq 区分大小写、精确匹配。gte/lte 仅数值字段，边界为十进制字符串；missing 仅匹配 null，value 保留但不用。过滤先作用于源行，完全无结果返回 400，不生成空数据集。
+- sort 最多 4 条 `{field,direction:asc|desc}`，字段不得重复，作用于结果列，优先级按数组顺序。数值排序、UTF-16 文本字典序、缺失始终最后，同值稳定；空数组不自动排序。界面汇总模式目前提供分组列排序，API 也可排序返回的统计列。
+- missingGroup=include/exclude。include 按类型和实际值分组，null 与文本“null”不同；exclude 排除任一分组字段缺失的行。replicate 为可选源字段，选择后同组标识必须非缺失且唯一，否则 400；不自动去重。
+- error=sd/sem/none；display=bars/band，为新建图的误差显示提示。x/group 为空或源分组字段，二者不能相同；band 要求 x 是数值分组字段。n/mean/SD/SEM 均计算，不受 error 切换影响；lower/upper=mean±所选误差，none 时缺失。这不是置信区间。
+- 每指标输出 total/n/missing/mean/sd/sem/lower/upper 八列；列名通常为 `<metric>__<stat>`，过长或冲突时确定性分配，客户端以返回的 statistics 数组 `{metric,columns:{...}}` 为准。n=0 时 mean=null，n<2 时 sd/sem/lower/upper=null，常量重复 SD=0。SD 分母 n−1，SEM=SD/√n。十进制中心化两遍计算；不可表示的有限数结果返回 400，提示调整单位。输出上限 20,000 行、200,000 个单元格、保存 CSV 最多 10 MB。
+- preview 不写库，返回 `{fields,rows,row_count,warnings,statistics,counts,rules,source}`；rows 只取前 20 行，row_count/counts 来自完整结果。counts 包含 source_rows/filtered_rows/excluded_rows/output_rows/groups/missing_group_rows；excluded_rows 包含过滤排除和明确排除的缺失分组行，sort 模式 groups=0。
+- commit 使用同一计算器重新计算并在事务中创建独立 dataset 和 v1，返回完整 Dataset；结果 CSV 通过现有 original 接口下载。结果不会覆盖源数据或已有派生版本；可对任意派生版本继续执行处理，来源引用直接上游版本。
+- source_meta 联合新增 `{schema_version:1,kind:data_processing,algorithm:group-summary-v1,numeric_encoding:decimal-strings-v1,created_at,source,rules,statistics,counts}`。source 为 `{datasetVersionId,datasetId,version,filename,sha256}`。为避免 MySQL JSON 二进制浮点转换改变末位，派生数值在 rows_json 内按精确数值文本存储，读取按字段类型恢复 JSON number；外部 rows 协议未改变。
+- datasets 列表新增 source_meta，与 detail 同一联合类型。旧上传和 experiment_comparison 兼容；source_meta.kind 必须区分读取，不再把所有来源当作实验对比。处理来源仅在创建结果时写入，新上传的版本不继承旧处理规则。
+- 汇总新图从 statistics 映射每指标的均值与所选误差列，数值 X 用折线、类别 X 用柱状图；一个额外变化条件自动设置分面。普通折线/柱状/散点若仍有未映射的变化分组字段，画布停止绘制并提示过滤或排版，避免跨条件连线；不自动合并或丢弃条件。
+
 ## 第五批增量协议：模型评估与实际区间（2026-10-19）
 
 新增 `type=roc|pr`，继续使用同一图表快照和 revision 协议，schema_version=1。如下为增量片段；对象出现时内部字段必须完整。旧配置不添加字段也可重新打开，切换普通图时保留评估与区间配置。

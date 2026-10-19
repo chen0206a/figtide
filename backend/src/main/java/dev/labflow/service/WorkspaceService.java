@@ -55,6 +55,28 @@ public class WorkspaceService {
         result.put(key.replace("_json", ""), value == null ? null : decode(value));
       }
     }
+    if (result.get("source_meta") instanceof Map<?, ?> meta
+        && "decimal-strings-v1".equals(meta.get("numeric_encoding"))
+        && result.get("rows") instanceof List<?> rows
+        && result.get("fields") instanceof List<?> fields) {
+      Set<String> numeric = new HashSet<>();
+      for (var field : fields)
+        if (field instanceof Map<?, ?> f && "number".equals(f.get("type")))
+          numeric.add(f.get("name").toString());
+      for (var entry : rows)
+        if (entry instanceof Map<?, ?>) {
+          @SuppressWarnings("unchecked")
+          var storedRow = (Map<String, Object>) entry;
+          for (String name : numeric)
+            if (storedRow.get(name) instanceof String value) {
+              try {
+                storedRow.put(name, json.readValue(value, Number.class));
+              } catch (Exception e) {
+                throw new IllegalStateException("Invalid stored numeric token", e);
+              }
+            }
+        }
+    }
     return result;
   }
 
@@ -167,7 +189,7 @@ public class WorkspaceService {
     return unpackAll(
         db.query(
             "SELECT"
-                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.warnings_json,v.parse_rules_json,v.created_at,d.name"
+                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.warnings_json,v.parse_rules_json,v.source_meta_json,v.created_at,d.name"
                 + " FROM dataset_versions v JOIN datasets d ON d.id=v.dataset_id WHERE"
                 + " d.project_id=? ORDER BY v.id DESC",
             p));

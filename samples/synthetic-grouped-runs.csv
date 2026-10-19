@@ -1,0 +1,18 @@
+model,epoch,seed,accuracy,data_kind
+Baseline,2,1,0.77,synthetic_demo
+Baseline,1,1,0.62,synthetic_demo
+Baseline,1,2,0.65,synthetic_demo
+Baseline,1,3,0.68,synthetic_demo
+Baseline,1,4,,synthetic_demo
+Baseline,2,2,0.8,synthetic_demo
+Baseline,2,3,0.83,synthetic_demo
+Baseline,3,1,0.84,synthetic_demo
+Baseline,3,2,0.86,synthetic_demo
+Baseline,3,3,0.88,synthetic_demo
+Method A,1,1,0.69,synthetic_demo
+Method A,1,2,0.72,synthetic_demo
+Method A,1,3,0.75,synthetic_demo
+Method A,2,1,0.83,synthetic_demo
+Method A,2,2,0.86,synthetic_demo
+Method A,2,3,0.89,synthetic_demo
+Method A,3,1,0.92,synthetic_demo

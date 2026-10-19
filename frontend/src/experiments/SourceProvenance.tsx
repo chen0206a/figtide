@@ -1,15 +1,18 @@
 import { useState } from "react";
-import type { ComparisonSource } from "../lib/api";
+import type { Dataset } from "../lib/api";
+import { ProcessingProvenance } from "../processing/ProcessingProvenance";
 import { Dialog } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
 export function SourceProvenance({
   source,
   project,
 }: {
-  source: ComparisonSource | null | undefined;
+  source: Dataset["source_meta"];
   project: number;
 }) {
   const [open, setOpen] = useState(false);
+  if (source?.kind === "data_processing")
+    return <ProcessingProvenance source={source} project={project} />;
   if (!source || source.kind !== "experiment_comparison") return null;
   return (
     <>

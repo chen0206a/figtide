@@ -255,9 +255,11 @@ function Workbench(
   const output = publicationMetrics(c);
   const [name, setName] = useState(
       p.original?.name ||
-        (p.data.source_meta
+        (p.data.source_meta?.kind === "experiment_comparison"
           ? `${p.data.source_meta.metric} · 实验对比`.slice(0, 120)
-          : "Untitled figure"),
+          : p.data.source_meta?.kind === "data_processing"
+            ? `${p.data.filename.replace(/\.csv$/i, "")} · 图表`.slice(0, 120)
+            : "Untitled figure"),
     ),
     [revision, setRevision] = useState(p.original?.revision || 0),
     [id, setId] = useState<number | null>(p.chartId),
@@ -627,7 +629,11 @@ function Workbench(
       {p.data.source_meta && (
         <div className="provenance-strip">
           <SourceProvenance source={p.data.source_meta} project={p.project} />
-          <span>指标来自固定实验快照 · 后续修改实验不会影响此图</span>
+          <span>
+            {p.data.source_meta.kind === "data_processing"
+              ? "基于固定数据版本和显式处理规则 · 原始数据保持不变"
+              : "指标来自固定实验快照 · 后续修改实验不会影响此图"}
+          </span>
         </div>
       )}
       <div className="editor-body" inert={saving}>

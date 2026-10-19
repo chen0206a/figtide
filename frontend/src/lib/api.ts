@@ -54,7 +54,7 @@ export type Dataset = {
   rows: Record<string, string | number | null>[];
   warnings: string[];
   parse_rules?: ImportRules | null;
-  source_meta?: ComparisonSource | null;
+  source_meta?: ComparisonSource | ProcessingSource | null;
 };
 export type Project = {
   id: number;
@@ -125,3 +125,59 @@ export type ComparisonSource = {
   experiments: Experiment[];
   missing_count: number;
 };
+export type ProcessingRules = {
+  schema_version: 1;
+  mode: "aggregate" | "sort";
+  groupBy: string[];
+  metrics: string[];
+  filters: {
+    field: string;
+    operator: "eq" | "gte" | "lte" | "missing";
+    value: string;
+  }[];
+  sort: { field: string; direction: "asc" | "desc" }[];
+  missingGroup: "include" | "exclude";
+  error: "sd" | "sem" | "none";
+  observationUnit: string;
+  replicate: string;
+  x: string;
+  group: string;
+  display: "bars" | "band";
+};
+export type ProcessingStatistic = {
+  metric: string;
+  columns: Record<
+    "total" | "n" | "missing" | "mean" | "sd" | "sem" | "lower" | "upper",
+    string
+  >;
+};
+export type ProcessingSource = {
+  schema_version: 1;
+  kind: "data_processing";
+  algorithm: "group-summary-v1";
+  numeric_encoding?: "decimal-strings-v1";
+  created_at: string;
+  source: {
+    datasetVersionId: number;
+    datasetId: number;
+    version: number;
+    filename: string;
+    sha256: string;
+  };
+  rules: ProcessingRules;
+  statistics: ProcessingStatistic[];
+  counts: Record<
+    | "source_rows"
+    | "filtered_rows"
+    | "excluded_rows"
+    | "output_rows"
+    | "groups"
+    | "missing_group_rows",
+    number
+  >;
+};
+export type ProcessingPreview = Pick<
+  Dataset,
+  "fields" | "rows" | "row_count" | "warnings"
+> &
+  Pick<ProcessingSource, "source" | "rules" | "statistics" | "counts">;

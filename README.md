@@ -2,7 +2,7 @@
 
 面向 AI / ML 研究生的本地实验数据管理与科研绘图工作台。**第一阶段**：React 工作台 + Java 21 / Spring Boot 3 + 真实 MySQL 8，无 AI API、无订阅服务。
 
-已完成五批功能增量：[导入与工作台体验](docs/BATCH-1.md)、[实验关联与对比](docs/BATCH-2.md)、[分布图与多子图](docs/BATCH-3.md)、[论文尺寸与经验分布](docs/BATCH-4.md)、[模型评估与实际区间](docs/BATCH-5.md)。当前支持 10 种图表，完整流程连接真实 Java API 和 MySQL。
+已完成六批功能增量：[导入与工作台体验](docs/BATCH-1.md)、[实验关联与对比](docs/BATCH-2.md)、[分布图与多子图](docs/BATCH-3.md)、[论文尺寸与经验分布](docs/BATCH-4.md)、[模型评估与实际区间](docs/BATCH-5.md)、[数据处理与重复实验汇总](docs/BATCH-6.md)。当前支持 10 种图表，完整流程连接真实 Java API 和 MySQL。
 
 ![绘图编辑器](docs/screenshots/editor.png)
 
@@ -67,6 +67,7 @@ npm run dev
 
 - 项目创建与概览、真实统计、实验创建/编辑、JSON 参数与指标、备注。
 - CSV/XLSX 解析、分页预览、字段元数据、原文件下载、追加数据版本。
+- 服务端显式过滤/排序、按多个条件汇总重复观测、有效 n / 缺失 / 均值 / 样本 SD / SEM，派生数据保存与来源追溯。
 - 折线、分组柱状、散点、长表热力图、箱线、小提琴、直方图、ECDF、ROC、PR；多序列、类别分组、真实误差列与上下界区间，以及按指标/类别分面。
 - 标题、字体/字重/字号、序列颜色/透明度/线型/点型、坐标范围/网格/对数、图例、画布与边距、文本注释。
 - 三种独立视觉预设、撤销重做、恢复默认、可记录过滤、配置 schema v1、乐观锁版本保存、历史恢复。
@@ -91,6 +92,8 @@ npm run dev
 第四批增加物理尺寸与成品字号、DPI 元数据、科学色板与热力图固定色阶和数字标注。第五批增加基于逐样本真实标签/分数的 ROC、PR、AUC/AP 与阈值指标，及实际上下界区间带。上传 `samples/synthetic-classification.csv`，选择 ROC/PR，在专业面板明确标签和正类，各序列 Y 映射为模型分数；画布下方查看与导出评估。上传 `samples/synthetic-intervals.csv`，在折线序列面板配置上下界。两组数据均为合成演示，不能作为真实科研结论。也可运行 `node scripts/seed-evaluation-demo.mjs` 创建可直接打开的本地演示图。
 
 GitHub Actions 已配置 Java/MySQL 与前端测试工作流，尚未在远端执行；参与方式见 [CONTRIBUTING.md](CONTRIBUTING.md)。根项目许可证仍待所有者选择，不能仅因源码公开就视作已完成开源授权。
+
+数据管理新增“处理与统计”：可只筛选排序，或按模型、评估集、epoch 等条件汇总逐次观测。声明每行观测单位，选择可选重复标识进行同组唯一性校验，预览后保存独立数据集或直接绘图。误差棒/区间带按所选 SD/SEM 自动映射；n<2 的误差保持缺失，不自动生成置信区间。规则、源版本与内容指纹随结果保存，原始数据保持不变。样例为 `samples/synthetic-grouped-runs.csv`；运行 `node scripts/seed-processing-demo.mjs` 创建“重复实验汇总 · 合成演示”。
 
 ## 测试
 

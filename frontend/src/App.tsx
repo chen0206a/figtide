@@ -24,6 +24,7 @@ import { useConfirm } from "./components/useConfirm";
 import "./components/refinements.css";
 import { Experiments } from "./experiments/Experiments";
 import { SourceProvenance } from "./experiments/SourceProvenance";
+import { ProcessingDialog } from "./processing/ProcessingDialog";
 const Editor = lazy(() => import("./editor/Editor"));
 type Page = "home" | "experiments" | "data" | "editor";
 export default function App() {
@@ -307,6 +308,14 @@ export default function App() {
                   setChart(null);
                   navigate("editor");
                 }}
+                onProcessed={(d, plot) => {
+                  qc.setQueryData(["data", project, d.id], d);
+                  setDataset(d.id);
+                  setChart(null);
+                  refresh();
+                  setMessage("处理结果已保存为独立数据集，源数据保持不变");
+                  if (plot) void navigate("editor");
+                }}
               />
             ) : page === "experiments" ? (
               <Experiments
@@ -409,6 +418,7 @@ function DataPage({
   onUpload,
   busy,
   onPlot,
+  onProcessed,
 }: {
   project: number;
   selected: number;
@@ -420,7 +430,9 @@ function DataPage({
   onUpload: (id?: number | null) => void;
   busy: boolean;
   onPlot: () => void;
+  onProcessed: (data: Dataset, plot: boolean) => void;
 }) {
+  const [processing, setProcessing] = useState<Dataset | null>(null);
   const id = selected || datasets[0]?.id;
   const detail = useQuery({
     queryKey: ["data", project, id],
@@ -495,6 +507,13 @@ function DataPage({
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => setProcessing(detail.data)}
+                      >
+                        处理与统计
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         disabled={busy}
                         onClick={() => onUpload(detail.data.dataset_id)}
                       >
@@ -505,7 +524,9 @@ function DataPage({
                         <a
                           href={`/api/projects/${project}/data/${id}/original`}
                         >
-                          原始文件
+                          {detail.data.source_meta?.kind === "data_processing"
+                            ? "结果 CSV"
+                            : "原始文件"}
                         </a>
                       </Button>
                       <Button size="sm" onClick={onPlot}>
@@ -550,6 +571,17 @@ function DataPage({
             选择数据文件
           </Button>
         </div>
+      )}
+      {processing && (
+        <ProcessingDialog
+          project={project}
+          data={processing}
+          onClose={() => setProcessing(null)}
+          onSaved={(d, plot) => {
+            setProcessing(null);
+            onProcessed(d, plot);
+          }}
+        />
       )}
     </>
   );
