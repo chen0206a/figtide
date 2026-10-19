@@ -125,14 +125,18 @@ test("experiment creation, editing and malformed CSV feedback", async ({
   await page.getByRole("button", { name: "实验记录", exact: true }).click();
   await page.getByRole("button", { name: "记录实验", exact: true }).click();
   await page.getByLabel("实验名称").fill("AdamW ablation");
+  await page.getByRole("button", { name: "参数高级 JSON" }).click();
   await page.getByLabel("参数（JSON）").fill('{"lr":0.001,"seed":42}');
+  await page.getByRole("button", { name: "指标高级 JSON" }).click();
   await page.getByLabel("指标（JSON）").fill('{"accuracy":92.8}');
   await page.getByLabel("备注", { exact: true }).fill("合成演示记录");
   await page.getByRole("button", { name: "保存记录", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "AdamW ablation" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: /AdamW ablation/ }).click();
+  await page
+    .getByRole("button", { name: "编辑 AdamW ablation", exact: true })
+    .click();
   await page.getByLabel("备注", { exact: true }).fill("已复核：合成演示记录");
   await page.getByRole("button", { name: "保存记录", exact: true }).click();
   await expect(

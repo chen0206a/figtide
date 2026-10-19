@@ -54,6 +54,7 @@ export type Dataset = {
   rows: Record<string, string | number | null>[];
   warnings: string[];
   parse_rules?: ImportRules | null;
+  source_meta?: ComparisonSource | null;
 };
 export type Project = {
   id: number;
@@ -88,4 +89,39 @@ export type ImportPreview = Pick<
   sheets: string[];
   issues: { row: number; field: string; value: string; message: string }[];
   parse_rules: ImportRules;
+};
+export type JsonValue =
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+export type ExperimentStatus = "planned" | "running" | "completed" | "failed";
+export type Experiment = {
+  id: number;
+  project_id: number;
+  name: string;
+  parameters: Record<string, JsonValue>;
+  metrics: Record<string, JsonValue>;
+  notes: string;
+  status: ExperimentStatus;
+  tags: string[];
+  revision: number;
+  created_at: string;
+  updated_at: string;
+  dataset_version_ids: number[];
+  datasets: {
+    experiment_id: number;
+    dataset_version_id: number;
+    filename: string;
+    version: number;
+    sha256: string;
+  }[];
+};
+export type ComparisonSource = {
+  schema_version: 1;
+  kind: "experiment_comparison";
+  created_at: string;
+  metric: string;
+  direction: "higher" | "lower";
+  baseline_id: number;
+  chart_type: "bar" | "scatter";
+  experiments: Experiment[];
+  missing_count: number;
 };

@@ -47,6 +47,7 @@ public class WorkspaceService {
             "rows_json",
             "warnings_json",
             "parse_rules_json",
+            "source_meta_json",
             "parameters",
             "metrics")) {
       if (result.containsKey(key)) {
@@ -161,37 +162,6 @@ public class WorkspaceService {
     return db.one("SELECT * FROM projects WHERE id=?", id);
   }
 
-  public List<Map<String, Object>> experiments(long p) {
-    project(p);
-    return unpackAll(db.query("SELECT * FROM experiments WHERE project_id=? ORDER BY id DESC", p));
-  }
-
-  public Map<String, Object> saveExperiment(
-      long p, Long id, String name, JsonNode parameters, JsonNode metrics, String notes) {
-    project(p);
-    if (!parameters.isObject() || !metrics.isObject()) throw ApiException.bad("参数和指标必须为 JSON 对象");
-    if (id == null)
-      id =
-          db.insert(
-              "INSERT INTO experiments(project_id,name,parameters,metrics,notes) VALUES(?,?,?,?,?)",
-              p,
-              name,
-              encode(parameters),
-              encode(metrics),
-              notes);
-    else if (db.update(
-            "UPDATE experiments SET name=?,parameters=?,metrics=?,notes=? WHERE id=? AND"
-                + " project_id=?",
-            name,
-            encode(parameters),
-            encode(metrics),
-            notes,
-            id,
-            p)
-        == 0) throw new ApiException(404, "实验不存在");
-    return unpack(db.one("SELECT * FROM experiments WHERE id=? AND project_id=?", id, p));
-  }
-
   public List<Map<String, Object>> datasets(long p) {
     project(p);
     return unpackAll(
@@ -261,7 +231,7 @@ public class WorkspaceService {
     return unpack(
         db.one(
             "SELECT"
-                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.rows_json,v.warnings_json,v.parse_rules_json,v.created_at"
+                + " v.id,v.dataset_id,v.version,v.filename,v.sha256,v.row_count,v.fields_json,v.rows_json,v.warnings_json,v.parse_rules_json,v.source_meta_json,v.created_at"
                 + " FROM dataset_versions v JOIN datasets d ON d.id=v.dataset_id WHERE v.id=? AND"
                 + " d.project_id=?",
             id,

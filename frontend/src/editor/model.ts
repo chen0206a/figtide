@@ -83,7 +83,7 @@ export function defaults(d: Dataset): Config {
   return {
     schema_version: 1,
     datasetVersionId: d.id,
-    type: "line",
+    type: d.source_meta?.chart_type || "line",
     x,
     group: d.fields.find((f) => f.role === "group")?.name || "",
     heatY: d.fields[1]?.name || "",
@@ -93,11 +93,12 @@ export function defaults(d: Dataset): Config {
       : [nums.find((n) => n !== x && n !== error) || nums[0] || ""]
     ).map((y, i) => ({
       ...makeSeries(y, i),
+      name: d.source_meta?.metric || y,
       error: ys.length === 1 ? error : "",
     })),
     axes: {
       x: {
-        title: x || "X",
+        title: d.source_meta ? "实验" : x || "X",
         min: "",
         max: "",
         log: false,
@@ -106,7 +107,11 @@ export function defaults(d: Dataset): Config {
       },
       y: {
         title:
-          ys[0] || nums.find((n) => n !== x && n !== error) || nums[0] || "Y",
+          d.source_meta?.metric ||
+          ys[0] ||
+          nums.find((n) => n !== x && n !== error) ||
+          nums[0] ||
+          "Y",
         min: "",
         max: "",
         log: false,
@@ -115,7 +120,9 @@ export function defaults(d: Dataset): Config {
       },
     },
     style: {
-      title: "Model performance",
+      title: d.source_meta
+        ? `${d.source_meta.metric} · 实验对比`
+        : "Model performance",
       font: "Arial",
       fontSize: 14,
       bold: false,

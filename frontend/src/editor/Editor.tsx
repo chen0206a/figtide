@@ -48,6 +48,7 @@ import {
   type Series,
 } from "./model";
 import { useConfirm } from "../components/useConfirm";
+import { SourceProvenance } from "../experiments/SourceProvenance";
 import { buildPlot } from "./plot";
 type Props = {
   project: number;
@@ -190,7 +191,7 @@ function Workbench(
       />
     );
   }
-  const draftKey = `labflow-draft-v1:${p.project}:${p.chartId ?? "new"}`;
+  const draftKey = `labflow-draft-v1:${p.project}:${p.chartId ?? (p.data.source_meta ? `comparison-${p.data.id}` : "new")}`;
   const [recovery, setRecovery] = useState<{
     config: Config;
     name: string;
@@ -236,7 +237,12 @@ function Workbench(
     future: [],
   });
   const c = history.present;
-  const [name, setName] = useState(p.original?.name || "Untitled figure"),
+  const [name, setName] = useState(
+      p.original?.name ||
+        (p.data.source_meta
+          ? `${p.data.source_meta.metric} · 实验对比`.slice(0, 120)
+          : "Untitled figure"),
+    ),
     [revision, setRevision] = useState(p.original?.revision || 0),
     [id, setId] = useState<number | null>(p.chartId),
     [baseline, setBaseline] = useState(
@@ -587,6 +593,12 @@ function Workbench(
           </Button>
         </div>
       </div>
+      {p.data.source_meta && (
+        <div className="provenance-strip">
+          <SourceProvenance source={p.data.source_meta} project={p.project} />
+          <span>指标来自固定实验快照 · 后续修改实验不会影响此图</span>
+        </div>
+      )}
       <div className="editor-body" inert={saving}>
         <aside className="editor-left" style={{ width: widths.left }}>
           <div className="panel-title">

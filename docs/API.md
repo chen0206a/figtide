@@ -2,6 +2,32 @@
 
 本地基址 `http://127.0.0.1:8086/api`。UTF-8 JSON。当前返回创建资源 HTTP 200。上传为 `multipart/form-data`，字段名 `file`。数据库 ID 为整数。
 
+## 第二批增量协议：实验关联与对比
+
+实验创建和更新仍使用原有路径，新增字段示例：
+
+```json
+{"name":"run-001","parameters":{"lr":0.001},"metrics":{"accuracy":92.8,"loss":null},"notes":"合成示例","status":"completed","tags":["baseline"],"dataset_version_ids":[1],"revision":1}
+```
+
+- status 为 planned/running/completed/failed；新记录默认 planned，revision 从 1 开始。
+- tags 最多 20 个，每个 1–40 字符；dataset_version_ids 最多 50 个唯一的同项目版本 ID。
+- 返回对象增加 status、tags、revision、dataset_version_ids 与 datasets。datasets 每项含 experiment_id、dataset_version_id、filename、version、sha256。
+- PUT 带 revision 时检查乐观锁，冲突返回 409。为兼容旧客户端，省略 revision 时仍接受更新；省略 status/tags/dataset_version_ids 时保留原值。新版前端始终携带 revision。
+- parameters/metrics 各最多 100 个顶层字段、序列化后 100000 字符；顶层键 1–120 字符、嵌套最多 30 层，拒绝超出有限数值范围的数字。文本和 null 原样保留，不隐式转换成数值。
+
+`POST /projects/{p}/comparisons`：
+
+```json
+{"experiments":[{"id":1,"revision":2},{"id":2,"revision":1}],"baseline_id":1,"metric":"accuracy","direction":"higher","chart_type":"bar"}
+```
+
+选择 2–8 个唯一实验，基线必须在所选实验内。direction 为 higher/lower，chart_type 为 bar/scatter；至少两个实验的指定指标为有限数值。服务器按 ID 排序加锁并核对修订，过期返回 409；跨项目版本或实验返回 404，事务失败不产生数据版本。
+
+成功返回完整 Dataset（含 rows），CSV 两列为 experiment、metric_value；缺失指标保留 null。新版本的 source_meta 包含 schema_version:1、kind:experiment_comparison、created_at、metric、direction、baseline_id、chart_type、missing_count、experiments（完整记录及关联版本元数据）。快照创建与来源写入在同一事务内完成；后续编辑实验不改变快照。
+
+source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通上传版本为 null；列表不加载完整来源。图表继续用 schema_version:1 和 datasetVersionId 引用快照，创建/保存/恢复协议不变。生成快照不等于保存图表，用户在编辑器点击保存完成图表持久化。
+
 ## 项目与实验
 
 `GET /projects` 返回数组，包括 `experiment_count/chart_count/dataset_count`。

@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  FlaskConical,
   Database,
   ChartNoAxesCombined,
   Plus,
@@ -23,6 +22,8 @@ import { UploadDialog } from "./components/UploadDialog";
 import { ProjectManager } from "./components/ProjectManager";
 import { useConfirm } from "./components/useConfirm";
 import "./components/refinements.css";
+import { Experiments } from "./experiments/Experiments";
+import { SourceProvenance } from "./experiments/SourceProvenance";
 const Editor = lazy(() => import("./editor/Editor"));
 type Page = "home" | "experiments" | "data" | "editor";
 export default function App() {
@@ -309,9 +310,24 @@ export default function App() {
               />
             ) : page === "experiments" ? (
               <Experiments
+                key={project}
                 project={project}
+                datasets={datasets.data || []}
                 notify={setMessage}
-                onData={() => navigate("data")}
+                onData={(id) => {
+                  if (id) setDataset(id);
+                  void navigate("data");
+                }}
+                onGenerated={async (d) => {
+                  qc.setQueryData(["data", project, d.id], d);
+                  await qc.invalidateQueries({
+                    queryKey: ["datasets", project],
+                  });
+                  setDataset(d.id);
+                  setChart(null);
+                  refresh();
+                  void navigate("editor");
+                }}
               />
             ) : null}
           </main>
@@ -514,6 +530,10 @@ function DataPage({
                       {w}
                     </div>
                   ))}
+                  <SourceProvenance
+                    project={project}
+                    source={detail.data.source_meta}
+                  />
                   <DataTable key={id} data={detail.data} />
                 </>
               )
@@ -531,167 +551,6 @@ function DataPage({
           </Button>
         </div>
       )}
-    </>
-  );
-}
-function Experiments({
-  project,
-  notify,
-  onData,
-}: {
-  project: number;
-  notify: (s: string) => void;
-  onData: () => void;
-}) {
-  const qc = useQueryClient(),
-    query = useQuery({
-      queryKey: ["experiments", project],
-      queryFn: () => api<any[]>(`/projects/${project}/experiments`),
-    });
-  const [open, setOpen] = useState(false),
-    [busy, setBusy] = useState(false),
-    [edit, setEdit] = useState<any>({
-      name: "",
-      parameters: "{}",
-      metrics: "{}",
-      notes: "",
-    });
-  function start(e?: any) {
-    setEdit(
-      e
-        ? {
-            ...e,
-            parameters: JSON.stringify(e.parameters, null, 2),
-            metrics: JSON.stringify(e.metrics, null, 2),
-          }
-        : { name: "", parameters: "{}", metrics: "{}", notes: "" },
-    );
-    setOpen(true);
-  }
-  async function save(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      await api(
-        `/projects/${project}/experiments${edit.id ? "/" + edit.id : ""}`,
-        send(edit.id ? "PUT" : "POST", {
-          ...edit,
-          parameters: JSON.parse(edit.parameters),
-          metrics: JSON.parse(edit.metrics),
-        }),
-      );
-      qc.invalidateQueries({ queryKey: ["experiments", project] });
-      qc.invalidateQueries({ queryKey: ["projects"] });
-      setOpen(false);
-      notify("实验记录已保存");
-    } catch (e) {
-      notify((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <>
-      <div className="page-eyebrow">EXPERIMENT NOTEBOOK</div>
-      <div className="page-heading">
-        <div>
-          <h1>把探索，沉淀为记录。</h1>
-          <p>将参数、评估指标和观察留在同一处。</p>
-        </div>
-        <div className="button-row">
-          <Button variant="outline" onClick={onData}>
-            项目数据文件
-          </Button>
-          <Button onClick={() => start()}>
-            <Plus size={16} />
-            记录实验
-          </Button>
-        </div>
-      </div>
-      {query.isPending ? (
-        <p>加载中…</p>
-      ) : query.isError ? (
-        <div className="empty-inline">
-          {query.error.message}
-          <Button onClick={() => query.refetch()}>重试</Button>
-        </div>
-      ) : query.data?.length ? (
-        <div className="experiment-list">
-          {query.data.map((e) => (
-            <button key={e.id} onClick={() => start(e)}>
-              <span className="experiment-icon">
-                <FlaskConical />
-              </span>
-              <div>
-                <h3>{e.name}</h3>
-                <p>{e.notes || "暂无实验备注"}</p>
-                <div className="metric-pills">
-                  {Object.entries(e.metrics).map(([k, v]) => (
-                    <span key={k}>
-                      {k} <b>{String(v)}</b>
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <ArrowUpRight size={18} />
-            </button>
-          ))}
-        </div>
-      ) : (
-        <div className="empty-state bordered">
-          <FlaskConical size={40} />
-          <h2>开始记录你的第一个实验</h2>
-          <p>保存参数、指标和研究笔记，随时回来继续。</p>
-          <Button onClick={() => start()}>创建实验记录</Button>
-        </div>
-      )}
-      <Dialog
-        open={open}
-        onOpenChange={setOpen}
-        title={edit.id ? "编辑实验记录" : "新建实验记录"}
-        description="参数和指标使用 JSON 对象保存，支持任意实验配置。"
-      >
-        <form onSubmit={save}>
-          {(["name", "parameters", "metrics", "notes"] as const).map((k) => (
-            <label key={k}>
-              {
-                {
-                  name: "实验名称",
-                  parameters: "参数（JSON）",
-                  metrics: "指标（JSON）",
-                  notes: "备注",
-                }[k]
-              }
-              {k === "name" ? (
-                <input
-                  required
-                  maxLength={120}
-                  value={edit[k]}
-                  onChange={(e) => setEdit({ ...edit, [k]: e.target.value })}
-                />
-              ) : (
-                <textarea
-                  aria-label={
-                    {
-                      parameters: "参数（JSON）",
-                      metrics: "指标（JSON）",
-                      notes: "备注",
-                    }[k as "parameters" | "metrics" | "notes"]
-                  }
-                  className={k !== "notes" ? "code-input" : ""}
-                  value={edit[k]}
-                  onChange={(e) => setEdit({ ...edit, [k]: e.target.value })}
-                />
-              )}
-            </label>
-          ))}
-          <div className="dialog-actions">
-            <Button disabled={busy || !edit.name.trim()}>
-              {busy ? "保存中…" : "保存记录"}
-            </Button>
-          </div>
-        </form>
-      </Dialog>
     </>
   );
 }

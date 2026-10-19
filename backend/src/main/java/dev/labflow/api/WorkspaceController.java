@@ -20,12 +20,6 @@ public class WorkspaceController {
   public record ProjectInput(
       @NotBlank @Size(max = 120) String name, @NotNull @Size(max = 10000) String description) {}
 
-  public record ExperimentInput(
-      @NotBlank @Size(max = 120) String name,
-      @NotNull JsonNode parameters,
-      @NotNull JsonNode metrics,
-      @NotNull @Size(max = 30000) String notes) {}
-
   public record ChartInput(
       @NotBlank @Size(max = 120) String name, Integer revision, @NotNull JsonNode config) {}
 
@@ -62,22 +56,6 @@ public class WorkspaceController {
       throws Exception {
     return service.preview(
         p, file.getOriginalFilename(), file.getBytes(), service.importRules(rules));
-  }
-
-  @GetMapping("/projects/{p}/experiments")
-  Object experiments(@PathVariable long p) {
-    return service.experiments(p);
-  }
-
-  @PostMapping("/projects/{p}/experiments")
-  Object experiment(@PathVariable long p, @Valid @RequestBody ExperimentInput in) {
-    return service.saveExperiment(p, null, in.name(), in.parameters(), in.metrics(), in.notes());
-  }
-
-  @PutMapping("/projects/{p}/experiments/{id}")
-  Object editExperiment(
-      @PathVariable long p, @PathVariable long id, @Valid @RequestBody ExperimentInput in) {
-    return service.saveExperiment(p, id, in.name(), in.parameters(), in.metrics(), in.notes());
   }
 
   @GetMapping("/projects/{p}/datasets")
