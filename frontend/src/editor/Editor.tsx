@@ -46,6 +46,7 @@ import {
   makeSeries,
   palettes,
   historyReducer,
+  defaultEmpirical,
   type Config,
   type Series,
 } from "./model";
@@ -53,6 +54,12 @@ import { useConfirm } from "../components/useConfirm";
 import { SourceProvenance } from "../experiments/SourceProvenance";
 import { buildPlot } from "./plot";
 import { ProfessionalPanel } from "./ProfessionalPanel";
+import {
+  exportChecks,
+  publicationMetrics,
+  physicalSvg,
+  pngDensity,
+} from "./publication";
 type Props = {
   project: number;
   projectName: string;
@@ -240,6 +247,8 @@ function Workbench(
     future: [],
   });
   const c = history.present;
+  const empirical = c.type === "histogram" || c.type === "ecdf";
+  const output = publicationMetrics(c);
   const [name, setName] = useState(
       p.original?.name ||
         (p.data.source_meta
@@ -436,12 +445,24 @@ function Workbench(
     setExporting(true);
     try {
       await plotReady.current;
-      const url = await Plotly.toImage(graph.current, {
+      const metrics = publicationMetrics(c, scale);
+      if (
+        format === "png" &&
+        (metrics.pixelWidth * metrics.pixelHeight > 40000000 ||
+          Math.max(metrics.pixelWidth, metrics.pixelHeight) > 12000)
+      )
+        throw new Error(
+          "输出超过 4000 万像素或单边 12000 px，请降低 DPI / 倍率",
+        );
+      let url = await Plotly.toImage(graph.current, {
         format,
         width: c.style.width,
         height: c.style.height,
-        scale: format === "png" ? scale : 1,
+        scale: format === "png" ? metrics.scale : 1,
       });
+      if (format === "svg") url = physicalSvg(url, c);
+      if (format === "png" && metrics.enabled)
+        url = pngDensity(url, metrics.effectiveDpi);
       const link = document.createElement("a");
       link.href = url;
       link.download =
@@ -473,7 +494,10 @@ function Workbench(
               ? "Helvetica"
               : "Arial",
       },
-      series: c.series.map((s, i) => ({ ...s, color: palettes[value][i % 5] })),
+      series: c.series.map((s, i) => ({
+        ...s,
+        color: palettes[value][i % palettes[value].length],
+      })),
     });
   };
   return (
@@ -657,7 +681,7 @@ function Workbench(
           </section>
           <section className="left-section">
             <div className="section-label">
-              图表类型<span className="tiny-label">6 种</span>
+              图表类型<span className="tiny-label">8 种</span>
             </div>
             <div className="chart-type-grid">
               {(
@@ -668,6 +692,8 @@ function Workbench(
                   ["heatmap", Grid2X2, "热力图"],
                   ["box", ChartCandlestick, "箱线图"],
                   ["violin", AudioLines, "小提琴图"],
+                  ["histogram", ChartColumn, "直方图"],
+                  ["ecdf", ChartNoAxesCombined, "ECDF"],
                 ] as const
               ).map(([type, Icon, label]) => (
                 <button
@@ -676,7 +702,10 @@ function Workbench(
                   onClick={() => {
                     patch({ type });
                     setPanel(
-                      type === "box" || type === "violin"
+                      type === "box" ||
+                        type === "violin" ||
+                        type === "histogram" ||
+                        type === "ecdf"
                         ? "professional"
                         : "chart",
                     );
@@ -913,7 +942,7 @@ function Workbench(
               )}
           </div>
           <div className="bottom-tabs">
-            {(c.type === "box" || c.type === "violin") && (
+            {(c.type === "box" || c.type === "violin" || empirical) && (
               <button
                 className={bottom === "samples" ? "active" : ""}
                 onClick={() => setBottom(bottom === "samples" ? "" : "samples")}
@@ -956,7 +985,7 @@ function Workbench(
               {bottom === "samples" ? (
                 <>
                   <p className="sample-summary-note">
-                    按当前过滤与对数轴统计有效观测；缺失值不作为零。汇总数据不能替代逐次实验样本。
+                    按当前过滤、分箱范围与对数轴统计；缺失与排除分开列出，均不作为零。汇总数据不能替代逐次观测。
                   </p>
                   <table className="sample-summary">
                     <thead>
@@ -967,7 +996,7 @@ function Workbench(
                           "类别",
                           "有效 n",
                           "缺失",
-                          "对数排除",
+                          "排除",
                           "最小值",
                           "最大值",
                         ].map((title) => (
@@ -1046,12 +1075,14 @@ function Workbench(
             {panel === "chart" && (
               <>
                 <Section title="字段映射" icon={<Database size={13} />}>
-                  <Select
-                    label="X 轴字段"
-                    value={c.x}
-                    options={fields}
-                    onChange={(x) => patch({ x })}
-                  />
+                  {!empirical && (
+                    <Select
+                      label="X 轴字段"
+                      value={c.x}
+                      options={fields}
+                      onChange={(x) => patch({ x })}
+                    />
+                  )}
                   {c.type === "heatmap" ? (
                     <>
                       <Select
@@ -1104,13 +1135,18 @@ function Workbench(
                     onChange={(font) => style({ font })}
                   />
                   <div className="form-grid">
-                    <NumberInput
-                      label="字号"
-                      value={c.style.fontSize}
-                      min={8}
-                      max={40}
-                      onChange={(fontSize) => style({ fontSize })}
-                    />
+                    <fieldset
+                      className="axis-numeric-controls"
+                      disabled={!!c.publication?.enabled}
+                    >
+                      <NumberInput
+                        label="字号"
+                        value={c.style.fontSize}
+                        min={8}
+                        max={40}
+                        onChange={(fontSize) => style({ fontSize })}
+                      />
+                    </fieldset>
                     <label>
                       字重
                       <select
@@ -1416,11 +1452,28 @@ function Workbench(
                 <Section key={axis} title={`${axis.toUpperCase()} 坐标轴`}>
                   <Text
                     label={`${axis.toUpperCase()} 轴名称`}
-                    value={c.axes[axis].title}
+                    value={
+                      empirical
+                        ? axis === "x"
+                          ? c.empirical?.valueTitle || ""
+                          : c.empirical?.resultTitle || ""
+                        : c.axes[axis].title
+                    }
                     onChange={(title) =>
-                      patch({
-                        axes: { ...c.axes, [axis]: { ...c.axes[axis], title } },
-                      })
+                      empirical
+                        ? patch({
+                            empirical: {
+                              ...(c.empirical || defaultEmpirical),
+                              [axis === "x" ? "valueTitle" : "resultTitle"]:
+                                title,
+                            },
+                          })
+                        : patch({
+                            axes: {
+                              ...c.axes,
+                              [axis]: { ...c.axes[axis], title },
+                            },
+                          })
                     }
                   />
                   <fieldset
@@ -1677,7 +1730,7 @@ function Workbench(
           options={["svg", "png"]}
           onChange={(v) => setFormat(v as "svg" | "png")}
         />
-        {format === "png" && (
+        {format === "png" && !c.publication?.enabled && (
           <NumberInput
             label="像素倍率"
             value={scale}
@@ -1689,12 +1742,25 @@ function Workbench(
         <div className="export-summary">
           {format === "svg"
             ? "SVG 矢量 · 可编辑文本"
-            : `PNG · ${c.style.width * scale} × ${c.style.height * scale} px`}
+            : `PNG · ${publicationMetrics(c, scale).pixelWidth} × ${publicationMetrics(c, scale).pixelHeight} px`}
           <small>
             {format === "svg"
               ? "文字保留为文本，接收设备需安装相同字体。"
-              : "建议论文使用 2× 或更高倍率。"}
+              : c.publication?.enabled
+                ? `成品 ${output.widthMm} × ${output.heightMm.toFixed(1)} mm · 约 ${output.effectiveDpi.toFixed(0)} DPI`
+                : "有效 DPI 取决于成品物理宽度，可在专业面板中设置。"}
           </small>
+        </div>
+        <div className="export-checks">
+          {exportChecks(c, scale).map((message) => (
+            <p key={message}>{message}</p>
+          ))}
+          {c.publication?.enabled && (
+            <p>
+              SVG 物理尺寸：{output.widthMm} × {output.heightMm.toFixed(1)} mm ·
+              基础字号 {output.fontPt} pt
+            </p>
+          )}
         </div>
         <div className="dialog-actions">
           <Button disabled={exporting} onClick={download}>

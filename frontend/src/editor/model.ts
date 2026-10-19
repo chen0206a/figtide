@@ -61,7 +61,36 @@ export const defaultFacet: Facet = {
 export type Config = {
   schema_version: 1;
   datasetVersionId: number;
-  type: "line" | "bar" | "scatter" | "heatmap" | "box" | "violin";
+  type:
+    | "line"
+    | "bar"
+    | "scatter"
+    | "heatmap"
+    | "box"
+    | "violin"
+    | "histogram"
+    | "ecdf";
+  publication?: {
+    enabled: boolean;
+    widthMm: number;
+    fontPt: number;
+    dpi: number;
+  };
+  empirical?: {
+    bins: number;
+    start: string;
+    end: string;
+    normalization: "count" | "probability" | "density";
+    valueTitle: string;
+    resultTitle: string;
+  };
+  heatmap?: {
+    palette: "series" | "viridis" | "cividis" | "blueRed";
+    min: string;
+    max: string;
+    center: string;
+    labels: boolean;
+  };
   distribution?: Distribution;
   facet?: Facet;
   x: string;
@@ -97,16 +126,54 @@ export const palettes: Record<string, string[]> = {
   "Clean Academic": ["#6758ce", "#269e95", "#d99641", "#db6d87", "#518ac0"],
   "Nature-inspired": ["#3b5488", "#00a087", "#e64b35", "#f39b7f", "#8491b4"],
   "Modern Research": ["#735fe8", "#21a7a0", "#eaab54", "#df729a", "#62a0db"],
+  "Okabe–Ito": [
+    "#0072b2",
+    "#e69f00",
+    "#009e73",
+    "#cc79a7",
+    "#d55e00",
+    "#56b4e9",
+    "#000000",
+    "#f0e442",
+  ],
 };
+export const defaultPublication = {
+  enabled: false,
+  widthMm: 183,
+  fontPt: 8,
+  dpi: 300,
+};
+export const defaultEmpirical: NonNullable<Config["empirical"]> = {
+  bins: 20,
+  start: "",
+  end: "",
+  normalization: "count",
+  valueTitle: "",
+  resultTitle: "",
+};
+export const defaultHeatmap: NonNullable<Config["heatmap"]> = {
+  palette: "series",
+  min: "",
+  max: "",
+  center: "",
+  labels: false,
+};
+export function seriesEncoding(palette: string, i: number) {
+  const colors = palettes[palette] || palettes["Clean Academic"];
+  const cycle = Math.floor(i / colors.length);
+  return {
+    color: colors[i % colors.length],
+    dash: ["solid", "dash", "dot", "dashdot"][cycle % 4],
+    symbol: ["circle", "square", "diamond", "triangle-up"][cycle % 4],
+  };
+}
 export const makeSeries = (y: string, i = 0): Series => ({
   id: crypto.randomUUID(),
   y,
   name: y,
-  color: palettes["Clean Academic"][i % 5],
+  ...seriesEncoding("Clean Academic", i),
   opacity: 1,
   width: 2.5,
-  dash: "solid",
-  symbol: "circle",
   size: 6,
   error: "",
   visible: true,
@@ -126,6 +193,9 @@ export function defaults(d: Dataset): Config {
     type: d.source_meta?.chart_type || "line",
     distribution: { ...defaultDistribution },
     facet: { ...defaultFacet, titles: {} },
+    publication: { ...defaultPublication },
+    empirical: { ...defaultEmpirical },
+    heatmap: { ...defaultHeatmap },
     x,
     group: d.fields.find((f) => f.role === "group")?.name || "",
     heatY: d.fields[1]?.name || "",

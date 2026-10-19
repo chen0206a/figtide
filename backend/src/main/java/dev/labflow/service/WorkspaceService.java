@@ -311,7 +311,8 @@ public class WorkspaceService {
       names.add(f.get("name").toString());
       if (f.get("type").equals("number")) numeric.add(f.get("name").toString());
     }
-    if (!names.contains(c.path("x").asText())) throw ApiException.bad("请选择有效的 X 字段");
+    if (!Set.of("histogram", "ecdf").contains(c.path("type").asText())
+        && !names.contains(c.path("x").asText())) throw ApiException.bad("请选择有效的 X 字段");
     if (!c.path("group").asText("").isEmpty() && !names.contains(c.path("group").asText()))
       throw ApiException.bad("分组字段不存在");
     if (c.path("facet").path("mode").asText().equals("field")

@@ -20,6 +20,42 @@ class ConfigValidatorTest {
   }
 
   @Test
+  void publicationAndEmpiricalOptionsValidated() throws Exception {
+    var c = fixture().put("type", "histogram");
+    c.set(
+        "publication",
+        new ObjectMapper().readTree("{\"enabled\":true,\"widthMm\":89,\"fontPt\":7,\"dpi\":300}"));
+    c.set(
+        "empirical",
+        new ObjectMapper()
+            .readTree(
+                "{\"bins\":20,\"start\":\"0\",\"end\":\"10\",\"normalization\":\"density\",\"valueTitle\":\"Score\",\"resultTitle\":\"Density\"}"));
+    assertDoesNotThrow(() -> ConfigValidator.validate(c));
+    ((ObjectNode) c.path("publication")).put("dpi", 0);
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+    ((ObjectNode) c.path("publication")).put("dpi", 300);
+    ((ObjectNode) c.path("empirical")).put("bins", 1.5);
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+    ((ObjectNode) c.path("empirical")).put("bins", 20).put("start", "Infinity");
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+  }
+
+  @Test
+  void heatmapScaleOptionsValidated() throws Exception {
+    var c = fixture().put("type", "heatmap");
+    c.set(
+        "heatmap",
+        new ObjectMapper()
+            .readTree(
+                "{\"palette\":\"blueRed\",\"min\":\"-1\",\"max\":\"1\",\"center\":\"0\",\"labels\":true}"));
+    assertDoesNotThrow(() -> ConfigValidator.validate(c));
+    ((ObjectNode) c.path("heatmap")).put("center", "2");
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+    ((ObjectNode) c.path("heatmap")).put("center", "0").put("palette", "rainbow-unsupported");
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+  }
+
+  @Test
   void incompleteConfigRejected() throws Exception {
     var c = fixture();
     c.remove("axes");

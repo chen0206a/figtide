@@ -28,10 +28,22 @@ public final class ConfigValidator {
     require(n.asText().matches("#[0-9a-fA-F]{6}"), "颜色必须是 HEX");
   }
 
+  private static Double optionalNumber(JsonNode n, String name) {
+    text(n, 120, name);
+    if (n.asText().isBlank()) return null;
+    try {
+      double value = Double.parseDouble(n.asText().trim());
+      require(Double.isFinite(value), name + " 必须为有限数值");
+      return value;
+    } catch (NumberFormatException e) {
+      throw ApiException.bad(name + " 必须为数值或留空");
+    }
+  }
+
   public static void validate(JsonNode c) {
     require(c.isObject(), "必须是 JSON 对象");
     require(
-        Set.of("line", "bar", "scatter", "heatmap", "box", "violin")
+        Set.of("line", "bar", "scatter", "heatmap", "box", "violin", "histogram", "ecdf")
             .contains(c.path("type").asText()),
         "图表类型无效");
     require(
@@ -94,6 +106,40 @@ public final class ConfigValidator {
     }
     require(c.path("transforms").isArray() && c.path("transforms").size() <= 100, "转换列表无效");
     for (var t : c.path("transforms")) text(t.path("value"), 500, "过滤值");
+    if (c.has("publication")) {
+      var p = c.path("publication");
+      require(p.isObject() && p.path("enabled").isBoolean(), "物理尺寸配置无效");
+      number(p.path("widthMm"), 50, 300, "成品宽度");
+      number(p.path("fontPt"), 4, 24, "成品字号");
+      number(p.path("dpi"), 72, 1200, "DPI");
+    }
+    if (c.has("empirical")) {
+      var e = c.path("empirical");
+      require(e.isObject() && e.path("bins").isIntegralNumber(), "分箱数量必须为整数");
+      number(e.path("bins"), 1, 200, "分箱数量");
+      var start = optionalNumber(e.path("start"), "分箱起点");
+      var end = optionalNumber(e.path("end"), "分箱终点");
+      require(start == null || end == null || start < end, "分箱起点必须小于终点");
+      require(
+          Set.of("count", "probability", "density").contains(e.path("normalization").asText()),
+          "直方图纵轴无效");
+      text(e.path("valueTitle"), 120, "观测轴标题");
+      text(e.path("resultTitle"), 120, "分布轴标题");
+    }
+    if (c.has("heatmap")) {
+      var h = c.path("heatmap");
+      require(h.isObject() && h.path("labels").isBoolean(), "热力图配置无效");
+      require(
+          Set.of("series", "viridis", "cividis", "blueRed").contains(h.path("palette").asText()),
+          "热力图色阶无效");
+      var min = optionalNumber(h.path("min"), "色阶最小值");
+      var max = optionalNumber(h.path("max"), "色阶最大值");
+      var center = optionalNumber(h.path("center"), "色阶中心值");
+      require(min == null || max == null || min < max, "色阶最小值必须小于最大值");
+      require(
+          center == null || ((min == null || min < center) && (max == null || center < max)),
+          "色阶中心值须在范围内");
+    }
     if (c.has("distribution")) {
       var d = c.path("distribution");
       require(d.isObject(), "分布配置无效");

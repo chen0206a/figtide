@@ -30,6 +30,56 @@ class WorkspaceIntegrationTest {
   }
 
   @Test
+  void empiricalAndPhysicalConfigSurviveRealMysql() throws Exception {
+    long p =
+        request(
+                "/api/projects",
+                "{\"name\":\"Publication and empirical test\",\"description\":\"synthetic\"}")
+            .path("id")
+            .asLong();
+    String root = "/api/projects/" + p;
+    var file =
+        new MockMultipartFile(
+            "file",
+            "hist.csv",
+            "text/csv",
+            "epoch,accuracy,error\n1,1,0\n2,2,0\n3,2,0\n4,4,0".getBytes());
+    var data =
+        json.readTree(
+            mvc.perform(multipart(root + "/datasets").file(file))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString());
+    var config =
+        (com.fasterxml.jackson.databind.node.ObjectNode)
+            json.readTree(getClass().getResourceAsStream("/config-v1.json"));
+    config.put("datasetVersionId", data.path("id").asLong()).put("x", "previous-dataset-field");
+    config.set(
+        "publication", json.readTree("{\"enabled\":true,\"widthMm\":89,\"fontPt\":7,\"dpi\":300}"));
+    config.set(
+        "empirical",
+        json.readTree(
+            "{\"bins\":2,\"start\":\"0\",\"end\":\"4\",\"normalization\":\"probability\",\"valueTitle\":\"Accuracy\",\"resultTitle\":\"\"}"));
+    for (String type : new String[] {"histogram", "ecdf"}) {
+      config.put("type", type);
+      var body = json.createObjectNode().put("name", "Synthetic " + type);
+      body.set("config", config);
+      var chart = request(root + "/charts", body.toString());
+      var reopened =
+          json.readTree(
+              mvc.perform(get(root + "/charts/" + chart.path("id").asLong()))
+                  .andExpect(status().isOk())
+                  .andReturn()
+                  .getResponse()
+                  .getContentAsString());
+      assertEquals(json.readTree(config.toString()), reopened.path("config"));
+    }
+    mvc.perform(get(root + "/data/" + data.path("id").asLong() + "/original"))
+        .andExpect(content().bytes(file.getBytes()));
+  }
+
+  @Test
   void realMySqlRoundtripVersionIsolationAndConflict() throws Exception {
     long p =
         request(

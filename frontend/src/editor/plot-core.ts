@@ -2,6 +2,8 @@ import { vectorHeatmap } from "./heatmap";
 import type { Config } from "./model";
 import type { Dataset } from "../lib/api";
 import { distributionTraces } from "./distribution";
+import { empiricalTraces } from "./empirical";
+import { defaultEmpirical } from "./model";
 const plain = (s: string) =>
   s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 export function filteredRows(c: Config, d: Dataset) {
@@ -27,7 +29,12 @@ export function buildSinglePlot(c: Config, d: Dataset) {
   if (!fields.has(c.x)) warnings.push("X 字段不存在，请重新映射");
   let heat: ReturnType<typeof vectorHeatmap> | undefined;
   const distribution = c.type === "box" || c.type === "violin";
-  const stats = distribution ? distributionTraces(c, rows) : undefined;
+  const empirical = c.type === "histogram" || c.type === "ecdf";
+  const stats = empirical
+    ? empiricalTraces(c, rows)
+    : distribution
+      ? distributionTraces(c, rows)
+      : undefined;
   if (stats) {
     traces.push(...stats.traces);
     warnings.push(...stats.warnings);
@@ -173,6 +180,18 @@ export function buildSinglePlot(c: Config, d: Dataset) {
       ),
       ...heat?.xaxis,
       ...(distribution ? { type: "category" } : {}),
+      ...(empirical
+        ? {
+            title: {
+              text: plain(
+                c.empirical?.valueTitle ||
+                  c.series.find((s) => s.visible)?.name ||
+                  "观测值",
+              ),
+              standoff: 14,
+            },
+          }
+        : {}),
     },
     yaxis: { ...axis(c.axes.y), ...heat?.yaxis },
     shapes: heat?.shapes || [],
@@ -186,17 +205,38 @@ export function buildSinglePlot(c: Config, d: Dataset) {
     boxmode: "group",
     violinmode: "group",
     bargap: 0.25,
-    annotations: c.annotations.map((a) => ({
-      text: plain(a.text),
-      x: a.x,
-      y: a.y,
-      xref: "paper",
-      yref: "paper",
-      showarrow: false,
-    })),
+    annotations: [
+      ...(heat?.annotations || []),
+      ...c.annotations.map((a) => ({
+        text: plain(a.text),
+        x: a.x,
+        y: a.y,
+        xref: "paper",
+        yref: "paper",
+        showarrow: false,
+      })),
+    ],
     hovermode: "closest",
     dragmode: false,
   };
+  if (empirical) {
+    const e = c.empirical || defaultEmpirical;
+    layout.yaxis.title = {
+      text: plain(
+        e.resultTitle ||
+          (c.type === "ecdf"
+            ? "累计概率"
+            : { count: "频数", probability: "概率", density: "概率密度" }[
+                e.normalization
+              ]),
+      ),
+      standoff: 14,
+    };
+    if (c.type === "ecdf" && !c.axes.y.min && !c.axes.y.max && !c.axes.y.log)
+      Object.assign(layout.yaxis, { range: [0, 1.05], autorange: false });
+    if (c.type === "histogram" && c.axes.y.log)
+      warnings.push("直方图对数 Y 轴不显示零频箱；分箱计数仍包含这些箱");
+  }
   return {
     traces,
     layout,

@@ -2,6 +2,28 @@
 
 本地基址 `http://127.0.0.1:8086/api`。UTF-8 JSON。当前返回创建资源 HTTP 200。上传为 `multipart/form-data`，字段名 `file`。数据库 ID 为整数。
 
+## 第四批增量协议：论文尺寸与经验分布（2026-10-19）
+
+type 新增 histogram/ecdf。继续使用现有图表保存、版本和重新打开接口，schema_version:1；以下为可选扩展片段，缺省时保持旧图行为。对象一旦出现，需完整提交内部字段。
+
+```json
+{
+  "publication": {"enabled":false,"widthMm":183,"fontPt":8,"dpi":300},
+  "empirical": {"bins":20,"start":"","end":"","normalization":"count","valueTitle":"","resultTitle":""},
+  "heatmap": {"palette":"series","min":"","max":"","center":"","labels":false}
+}
+```
+
+- publication.widthMm 为 50–300 mm，fontPt 为 4–24 pt，dpi 为 72–1200；enabled 为布尔值。高度按逻辑画布宽高比推导，不维护重复的高度真值。style.width/height/fontSize 保留编辑器逻辑尺寸与原始字号；开启时渲染器换算成品字号并为变大的文字扩展边距，关闭后恢复原样式。
+- SVG 导出保留原 viewBox，根宽高写为 mm；文字仍为可编辑文本，不嵌入字体。PNG 像素宽度=round(widthMm/25.4×dpi)，高度按同一比例取整，写入 pHYs 密度数据块。四舍五入可使有效 DPI 与目标存在轻微差异，界面报告实际换算值。PNG 超过 4000 万像素或单边 12000 px 会被拒绝。
+- empirical.bins 为整数 1–200；start/end 为可选有限数字字符串，均指定时 start<end。normalization 为 count/probability/density，两个轴标题均最多 120 字符。留空标题时自动选择观测名称与纵轴语义。
+- histogram/ecdf 使用每条 series.y 的数值观测；配置 x 仅保留供其他图表使用，保存时不要求其仍是有效列。group 与所有过滤步骤仍检查归属并生效。
+- 同一子图内，直方图各序列/类别共享自动起止范围；跨子图建议显式设置相同范围。最后一箱含右端点，其余左闭右开；范围外及非正对数观测明确计入排除。概率和密度按范围内有效 n 计算，密度=count/(n×箱宽)。
+- ECDF 合并重复值，阶梯右连续，不平滑；零概率起点在对数 Y 轴下不显示并告警。经验分布最多 200 条轨迹；样本检查统计 n、缺失、排除、极值。
+- heatmap.palette 为 series/viridis/cividis/blueRed。min/max/center 为可选有限数字字符串；显式 min<max，显式 center 必须在范围内。自动范围会包含中心值；颜色超范围截到端点并告警，原数值不变。色块和色标采用同一映射（连续色阶使用五个锚点线性插值）。
+- heatmap.labels 为布尔值，超过 400 单元格时整批关闭数字标注并提示，仍绘制全部色块；标注前景根据背景选择黑/白。计数矩阵样式仅设置色阶和标注，不计算混淆矩阵、不归一化数据。
+- style.preset 可选新增 Okabe–Ito。显式“应用色彩＋线型区分”会写入每条 series 的颜色、线型和点形，旧图不自动重配。
+
 ## 第三批增量协议：分布图与分面（2026-10-19）
 
 图表 type 新增 `box|violin`。原保存、打开、版本恢复接口与 schema_version:1 不变，JSON 增加两个可选对象；缺省时前端采用以下默认值，打开旧图不会隐式重写配置。
