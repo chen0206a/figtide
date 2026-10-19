@@ -23,6 +23,13 @@ public class WorkspaceController {
   public record ChartInput(
       @NotBlank @Size(max = 120) String name, Integer revision, @NotNull JsonNode config) {}
 
+  public record EvaluationInput(@NotNull JsonNode config) {}
+
+  @PostMapping("/projects/{p}/classification/report")
+  Object classification(@PathVariable long p, @Valid @RequestBody EvaluationInput input) {
+    return service.classificationReport(p, input.config());
+  }
+
   @GetMapping("/health")
   Object health() {
     return java.util.Map.of("status", "ok", "mode", "local-only");

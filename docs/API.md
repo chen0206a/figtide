@@ -2,6 +2,37 @@
 
 本地基址 `http://127.0.0.1:8086/api`。UTF-8 JSON。当前返回创建资源 HTTP 200。上传为 `multipart/form-data`，字段名 `file`。数据库 ID 为整数。
 
+## 第七批增量协议：混淆矩阵与共同样本（2026-10-19）
+
+图表 type 新增 confusion。chart schema_version=1 与保存/版本/重新打开接口不变。以下为可选扩展片段；classification 存在时内部字段完整，confusion 活跃时额外验证类别与字段。Series 可选新增 prediction（≤120 字符，预测标签列）；旧 y 保留给数值图/分数模式，标签矩阵不要求旧 y 仍有效。
+
+```json
+{
+  "sampling":{"policy":"intersection","id":"sample_id"},
+  "classification":{
+    "algorithm":"classification-v1","label":"truth","input":"labels",
+    "positive":"1","threshold":0.5,"classes":["cat","dog","bird"],
+    "normalization":"true","seriesId":"model-0","groupValue":"","xTitle":"","yTitle":""
+  }
+}
+```
+
+- sampling 同时作用于 ROC、PR 和 confusion；缺省 independent/id空，兼容旧图。policy=independent 按每个模型自身有效预测行；intersection 取所有可见模型的共同有效行（真实标签非缺失、每个可见预测有效）。按模型分面的 ROC/PR 使用完整父级模型集合确定交集，不在子图中退回独立行。
+- id 为空时按同一不可变数据版本的行位置对齐；非空时必须为源字段，在当前过滤后的全集非缺失且唯一。不是跨数据文件 join，也不按内容猜测重复样本。隐藏/显示模型会改变交集，配置持久化这一策略。
+- classification.algorithm 只接受 classification-v1；label 为源字段，input=labels/scores。labels 使用各可见 series.prediction，可为文本或数值标签；scores 使用 series.y 的有限数值，必须恰好两类且 positive 为其中一类，预测规则 score>=threshold。threshold 为任意有限 JSON number，分数越大越倾向正类，不要求为概率。
+- classes 为用户明确的类别顺序，活跃矩阵要求 2–20 个不重复非空值，各 ≤500 字符。通过“读取真实与预测类别”显式初始化，未知真实或预测类别返回 400，不自动忽略。数值标签按导入值字符串形式解释；复杂类别建议使用文本标签。
+- normalization=count/true/pred/all，分别为计数/按真实行/按预测列/按全部有效样本归一化。分母为零时 matrix 对应单元格 null，图中显示 —；计数仍保留为 0，未观察到不等于观察到 0% 准确率。
+- 行=真实类别，列=预测类别，真实首类显示在顶部。矩阵使用 SVG 矩形与文字，同一配置用于实时画布、SVG、PNG，自动标注所选模型/组与有效 n。
+- seriesId 为空时取首个可见模型；非空须存在。groupValue 为空时取当前模型首组；非空是分组原始值的 JSON 字符串（例如文本 A 编码为 `"\"A\""`，数值 1 为 `"1"`，缺失为 `"null"`）。选择失效时告警，不悄悄显示另一组。单图模型/分组选择器不限制底部报告，报告包含全部可见模型与组，最多 100 个模型分组。矩阵分面暂不支持，原分面设置保留。
+- xTitle/yTitle 各 ≤500 字符，空时 Predicted class / True class；原普通坐标轴范围/对数、误差棒和线型映射均保留但不作用于矩阵。无效的未使用误差列不阻塞分类图保存。
+- 每类 support/预测数/TP/FP/FN 及 precision=TP/(TP+FP)、recall=TP/(TP+FN)、F1=2TP/(2TP+FP+FN)。零分母为 null；macro 对任一未定义值传播 null，weighted 按 support>0 类别加权且传播其中的未定义值；micro 在完整单标签分类中等于 accuracy。不计算多标签、多分类 ROC/AP、统计显著性或置信区间。
+
+`POST /projects/{p}/classification/report` 接收 `{config:<完整图表配置>}`，要求 type=confusion。Java 端执行同一配置/归属/过滤/类别/ID 校验，并重新计算。返回 `{schema_version,datasetVersionId,source,classification,sampling,series,group,transforms,reports}`。source 含 filename/version/sha256；不写数据集、不覆盖原始标签或预测。
+
+reports 每项包含 seriesId/series/groupKey/group/classes、原始 counts、显示 matrix、n/excluded/ownMissing/excludedByOthers、accuracy、perClass、macro/micro/weighted，以及 sampleRows（相对固定源版本的 1 基行号，不含 CSV 表头）。所有归一化共享同一 counts 与指标。前端 JSON 导出使用此接口，浏览器测试与前端纯函数逐项比较 reports。
+
+ROC/PR 的既有 metrics 增加 ownMissing/excludedByOthers；原 excluded 仍为总排除数，JSON 导出新增 sampling。旧配置无 sampling 时行为保持独立有效行。
+
 ## 第六批增量协议：数据处理与重复实验汇总（2026-10-19）
 
 `POST /projects/{p}/data/{id}/process/preview` 与 `/process` 接收同一请求。id 为固定源版本，必须属于 p；所有分组、过滤、指标、重复标识均验证源字段归属。客户端只提交规则，不接受替换行数据。

@@ -7,6 +7,8 @@ import { defaultEmpirical } from "./model";
 import { defaultEvaluation } from "./model";
 import { evaluationTraces } from "./evaluation";
 import { bandTraces } from "./bands";
+import { classificationReports } from "./classification";
+import { confusionPlot } from "./confusion";
 const plain = (s: string) =>
   s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 export function filteredRows(c: Config, d: Dataset) {
@@ -28,21 +30,31 @@ export function buildSinglePlot(
   c: Config,
   d: Dataset,
   evaluationLabels?: Set<string>,
+  samplingReference: Config = c,
 ) {
   const rows = filteredRows(c, d);
   const warnings = [...d.warnings];
   const fields = new Set(d.fields.map((f) => f.name));
   const traces: any[] = [];
   const evaluation = c.type === "roc" || c.type === "pr";
+  const classification =
+    c.type === "confusion"
+      ? classificationReports(
+          c,
+          rows,
+          new Map(d.rows.map((r, i) => [r, i + 1])),
+        )
+      : undefined;
   if (
     !evaluation &&
+    c.type !== "confusion" &&
     c.type !== "histogram" &&
     c.type !== "ecdf" &&
     !fields.has(c.x)
   )
     warnings.push("X 字段不存在，请重新映射");
   const assessed = evaluation
-    ? evaluationTraces(c, rows, evaluationLabels)
+    ? evaluationTraces(c, rows, evaluationLabels, samplingReference)
     : undefined;
   let heat: ReturnType<typeof vectorHeatmap> | undefined;
   const distribution = c.type === "box" || c.type === "violin";
@@ -52,7 +64,11 @@ export function buildSinglePlot(
     : distribution
       ? distributionTraces(c, rows)
       : undefined;
-  if (assessed) {
+  if (classification) {
+    heat = confusionPlot(c, classification.reports);
+    traces.push(...heat.traces);
+    warnings.push(...classification.warnings, ...heat.warnings);
+  } else if (assessed) {
     traces.push(...assessed.traces);
     warnings.push(...assessed.warnings);
   } else if (stats) {
@@ -294,6 +310,7 @@ export function buildSinglePlot(
     shownRows: rows.length,
     summaries: stats?.summaries || [],
     metrics: assessed?.metrics || [],
+    classificationReports: classification?.reports || [],
     panelCount: 1,
   };
 }

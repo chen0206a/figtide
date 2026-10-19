@@ -2,6 +2,8 @@ package dev.labflow.service;
 
 import com.fasterxml.jackson.databind.*;
 import dev.labflow.api.ApiException;
+import dev.labflow.evaluation.ClassificationEvaluator;
+import dev.labflow.evaluation.EvaluationSupport;
 import dev.labflow.importer.DataImporter;
 import dev.labflow.importer.ImportRules;
 import dev.labflow.repository.WorkspaceRepository;
@@ -295,7 +297,7 @@ public class WorkspaceService {
   public Map<String, Object> saveChart(
       long p, Long id, String name, Integer revision, JsonNode config) {
     project(p);
-    validate(p, config);
+    validateAndReport(p, config);
     if (id == null) {
       id = db.insert("INSERT INTO charts(project_id,name) VALUES(?,?)", p, name);
       revision = 0;
@@ -321,19 +323,20 @@ public class WorkspaceService {
   }
 
   @SuppressWarnings("unchecked")
-  private void validate(long p, JsonNode c) {
+  private Map<String, Object> validateAndReport(long p, JsonNode c) {
     if (c == null || c.path("schema_version").asInt() != 1)
       throw ApiException.bad("不支持的配置 schema_version");
     ConfigValidator.validate(c);
     if (encode(c).length() > 200000) throw ApiException.bad("配置过大");
     var data = data(p, c.path("datasetVersionId").asLong());
+    Map<String, Object> report = null;
     var fields = (List<Map<String, Object>>) data.get("fields");
     Set<String> names = new HashSet<>(), numeric = new HashSet<>();
     for (var f : fields) {
       names.add(f.get("name").toString());
       if (f.get("type").equals("number")) numeric.add(f.get("name").toString());
     }
-    if (!Set.of("histogram", "ecdf", "roc", "pr").contains(c.path("type").asText())
+    if (!Set.of("histogram", "ecdf", "roc", "pr", "confusion").contains(c.path("type").asText())
         && !names.contains(c.path("x").asText())) throw ApiException.bad("请选择有效的 X 字段");
     if (!c.path("group").asText("").isEmpty() && !names.contains(c.path("group").asText()))
       throw ApiException.bad("分组字段不存在");
@@ -343,7 +346,12 @@ public class WorkspaceService {
     if (!c.path("series").isArray() || c.path("series").isEmpty() || c.path("series").size() > 20)
       throw ApiException.bad("需要 1–20 条序列");
     for (JsonNode s : c.path("series")) {
-      if (!numeric.contains(s.path("y").asText())) throw ApiException.bad("Y 字段必须为数值列");
+      boolean labels =
+          c.path("type").asText().equals("confusion")
+              && c.path("classification").path("input").asText().equals("labels");
+      if (!labels && !numeric.contains(s.path("y").asText())) throw ApiException.bad("Y 字段必须为数值列");
+      if (labels && s.path("visible").asBoolean() && !names.contains(s.path("prediction").asText()))
+        throw ApiException.bad("预测标签列不属于当前数据版本");
       var band = s.path("band");
       if (c.path("type").asText().equals("line") && band.path("enabled").asBoolean()) {
         if (!numeric.contains(c.path("x").asText())
@@ -359,7 +367,7 @@ public class WorkspaceService {
         }
       }
       String err = s.path("error").asText("");
-      if (!err.isEmpty()) {
+      if (!err.isEmpty() && Set.of("line", "bar", "scatter").contains(c.path("type").asText())) {
         if (!numeric.contains(err)) throw ApiException.bad("误差棒必须引用数值字段");
         for (var row : (List<Map<String, Object>>) data.get("rows"))
           if (row.get(err) instanceof Number n && n.doubleValue() < 0)
@@ -372,6 +380,27 @@ public class WorkspaceService {
           || !names.contains(t.path("field").asText())
           || !Set.of("eq", "gte", "lte").contains(t.path("operator").asText()))
         throw ApiException.bad("无效过滤步骤");
+    }
+    if (Set.of("roc", "pr", "confusion").contains(c.path("type").asText())) {
+      String identity = c.path("sampling").path("id").asText("");
+      if (!identity.isEmpty() && !names.contains(identity))
+        throw ApiException.bad("样本 ID 不属于当前数据版本");
+      EvaluationSupport.validateIdentity(
+          c, EvaluationSupport.filtered(c, (List<Map<String, Object>>) data.get("rows")));
+    }
+    if (c.path("type").asText().equals("confusion")) {
+      if (!names.contains(c.path("classification").path("label").asText()))
+        throw ApiException.bad("分类真实标签列不属于当前数据版本");
+      report = ClassificationEvaluator.evaluate(c, (List<Map<String, Object>>) data.get("rows"));
+      report.put(
+          "source",
+          Map.of(
+              "filename",
+              data.get("filename"),
+              "version",
+              data.get("version"),
+              "sha256",
+              data.get("sha256")));
     }
     if (Set.of("roc", "pr").contains(c.path("type").asText())) {
       String label = c.path("evaluation").path("label").asText(),
@@ -411,6 +440,7 @@ public class WorkspaceService {
       int n = c.path("style").path(key).asInt();
       if (n < 250 || n > 2400) throw ApiException.bad("图表尺寸须为 250–2400 px");
     }
+    return report;
   }
 
   private static String labelValue(Object value) {
@@ -418,5 +448,12 @@ public class WorkspaceService {
     if (value instanceof Number)
       return new java.math.BigDecimal(value.toString()).stripTrailingZeros().toPlainString();
     return value.toString();
+  }
+
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> classificationReport(long p, JsonNode c) {
+    if (c == null || !c.path("type").asText().equals("confusion"))
+      throw ApiException.bad("分类报告需要混淆矩阵配置");
+    return validateAndReport(p, c);
   }
 }

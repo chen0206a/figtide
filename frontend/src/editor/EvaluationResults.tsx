@@ -18,6 +18,8 @@ export function EvaluationResults({
     ["positive", "正例"],
     ["negative", "负例"],
     ["excluded", "排除"],
+    ["ownMissing", "自身缺失"],
+    ["excludedByOthers", "共同样本额外排除"],
     ["auc", "ROC AUC"],
     ["ap", "AP"],
     ["threshold", "阈值"],
@@ -39,6 +41,7 @@ export function EvaluationResults({
               schema_version: 1,
               datasetVersionId: config.datasetVersionId,
               evaluation: config.evaluation,
+              sampling: config.sampling || { policy: "independent", id: "" },
               series: config.series.map((s) => ({
                 id: s.id,
                 name: s.name,

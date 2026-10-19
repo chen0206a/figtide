@@ -31,16 +31,22 @@ export function buildFacets(
 ): ReturnType<typeof buildSinglePlot> {
   const f = c.facet || defaultFacet;
   const base = buildSinglePlot(c, d);
-  if (c.type === "heatmap")
+  if (c.type === "heatmap" || c.type === "confusion")
     return {
       ...base,
-      warnings: [...base.warnings, "热力图暂使用单图；分面设置已保留"],
+      warnings: [
+        ...base.warnings,
+        c.type === "confusion"
+          ? "混淆矩阵使用单图模型/分组选择器；分面设置已保留"
+          : "热力图暂使用单图；分面设置已保留",
+      ],
     };
   const entries = facetEntries(c, d);
   const fail = (message: string) => ({
     ...base,
     traces: [],
     metrics: [],
+    classificationReports: [],
     summaries: [],
     panelCount: 0,
     layout: {
@@ -120,7 +126,7 @@ export function buildFacets(
       f.mode === "field"
         ? { ...d, rows: d.rows.filter((r) => r[f.field] === entry.value) }
         : d;
-    const child = buildSinglePlot(childConfig, childData, evaluationLabels);
+    const child = buildSinglePlot(childConfig, childData, evaluationLabels, c);
     child.warnings.forEach((w) => warnings.add(w));
     const suffix = i ? String(i + 1) : "",
       xref = `x${suffix}`,
@@ -190,6 +196,7 @@ export function buildFacets(
     warnings: [...warnings],
     summaries,
     metrics,
+    classificationReports: [],
     shownRows: filteredRows(c, d).length,
     panelCount: entries.length,
   };

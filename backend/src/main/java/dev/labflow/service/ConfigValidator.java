@@ -53,7 +53,8 @@ public final class ConfigValidator {
                 "histogram",
                 "ecdf",
                 "roc",
-                "pr")
+                "pr",
+                "confusion")
             .contains(c.path("type").asText()),
         "图表类型无效");
     require(
@@ -96,6 +97,7 @@ public final class ConfigValidator {
       text(s.path("name"), 500, "序列名称");
       text(s.path("y"), 120, "Y 字段");
       text(s.path("error"), 120, "误差字段");
+      if (s.has("prediction")) text(s.path("prediction"), 120, "预测标签列");
       if (s.has("band")) {
         var b = s.path("band");
         require(b.isObject() && b.path("enabled").isBoolean(), "区间带开关无效");
@@ -126,6 +128,46 @@ public final class ConfigValidator {
     for (var t : c.path("transforms")) text(t.path("value"), 500, "过滤值");
     if (Set.of("roc", "pr").contains(c.path("type").asText()))
       require(c.has("evaluation"), "缺少评估配置");
+    if (c.has("sampling")) {
+      var p = c.path("sampling");
+      require(
+          p.isObject() && Set.of("independent", "intersection").contains(p.path("policy").asText()),
+          "样本策略无效");
+      text(p.path("id"), 120, "样本 ID 字段");
+    }
+    if (c.path("type").asText().equals("confusion")) require(c.has("classification"), "缺少分类评估配置");
+    if (c.has("classification")) {
+      var k = c.path("classification");
+      require(k.isObject() && k.path("algorithm").asText().equals("classification-v1"), "分类评估算法无效");
+      text(k.path("label"), 120, "分类真实标签列");
+      text(k.path("positive"), 500, "矩阵正类值");
+      require(Set.of("labels", "scores").contains(k.path("input").asText()), "预测输入方式无效");
+      require(
+          Set.of("count", "true", "pred", "all").contains(k.path("normalization").asText()),
+          "矩阵归一化无效");
+      require(
+          k.path("threshold").isNumber() && Double.isFinite(k.path("threshold").asDouble()),
+          "矩阵阈值必须为有限数值");
+      for (String key : List.of("xTitle", "yTitle")) text(k.path(key), 500, "矩阵轴名称");
+      text(k.path("seriesId"), 80, "矩阵模型");
+      text(k.path("groupValue"), 12000, "矩阵分组");
+      require(k.path("classes").isArray() && k.path("classes").size() <= 20, "类别列表最多 20 类");
+      Set<String> labels = new HashSet<>();
+      for (var label : k.path("classes")) {
+        text(label, 500, "类别名称");
+        require(labels.add(label.asText()), "类别不能重复");
+      }
+      if (c.path("type").asText().equals("confusion")) {
+        require(labels.size() >= 2 && !labels.contains(""), "需明确 2–20 个非空类别");
+        if (k.path("input").asText().equals("scores"))
+          require(
+              labels.size() == 2 && labels.contains(k.path("positive").asText()),
+              "分数矩阵仅支持二分类且须指定有效正类");
+        require(
+            k.path("seriesId").asText().isEmpty() || ids.contains(k.path("seriesId").asText()),
+            "矩阵模型不存在");
+      }
+    }
     if (c.has("evaluation")) {
       var e = c.path("evaluation");
       require(e.isObject() && e.path("algorithm").asText().equals("binary-ranking-v1"), "评估算法不受支持");

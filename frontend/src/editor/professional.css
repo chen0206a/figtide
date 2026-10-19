@@ -197,3 +197,20 @@
 .evaluation-panel {
   border-left: 2px solid #708cff;
 }
+.class-order-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.class-order-row input {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+}
+.classification-report {
+  margin: 12px 0 22px;
+}
+.classification-report > strong {
+  font-size: 13px;
+}

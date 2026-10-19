@@ -5,6 +5,7 @@ import {
   type Config,
   type Series,
 } from "./model";
+import { SamplingPanel } from "./SamplingPanel";
 export function EvaluationPanel({
   config: c,
   data,
@@ -26,81 +27,84 @@ export function EvaluationPanel({
     ),
   ];
   return (
-    <section className="property-section evaluation-panel">
-      <span className="professional-kicker">BINARY MODEL EVALUATION</span>
-      <h3>从样本，到评估曲线。</h3>
-      <p className="tiny-note">
-        每行是一份真实样本；各序列 Y
-        映射为预测分数。分数越高越倾向正类，不要求为概率。
-      </p>
-      <label>
-        真实标签列
-        <select
-          aria-label="真实标签列"
-          value={e.label}
-          onChange={(v) => set({ label: v.target.value })}
-        >
-          <option value="">请明确选择</option>
-          {data.fields.map((f) => (
-            <option key={f.name} value={f.name}>
-              {f.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        正类值
-        <select
-          aria-label="正类值"
-          value={e.positive}
-          onChange={(v) => set({ positive: v.target.value })}
-        >
-          {!labels.includes(e.positive) && (
-            <option value={e.positive}>请选择正类</option>
-          )}
-          {labels.slice(0, 100).map((v) => (
-            <option key={v} value={v}>
-              {v}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        决策阈值
-        <input
-          aria-label="决策阈值"
-          type="number"
-          step="any"
-          value={e.threshold}
-          onChange={(v) => {
-            if (
-              v.target.value !== "" &&
-              Number.isFinite(Number(v.target.value))
-            )
-              set({ threshold: Number(v.target.value) });
-          }}
-        />
-      </label>
-      <p className="tiny-note">
-        分数 ≥ 阈值判为正类。阈值只影响混淆指标，不改变
-        AUC/AP。缺失标签或分数明确排除；各模型独立取有效样本，不自动取交集。
-      </p>
-      <label className="toggle-label">
-        显示随机排序参考线
-        <input
-          type="checkbox"
-          role="switch"
-          aria-label="显示随机排序参考线"
-          checked={e.baseline}
-          onChange={(v) => set({ baseline: v.target.checked })}
-        />
-      </label>
-      <p className="tiny-note">
-        ROC AUC 采用梯形积分；AP
-        采用逐阈值召回增量加权精确率。并列分数一起处理，PR 阶梯线与 AP
-        一致。指标见画布下方「模型评估」。
-      </p>
-    </section>
+    <>
+      <section className="property-section evaluation-panel">
+        <span className="professional-kicker">BINARY MODEL EVALUATION</span>
+        <h3>从样本，到评估曲线。</h3>
+        <p className="tiny-note">
+          每行是一份真实样本；各序列 Y
+          映射为预测分数。分数越高越倾向正类，不要求为概率。
+        </p>
+        <label>
+          真实标签列
+          <select
+            aria-label="真实标签列"
+            value={e.label}
+            onChange={(v) => set({ label: v.target.value })}
+          >
+            <option value="">请明确选择</option>
+            {data.fields.map((f) => (
+              <option key={f.name} value={f.name}>
+                {f.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          正类值
+          <select
+            aria-label="正类值"
+            value={e.positive}
+            onChange={(v) => set({ positive: v.target.value })}
+          >
+            {!labels.includes(e.positive) && (
+              <option value={e.positive}>请选择正类</option>
+            )}
+            {labels.slice(0, 100).map((v) => (
+              <option key={v} value={v}>
+                {v}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          决策阈值
+          <input
+            aria-label="决策阈值"
+            type="number"
+            step="any"
+            value={e.threshold}
+            onChange={(v) => {
+              if (
+                v.target.value !== "" &&
+                Number.isFinite(Number(v.target.value))
+              )
+                set({ threshold: Number(v.target.value) });
+            }}
+          />
+        </label>
+        <p className="tiny-note">
+          分数 ≥ 阈值判为正类。阈值只影响混淆指标，不改变
+          AUC/AP。缺失标签或分数明确排除；样本口径由下方策略指定。
+        </p>
+        <label className="toggle-label">
+          显示随机排序参考线
+          <input
+            type="checkbox"
+            role="switch"
+            aria-label="显示随机排序参考线"
+            checked={e.baseline}
+            onChange={(v) => set({ baseline: v.target.checked })}
+          />
+        </label>
+        <p className="tiny-note">
+          ROC AUC 采用梯形积分；AP
+          采用逐阈值召回增量加权精确率。并列分数一起处理，PR 阶梯线与 AP
+          一致。指标见画布下方「模型评估」。
+        </p>
+      </section>
+      <SamplingPanel config={c} data={data} onChange={onChange} />
+    </>
   );
 }
 export function BandPanel({

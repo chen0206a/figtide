@@ -11,6 +11,7 @@ export type Series = {
   size: number;
   error: string;
   visible: boolean;
+  prediction?: string;
   band?: {
     enabled: boolean;
     lower: string;
@@ -78,7 +79,22 @@ export type Config = {
     | "histogram"
     | "ecdf"
     | "roc"
-    | "pr";
+    | "pr"
+    | "confusion";
+  sampling?: { policy: "independent" | "intersection"; id: string };
+  classification?: {
+    algorithm: "classification-v1";
+    label: string;
+    input: "labels" | "scores";
+    positive: string;
+    threshold: number;
+    classes: string[];
+    normalization: "count" | "true" | "pred" | "all";
+    seriesId: string;
+    groupValue: string;
+    xTitle: string;
+    yTitle: string;
+  };
   evaluation?: {
     algorithm: "binary-ranking-v1";
     missing: "exclude";
@@ -157,6 +173,23 @@ export const palettes: Record<string, string[]> = {
     "#000000",
     "#f0e442",
   ],
+};
+export const defaultSampling: NonNullable<Config["sampling"]> = {
+  policy: "independent",
+  id: "",
+};
+export const defaultClassification: NonNullable<Config["classification"]> = {
+  algorithm: "classification-v1",
+  label: "",
+  input: "labels",
+  positive: "1",
+  threshold: 0.5,
+  classes: [],
+  normalization: "count",
+  seriesId: "",
+  groupValue: "",
+  xTitle: "",
+  yTitle: "",
 };
 export const defaultPublication = {
   enabled: false,

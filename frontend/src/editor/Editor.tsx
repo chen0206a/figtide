@@ -48,6 +48,7 @@ import {
   historyReducer,
   defaultEmpirical,
   defaultEvaluation,
+  defaultClassification,
   type Config,
   type Series,
 } from "./model";
@@ -57,6 +58,7 @@ import { buildPlot } from "./plot";
 import { ProfessionalPanel } from "./ProfessionalPanel";
 import { BandPanel } from "./EvaluationPanel";
 import { EvaluationResults } from "./EvaluationResults";
+import { ClassificationResults } from "./ClassificationResults";
 import {
   exportChecks,
   publicationMetrics,
@@ -251,7 +253,11 @@ function Workbench(
   });
   const c = history.present;
   const empirical = c.type === "histogram" || c.type === "ecdf";
-  const evaluation = c.type === "roc" || c.type === "pr";
+  const evaluation =
+    c.type === "roc" || c.type === "pr" || c.type === "confusion";
+  const classificationLabels =
+    c.type === "confusion" &&
+    (c.classification?.input || "labels") === "labels";
   const output = publicationMetrics(c);
   const [name, setName] = useState(
       p.original?.name ||
@@ -691,7 +697,7 @@ function Workbench(
           </section>
           <section className="left-section">
             <div className="section-label">
-              图表类型<span className="tiny-label">10 种</span>
+              图表类型<span className="tiny-label">11 种</span>
             </div>
             <div className="chart-type-grid">
               {(
@@ -706,20 +712,34 @@ function Workbench(
                   ["ecdf", ChartNoAxesCombined, "ECDF"],
                   ["roc", ChartNoAxesCombined, "ROC"],
                   ["pr", ChartNoAxesCombined, "PR"],
+                  ["confusion", Grid2X2, "混淆矩阵"],
                 ] as const
               ).map(([type, Icon, label]) => (
                 <button
                   key={type}
                   className={c.type === type ? "active" : ""}
                   onClick={() => {
-                    patch({ type });
+                    patch({
+                      type,
+                      ...(type === "confusion" && !c.classification
+                        ? {
+                            classification: {
+                              ...defaultClassification,
+                              label: c.evaluation?.label || "",
+                              positive: c.evaluation?.positive || "1",
+                              threshold: c.evaluation?.threshold ?? 0.5,
+                            },
+                          }
+                        : {}),
+                    });
                     setPanel(
                       type === "box" ||
                         type === "violin" ||
                         type === "histogram" ||
                         type === "ecdf" ||
                         type === "roc" ||
-                        type === "pr"
+                        type === "pr" ||
+                        type === "confusion"
                         ? "professional"
                         : "chart",
                     );
@@ -737,12 +757,17 @@ function Workbench(
               <button
                 aria-label="添加序列"
                 title="添加序列"
-                disabled={c.series.length >= 20 || !nums.length}
+                disabled={
+                  c.series.length >= 20 ||
+                  (!nums.length && !classificationLabels)
+                }
                 onClick={() => {
                   const s = makeSeries(
                     nums.find(
                       (n) => !c.series.some((s) => s.y === n) && n !== c.x,
-                    ) || nums[0],
+                    ) ||
+                      nums[0] ||
+                      "",
                     c.series.length,
                   );
                   patch({ series: [...c.series, s] });
@@ -964,7 +989,12 @@ function Workbench(
                 }
               >
                 <ChartNoAxesCombined size={14} />
-                模型评估<span>{plot.metrics.length}</span>
+                模型评估
+                <span>
+                  {c.type === "confusion"
+                    ? plot.classificationReports.length
+                    : plot.metrics.length}
+                </span>
               </button>
             )}
             {(c.type === "box" || c.type === "violin" || empirical) && (
@@ -1008,7 +1038,15 @@ function Workbench(
           {bottom && (
             <div className="bottom-content">
               {bottom === "evaluation" ? (
-                <EvaluationResults metrics={plot.metrics} config={c} />
+                c.type === "confusion" ? (
+                  <ClassificationResults
+                    reports={plot.classificationReports}
+                    config={c}
+                    project={p.project}
+                  />
+                ) : (
+                  <EvaluationResults metrics={plot.metrics} config={c} />
+                )
               ) : bottom === "samples" ? (
                 <>
                   <p className="sample-summary-note">
@@ -1129,13 +1167,25 @@ function Workbench(
                     <>
                       <Select
                         label={
-                          evaluation
-                            ? "预测分数列 · 当前序列"
-                            : "Y 轴字段 · 当前序列"
+                          classificationLabels
+                            ? "预测标签列 · 当前序列"
+                            : evaluation
+                              ? "预测分数列 · 当前序列"
+                              : "Y 轴字段 · 当前序列"
                         }
-                        value={series.y}
-                        options={nums}
-                        onChange={(y) => updateSeries({ y, name: y })}
+                        value={
+                          classificationLabels
+                            ? series.prediction || ""
+                            : series.y
+                        }
+                        options={classificationLabels ? ["", ...fields] : nums}
+                        onChange={(y) =>
+                          updateSeries(
+                            classificationLabels
+                              ? { prediction: y, name: y }
+                              : { y, name: y },
+                          )
+                        }
                       />
                       <Select
                         label="按类别分组"
@@ -1241,35 +1291,40 @@ function Workbench(
                     ))}
                   </div>
                 </Section>
-                <Section title="图例">
-                  <Toggle
-                    label="显示图例"
-                    value={c.legend.show}
-                    onChange={(show) =>
-                      patch({ legend: { ...c.legend, show } })
-                    }
-                  />
-                  <div className="form-grid">
-                    <Select
-                      label="位置"
-                      value={c.legend.position}
-                      options={["top", "bottom", "right"]}
-                      onChange={(position) =>
-                        patch({ legend: { ...c.legend, position } })
+                {c.type !== "confusion" && (
+                  <Section title="图例">
+                    <Toggle
+                      label="显示图例"
+                      value={c.legend.show}
+                      onChange={(show) =>
+                        patch({ legend: { ...c.legend, show } })
                       }
                     />
-                    <Select
-                      label="方向"
-                      value={c.legend.orientation}
-                      options={["h", "v"]}
-                      onChange={(v) =>
-                        patch({
-                          legend: { ...c.legend, orientation: v as "h" | "v" },
-                        })
-                      }
-                    />
-                  </div>
-                </Section>
+                    <div className="form-grid">
+                      <Select
+                        label="位置"
+                        value={c.legend.position}
+                        options={["top", "bottom", "right"]}
+                        onChange={(position) =>
+                          patch({ legend: { ...c.legend, position } })
+                        }
+                      />
+                      <Select
+                        label="方向"
+                        value={c.legend.orientation}
+                        options={["h", "v"]}
+                        onChange={(v) =>
+                          patch({
+                            legend: {
+                              ...c.legend,
+                              orientation: v as "h" | "v",
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                  </Section>
+                )}
                 <Section title="数据过滤 · 可复现" icon={<Filter size={13} />}>
                   <p className="tiny-note">仅影响展示，不覆盖原始数据。</p>
                   {c.transforms.map((t, i) => (
@@ -1364,10 +1419,22 @@ function Workbench(
                     onChange={(name) => updateSeries({ name })}
                   />
                   <Select
-                    label={evaluation ? "预测分数列" : "Y 数值字段"}
-                    value={series.y}
-                    options={nums}
-                    onChange={(y) => updateSeries({ y })}
+                    label={
+                      classificationLabels
+                        ? "预测标签列"
+                        : evaluation
+                          ? "预测分数列"
+                          : "Y 数值字段"
+                    }
+                    value={
+                      classificationLabels ? series.prediction || "" : series.y
+                    }
+                    options={classificationLabels ? ["", ...fields] : nums}
+                    onChange={(y) =>
+                      updateSeries(
+                        classificationLabels ? { prediction: y } : { y },
+                      )
+                    }
                   />
                   <Toggle
                     label="显示该序列"
@@ -1375,77 +1442,79 @@ function Workbench(
                     onChange={(visible) => updateSeries({ visible })}
                   />
                 </Section>
-                <Section title="外观">
-                  <label>
-                    序列颜色
-                    <div className="color-input">
+                {c.type !== "confusion" && (
+                  <Section title="外观">
+                    <label>
+                      序列颜色
+                      <div className="color-input">
+                        <input
+                          aria-label="序列颜色"
+                          type="color"
+                          value={series.color}
+                          onChange={(e) =>
+                            updateSeries({ color: e.target.value })
+                          }
+                        />
+                        <span>{series.color.toUpperCase()}</span>
+                      </div>
+                    </label>
+                    <label>
+                      透明度{" "}
+                      <span className="float-right">
+                        {Math.round(series.opacity * 100)}%
+                      </span>
                       <input
-                        aria-label="序列颜色"
-                        type="color"
-                        value={series.color}
+                        aria-label="透明度"
+                        type="range"
+                        min={0.1}
+                        max={1}
+                        step={0.05}
+                        value={series.opacity}
                         onChange={(e) =>
-                          updateSeries({ color: e.target.value })
+                          updateSeries({ opacity: Number(e.target.value) })
                         }
                       />
-                      <span>{series.color.toUpperCase()}</span>
-                    </div>
-                  </label>
-                  <label>
-                    透明度{" "}
-                    <span className="float-right">
-                      {Math.round(series.opacity * 100)}%
-                    </span>
-                    <input
-                      aria-label="透明度"
-                      type="range"
-                      min={0.1}
-                      max={1}
-                      step={0.05}
-                      value={series.opacity}
-                      onChange={(e) =>
-                        updateSeries({ opacity: Number(e.target.value) })
-                      }
-                    />
-                  </label>
-                  <div className="form-grid">
-                    <NumberInput
-                      label="线宽"
-                      value={series.width}
-                      min={0.5}
-                      max={10}
-                      step={0.5}
-                      onChange={(width) => updateSeries({ width })}
-                    />
-                    {c.type !== "box" && c.type !== "violin" && (
-                      <Select
-                        label="线型"
-                        value={series.dash}
-                        options={["solid", "dash", "dot", "dashdot"]}
-                        onChange={(dash) => updateSeries({ dash })}
+                    </label>
+                    <div className="form-grid">
+                      <NumberInput
+                        label="线宽"
+                        value={series.width}
+                        min={0.5}
+                        max={10}
+                        step={0.5}
+                        onChange={(width) => updateSeries({ width })}
                       />
-                    )}
-                  </div>
-                  <Select
-                    label="点形状"
-                    value={series.symbol}
-                    options={[
-                      "circle",
-                      "square",
-                      "diamond",
-                      "triangle-up",
-                      "cross",
-                      "x",
-                    ]}
-                    onChange={(symbol) => updateSeries({ symbol })}
-                  />
-                  <NumberInput
-                    label="点大小"
-                    value={series.size}
-                    min={0}
-                    max={30}
-                    onChange={(size) => updateSeries({ size })}
-                  />
-                </Section>
+                      {c.type !== "box" && c.type !== "violin" && (
+                        <Select
+                          label="线型"
+                          value={series.dash}
+                          options={["solid", "dash", "dot", "dashdot"]}
+                          onChange={(dash) => updateSeries({ dash })}
+                        />
+                      )}
+                    </div>
+                    <Select
+                      label="点形状"
+                      value={series.symbol}
+                      options={[
+                        "circle",
+                        "square",
+                        "diamond",
+                        "triangle-up",
+                        "cross",
+                        "x",
+                      ]}
+                      onChange={(symbol) => updateSeries({ symbol })}
+                    />
+                    <NumberInput
+                      label="点大小"
+                      value={series.size}
+                      min={0}
+                      max={30}
+                      onChange={(size) => updateSeries({ size })}
+                    />
+                  </Section>
+                )}
                 {c.type === "line" && (
                   <BandPanel
                     series={series}
@@ -1491,50 +1560,61 @@ function Workbench(
                   <Text
                     label={`${axis.toUpperCase()} 轴名称`}
                     value={
-                      evaluation
-                        ? c.evaluation?.[
-                            c.type === "roc"
-                              ? axis === "x"
-                                ? "rocXTitle"
-                                : "rocYTitle"
-                              : axis === "x"
-                                ? "prXTitle"
-                                : "prYTitle"
+                      c.type === "confusion"
+                        ? c.classification?.[
+                            axis === "x" ? "xTitle" : "yTitle"
                           ] || ""
-                        : empirical
-                          ? axis === "x"
-                            ? c.empirical?.valueTitle || ""
-                            : c.empirical?.resultTitle || ""
-                          : c.axes[axis].title
-                    }
-                    onChange={(title) =>
-                      evaluation
-                        ? patch({
-                            evaluation: {
-                              ...(c.evaluation || defaultEvaluation),
-                              [c.type === "roc"
+                        : evaluation
+                          ? c.evaluation?.[
+                              c.type === "roc"
                                 ? axis === "x"
                                   ? "rocXTitle"
                                   : "rocYTitle"
                                 : axis === "x"
                                   ? "prXTitle"
-                                  : "prYTitle"]: title,
+                                  : "prYTitle"
+                            ] || ""
+                          : empirical
+                            ? axis === "x"
+                              ? c.empirical?.valueTitle || ""
+                              : c.empirical?.resultTitle || ""
+                            : c.axes[axis].title
+                    }
+                    onChange={(title) =>
+                      c.type === "confusion"
+                        ? patch({
+                            classification: {
+                              ...(c.classification || defaultClassification),
+                              [axis === "x" ? "xTitle" : "yTitle"]: title,
                             },
                           })
-                        : empirical
+                        : evaluation
                           ? patch({
-                              empirical: {
-                                ...(c.empirical || defaultEmpirical),
-                                [axis === "x" ? "valueTitle" : "resultTitle"]:
-                                  title,
+                              evaluation: {
+                                ...(c.evaluation || defaultEvaluation),
+                                [c.type === "roc"
+                                  ? axis === "x"
+                                    ? "rocXTitle"
+                                    : "rocYTitle"
+                                  : axis === "x"
+                                    ? "prXTitle"
+                                    : "prYTitle"]: title,
                               },
                             })
-                          : patch({
-                              axes: {
-                                ...c.axes,
-                                [axis]: { ...c.axes[axis], title },
-                              },
-                            })
+                          : empirical
+                            ? patch({
+                                empirical: {
+                                  ...(c.empirical || defaultEmpirical),
+                                  [axis === "x" ? "valueTitle" : "resultTitle"]:
+                                    title,
+                                },
+                              })
+                            : patch({
+                                axes: {
+                                  ...c.axes,
+                                  [axis]: { ...c.axes[axis], title },
+                                },
+                              })
                     }
                   />
                   <fieldset
@@ -1577,15 +1657,20 @@ function Workbench(
                       }
                     />
                   </fieldset>
-                  <Toggle
-                    label="显示网格线"
-                    value={c.axes[axis].grid}
-                    onChange={(grid) =>
-                      patch({
-                        axes: { ...c.axes, [axis]: { ...c.axes[axis], grid } },
-                      })
-                    }
-                  />
+                  {c.type !== "confusion" && (
+                    <Toggle
+                      label="显示网格线"
+                      value={c.axes[axis].grid}
+                      onChange={(grid) =>
+                        patch({
+                          axes: {
+                            ...c.axes,
+                            [axis]: { ...c.axes[axis], grid },
+                          },
+                        })
+                      }
+                    />
+                  )}
                   <fieldset
                     className="axis-numeric-controls"
                     disabled={
@@ -1606,7 +1691,9 @@ function Workbench(
                   </fieldset>
                   {evaluation && (
                     <p className="tiny-note">
-                      评估曲线使用线性 0–1 坐标；普通图的范围和对数设置已保留。
+                      {c.type === "confusion"
+                        ? "混淆矩阵使用离散类别轴；普通图的范围和对数设置已保留。"
+                        : "评估曲线使用线性 0–1 坐标；普通图的范围和对数设置已保留。"}
                     </p>
                   )}
                   {axis === "x" &&

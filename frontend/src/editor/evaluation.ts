@@ -1,5 +1,6 @@
 import type { Config } from "./model";
 import { defaultEvaluation } from "./model";
+import { sampleSelection } from "./sampling";
 type Row = Record<string, string | number | null>;
 export type EvaluationMetric = {
   panel: string;
@@ -10,6 +11,8 @@ export type EvaluationMetric = {
   positive: number;
   negative: number;
   excluded: number;
+  ownMissing?: number;
+  excludedByOthers?: number;
   auc: number | null;
   ap: number | null;
   threshold: number;
@@ -22,8 +25,6 @@ export type EvaluationMetric = {
   f1: number | null;
   accuracy: number | null;
 };
-const finite = (v: unknown): v is number =>
-  typeof v === "number" && Number.isFinite(v);
 const present = (v: unknown) => v != null && v !== "";
 const escape = (s: string) =>
   s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
@@ -81,6 +82,7 @@ export function evaluationTraces(
   c: Config,
   rows: Row[],
   labelUniverse?: Set<string>,
+  reference: Config = c,
 ) {
   const e = c.evaluation || defaultEvaluation;
   const traces: any[] = [],
@@ -112,12 +114,18 @@ export function evaluationTraces(
       const selected = c.group
         ? rows.filter((r) => r[c.group] === group)
         : rows;
-      const samples = selected
-        .filter((r) => present(r[e.label]) && finite(r[s.y]))
-        .map((r) => ({
-          positive: String(r[e.label]) === e.positive,
-          score: r[s.y] as number,
-        }));
+      const selection = sampleSelection(
+        c,
+        selected,
+        e.label,
+        s.y,
+        "scores",
+        reference,
+      );
+      const samples = selection.used.map((r) => ({
+        positive: String(r[e.label]) === e.positive,
+        score: r[s.y] as number,
+      }));
       const result = binaryRanking(samples, e.threshold);
       const { points, ...values } = result;
       const metric = {
@@ -127,6 +135,8 @@ export function evaluationTraces(
         group: c.group ? String(group ?? "缺失") : "全部",
         n: samples.length,
         excluded: selected.length - samples.length,
+        ownMissing: selection.ownMissing,
+        excludedByOthers: selection.excludedByOthers,
         threshold: e.threshold,
         ...values,
       };
@@ -134,7 +144,7 @@ export function evaluationTraces(
       const name = s.name + (c.group ? ` · ${group ?? "缺失"}` : "");
       if (metric.excluded)
         warnings.push(
-          `${name}：排除 ${metric.excluded} 行缺失标签/分数；未当作零`,
+          `${name}：排除 ${metric.excluded} 行（自身缺失 ${selection.ownMissing}，共同样本额外排除 ${selection.excludedByOthers}）；未当作零`,
         );
       if (!result.positive || !result.negative) {
         warnings.push(
@@ -189,7 +199,7 @@ export function evaluationTraces(
           hoverinfo: "name",
         });
     }
-  if (metrics.length > 1)
+  if (metrics.length > 1 && c.sampling?.policy !== "intersection")
     warnings.push(
       "各序列按自身有效样本计算；比较前请核对 n、正负例与排除数，未自动取共同样本",
     );

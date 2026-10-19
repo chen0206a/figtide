@@ -167,40 +167,42 @@ export function ScientificPanel({
           )}
         </section>
       )}
-      <section className="property-section">
-        <h3>科学色彩与区分</h3>
-        <Choice
-          label="序列色板"
-          value={c.style.preset}
-          options={Object.keys(palettes).map((key) => [key, key])}
-          onChange={(preset) =>
-            onChange({
-              style: { ...c.style, preset },
-              series: c.series.map((s, i) => ({
-                ...s,
-                color: palettes[preset][i % palettes[preset].length],
-              })),
-            })
-          }
-        />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() =>
-            onChange({
-              series: c.series.map((s, i) => ({
-                ...s,
-                ...seriesEncoding(c.style.preset, i),
-              })),
-            })
-          }
-        >
-          应用色彩＋线型区分
-        </Button>
-        <p className="tiny-note">
-          颜色循环后增加线型和点形差异，辅助灰度阅读；不等于完成色觉可访问性认证。
-        </p>
-      </section>
+      {c.type !== "confusion" && (
+        <section className="property-section">
+          <h3>科学色彩与区分</h3>
+          <Choice
+            label="序列色板"
+            value={c.style.preset}
+            options={Object.keys(palettes).map((key) => [key, key])}
+            onChange={(preset) =>
+              onChange({
+                style: { ...c.style, preset },
+                series: c.series.map((s, i) => ({
+                  ...s,
+                  color: palettes[preset][i % palettes[preset].length],
+                })),
+              })
+            }
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              onChange({
+                series: c.series.map((s, i) => ({
+                  ...s,
+                  ...seriesEncoding(c.style.preset, i),
+                })),
+              })
+            }
+          >
+            应用色彩＋线型区分
+          </Button>
+          <p className="tiny-note">
+            颜色循环后增加线型和点形差异，辅助灰度阅读；不等于完成色觉可访问性认证。
+          </p>
+        </section>
+      )}
       {c.type === "heatmap" && (
         <section className="property-section">
           <h3>热力图色阶与数值</h3>

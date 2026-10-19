@@ -8,7 +8,15 @@ const escape = (s: unknown) =>
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 /** SVG rectangles, rather than Plotly's raster heatmap trace, keep exported cells vector. */
-export function vectorHeatmap(c: Config, rows: Dataset["rows"]) {
+export type VectorPlot = {
+  warnings: string[];
+  shapes: any[];
+  traces: any[];
+  annotations: any[];
+  xaxis: Record<string, unknown>;
+  yaxis: Record<string, unknown>;
+};
+export function vectorHeatmap(c: Config, rows: Dataset["rows"]): VectorPlot {
   const xs = [...new Set(rows.map((r) => r[c.x]).filter((v) => v != null))];
   const ys = [...new Set(rows.map((r) => r[c.heatY]).filter((v) => v != null))];
   const warnings: string[] = [];

@@ -3,6 +3,7 @@ import type { Dataset } from "../lib/api";
 import { buildSinglePlot, filteredRows } from "./plot-core";
 import { buildFacets } from "./facets";
 import { renderConfig } from "./publication";
+import { identityWarning } from "./sampling";
 
 export function buildPlot(
   c: Config,
@@ -13,6 +14,18 @@ export function buildPlot(
     c.facet && c.facet.mode !== "none"
       ? buildFacets(c, d)
       : buildSinglePlot(c, d);
+  if (["roc", "pr", "confusion"].includes(c.type)) {
+    const warning = identityWarning(c, filteredRows(c, d));
+    if (warning)
+      return {
+        ...result,
+        traces: [],
+        layout: { ...result.layout, shapes: [], annotations: [] },
+        metrics: [],
+        classificationReports: [],
+        warnings: [...result.warnings, warning],
+      };
+  }
   if (
     d.source_meta?.kind === "data_processing" &&
     d.source_meta.rules.mode === "aggregate" &&

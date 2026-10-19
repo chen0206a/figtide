@@ -1,6 +1,20 @@
 # 第一阶段验收记录
 
-## 最新增量：第六批数据处理与重复实验汇总（2026-10-19，Asia/Tokyo）
+## 最新增量：第七批混淆矩阵与共同样本（2026-10-19，Asia/Tokyo）
+
+Java **51/51**、Vitest **59/59**、完整 Chrome E2E **20/20（约 2.3 分钟）** 通过，TypeScript / Vite 生产构建通过。Java 新增 6 项纯计算与 2 项真实 MySQL 集成测试；前端新增 10 项计算/交互测试，浏览器新增两条完整流程。
+
+手算三类矩阵 `[[1,1,0],[0,1,1],[0,0,2]]` 核对逐类 precision/recall/F1、support、macro/micro/weighted 与 accuracy；验证按行、按列、全部归一化仍保留相同计数和指标。零分母保持 null；未知类别、重复/缺失样本 ID、错误字段与跨项目请求被拒绝，不自动去重或补零。
+
+真实 Chrome：逐样本标签 → 两模型映射 → 明确类别顺序 → 计数 → 归一化与共同样本 → MySQL v1/v2 → 刷新重开 → SVG/PNG/Java JSON。下载的 Java reports 与前端纯函数逐项深比较，包括原始计数、显示矩阵、每类与平均指标、排除诊断及源行号。额外测试共同样本 ROC 在按模型分面后仍保持交集，非唯一 ID 无法覆盖已保存版本。原始 CSV 下载字节不变。
+
+SVG 保留文本、色块矢量路径与百分比，不含 image；PNG 实测宽 1520 px。矩阵标注所选模型/组与有效 n。已目视检查 [三分类工作台](screenshots/multiclass-matrix.png)、[演示工作台](screenshots/classification-demo.png)；实际 [SVG](exports/multiclass-matrix.svg)、[PNG](exports/multiclass-matrix.png)、[Java JSON](exports/multiclass-report.json)。
+
+独立创建“分类评估与共同样本 · 合成演示”，两份合成数据、三张保存图。三类预测共 12 行，共同样本为两模型相同的 8 行，来源始终为合成演示；没有修改用户现有项目。
+
+边界：共同样本只按同一不可变数据版本对齐，不跨文件 join；最多 20 类、100 个模型分组。分类指标为完整单标签分类，不提供多标签、多分类 ROC/AP、显著性或置信区间。矩阵单图选择模型/组，暂不支持矩阵分面。包体积提示仍存在（Plotly 按需包约 4.95 MB），性能/品牌/首页动效未作专项调整。详见 [第七批记录](BATCH-7.md)。
+
+## 第六批数据处理与重复实验汇总（2026-10-19，Asia/Tokyo）
 
 Java **43/43**、Vitest **49/49**、完整 Chrome E2E **18/18（约 1.5 分钟）** 通过；最后补充分组条件保护与多个指标映射后，49 项前端测试与本批 3 条 E2E 再次通过。TypeScript / Vite 构建通过，Plotly 包体积提示仍存在。本批以功能为主，没有修改首页、入场动效或品牌视觉。
 

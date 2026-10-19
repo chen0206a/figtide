@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "datasetVersionId": 181,
+  "classification": {
+    "input": "labels",
+    "label": "truth",
+    "xTitle": "",
+    "yTitle": "",
+    "classes": [
+      "A",
+      "B",
+      "C"
+    ],
+    "positive": "1",
+    "seriesId": "",
+    "algorithm": "classification-v1",
+    "threshold": 0.5,
+    "groupValue": "",
+    "normalization": "true"
+  },
+  "sampling": {
+    "id": "id",
+    "policy": "intersection"
+  },
+  "group": "",
+  "transforms": [],
+  "series": [
+    {
+      "y": "id",
+      "id": "1abc87a9-b145-4b38-ab19-64873a57e34f",
+      "dash": "solid",
+      "name": "Model A",
+      "size": 6,
+      "color": "#6758ce",
+      "error": "",
+      "width": 2.5,
+      "symbol": "circle",
+      "opacity": 1,
+      "visible": true,
+      "prediction": "a"
+    },
+    {
+      "y": "id",
+      "id": "4ef2c481-72ba-4c74-8ac0-b97f09dae8b3",
+      "dash": "solid",
+      "name": "Model B",
+      "size": 6,
+      "color": "#269e95",
+      "error": "",
+      "width": 2.5,
+      "symbol": "circle",
+      "opacity": 1,
+      "visible": true,
+      "prediction": "b"
+    }
+  ],
+  "reports": [
+    {
+      "seriesId": "1abc87a9-b145-4b38-ab19-64873a57e34f",
+      "groupKey": "\"\"",
+      "series": "Model A",
+      "group": "全部",
+      "classes": [
+        "A",
+        "B",
+        "C"
+      ],
+      "counts": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          0,
+          2
+        ]
+      ],
+      "matrix": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "n": 5,
+      "excluded": 4,
+      "ownMissing": 3,
+      "excludedByOthers": 1,
+      "sampleRows": [
+        1,
+        3,
+        4,
+        5,
+        6
+      ],
+      "perClass": [
+        {
+          "label": "A",
+          "support": 1,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1
+        },
+        {
+          "label": "B",
+          "support": 2,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1,
+          "recall": 0.5,
+          "f1": 0.6666666666666666
+        },
+        {
+          "label": "C",
+          "support": 2,
+          "predicted": 3,
+          "tp": 2,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.6666666666666666,
+          "recall": 1,
+          "f1": 0.8
+        }
+      ],
+      "macro": {
+        "precision": 0.8888888888888888,
+        "recall": 0.8333333333333334,
+        "f1": 0.8222222222222223
+      },
+      "weighted": {
+        "precision": 0.8666666666666666,
+        "recall": 0.8,
+        "f1": 0.7866666666666666
+      },
+      "micro": {
+        "precision": 0.8,
+        "recall": 0.8,
+        "f1": 0.8
+      },
+      "accuracy": 0.8
+    },
+    {
+      "seriesId": "4ef2c481-72ba-4c74-8ac0-b97f09dae8b3",
+      "groupKey": "\"\"",
+      "series": "Model B",
+      "group": "全部",
+      "classes": [
+        "A",
+        "B",
+        "C"
+      ],
+      "counts": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1
+        ]
+      ],
+      "matrix": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ]
+      ],
+      "n": 5,
+      "excluded": 4,
+      "ownMissing": 2,
+      "excludedByOthers": 2,
+      "sampleRows": [
+        1,
+        3,
+        4,
+        5,
+        6
+      ],
+      "perClass": [
+        {
+          "label": "A",
+          "support": 1,
+          "predicted": 2,
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.5,
+          "recall": 1,
+          "f1": 0.6666666666666666
+        },
+        {
+          "label": "B",
+          "support": 2,
+          "predicted": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1,
+          "recall": 0.5,
+          "f1": 0.6666666666666666
+        },
+        {
+          "label": "C",
+          "support": 2,
+          "predicted": 2,
+          "tp": 1,
+          "fp": 1,
+          "fn": 1,
+          "precision": 0.5,
+          "recall": 0.5,
+          "f1": 0.5
+        }
+      ],
+      "macro": {
+        "precision": 0.6666666666666666,
+        "recall": 0.6666666666666666,
+        "f1": 0.611111111111111
+      },
+      "weighted": {
+        "precision": 0.7,
+        "recall": 0.6,
+        "f1": 0.6
+      },
+      "micro": {
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6
+      },
+      "accuracy": 0.6
+    }
+  ],
+  "source": {
+    "filename": "synthetic-classes.csv",
+    "version": 1,
+    "sha256": "fc5b54acfcbe14567951bc101dca448d455ccea8f1dd1ed42ae98f838f4f8fbe"
+  }
+}

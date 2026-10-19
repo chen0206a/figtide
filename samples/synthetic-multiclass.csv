@@ -1,0 +1,13 @@
+sample_id,truth,model_a,model_b,data_kind
+1,cat,cat,cat,synthetic_demo
+2,cat,dog,,synthetic_demo
+3,dog,dog,bird,synthetic_demo
+4,dog,bird,dog,synthetic_demo
+5,bird,bird,bird,synthetic_demo
+6,bird,bird,cat,synthetic_demo
+7,bird,,bird,synthetic_demo
+8,,cat,cat,synthetic_demo
+9,cat,,dog,synthetic_demo
+10,cat,cat,cat,synthetic_demo
+11,dog,dog,dog,synthetic_demo
+12,bird,bird,bird,synthetic_demo

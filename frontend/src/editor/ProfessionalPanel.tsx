@@ -10,6 +10,7 @@ import { Button } from "../components/ui/button";
 import "./professional.css";
 import { ScientificPanel } from "./ScientificPanel";
 import { EvaluationPanel } from "./EvaluationPanel";
+import { ClassificationPanel } from "./ClassificationPanel";
 
 export function ProfessionalPanel({
   config: c,
@@ -20,6 +21,18 @@ export function ProfessionalPanel({
   data: Dataset;
   onChange: (value: Partial<Config>) => void;
 }) {
+  if (c.type === "confusion")
+    return (
+      <>
+        <ClassificationPanel config={c} data={data} onChange={onChange} />
+        <ScientificPanel config={c} onChange={onChange} />
+        <section className="property-section">
+          <p className="tiny-note">
+            混淆矩阵通过模型和分组选择器显示单图；其他类型的分面设置已保留。
+          </p>
+        </section>
+      </>
+    );
   const distribution = c.distribution || defaultDistribution,
     facet = c.facet || defaultFacet;
   const setDistribution = (value: Partial<typeof distribution>) =>
