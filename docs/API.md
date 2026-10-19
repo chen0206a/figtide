@@ -2,6 +2,37 @@
 
 本地基址 `http://127.0.0.1:8086/api`。UTF-8 JSON。当前返回创建资源 HTTP 200。上传为 `multipart/form-data`，字段名 `file`。数据库 ID 为整数。
 
+## 第五批增量协议：模型评估与实际区间（2026-10-19）
+
+新增 `type=roc|pr`，继续使用同一图表快照和 revision 协议，schema_version=1。如下为增量片段；对象出现时内部字段必须完整。旧配置不添加字段也可重新打开，切换普通图时保留评估与区间配置。
+
+```json
+{
+  "evaluation": {
+    "algorithm":"binary-ranking-v1", "missing":"exclude",
+    "label":"label", "positive":"1", "threshold":0.5, "baseline":true,
+    "rocXTitle":"", "rocYTitle":"", "prXTitle":"", "prYTitle":""
+  }
+}
+```
+
+- `roc/pr` 必须包含 evaluation；label 为当前数据版本字段（不超过 120 字符），positive 为明确选择的标签值（最多 500 字符），threshold 为有限 JSON number，分数 ≥ threshold 判为正类。`series.y` 仍是唯一的分数列映射，必须为当前数据版本数值字段，不另设重复字段。分数越大越倾向正类，可为任意有限数值，不自动要求概率。
+- algorithm 只接受 binary-ranking-v1；missing 只接受 exclude；baseline 布尔，轴名称各最多 500 字符，留空采用 ROC/PR 语义默认值。评估图固定线性 [0,1]，普通图的 axes 范围、对数和标题原样保留。`x` 不参与评估计算，不要求有效；group、facet、transforms 仍检查字段归属。
+- 过滤后非缺失标签须恰有两种，positive 必须为其中之一，否则预览告警、保存返回 400。数字标签按数值的字符串形式匹配（例 0/1），建议文本标签使用明确且稳定的类别名称。
+- 每个序列/分组独立排除缺失标签或分数；显示有效 n、正负例与排除数。不自动将多模型限制到共同有效行。有效样本少于两类的组不绘评估曲线，AUC/AP 为 null，混淆计数仍报告实际值。分数并列按同一阈值处理，ROC AUC 梯形积分，AP=Σ(召回增量 × 当前精确率)，PR 阶梯 shape=vh。无预测阳性 precision=null；无实际阳性 recall/F1=null，空样本 accuracy=null。
+- ROC 参考线为随机排序对角线；PR 参考线为当前组有效样本正类比例。最多 100 个序列分组，不截断样本。指标为前端确定性派生值，图表数据库保存原数据版本与完整计算配置，不接受替换原始实验结果。
+- 底部评估 JSON 包含数据版本、算法与阈值、分数列、分组、分面、过滤、逐序列指标，不包含原始样本；用于追溯派生指标。
+
+Series 可选新增：
+
+```json
+{"band":{"enabled":true,"lower":"lower","upper":"upper","opacity":0.18,"label":"实际区间"}}
+```
+
+- band 仅在 line 下启用，X/lower/upper 须为同数据版本数值字段。opacity 为 0.05–0.6，label 最多 120 字符。上下界不会由系统推算或自动解释为置信区间；若原数据存在下界大于上界，保存拒绝，不产生快照。
+- 按分组和原始行顺序绘制，X 必须严格递增，不满足时保留中央曲线、停止区间绘制并告警，不自动排序。缺失中心/X/上下界、非正对数坐标处截断多边形；单点片段不填充，不跨缺口插值。
+- 启用带时 error 映射保留但不同时显示误差棒；图层选择、分面、样式、撤销恢复和 SVG/PNG 走相同渲染路径。
+
 ## 第四批增量协议：论文尺寸与经验分布（2026-10-19）
 
 type 新增 histogram/ecdf。继续使用现有图表保存、版本和重新打开接口，schema_version:1；以下为可选扩展片段，缺省时保持旧图行为。对象一旦出现，需完整提交内部字段。

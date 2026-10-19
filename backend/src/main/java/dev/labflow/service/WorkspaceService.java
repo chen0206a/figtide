@@ -311,7 +311,7 @@ public class WorkspaceService {
       names.add(f.get("name").toString());
       if (f.get("type").equals("number")) numeric.add(f.get("name").toString());
     }
-    if (!Set.of("histogram", "ecdf").contains(c.path("type").asText())
+    if (!Set.of("histogram", "ecdf", "roc", "pr").contains(c.path("type").asText())
         && !names.contains(c.path("x").asText())) throw ApiException.bad("请选择有效的 X 字段");
     if (!c.path("group").asText("").isEmpty() && !names.contains(c.path("group").asText()))
       throw ApiException.bad("分组字段不存在");
@@ -322,6 +322,20 @@ public class WorkspaceService {
       throw ApiException.bad("需要 1–20 条序列");
     for (JsonNode s : c.path("series")) {
       if (!numeric.contains(s.path("y").asText())) throw ApiException.bad("Y 字段必须为数值列");
+      var band = s.path("band");
+      if (c.path("type").asText().equals("line") && band.path("enabled").asBoolean()) {
+        if (!numeric.contains(c.path("x").asText())
+            || !numeric.contains(band.path("lower").asText())
+            || !numeric.contains(band.path("upper").asText()))
+          throw ApiException.bad("区间带 X 与上下界须引用本数据版本中的数值列");
+        for (var row : (List<Map<String, Object>>) data.get("rows")) {
+          Object low = row.get(band.path("lower").asText()),
+              high = row.get(band.path("upper").asText());
+          if (low instanceof Number l
+              && high instanceof Number h
+              && l.doubleValue() > h.doubleValue()) throw ApiException.bad("区间下界不能大于上界");
+        }
+      }
       String err = s.path("error").asText("");
       if (!err.isEmpty()) {
         if (!numeric.contains(err)) throw ApiException.bad("误差棒必须引用数值字段");
@@ -337,6 +351,36 @@ public class WorkspaceService {
           || !Set.of("eq", "gte", "lte").contains(t.path("operator").asText()))
         throw ApiException.bad("无效过滤步骤");
     }
+    if (Set.of("roc", "pr").contains(c.path("type").asText())) {
+      String label = c.path("evaluation").path("label").asText(),
+          positive = c.path("evaluation").path("positive").asText();
+      if (!names.contains(label)) throw ApiException.bad("真实标签列不属于当前数据版本");
+      Set<String> labels = new HashSet<>();
+      for (var row : (List<Map<String, Object>>) data.get("rows")) {
+        boolean keep = true;
+        for (var t : c.path("transforms")) {
+          Object value = row.get(t.path("field").asText());
+          String target = t.path("value").asText(), op = t.path("operator").asText();
+          if (op.equals("eq")) {
+            if (!labelValue(value).equals(target)) keep = false;
+          } else {
+            try {
+              double v = Double.parseDouble(String.valueOf(value)),
+                  bound = Double.parseDouble(target);
+              if (!Double.isFinite(v)
+                  || !Double.isFinite(bound)
+                  || (op.equals("gte") ? v < bound : v > bound)) keep = false;
+            } catch (NumberFormatException ex) {
+              keep = false;
+            }
+          }
+        }
+        if (keep && row.get(label) != null && !labelValue(row.get(label)).isEmpty())
+          labels.add(labelValue(row.get(label)));
+      }
+      if (labels.size() != 2 || !labels.contains(positive))
+        throw ApiException.bad("当前过滤后须恰好有两类标签，并明确指定其中一类为正类");
+    }
     if (c.path("type").asText().equals("heatmap")
         && (!names.contains(c.path("heatY").asText())
             || !numeric.contains(c.path("heatZ").asText())))
@@ -345,5 +389,12 @@ public class WorkspaceService {
       int n = c.path("style").path(key).asInt();
       if (n < 250 || n > 2400) throw ApiException.bad("图表尺寸须为 250–2400 px");
     }
+  }
+
+  private static String labelValue(Object value) {
+    if (value == null) return "null";
+    if (value instanceof Number)
+      return new java.math.BigDecimal(value.toString()).stripTrailingZeros().toPlainString();
+    return value.toString();
   }
 }

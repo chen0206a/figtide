@@ -47,6 +47,7 @@ import {
   palettes,
   historyReducer,
   defaultEmpirical,
+  defaultEvaluation,
   type Config,
   type Series,
 } from "./model";
@@ -54,6 +55,8 @@ import { useConfirm } from "../components/useConfirm";
 import { SourceProvenance } from "../experiments/SourceProvenance";
 import { buildPlot } from "./plot";
 import { ProfessionalPanel } from "./ProfessionalPanel";
+import { BandPanel } from "./EvaluationPanel";
+import { EvaluationResults } from "./EvaluationResults";
 import {
   exportChecks,
   publicationMetrics,
@@ -248,6 +251,7 @@ function Workbench(
   });
   const c = history.present;
   const empirical = c.type === "histogram" || c.type === "ecdf";
+  const evaluation = c.type === "roc" || c.type === "pr";
   const output = publicationMetrics(c);
   const [name, setName] = useState(
       p.original?.name ||
@@ -681,7 +685,7 @@ function Workbench(
           </section>
           <section className="left-section">
             <div className="section-label">
-              图表类型<span className="tiny-label">8 种</span>
+              图表类型<span className="tiny-label">10 种</span>
             </div>
             <div className="chart-type-grid">
               {(
@@ -694,6 +698,8 @@ function Workbench(
                   ["violin", AudioLines, "小提琴图"],
                   ["histogram", ChartColumn, "直方图"],
                   ["ecdf", ChartNoAxesCombined, "ECDF"],
+                  ["roc", ChartNoAxesCombined, "ROC"],
+                  ["pr", ChartNoAxesCombined, "PR"],
                 ] as const
               ).map(([type, Icon, label]) => (
                 <button
@@ -705,7 +711,9 @@ function Workbench(
                       type === "box" ||
                         type === "violin" ||
                         type === "histogram" ||
-                        type === "ecdf"
+                        type === "ecdf" ||
+                        type === "roc" ||
+                        type === "pr"
                         ? "professional"
                         : "chart",
                     );
@@ -942,6 +950,17 @@ function Workbench(
               )}
           </div>
           <div className="bottom-tabs">
+            {evaluation && (
+              <button
+                className={bottom === "evaluation" ? "active" : ""}
+                onClick={() =>
+                  setBottom(bottom === "evaluation" ? "" : "evaluation")
+                }
+              >
+                <ChartNoAxesCombined size={14} />
+                模型评估<span>{plot.metrics.length}</span>
+              </button>
+            )}
             {(c.type === "box" || c.type === "violin" || empirical) && (
               <button
                 className={bottom === "samples" ? "active" : ""}
@@ -982,7 +1001,9 @@ function Workbench(
           </div>
           {bottom && (
             <div className="bottom-content">
-              {bottom === "samples" ? (
+              {bottom === "evaluation" ? (
+                <EvaluationResults metrics={plot.metrics} config={c} />
+              ) : bottom === "samples" ? (
                 <>
                   <p className="sample-summary-note">
                     按当前过滤、分箱范围与对数轴统计；缺失与排除分开列出，均不作为零。汇总数据不能替代逐次观测。
@@ -1075,7 +1096,7 @@ function Workbench(
             {panel === "chart" && (
               <>
                 <Section title="字段映射" icon={<Database size={13} />}>
-                  {!empirical && (
+                  {!empirical && !evaluation && (
                     <Select
                       label="X 轴字段"
                       value={c.x}
@@ -1101,7 +1122,11 @@ function Workbench(
                   ) : (
                     <>
                       <Select
-                        label="Y 轴字段 · 当前序列"
+                        label={
+                          evaluation
+                            ? "预测分数列 · 当前序列"
+                            : "Y 轴字段 · 当前序列"
+                        }
                         value={series.y}
                         options={nums}
                         onChange={(y) => updateSeries({ y, name: y })}
@@ -1333,7 +1358,7 @@ function Workbench(
                     onChange={(name) => updateSeries({ name })}
                   />
                   <Select
-                    label="Y 数值字段"
+                    label={evaluation ? "预测分数列" : "Y 数值字段"}
                     value={series.y}
                     options={nums}
                     onChange={(y) => updateSeries({ y })}
@@ -1415,7 +1440,14 @@ function Workbench(
                     onChange={(size) => updateSeries({ size })}
                   />
                 </Section>
-                {c.type !== "box" && c.type !== "violin" && (
+                {c.type === "line" && (
+                  <BandPanel
+                    series={series}
+                    data={p.data}
+                    onChange={updateSeries}
+                  />
+                )}
+                {!evaluation && c.type !== "box" && c.type !== "violin" && (
                   <Section title="误差棒 · 实际数据">
                     <Select
                       label="误差数值列"
@@ -1453,33 +1485,58 @@ function Workbench(
                   <Text
                     label={`${axis.toUpperCase()} 轴名称`}
                     value={
-                      empirical
-                        ? axis === "x"
-                          ? c.empirical?.valueTitle || ""
-                          : c.empirical?.resultTitle || ""
-                        : c.axes[axis].title
+                      evaluation
+                        ? c.evaluation?.[
+                            c.type === "roc"
+                              ? axis === "x"
+                                ? "rocXTitle"
+                                : "rocYTitle"
+                              : axis === "x"
+                                ? "prXTitle"
+                                : "prYTitle"
+                          ] || ""
+                        : empirical
+                          ? axis === "x"
+                            ? c.empirical?.valueTitle || ""
+                            : c.empirical?.resultTitle || ""
+                          : c.axes[axis].title
                     }
                     onChange={(title) =>
-                      empirical
+                      evaluation
                         ? patch({
-                            empirical: {
-                              ...(c.empirical || defaultEmpirical),
-                              [axis === "x" ? "valueTitle" : "resultTitle"]:
-                                title,
+                            evaluation: {
+                              ...(c.evaluation || defaultEvaluation),
+                              [c.type === "roc"
+                                ? axis === "x"
+                                  ? "rocXTitle"
+                                  : "rocYTitle"
+                                : axis === "x"
+                                  ? "prXTitle"
+                                  : "prYTitle"]: title,
                             },
                           })
-                        : patch({
-                            axes: {
-                              ...c.axes,
-                              [axis]: { ...c.axes[axis], title },
-                            },
-                          })
+                        : empirical
+                          ? patch({
+                              empirical: {
+                                ...(c.empirical || defaultEmpirical),
+                                [axis === "x" ? "valueTitle" : "resultTitle"]:
+                                  title,
+                              },
+                            })
+                          : patch({
+                              axes: {
+                                ...c.axes,
+                                [axis]: { ...c.axes[axis], title },
+                              },
+                            })
                     }
                   />
                   <fieldset
                     className="axis-numeric-controls"
                     disabled={
-                      axis === "x" && (c.type === "box" || c.type === "violin")
+                      evaluation ||
+                      (axis === "x" &&
+                        (c.type === "box" || c.type === "violin"))
                     }
                   >
                     <div className="form-grid">
@@ -1526,7 +1583,9 @@ function Workbench(
                   <fieldset
                     className="axis-numeric-controls"
                     disabled={
-                      axis === "x" && (c.type === "box" || c.type === "violin")
+                      evaluation ||
+                      (axis === "x" &&
+                        (c.type === "box" || c.type === "violin"))
                     }
                   >
                     <Toggle
@@ -1539,6 +1598,11 @@ function Workbench(
                       }
                     />
                   </fieldset>
+                  {evaluation && (
+                    <p className="tiny-note">
+                      评估曲线使用线性 0–1 坐标；普通图的范围和对数设置已保留。
+                    </p>
+                  )}
                   {axis === "x" &&
                     (c.type === "box" || c.type === "violin") && (
                       <p className="tiny-note">

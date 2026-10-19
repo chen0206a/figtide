@@ -178,3 +178,22 @@
 .export-checks p {
   margin: 5px 0;
 }
+.evaluation-results-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.evaluation-results-head .sample-summary-note {
+  margin: 0;
+}
+.evaluation-results-head button {
+  flex-shrink: 0;
+}
+.evaluation-results table {
+  white-space: nowrap;
+}
+.evaluation-panel {
+  border-left: 2px solid #708cff;
+}

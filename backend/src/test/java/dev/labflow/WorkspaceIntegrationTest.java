@@ -80,6 +80,90 @@ class WorkspaceIntegrationTest {
   }
 
   @Test
+  void evaluationAndBoundsRoundtripRejectForeignFieldsAndReversedBounds() throws Exception {
+    long p =
+        request(
+                "/api/projects",
+                "{\"name\":\"Synthetic evaluation acceptance\",\"description\":\"test\"}")
+            .path("id")
+            .asLong();
+    String root = "/api/projects/" + p;
+    var file =
+        new MockMultipartFile(
+            "file",
+            "synthetic.csv",
+            "text/csv",
+            "epoch,accuracy,error,label,lower,upper\n1,0.1,0,0,0,0.2\n2,0.4,0,0,0.3,0.5\n3,0.35,0,1,0.3,0.4\n4,0.8,0,1,0.7,0.9"
+                .getBytes());
+    var d =
+        json.readTree(
+            mvc.perform(multipart(root + "/datasets").file(file))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString());
+    var c =
+        (com.fasterxml.jackson.databind.node.ObjectNode)
+            json.readTree(getClass().getResourceAsStream("/config-v1.json"));
+    c.put("datasetVersionId", d.path("id").asLong()).put("x", "previous-dataset-x");
+    var e = c.putObject("evaluation");
+    e.put("algorithm", "binary-ranking-v1")
+        .put("missing", "exclude")
+        .put("label", "label")
+        .put("positive", "1")
+        .put("threshold", 0.5)
+        .put("baseline", true);
+    for (String k : new String[] {"rocXTitle", "rocYTitle", "prXTitle", "prYTitle"}) e.put(k, "");
+    var b =
+        ((com.fasterxml.jackson.databind.node.ObjectNode) c.path("series").get(0))
+            .putObject("band");
+    b.put("enabled", true)
+        .put("lower", "lower")
+        .put("upper", "upper")
+        .put("opacity", 0.18)
+        .put("label", "Actual bounds");
+    var body = json.createObjectNode().put("name", "Synthetic evaluation");
+    body.set("config", c);
+    for (String type : new String[] {"roc", "pr", "line"}) {
+      c.put("type", type);
+      if (type.equals("line")) c.put("x", "epoch");
+      var chart = request(root + "/charts", body.toString());
+      var reopened =
+          json.readTree(
+              mvc.perform(get(root + "/charts/" + chart.path("id").asLong()))
+                  .andExpect(status().isOk())
+                  .andReturn()
+                  .getResponse()
+                  .getContentAsString());
+      assertEquals(json.readTree(c.toString()), reopened.path("config"));
+    }
+    b.put("lower", "upper").put("upper", "lower");
+    mvc.perform(post(root + "/charts").contentType("application/json").content(body.toString()))
+        .andExpect(status().isBadRequest());
+    b.put("lower", "not_this_dataset").put("upper", "upper");
+    mvc.perform(post(root + "/charts").contentType("application/json").content(body.toString()))
+        .andExpect(status().isBadRequest());
+    c.put("type", "roc");
+    e.put("label", "not_this_dataset");
+    mvc.perform(post(root + "/charts").contentType("application/json").content(body.toString()))
+        .andExpect(status().isBadRequest());
+    e.put("label", "label").put("positive", "unknown");
+    mvc.perform(post(root + "/charts").contentType("application/json").content(body.toString()))
+        .andExpect(status().isBadRequest());
+    e.put("positive", "1");
+    c.putArray("transforms")
+        .addObject()
+        .put("op", "filter")
+        .put("field", "label")
+        .put("operator", "eq")
+        .put("value", "1");
+    mvc.perform(post(root + "/charts").contentType("application/json").content(body.toString()))
+        .andExpect(status().isBadRequest());
+    mvc.perform(get(root + "/data/" + d.path("id").asLong() + "/original"))
+        .andExpect(content().bytes(file.getBytes()));
+  }
+
+  @Test
   void realMySqlRoundtripVersionIsolationAndConflict() throws Exception {
     long p =
         request(

@@ -9,6 +9,7 @@ import { facetEntries } from "./facets";
 import { Button } from "../components/ui/button";
 import "./professional.css";
 import { ScientificPanel } from "./ScientificPanel";
+import { EvaluationPanel } from "./EvaluationPanel";
 
 export function ProfessionalPanel({
   config: c,
@@ -34,6 +35,7 @@ export function ProfessionalPanel({
         <h3>从单张图，到完整图版。</h3>
         <p>样本分布、指标分面与统一排版，全部随图表保存。</p>
       </section>
+      <EvaluationPanel config={c} data={data} onChange={onChange} />
       <ScientificPanel config={c} onChange={onChange} />
       {isDistribution && (
         <section className="property-section">

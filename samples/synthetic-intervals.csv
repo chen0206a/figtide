@@ -1,0 +1,9 @@
+epoch,accuracy,lower,upper,data_kind
+1,0.52,0.48,0.56,synthetic_demo
+2,0.63,0.59,0.67,synthetic_demo
+3,0.71,0.68,0.74,synthetic_demo
+4,0.77,,,synthetic_demo
+5,0.81,0.78,0.84,synthetic_demo
+6,0.84,0.81,0.87,synthetic_demo
+7,0.86,0.84,0.88,synthetic_demo
+8,0.87,0.85,0.89,synthetic_demo

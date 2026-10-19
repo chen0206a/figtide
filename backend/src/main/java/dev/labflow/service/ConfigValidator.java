@@ -43,7 +43,17 @@ public final class ConfigValidator {
   public static void validate(JsonNode c) {
     require(c.isObject(), "必须是 JSON 对象");
     require(
-        Set.of("line", "bar", "scatter", "heatmap", "box", "violin", "histogram", "ecdf")
+        Set.of(
+                "line",
+                "bar",
+                "scatter",
+                "heatmap",
+                "box",
+                "violin",
+                "histogram",
+                "ecdf",
+                "roc",
+                "pr")
             .contains(c.path("type").asText()),
         "图表类型无效");
     require(
@@ -86,6 +96,14 @@ public final class ConfigValidator {
       text(s.path("name"), 500, "序列名称");
       text(s.path("y"), 120, "Y 字段");
       text(s.path("error"), 120, "误差字段");
+      if (s.has("band")) {
+        var b = s.path("band");
+        require(b.isObject() && b.path("enabled").isBoolean(), "区间带开关无效");
+        text(b.path("lower"), 120, "区间下界列");
+        text(b.path("upper"), 120, "区间上界列");
+        text(b.path("label"), 120, "区间说明");
+        number(b.path("opacity"), 0.05, 0.6, "区间透明度");
+      }
       color(s.path("color"));
       number(s.path("opacity"), 0.1, 1, "透明度");
       number(s.path("width"), 0.5, 10, "线宽");
@@ -106,6 +124,21 @@ public final class ConfigValidator {
     }
     require(c.path("transforms").isArray() && c.path("transforms").size() <= 100, "转换列表无效");
     for (var t : c.path("transforms")) text(t.path("value"), 500, "过滤值");
+    if (Set.of("roc", "pr").contains(c.path("type").asText()))
+      require(c.has("evaluation"), "缺少评估配置");
+    if (c.has("evaluation")) {
+      var e = c.path("evaluation");
+      require(e.isObject() && e.path("algorithm").asText().equals("binary-ranking-v1"), "评估算法不受支持");
+      require(
+          e.path("missing").asText().equals("exclude") && e.path("baseline").isBoolean(), "评估开关无效");
+      text(e.path("label"), 120, "真实标签列");
+      text(e.path("positive"), 500, "正类值");
+      require(
+          e.path("threshold").isNumber() && Double.isFinite(e.path("threshold").asDouble()),
+          "决策阈值须为有限数值");
+      for (String k : List.of("rocXTitle", "rocYTitle", "prXTitle", "prYTitle"))
+        text(e.path(k), 500, "评估轴名称");
+    }
     if (c.has("publication")) {
       var p = c.path("publication");
       require(p.isObject() && p.path("enabled").isBoolean(), "物理尺寸配置无效");

@@ -4,3 +4,7 @@
 `demo-heatmap.csv` 模拟模型 × 数据集准确率矩阵，标签仅演示软件操作。
 
 `demo-repeat-observations.csv` 为 72 行确定性合成观测（2 个评估集 × 3 个方法 × 12 次运行），包含 accuracy、f1、latency_ms。每组通过正弦/余弦扰动生成，不来自训练；data_kind 列明确标记 synthetic_demo。适合测试箱线、小提琴、样本数和分面。推荐 X=model、Y=accuracy，按 dataset 分面；不要将两种评估集的结果混合作为同一分布。
+
+`synthetic-classification.csv` 为 22 行人工设定的二分类样本，label=1 为正类；model_a_score/model_b_score 为两组预测分数。最后两行演示缺失分数和标签；每个模型的有效样本数可能不同。使用 ROC/PR 时明确选择 label 和正类 1，再将两个分数列分别加入序列。所有数值只是功能演示，不来自实际模型。
+
+`synthetic-intervals.csv` 为 8 个 epoch 的合成准确率与人工设定上下界，第四行故意缺失区间。设置 X=epoch、Y=accuracy、区间下界=lower、上界=upper。这里的上下界没有统计置信含义，不可称作真实 SD/SEM/CI；系统不会补全第四行的区间。

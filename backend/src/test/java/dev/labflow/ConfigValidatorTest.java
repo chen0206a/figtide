@@ -20,6 +20,35 @@ class ConfigValidatorTest {
   }
 
   @Test
+  void evaluationAlgorithmAndActualBandContractValidated() throws Exception {
+    var c = fixture().put("type", "roc");
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+    var e =
+        new ObjectMapper()
+            .readTree(
+                """
+{"algorithm":"binary-ranking-v1","missing":"exclude","label":"label","positive":"1","threshold":0.5,"baseline":true,"rocXTitle":"","rocYTitle":"","prXTitle":"","prYTitle":""}
+""");
+    c.set("evaluation", e);
+    assertDoesNotThrow(() -> ConfigValidator.validate(c));
+    ((ObjectNode) e).put("algorithm", "unknown");
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+    ((ObjectNode) e).put("algorithm", "binary-ranking-v1").put("threshold", "NaN");
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+    c.remove("evaluation");
+    c.put("type", "line");
+    var b = ((ObjectNode) c.path("series").get(0)).putObject("band");
+    b.put("enabled", true)
+        .put("lower", "lower")
+        .put("upper", "upper")
+        .put("opacity", 0.18)
+        .put("label", "Actual bounds");
+    assertDoesNotThrow(() -> ConfigValidator.validate(c));
+    b.put("opacity", 2);
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+  }
+
+  @Test
   void publicationAndEmpiricalOptionsValidated() throws Exception {
     var c = fixture().put("type", "histogram");
     c.set(

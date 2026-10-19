@@ -4,6 +4,9 @@ import type { Dataset } from "../lib/api";
 import { distributionTraces } from "./distribution";
 import { empiricalTraces } from "./empirical";
 import { defaultEmpirical } from "./model";
+import { defaultEvaluation } from "./model";
+import { evaluationTraces } from "./evaluation";
+import { bandTraces } from "./bands";
 const plain = (s: string) =>
   s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 export function filteredRows(c: Config, d: Dataset) {
@@ -21,12 +24,26 @@ export function filteredRows(c: Config, d: Dataset) {
   }
   return rows;
 }
-export function buildSinglePlot(c: Config, d: Dataset) {
+export function buildSinglePlot(
+  c: Config,
+  d: Dataset,
+  evaluationLabels?: Set<string>,
+) {
   const rows = filteredRows(c, d);
   const warnings = [...d.warnings];
   const fields = new Set(d.fields.map((f) => f.name));
   const traces: any[] = [];
-  if (!fields.has(c.x)) warnings.push("X 字段不存在，请重新映射");
+  const evaluation = c.type === "roc" || c.type === "pr";
+  if (
+    !evaluation &&
+    c.type !== "histogram" &&
+    c.type !== "ecdf" &&
+    !fields.has(c.x)
+  )
+    warnings.push("X 字段不存在，请重新映射");
+  const assessed = evaluation
+    ? evaluationTraces(c, rows, evaluationLabels)
+    : undefined;
   let heat: ReturnType<typeof vectorHeatmap> | undefined;
   const distribution = c.type === "box" || c.type === "violin";
   const empirical = c.type === "histogram" || c.type === "ecdf";
@@ -35,7 +52,10 @@ export function buildSinglePlot(c: Config, d: Dataset) {
     : distribution
       ? distributionTraces(c, rows)
       : undefined;
-  if (stats) {
+  if (assessed) {
+    traces.push(...assessed.traces);
+    warnings.push(...assessed.warnings);
+  } else if (stats) {
     traces.push(...stats.traces);
     warnings.push(...stats.warnings);
   } else if (c.type === "heatmap") {
@@ -61,6 +81,14 @@ export function buildSinglePlot(c: Config, d: Dataset) {
             return false;
           return true;
         });
+        const band = bandTraces(
+          c,
+          s,
+          selected,
+          s.id + ":" + JSON.stringify(group),
+        );
+        traces.push(...band.traces);
+        warnings.push(...band.warnings);
         if (valid.length !== selected.length)
           warnings.push("对数轴排除了非正值；原始数据未修改");
         const errors = s.error ? valid.map((r) => r[s.error]) : [];
@@ -82,7 +110,9 @@ export function buildSinglePlot(c: Config, d: Dataset) {
             line: { width: c.type === "scatter" ? 0 : 1, color: s.color },
           },
           error_y:
-            s.error && !errors.some((v) => typeof v === "number" && v < 0)
+            s.error &&
+            !(c.type === "line" && s.band?.enabled) &&
+            !errors.some((v) => typeof v === "number" && v < 0)
               ? {
                   type: "data",
                   array: errors,
@@ -219,6 +249,26 @@ export function buildSinglePlot(c: Config, d: Dataset) {
     hovermode: "closest",
     dragmode: false,
   };
+  if (evaluation) {
+    const e = c.evaluation || defaultEvaluation;
+    for (const axis of ["x", "y"] as const) {
+      const title =
+        c.type === "roc"
+          ? axis === "x"
+            ? e.rocXTitle || "False positive rate"
+            : e.rocYTitle || "True positive rate"
+          : axis === "x"
+            ? e.prXTitle || "Recall"
+            : e.prYTitle || "Precision";
+      Object.assign(layout[`${axis}axis`], {
+        type: "linear",
+        range: [0, 1],
+        autorange: false,
+        dtick: 0.2,
+        title: { text: plain(title), standoff: 14 },
+      });
+    }
+  }
   if (empirical) {
     const e = c.empirical || defaultEmpirical;
     layout.yaxis.title = {
@@ -243,6 +293,7 @@ export function buildSinglePlot(c: Config, d: Dataset) {
     warnings: [...new Set(warnings)],
     shownRows: rows.length,
     summaries: stats?.summaries || [],
+    metrics: assessed?.metrics || [],
     panelCount: 1,
   };
 }

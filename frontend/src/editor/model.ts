@@ -11,6 +11,13 @@ export type Series = {
   size: number;
   error: string;
   visible: boolean;
+  band?: {
+    enabled: boolean;
+    lower: string;
+    upper: string;
+    opacity: number;
+    label: string;
+  };
 };
 export type Axis = {
   title: string;
@@ -69,7 +76,21 @@ export type Config = {
     | "box"
     | "violin"
     | "histogram"
-    | "ecdf";
+    | "ecdf"
+    | "roc"
+    | "pr";
+  evaluation?: {
+    algorithm: "binary-ranking-v1";
+    missing: "exclude";
+    label: string;
+    positive: string;
+    threshold: number;
+    baseline: boolean;
+    rocXTitle: string;
+    rocYTitle: string;
+    prXTitle: string;
+    prYTitle: string;
+  };
   publication?: {
     enabled: boolean;
     widthMm: number;
@@ -142,6 +163,25 @@ export const defaultPublication = {
   widthMm: 183,
   fontPt: 8,
   dpi: 300,
+};
+export const defaultEvaluation: NonNullable<Config["evaluation"]> = {
+  algorithm: "binary-ranking-v1",
+  missing: "exclude",
+  label: "",
+  positive: "1",
+  threshold: 0.5,
+  baseline: true,
+  rocXTitle: "",
+  rocYTitle: "",
+  prXTitle: "",
+  prYTitle: "",
+};
+export const defaultBand: NonNullable<Series["band"]> = {
+  enabled: false,
+  lower: "",
+  upper: "",
+  opacity: 0.18,
+  label: "实际区间",
 };
 export const defaultEmpirical: NonNullable<Config["empirical"]> = {
   bins: 20,

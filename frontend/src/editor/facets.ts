@@ -40,6 +40,8 @@ export function buildFacets(
   const fail = (message: string) => ({
     ...base,
     traces: [],
+    metrics: [],
+    summaries: [],
     panelCount: 0,
     layout: {
       ...base.layout,
@@ -71,6 +73,7 @@ export function buildFacets(
     return fail("子图可用空间不足，请增大画布、减少列数或缩小间距");
   const traces: any[] = [],
     summaries: typeof base.summaries = [];
+  const metrics: typeof base.metrics = [];
   const warnings = new Set<string>(d.warnings);
   const layout: any = {
     ...base.layout,
@@ -84,6 +87,19 @@ export function buildFacets(
       y: 1 + (c.style.fontSize + 26) / height,
     };
   const seen = new Set<string>();
+  // Validate labels across the filtered dataset; a panel may contain only one class.
+  const evaluationLabels =
+    c.type === "roc" || c.type === "pr"
+      ? new Set(
+          filteredRows(c, d)
+            .filter(
+              (r) =>
+                r[c.evaluation?.label || ""] != null &&
+                r[c.evaluation?.label || ""] !== "",
+            )
+            .map((r) => String(r[c.evaluation?.label || ""])),
+        )
+      : undefined;
   entries.forEach((entry, i) => {
     const childConfig = {
       ...c,
@@ -104,7 +120,7 @@ export function buildFacets(
       f.mode === "field"
         ? { ...d, rows: d.rows.filter((r) => r[f.field] === entry.value) }
         : d;
-    const child = buildSinglePlot(childConfig, childData);
+    const child = buildSinglePlot(childConfig, childData, evaluationLabels);
     child.warnings.forEach((w) => warnings.add(w));
     const suffix = i ? String(i + 1) : "",
       xref = `x${suffix}`,
@@ -145,6 +161,12 @@ export function buildFacets(
         panel: f.titles[entry.key] ?? entry.title,
       })),
     );
+    metrics.push(
+      ...child.metrics.map((m) => ({
+        ...m,
+        panel: f.titles[entry.key] ?? entry.title,
+      })),
+    );
     layout.annotations.push({
       text: escape(
         `${f.labels ? `(${String.fromCharCode(97 + i)})  ` : ""}${f.titles[entry.key] ?? entry.title}`,
@@ -167,6 +189,7 @@ export function buildFacets(
     layout,
     warnings: [...warnings],
     summaries,
+    metrics,
     shownRows: filteredRows(c, d).length,
     panelCount: entries.length,
   };
