@@ -2,3 +2,5 @@
 这里的 CSV 完全由人工合成，用于测试导入、映射、绘图和导出，不来自真实模型训练，不可作为论文实验依据。
 `demo-learning-curves.csv` 模拟训练曲线；`measured_std` 也是合成的示例数值，只有显式映射后才显示误差棒。
 `demo-heatmap.csv` 模拟模型 × 数据集准确率矩阵，标签仅演示软件操作。
+
+`demo-repeat-observations.csv` 为 72 行确定性合成观测（2 个评估集 × 3 个方法 × 12 次运行），包含 accuracy、f1、latency_ms。每组通过正弦/余弦扰动生成，不来自训练；data_kind 列明确标记 synthetic_demo。适合测试箱线、小提琴、样本数和分面。推荐 X=model、Y=accuracy，按 dataset 分面；不要将两种评估集的结果混合作为同一分布。

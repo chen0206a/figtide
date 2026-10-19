@@ -304,8 +304,6 @@ public class WorkspaceService {
       throw ApiException.bad("不支持的配置 schema_version");
     ConfigValidator.validate(c);
     if (encode(c).length() > 200000) throw ApiException.bad("配置过大");
-    if (!Set.of("line", "bar", "scatter", "heatmap").contains(c.path("type").asText()))
-      throw ApiException.bad("无效图表类型");
     var data = data(p, c.path("datasetVersionId").asLong());
     var fields = (List<Map<String, Object>>) data.get("fields");
     Set<String> names = new HashSet<>(), numeric = new HashSet<>();
@@ -316,6 +314,9 @@ public class WorkspaceService {
     if (!names.contains(c.path("x").asText())) throw ApiException.bad("请选择有效的 X 字段");
     if (!c.path("group").asText("").isEmpty() && !names.contains(c.path("group").asText()))
       throw ApiException.bad("分组字段不存在");
+    if (c.path("facet").path("mode").asText().equals("field")
+        && !names.contains(c.path("facet").path("field").asText()))
+      throw ApiException.bad("分面字段不存在");
     if (!c.path("series").isArray() || c.path("series").isEmpty() || c.path("series").size() > 20)
       throw ApiException.bad("需要 1–20 条序列");
     for (JsonNode s : c.path("series")) {

@@ -31,6 +31,10 @@ public final class ConfigValidator {
   public static void validate(JsonNode c) {
     require(c.isObject(), "必须是 JSON 对象");
     require(
+        Set.of("line", "bar", "scatter", "heatmap", "box", "violin")
+            .contains(c.path("type").asText()),
+        "图表类型无效");
+    require(
         c.path("datasetVersionId").canConvertToLong() && c.path("datasetVersionId").asLong() > 0,
         "缺少数据版本");
     for (String key : List.of("x", "group", "heatY", "heatZ")) text(c.path(key), 120, key);
@@ -90,5 +94,48 @@ public final class ConfigValidator {
     }
     require(c.path("transforms").isArray() && c.path("transforms").size() <= 100, "转换列表无效");
     for (var t : c.path("transforms")) text(t.path("value"), 500, "过滤值");
+    if (c.has("distribution")) {
+      var d = c.path("distribution");
+      require(d.isObject(), "分布配置无效");
+      require(Set.of("all", "outliers", "none").contains(d.path("points").asText()), "观测点模式无效");
+      require(
+          Set.of("linear", "exclusive", "inclusive").contains(d.path("quartileMethod").asText()),
+          "四分位算法无效");
+      require(d.path("mean").isBoolean() && d.path("innerBox").isBoolean(), "分布开关无效");
+      require(Set.of("hard", "soft").contains(d.path("span").asText()), "密度边界无效");
+      text(d.path("bandwidth"), 120, "带宽");
+      var bandwidth = d.path("bandwidth").asText().trim();
+      if (!bandwidth.isEmpty()) {
+        double value;
+        try {
+          value = Double.parseDouble(bandwidth);
+        } catch (NumberFormatException e) {
+          throw ApiException.bad("密度带宽必须是正数或留空");
+        }
+        require(Double.isFinite(value) && value > 0, "密度带宽必须是有限正数");
+      }
+    }
+    if (c.has("facet")) {
+      var f = c.path("facet");
+      require(f.isObject(), "分面配置无效");
+      require(Set.of("none", "series", "field").contains(f.path("mode").asText()), "分面方式无效");
+      text(f.path("field"), 120, "分面字段");
+      require(f.path("columns").isIntegralNumber(), "子图列数必须为整数");
+      number(f.path("columns"), 1, 3, "子图列数");
+      number(f.path("gapX"), 24, 200, "水平间距");
+      number(f.path("gapY"), 40, 200, "垂直间距");
+      require(
+          f.path("shareX").isBoolean()
+              && f.path("shareY").isBoolean()
+              && f.path("labels").isBoolean(),
+          "分面开关无效");
+      var titles = f.path("titles");
+      require(titles.isObject() && titles.size() <= 100, "子图标题数量无效");
+      for (var it = titles.fields(); it.hasNext(); ) {
+        var title = it.next();
+        require(title.getKey().length() <= 500, "子图键过长");
+        text(title.getValue(), 300, "子图标题");
+      }
+    }
   }
 }

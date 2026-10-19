@@ -20,10 +20,50 @@ export type Axis = {
   grid: boolean;
   dtick: string;
 };
+export type Distribution = {
+  points: "all" | "outliers" | "none";
+  quartileMethod: "linear" | "exclusive" | "inclusive";
+  mean: boolean;
+  innerBox: boolean;
+  bandwidth: string;
+  span: "hard" | "soft";
+};
+export type Facet = {
+  mode: "none" | "series" | "field";
+  field: string;
+  columns: number;
+  gapX: number;
+  gapY: number;
+  shareX: boolean;
+  shareY: boolean;
+  labels: boolean;
+  titles: Record<string, string>;
+};
+export const defaultDistribution: Distribution = {
+  points: "all",
+  quartileMethod: "linear",
+  mean: false,
+  innerBox: true,
+  bandwidth: "",
+  span: "hard",
+};
+export const defaultFacet: Facet = {
+  mode: "none",
+  field: "",
+  columns: 2,
+  gapX: 90,
+  gapY: 100,
+  shareX: true,
+  shareY: false,
+  labels: true,
+  titles: {},
+};
 export type Config = {
   schema_version: 1;
   datasetVersionId: number;
-  type: "line" | "bar" | "scatter" | "heatmap";
+  type: "line" | "bar" | "scatter" | "heatmap" | "box" | "violin";
+  distribution?: Distribution;
+  facet?: Facet;
   x: string;
   group: string;
   heatY: string;
@@ -84,6 +124,8 @@ export function defaults(d: Dataset): Config {
     schema_version: 1,
     datasetVersionId: d.id,
     type: d.source_meta?.chart_type || "line",
+    distribution: { ...defaultDistribution },
+    facet: { ...defaultFacet, titles: {} },
     x,
     group: d.fields.find((f) => f.role === "group")?.name || "",
     heatY: d.fields[1]?.name || "",

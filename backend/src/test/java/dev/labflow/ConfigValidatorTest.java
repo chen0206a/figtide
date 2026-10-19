@@ -43,4 +43,56 @@ class ConfigValidatorTest {
         .add(c.path("series").get(0).deepCopy());
     assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
   }
+
+  private ObjectNode professional() throws Exception {
+    var c = fixture();
+    c.put("type", "violin");
+    c.set(
+        "distribution",
+        new ObjectMapper()
+            .readTree(
+                """
+{"points":"all","quartileMethod":"exclusive","mean":true,"innerBox":true,"bandwidth":"0.3","span":"hard"}
+"""));
+    c.set(
+        "facet",
+        new ObjectMapper()
+            .readTree(
+                """
+{"mode":"series","field":"","columns":2,"gapX":90,"gapY":100,"shareX":true,"shareY":false,"labels":true,"titles":{"series:s1":"Accuracy"}}
+"""));
+    return c;
+  }
+
+  @Test
+  void professionalContractAndLegacyConfigAccepted() throws Exception {
+    assertDoesNotThrow(() -> ConfigValidator.validate(professional()));
+    var box = professional().put("type", "box");
+    assertDoesNotThrow(() -> ConfigValidator.validate(box));
+    assertDoesNotThrow(() -> ConfigValidator.validate(fixture()));
+  }
+
+  @Test
+  void invalidDensityBandwidthAndMethodRejected() throws Exception {
+    for (String invalid : new String[] {"0", "-1", "NaN", "Infinity", "1e999", "text"}) {
+      var c = professional();
+      ((ObjectNode) c.path("distribution")).put("bandwidth", invalid);
+      assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+    }
+    var c = professional();
+    ((ObjectNode) c.path("distribution")).put("quartileMethod", "fabricated");
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+  }
+
+  @Test
+  void malformedFacetsRejected() throws Exception {
+    var c = professional();
+    ((ObjectNode) c.path("facet")).put("columns", 2.5);
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+    var malformed = professional();
+    ((ObjectNode) malformed.path("facet")).put("shareX", "yes");
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(malformed));
+    var invalidType = fixture().put("type", "unknown");
+    assertThrows(ApiException.class, () -> ConfigValidator.validate(invalidType));
+  }
 }

@@ -180,4 +180,70 @@ class WorkspaceIntegrationTest {
         .andExpect(status().isBadRequest());
     mvc.perform(get(root + "/datasets")).andExpect(jsonPath("$.length()").value(0));
   }
+
+  @Test
+  void professionalChartRoundtripAndInvalidFacetOwnership() throws Exception {
+    long p =
+        request(
+                "/api/projects",
+                "{\"name\":\"Professional plots test\",\"description\":\"synthetic\"}")
+            .path("id")
+            .asLong();
+    String root = "/api/projects/" + p;
+    var file =
+        new MockMultipartFile(
+            "file",
+            "repeats.csv",
+            "text/csv",
+            "epoch,accuracy,error\n1,80,1\n1,82,1\n1,84,1\n2,85,1\n2,86,1\n2,87,1".getBytes());
+    var d =
+        json.readTree(
+            mvc.perform(multipart(root + "/datasets").file(file))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString());
+    var config =
+        (com.fasterxml.jackson.databind.node.ObjectNode)
+            json.readTree(getClass().getResourceAsStream("/config-v1.json"));
+    config.put("datasetVersionId", d.path("id").asLong()).put("type", "box");
+    config.set(
+        "distribution",
+        json.readTree(
+            """
+{"points":"all","quartileMethod":"inclusive","mean":true,"innerBox":false,"bandwidth":"","span":"hard"}
+"""));
+    config.set(
+        "facet",
+        json.readTree(
+            """
+{"mode":"field","field":"epoch","columns":2,"gapX":90,"gapY":100,"shareX":true,"shareY":true,"labels":true,"titles":{"field:epoch:1":"Repeat A"}}
+"""));
+    var body = json.createObjectNode().put("name", "Reproducible distribution");
+    body.set("config", config);
+    var chart = request(root + "/charts", body.toString());
+    long id = chart.path("id").asLong();
+    assertEquals(json.readTree(config.toString()), chart.path("config"));
+    config.put("type", "violin");
+    body.put("revision", 1);
+    mvc.perform(
+            put(root + "/charts/" + id).contentType("application/json").content(body.toString()))
+        .andExpect(status().isOk());
+    var reopened =
+        json.readTree(
+            mvc.perform(get(root + "/charts/" + id))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString());
+    assertEquals(json.readTree(config.toString()), reopened.path("config"));
+    mvc.perform(get(root + "/charts/" + id + "/versions"))
+        .andExpect(jsonPath("$[1].config.type").value("box"));
+    ((com.fasterxml.jackson.databind.node.ObjectNode) config.path("facet"))
+        .put("field", "other_project_column");
+    mvc.perform(post(root + "/charts").contentType("application/json").content(body.toString()))
+        .andExpect(status().isBadRequest());
+    mvc.perform(get(root + "/data/" + d.path("id").asLong() + "/original"))
+        .andExpect(content().bytes(file.getBytes()));
+  }
 }

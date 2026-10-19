@@ -2,6 +2,45 @@
 
 本地基址 `http://127.0.0.1:8086/api`。UTF-8 JSON。当前返回创建资源 HTTP 200。上传为 `multipart/form-data`，字段名 `file`。数据库 ID 为整数。
 
+## 第三批增量协议：分布图与分面（2026-10-19）
+
+图表 type 新增 `box|violin`。原保存、打开、版本恢复接口与 schema_version:1 不变，JSON 增加两个可选对象；缺省时前端采用以下默认值，打开旧图不会隐式重写配置。
+
+```json
+{
+  "distribution": {
+    "points": "all",
+    "quartileMethod": "linear",
+    "mean": false,
+    "innerBox": true,
+    "bandwidth": "",
+    "span": "hard"
+  },
+  "facet": {
+    "mode": "none",
+    "field": "",
+    "columns": 2,
+    "gapX": 90,
+    "gapY": 100,
+    "shareX": true,
+    "shareY": false,
+    "labels": true,
+    "titles": {}
+  }
+}
+```
+
+这是现有 config 的增量片段，不是独立的完整图表配置。若对象出现，服务器要求内部字段完整并校验类型与范围。
+
+- points：all/outliers/none；quartileMethod：linear/exclusive/inclusive；span：hard/soft；mean 与 innerBox 为布尔值。
+- bandwidth：空字符串表示 Plotly 自动带宽；否则必须是有限正数字符串（最多 120 字符）。无效预览回退自动并告警，服务器拒绝保存无效值。
+- facet.mode：none/series/field。series 为每条可见序列一个子图；field 为过滤后的字段类别分面（包含缺失类别）。field 模式保存时检查字段属于当前数据版本。
+- columns 为整数 1–3，gapX 为 24–200 px，gapY 为 40–200 px。shareX/shareY/labels 为布尔值。
+- titles 为子图稳定键到标题的对象，最多 100 项；键最长 500 字符、标题最长 300 字符。序列键 `series:{seriesId}`；类别键 `field:{fieldName}:{JSON.stringify(value)}`，数值与文本类别保留类型。
+- 最多显示 8 个子图。超限或可用空间不足时清空绘图并提示，保留配置供用户调整，服务器可保存待调整的布局。热力图暂只显示单图，并告知分面设置已保留。
+- 分布图 X 使用类别轴，Y 仅取有限数值；小提琴组内有效 n<3 或常量时仅画真实点。样本检查分别统计有效数、缺失、对数排除及极值。原始数据字节不变。
+- 箱线/小提琴采用 SVG traces；导出复用实时图形，无新增网络绘图服务。Plotly 当前版本由 package-lock.json 固定，自动带宽未冻结为计算后的数字；升级绘图依赖后需重新核对统计与导出回归。
+
 ## 第二批增量协议：实验关联与对比
 
 实验创建和更新仍使用原有路径，新增字段示例：

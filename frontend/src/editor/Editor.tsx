@@ -34,6 +34,8 @@ import {
   Filter,
   Palette,
   MousePointer2,
+  ChartCandlestick,
+  AudioLines,
 } from "lucide-react";
 import { ApiError, api, send, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
@@ -50,6 +52,7 @@ import {
 import { useConfirm } from "../components/useConfirm";
 import { SourceProvenance } from "../experiments/SourceProvenance";
 import { buildPlot } from "./plot";
+import { ProfessionalPanel } from "./ProfessionalPanel";
 type Props = {
   project: number;
   projectName: string;
@@ -101,7 +104,7 @@ export default function Editor(p: Props) {
           <Upload size={16} />
           导入 CSV / XLSX
         </Button>
-        <small>折线 · 分组柱状 · 散点 · 热力图</small>
+        <small>折线 · 分组柱状 · 散点 · 热力图 · 箱线 · 小提琴</small>
       </div>
     );
   if (data.isPending)
@@ -654,7 +657,7 @@ function Workbench(
           </section>
           <section className="left-section">
             <div className="section-label">
-              图表类型<span className="tiny-label">4 种</span>
+              图表类型<span className="tiny-label">6 种</span>
             </div>
             <div className="chart-type-grid">
               {(
@@ -663,6 +666,8 @@ function Workbench(
                   ["bar", ChartColumn, "柱状图"],
                   ["scatter", ScatterChart, "散点图"],
                   ["heatmap", Grid2X2, "热力图"],
+                  ["box", ChartCandlestick, "箱线图"],
+                  ["violin", AudioLines, "小提琴图"],
                 ] as const
               ).map(([type, Icon, label]) => (
                 <button
@@ -670,7 +675,11 @@ function Workbench(
                   className={c.type === type ? "active" : ""}
                   onClick={() => {
                     patch({ type });
-                    setPanel("chart");
+                    setPanel(
+                      type === "box" || type === "violin"
+                        ? "professional"
+                        : "chart",
+                    );
                   }}
                 >
                   <Icon size={22} />
@@ -737,6 +746,14 @@ function Workbench(
               <Type size={15} />
               <span>文本注释</span>
               <small>{c.annotations.length || ""}</small>
+            </button>
+            <button
+              className={`layer-item ${panel === "professional" ? "active" : ""}`}
+              onClick={() => setPanel("professional")}
+            >
+              <Grid2X2 size={15} />
+              <span>分布与子图</span>
+              <small>{plot.panelCount > 1 ? plot.panelCount : ""}</small>
             </button>
           </section>
           <section className="left-section presets">
@@ -857,8 +874,7 @@ function Workbench(
                   onClick={(e) => {
                     const cls =
                       (e.target as Element).getAttribute("class") || "";
-                    if (cls.includes("xtitle") || cls.includes("ytitle"))
-                      setPanel("axes");
+                    if (/\b[xy]\d*title\b/.test(cls)) setPanel("axes");
                     if (cls.includes("gtitle")) setPanel("chart");
                   }}
                 >
@@ -884,8 +900,28 @@ function Workbench(
                 绘图失败：{plotError}
               </div>
             )}
+            {!plotError &&
+              !plot.traces.length &&
+              c.datasetVersionId === p.data.id && (
+                <div className="canvas-empty-plot" role="status">
+                  <strong>当前条件下没有可绘制的图形</strong>
+                  <p>
+                    {plot.warnings.at(-1) ||
+                      "请检查字段映射、过滤条件和序列可见性。"}
+                  </p>
+                </div>
+              )}
           </div>
           <div className="bottom-tabs">
+            {(c.type === "box" || c.type === "violin") && (
+              <button
+                className={bottom === "samples" ? "active" : ""}
+                onClick={() => setBottom(bottom === "samples" ? "" : "samples")}
+              >
+                <ChartCandlestick size={14} />
+                样本检查<span>{plot.summaries.length}</span>
+              </button>
+            )}
             <button
               className={bottom === "data" ? "active" : ""}
               onClick={() => setBottom(bottom === "data" ? "" : "data")}
@@ -917,7 +953,45 @@ function Workbench(
           </div>
           {bottom && (
             <div className="bottom-content">
-              {bottom === "data" ? (
+              {bottom === "samples" ? (
+                <>
+                  <p className="sample-summary-note">
+                    按当前过滤与对数轴统计有效观测；缺失值不作为零。汇总数据不能替代逐次实验样本。
+                  </p>
+                  <table className="sample-summary">
+                    <thead>
+                      <tr>
+                        {[
+                          "子图",
+                          "序列",
+                          "类别",
+                          "有效 n",
+                          "缺失",
+                          "对数排除",
+                          "最小值",
+                          "最大值",
+                        ].map((title) => (
+                          <th key={title}>{title}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {plot.summaries.map((row, i) => (
+                        <tr key={i}>
+                          <td>{row.panel || "单图"}</td>
+                          <td>{row.series}</td>
+                          <td>{row.category}</td>
+                          <td>{row.n}</td>
+                          <td>{row.missing}</td>
+                          <td>{row.excluded}</td>
+                          <td>{row.min ?? "—"}</td>
+                          <td>{row.max ?? "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
+              ) : bottom === "data" ? (
                 <DataTable data={p.data} />
               ) : bottom === "warnings" ? (
                 plot.warnings.length ? (
@@ -954,6 +1028,7 @@ function Workbench(
               ["series", "序列"],
               ["axes", "坐标轴"],
               ["annotations", "注释"],
+              ["professional", "专业"],
             ].map(([key, label]) => (
               <button
                 className={panel === key ? "active" : ""}
@@ -965,6 +1040,9 @@ function Workbench(
             ))}
           </div>
           <div className="inspector-scroll">
+            {panel === "professional" && (
+              <ProfessionalPanel config={c} data={p.data} onChange={patch} />
+            )}
             {panel === "chart" && (
               <>
                 <Section title="字段映射" icon={<Database size={13} />}>
@@ -1271,12 +1349,14 @@ function Workbench(
                       step={0.5}
                       onChange={(width) => updateSeries({ width })}
                     />
-                    <Select
-                      label="线型"
-                      value={series.dash}
-                      options={["solid", "dash", "dot", "dashdot"]}
-                      onChange={(dash) => updateSeries({ dash })}
-                    />
+                    {c.type !== "box" && c.type !== "violin" && (
+                      <Select
+                        label="线型"
+                        value={series.dash}
+                        options={["solid", "dash", "dot", "dashdot"]}
+                        onChange={(dash) => updateSeries({ dash })}
+                      />
+                    )}
                   </div>
                   <Select
                     label="点形状"
@@ -1299,18 +1379,20 @@ function Workbench(
                     onChange={(size) => updateSeries({ size })}
                   />
                 </Section>
-                <Section title="误差棒 · 实际数据">
-                  <Select
-                    label="误差数值列"
-                    value={series.error}
-                    options={["", ...nums]}
-                    empty="不显示误差棒"
-                    onChange={(error) => updateSeries({ error })}
-                  />
-                  <p className="tiny-note">
-                    仅使用文件中的非负误差值，不生成误差或显著性。
-                  </p>
-                </Section>
+                {c.type !== "box" && c.type !== "violin" && (
+                  <Section title="误差棒 · 实际数据">
+                    <Select
+                      label="误差数值列"
+                      value={series.error}
+                      options={["", ...nums]}
+                      empty="不显示误差棒"
+                      onChange={(error) => updateSeries({ error })}
+                    />
+                    <p className="tiny-note">
+                      仅使用文件中的非负误差值，不生成误差或显著性。
+                    </p>
+                  </Section>
+                )}
                 <Section title="图层操作">
                   <Button
                     variant="outline"
@@ -1341,34 +1423,44 @@ function Workbench(
                       })
                     }
                   />
-                  <div className="form-grid">
-                    {(["min", "max"] as const).map((k) => (
-                      <Text
-                        key={k}
-                        label={k === "min" ? "最小值" : "最大值"}
-                        value={c.axes[axis][k]}
-                        placeholder="自动"
-                        onChange={(v) =>
-                          patch({
-                            axes: {
-                              ...c.axes,
-                              [axis]: { ...c.axes[axis], [k]: v },
-                            },
-                          })
-                        }
-                      />
-                    ))}
-                  </div>
-                  <Text
-                    label="刻度间隔（log 轴为指数间隔）"
-                    placeholder="自动"
-                    value={c.axes[axis].dtick}
-                    onChange={(dtick) =>
-                      patch({
-                        axes: { ...c.axes, [axis]: { ...c.axes[axis], dtick } },
-                      })
+                  <fieldset
+                    className="axis-numeric-controls"
+                    disabled={
+                      axis === "x" && (c.type === "box" || c.type === "violin")
                     }
-                  />
+                  >
+                    <div className="form-grid">
+                      {(["min", "max"] as const).map((k) => (
+                        <Text
+                          key={k}
+                          label={k === "min" ? "最小值" : "最大值"}
+                          value={c.axes[axis][k]}
+                          placeholder="自动"
+                          onChange={(v) =>
+                            patch({
+                              axes: {
+                                ...c.axes,
+                                [axis]: { ...c.axes[axis], [k]: v },
+                              },
+                            })
+                          }
+                        />
+                      ))}
+                    </div>
+                    <Text
+                      label="刻度间隔（log 轴为指数间隔）"
+                      placeholder="自动"
+                      value={c.axes[axis].dtick}
+                      onChange={(dtick) =>
+                        patch({
+                          axes: {
+                            ...c.axes,
+                            [axis]: { ...c.axes[axis], dtick },
+                          },
+                        })
+                      }
+                    />
+                  </fieldset>
                   <Toggle
                     label="显示网格线"
                     value={c.axes[axis].grid}
@@ -1378,15 +1470,29 @@ function Workbench(
                       })
                     }
                   />
-                  <Toggle
-                    label="对数坐标"
-                    value={c.axes[axis].log}
-                    onChange={(log) =>
-                      patch({
-                        axes: { ...c.axes, [axis]: { ...c.axes[axis], log } },
-                      })
+                  <fieldset
+                    className="axis-numeric-controls"
+                    disabled={
+                      axis === "x" && (c.type === "box" || c.type === "violin")
                     }
-                  />
+                  >
+                    <Toggle
+                      label="对数坐标"
+                      value={c.axes[axis].log}
+                      onChange={(log) =>
+                        patch({
+                          axes: { ...c.axes, [axis]: { ...c.axes[axis], log } },
+                        })
+                      }
+                    />
+                  </fieldset>
+                  {axis === "x" &&
+                    (c.type === "box" || c.type === "violin") && (
+                      <p className="tiny-note">
+                        X
+                        为离散类别；数值范围、刻度间隔与对数设置保留供其他图表使用。
+                      </p>
+                    )}
                 </Section>
               ))}
             {panel === "annotations" && (

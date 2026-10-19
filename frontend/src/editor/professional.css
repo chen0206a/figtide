@@ -1,0 +1,139 @@
+.professional-intro {
+  background: #f1f5fb;
+}
+.professional-kicker {
+  font: 11.5px var(--font-mono);
+  letter-spacing: 0.12em;
+  color: #6e83a2;
+}
+.professional-intro h3 {
+  font-size: 17px;
+  margin: 12px 0 8px;
+}
+.professional-intro p {
+  font-size: 12px;
+  color: #65738a;
+  line-height: 1.8;
+  margin: 0;
+}
+.facet-plan {
+  padding: 12px;
+  margin: 14px 0;
+  border: 1px solid #e0e7f0;
+  border-radius: 10px;
+  background: white;
+}
+.facet-plan-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #7b889a;
+  margin-bottom: 12px;
+}
+.facet-plan-head strong {
+  color: #3f536f;
+  font-weight: 500;
+}
+.facet-mini-grid {
+  display: grid;
+  gap: 8px;
+}
+.facet-mini-grid > span {
+  min-width: 0;
+  border: 1px solid #dae3f1;
+  border-radius: 5px;
+  padding: 8px;
+  background: #f8fafd;
+}
+.facet-mini-grid b {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #5278b6;
+}
+.facet-mini-grid i {
+  display: block;
+  height: 22px;
+  border-bottom: 1px solid #c3cede;
+  border-left: 1px solid #c3cede;
+  margin: 7px 3px;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 9px,
+    #e7edf5 10px
+  );
+}
+.facet-mini-grid small {
+  display: block;
+  font-size: 11.5px;
+  color: #6b7b90;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.facet-plan p {
+  font-size: 12px;
+  color: #a54b4b;
+}
+.sample-summary {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+.sample-summary th,
+.sample-summary td {
+  text-align: left;
+  padding: 9px 13px;
+  border-bottom: 1px solid #e4e9f1;
+  white-space: nowrap;
+}
+.sample-summary th {
+  color: #607089;
+  font-weight: 500;
+  background: #f3f6fa;
+}
+.sample-summary td {
+  color: #34455c;
+  font-variant-numeric: tabular-nums;
+}
+.sample-summary-note {
+  color: #758195;
+  font-size: 11.5px;
+  padding: 0 13px;
+}
+.refined-shell .chart-type-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.refined-shell .chart-type-grid button span {
+  white-space: nowrap;
+}
+.canvas-empty-plot {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 1;
+  background: #fff;
+  border: 1px solid #dce4f0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: #526780;
+  font-size: 13px;
+  box-shadow: 0 3px 16px #1f365a08;
+}
+.canvas-empty-plot strong {
+  color: #31445e;
+  font-size: 14px;
+}
+.canvas-empty-plot p {
+  margin: 5px 0 0;
+}
+.axis-numeric-controls {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.axis-numeric-controls:disabled {
+  opacity: 0.45;
+}
