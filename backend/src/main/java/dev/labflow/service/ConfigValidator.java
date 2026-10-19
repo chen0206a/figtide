@@ -65,7 +65,7 @@ public final class ConfigValidator {
     text(style.path("title"), 500, "标题");
     text(style.path("preset"), 80, "预设");
     require(
-        Set.of("Arial", "Helvetica", "Times New Roman", "Georgia", "Courier New")
+        Set.of("Arial", "Helvetica", "Times New Roman", "Georgia", "Courier New", "Noto Sans SC")
             .contains(style.path("font").asText()),
         "字体不受支持");
     number(style.path("fontSize"), 8, 40, "字号");

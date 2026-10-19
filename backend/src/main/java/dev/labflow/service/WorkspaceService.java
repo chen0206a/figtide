@@ -323,7 +323,7 @@ public class WorkspaceService {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> validateAndReport(long p, JsonNode c) {
+  Map<String, Object> validateAndReport(long p, JsonNode c) {
     if (c == null || c.path("schema_version").asInt() != 1)
       throw ApiException.bad("不支持的配置 schema_version");
     ConfigValidator.validate(c);

@@ -59,6 +59,8 @@ import { ProfessionalPanel } from "./ProfessionalPanel";
 import { BandPanel } from "./EvaluationPanel";
 import { EvaluationResults } from "./EvaluationResults";
 import { ClassificationResults } from "./ClassificationResults";
+import { ReuseDialog } from "./ReuseDialog";
+import { downloadBlob } from "../lib/download";
 import {
   exportChecks,
   publicationMetrics,
@@ -286,8 +288,9 @@ function Workbench(
     [logs, setLogs] = useState<string[]>(["工作台已就绪"]);
   const graph = useRef<any>(null);
   const [plotError, setPlotError] = useState("");
+  const [reuseOpen, setReuseOpen] = useState(false);
   const plotReady = useRef<Promise<any>>(Promise.resolve());
-  const [format, setFormat] = useState<"svg" | "png">("svg"),
+  const [format, setFormat] = useState<"svg" | "png" | "pdf">("svg"),
     [scale, setScale] = useState(2);
   const versions = useQuery({
     queryKey: ["versions", p.project, id, revision],
@@ -350,7 +353,12 @@ function Workbench(
     let active = true;
     plotReady.current = plotReady.current
       .catch(() => {})
-      .then(() => {
+      .then(async () => {
+        if (!active) return;
+        if (c.style.font === "Noto Sans SC")
+          await document.fonts.load(
+            `${c.style.bold ? 700 : 400} ${c.style.fontSize}px "Noto Sans SC"`,
+          );
         if (!active) return;
         return Plotly.react(el, plot.traces, plot.layout, {
           displayModeBar: false,
@@ -467,7 +475,7 @@ function Workbench(
           "输出超过 4000 万像素或单边 12000 px，请降低 DPI / 倍率",
         );
       let url = await Plotly.toImage(graph.current, {
-        format,
+        format: format === "pdf" ? "svg" : format,
         width: c.style.width,
         height: c.style.height,
         scale: format === "png" ? metrics.scale : 1,
@@ -475,11 +483,17 @@ function Workbench(
       if (format === "svg") url = physicalSvg(url, c);
       if (format === "png" && metrics.enabled)
         url = pngDensity(url, metrics.effectiveDpi);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download =
+      const filename =
         (name.replace(/[^\p{L}\p{N}_-]/gu, "_") || "figure") + "." + format;
-      link.click();
+      if (format === "pdf") {
+        const { vectorPdf } = await import("./pdf");
+        downloadBlob(await vectorPdf(url, c), filename);
+      } else {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.click();
+      }
       setLogs((l) =>
         [
           `导出 ${format.toUpperCase()} · ${c.style.width} × ${c.style.height}`,
@@ -489,6 +503,7 @@ function Workbench(
       setExportOpen(false);
       p.notify(`${format.toUpperCase()} 已导出`);
     } catch (e) {
+      setExportOpen(true);
       p.notify("导出失败：" + (e as Error).message);
     } finally {
       setExporting(false);
@@ -620,6 +635,7 @@ function Workbench(
           <Button
             size="sm"
             disabled={
+              exporting ||
               !!plotError ||
               !plot.traces.length ||
               c.datasetVersionId !== p.data.id
@@ -627,7 +643,7 @@ function Workbench(
             onClick={() => setExportOpen(true)}
           >
             <Download size={14} />
-            导出
+            {exporting ? "导出中…" : "导出"}
             <ChevronDown size={12} />
           </Button>
         </div>
@@ -846,6 +862,9 @@ function Workbench(
               </button>
             ))}
             <p className="tiny-note">独立设计预设，非期刊官方认证。</p>
+            <Button variant="outline" onClick={() => setReuseOpen(true)}>
+              样式与图表复用
+            </Button>
           </section>
           <div className="left-foot">
             <span className="green-dot" />
@@ -1212,6 +1231,7 @@ function Workbench(
                       "Times New Roman",
                       "Georgia",
                       "Courier New",
+                      "Noto Sans SC",
                     ]}
                     onChange={(font) => style({ font })}
                   />
@@ -1875,6 +1895,22 @@ function Workbench(
           </Button>
         </div>
       </Dialog>
+      {reuseOpen && (
+        <ReuseDialog
+          project={p.project}
+          config={c}
+          name={name}
+          datasets={p.datasets}
+          onClose={() => setReuseOpen(false)}
+          onApply={change}
+          onReused={(result) => {
+            queryClient.setQueryData(["chart", p.project, result.id], result);
+            setReuseOpen(false);
+            p.onSaved(result.id);
+            p.notify("已创建复用图表，源图保持不变");
+          }}
+        />
+      )}
       <Dialog
         open={exportOpen}
         onOpenChange={setExportOpen}
@@ -1884,8 +1920,8 @@ function Workbench(
         <Select
           label="文件格式"
           value={format}
-          options={["svg", "png"]}
-          onChange={(v) => setFormat(v as "svg" | "png")}
+          options={["svg", "png", "pdf"]}
+          onChange={(v) => setFormat(v as "svg" | "png" | "pdf")}
         />
         {format === "png" && !c.publication?.enabled && (
           <NumberInput
@@ -1897,17 +1933,36 @@ function Workbench(
           />
         )}
         <div className="export-summary">
-          {format === "svg"
-            ? "SVG 矢量 · 可编辑文本"
-            : `PNG · ${publicationMetrics(c, scale).pixelWidth} × ${publicationMetrics(c, scale).pixelHeight} px`}
+          {format === "pdf"
+            ? "PDF 矢量 · 字体嵌入 · 单页图版"
+            : format === "svg"
+              ? "SVG 矢量 · 可编辑文本"
+              : `PNG · ${publicationMetrics(c, scale).pixelWidth} × ${publicationMetrics(c, scale).pixelHeight} px`}
           <small>
-            {format === "svg"
-              ? "文字保留为文本，接收设备需安装相同字体。"
-              : c.publication?.enabled
-                ? `成品 ${output.widthMm} × ${output.heightMm.toFixed(1)} mm · 约 ${output.effectiveDpi.toFixed(0)} DPI`
-                : "有效 DPI 取决于成品物理宽度，可在专业面板中设置。"}
+            {format === "pdf"
+              ? "使用内置 Noto Sans SC 字体，保证中英文与符号可移植。未启用物理尺寸时按 96 px/in 定义页面。"
+              : format === "svg"
+                ? "文字保留为文本，接收设备需安装相同字体。"
+                : c.publication?.enabled
+                  ? `成品 ${output.widthMm} × ${output.heightMm.toFixed(1)} mm · 约 ${output.effectiveDpi.toFixed(0)} DPI`
+                  : "有效 DPI 取决于成品物理宽度，可在专业面板中设置。"}
           </small>
         </div>
+        {format === "pdf" && c.style.font !== "Noto Sans SC" && (
+          <div className="export-summary">
+            <p>
+              PDF 首版支持内置 Noto Sans
+              SC。请先切换画布字体并核对效果，再下载；此修改可撤销。SVG / PNG
+              继续支持所有现有字体。
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => style({ font: "Noto Sans SC" })}
+            >
+              切换为可嵌入字体并预览
+            </Button>
+          </div>
+        )}
         <div className="export-checks">
           {exportChecks(c, scale).map((message) => (
             <p key={message}>{message}</p>
@@ -1920,7 +1975,12 @@ function Workbench(
           )}
         </div>
         <div className="dialog-actions">
-          <Button disabled={exporting} onClick={download}>
+          <Button
+            disabled={
+              exporting || (format === "pdf" && c.style.font !== "Noto Sans SC")
+            }
+            onClick={download}
+          >
             <Download size={15} />
             {exporting ? "正在导出…" : "下载图表"}
           </Button>

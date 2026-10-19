@@ -281,3 +281,45 @@
   outline: 2px solid #5989cf;
   outline-offset: -2px;
 }
+.project-backup {
+  border-block: 1px solid #e5e7eb;
+  padding-block: 16px;
+  margin-block: 16px;
+}
+.project-backup h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.project-backup label,
+.reuse-map label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-block: 12px;
+}
+.reuse-map {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 18px;
+}
+.reuse-map small {
+  color: #637083;
+  font-size: 12px;
+}
+.reuse-map select {
+  width: 100%;
+}
+@font-face {
+  font-family: "Noto Sans SC";
+  src: url("/fonts/NotoSansSC-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Noto Sans SC";
+  src: url("/fonts/NotoSansSC-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}

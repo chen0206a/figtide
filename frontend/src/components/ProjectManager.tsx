@@ -2,14 +2,17 @@ import { useState } from "react";
 import { api, send, type Project } from "../lib/api";
 import { Dialog } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { ProjectBackup } from "./ProjectBackup";
 export function ProjectManager({
   projects,
   onClose,
   onUpdated,
+  currentProject,
 }: {
   projects: Project[];
   onClose: () => void;
   onUpdated: () => void;
+  currentProject: number;
 }) {
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Project | null>(null);
@@ -54,6 +57,13 @@ export function ProjectManager({
         <p role="alert" className="inline-error">
           {error}
         </p>
+      )}
+      {!editing && (
+        <ProjectBackup
+          projects={projects}
+          onUpdated={onUpdated}
+          currentProject={currentProject}
+        />
       )}
       {editing ? (
         <form

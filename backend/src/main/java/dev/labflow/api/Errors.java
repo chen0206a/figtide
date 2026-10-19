@@ -18,13 +18,15 @@ public class Errors {
   @ExceptionHandler(MaxUploadSizeExceededException.class)
   ResponseEntity<?> size(Exception e) {
     return ResponseEntity.status(413)
-        .body(Map.of("message", "文件不得超过 10 MB", "code", "FILE_TOO_LARGE"));
+        .body(
+            Map.of("message", "请求超过大小限制：备份最大 64 MiB，CSV/XLSX 最大 10 MiB", "code", "FILE_TOO_LARGE"));
   }
 
   @ExceptionHandler({
     MethodArgumentNotValidException.class,
     HttpMessageNotReadableException.class,
     org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
+    org.springframework.web.bind.MissingServletRequestParameterException.class,
     org.springframework.web.multipart.support.MissingServletRequestPartException.class
   })
   ResponseEntity<?> invalid(Exception e) {

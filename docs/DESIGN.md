@@ -1,8 +1,25 @@
 # LabFlow · 第一阶段产品设计
 
 ## 产品边界与核心路径
-单用户本地研究工作区。创建项目 → 添加实验 → 上传真实 CSV/XLSX → 检查字段与缺失值 → 映射图表 → 即时编辑 → 保存 MySQL 版本 → 重开 → 导出 SVG/PNG。
-不包含 AI 服务、团队权限、PDF、多子图、推断统计或显著性标记。预设不是期刊认证。
+单用户本地研究工作区。创建项目 → 添加实验 → 上传真实 CSV/XLSX → 检查字段与缺失值 → 映射图表 → 即时编辑 → 保存 MySQL 版本 → 重开 → 复用与导出 SVG/PNG/PDF。
+目前八批增量已扩展分布、模型评估、同类分面、可追溯数据处理、样式模板和项目备份。未包含 AI 服务、团队权限、推断检验或显著性标记；预设不是期刊认证。下面保留首版架构，具体增量合同见各批文档。
+
+第八批新增 `DeliveryController → StyleTemplateService / BackupService → WorkspaceRepository`，备份/恢复与图表服务共享项目归属及配置校验。PDF 转换只在本机浏览器按需加载，原始数据继续由 Java/MySQL 管理。Flyway V4 增加如下关系：
+
+```mermaid
+erDiagram
+  projects ||--o{ style_templates : owns
+  style_templates {
+    bigint id PK
+    bigint project_id FK
+    varchar name
+    int schema_version
+    json profile_json
+    timestamp created_at
+  }
+```
+
+备份清单独立于数据库版本，格式为 labflow-project-v1，保留数据库 JSON 原文、原文件及所有版本。恢复在单事务中创建新项目，重建明确引用，不对实验参数或指标进行数字替换。模板仅提取外观白名单，完整图表复制必须显式映射字段；两者使用不同的 UI 路径。
 
 ## 系统架构
 ```mermaid

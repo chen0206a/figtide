@@ -8,8 +8,8 @@ spring:
     password: ${LABFLOW_DB_PASSWORD:labflow-local}
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 11MB
+      max-file-size: 64MB
+      max-request-size: 65MB
   jackson:
     time-zone: UTC
   flyway:

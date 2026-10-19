@@ -1,5 +1,19 @@
 # API v1
 
+## 第八批增量协议：成果复用与交付（2026-10-19）
+
+`GET /api/style-templates` 返回本机全部模板 `{id,project_id,project_name,name,schema_version,profile,created_at}`；`POST /api/projects/{p}/style-templates {name,config}` 从合法 schema v1 图表中提取外观白名单，返回 `{id,name,profile}`；`DELETE /api/style-templates/{id}` 返回 `{deleted:id}`。本地单用户模式，模板创建项目用于归属和备份，可跨项目应用。profile v1 不含数据版本、字段、标题、轴范围/对数、过滤或统计值；序列只包含 color/opacity/width/dash/symbol/size 及可选 band.opacity。
+
+整图复用仍使用 `POST /projects/{p}/charts`。前端选择目标不可变版本并显式映射所有保存的字段引用，包含暂未启用的热力图、评估、分面、区间和过滤配置；保留非字段设置，清空旧类别的自定义分面标题及矩阵分组选择。服务端按原有保存规则再次验证，失败不创建图表。
+
+`GET /api/projects/{p}/backup` 返回 `application/zip` 附件 `.labflow.zip`。`POST /api/backups/preview` multipart `file` 只读校验格式/内容指纹/内部引用，返回 `{format,name,created_at,counts,original_bytes}`。counts 包含 datasets/dataset_versions/experiments/experiment_datasets/charts/chart_versions/style_templates。
+
+`POST /api/backups/restore` multipart `file` + `name`，重新校验并在事务中创建未归档新项目，返回 `{id,name,summary}`。不覆盖同名项目。ID 全部重新分配，只有协议定义的引用会重建；版本、revision、UTC 创建/更新时间、实验参数/指标和源文件字节保留。来源快照中的历史显示文本（例如名称内的旧编号）作为原始实验内容保留，不当作外键改写。
+
+备份 format=`labflow-project-v1`：ZIP 仅含 `manifest.json` 与其 UTF-8 字节的十六进制 SHA-256 `sha256.txt`。manifest 包含 project 和 tables，数据库 JSON 列作为原文字符串保存，原文件 Base64；完整列合同见 BackupService.COLUMNS。压缩限 64 MiB、展开限 96 MiB、每表最多 10000 条；原始单文件仍限 10 MiB。没有写入上传路径或解压目录。重复条目、重复 ID、其他路径、损坏指纹、缺失引用、不完整图表历史、未知格式/来源 schema 拒绝；失败整体回滚。校验和只检查损坏，不认证发布者。
+
+PDF 在浏览器本地由同一 Plotly SVG 转换，使用随项目提供的 OFL Noto Sans SC 常规/粗体，按需载入 jsPDF + svg2pdf.js；不增加后端 PDF 上传或第三方服务。字体缺失字形、斜体/混合字体富文本、字符定位无法保持时明确报错，避免静默替换。物理尺寸开启时页面按 mm，未开启按 96 px/in；SVG/PNG 字体选项保持兼容。Noto Sans SC 是 schema v1 的增量可选字体，旧配置不改写。
+
 本地基址 `http://127.0.0.1:8086/api`。UTF-8 JSON。当前返回创建资源 HTTP 200。上传为 `multipart/form-data`，字段名 `file`。数据库 ID 为整数。
 
 ## 第七批增量协议：混淆矩阵与共同样本（2026-10-19）

@@ -1,0 +1,29 @@
+{
+  "pages": 1,
+  "width_mm": 88.99999927944606,
+  "height_mm": 58.55263294643825,
+  "text": "1\n1.5\n2\n2.5\n3\n0.7\n0.75\n0.8\n0.85\n0.9\naccuracy\n合成实验 · Model α\nepoch\naccuracy\n",
+  "images": 0,
+  "paths": 26,
+  "embedded_font_bytes": 252792,
+  "title_center_error_pt": -0.000713348388671875,
+  "heatmap": {
+    "text": "1\n2\nA\nB\n0.7\n0.75\n0.8\n0.85\n0.9\n0.95\nvalue\n合成热力图 · 模型对比\nepoch\nvalue\n0.7\n0.9\n0.8\n0.95\n",
+    "images": 0,
+    "paths": 20,
+    "fonts": [
+      [
+        9,
+        "ttf",
+        "Type0",
+        "Noto Sans SC",
+        "F16",
+        "Identity-H"
+      ]
+    ],
+    "font_weights": [
+      700
+    ]
+  },
+  "multiline_converter_text": "第一行 ±\nSecond line\n"
+}

@@ -85,6 +85,7 @@ export default function App() {
     if (id !== undefined) setChart(id);
   };
   const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["style-templates"] });
     qc.invalidateQueries({ queryKey: ["projects"] });
     qc.invalidateQueries({ queryKey: ["datasets", project] });
     qc.invalidateQueries({ queryKey: ["charts", project] });
@@ -345,6 +346,7 @@ export default function App() {
       {confirmDialog}
       {manage && (
         <ProjectManager
+          currentProject={project}
           projects={projects.data || []}
           onClose={() => setManage(false)}
           onUpdated={refresh}

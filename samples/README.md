@@ -1,4 +1,6 @@
 # 演示数据声明
+
+`synthetic-reuse-source.csv` 与 `synthetic-reuse-target.csv` 为第八批两份人工合成学习曲线，使用不同字段名演示显式映射。未进行模型训练，也不带推断统计或误差结论。`node scripts/seed-delivery-demo.mjs` 会用它们创建独立的“成果复用与交付 · 合成演示”。
 这里的 CSV 完全由人工合成，用于测试导入、映射、绘图和导出，不来自真实模型训练，不可作为论文实验依据。
 `demo-learning-curves.csv` 模拟训练曲线；`measured_std` 也是合成的示例数值，只有显式映射后才显示误差棒。
 `demo-heatmap.csv` 模拟模型 × 数据集准确率矩阵，标签仅演示软件操作。
