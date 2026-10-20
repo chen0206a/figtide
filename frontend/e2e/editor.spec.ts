@@ -32,7 +32,7 @@ test("dataset switch, undo, styles, annotations, heatmap and history", async ({
     project,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await expect(page.locator(".main-svg").first()).toBeVisible();
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("图表标题", { exact: true }).fill("Preserved title");
@@ -144,7 +144,7 @@ test("experiment creation, editing and malformed CSV feedback", async ({
     project.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "实验记录", exact: true }).click();
+  await page.getByRole("link", { name: "实验记录", exact: true }).click();
   await page.getByRole("button", { name: "记录实验", exact: true }).click();
   await page.getByLabel("实验名称").fill("AdamW ablation");
   await page.getByRole("button", { name: "参数高级 JSON" }).click();

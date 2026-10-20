@@ -65,7 +65,6 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await expect(page.getByText("本机草稿已保存", { exact: true })).toBeVisible();
   page.on("dialog", (d) => d.accept());
   await page.reload();
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
   await page.getByRole("button", { name: "恢复草稿", exact: true }).click();
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
@@ -111,7 +110,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
     .fill("Learning accuracy · synthetic data");
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
-  await page.getByRole("button", { name: "项目概览", exact: true }).click();
+  await page.getByRole("link", { name: "项目概览", exact: true }).click();
   await page.getByRole("button", { name: /草稿恢复验收 · 副本/ }).click();
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(

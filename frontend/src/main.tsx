@@ -5,15 +5,19 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/newsreader";
 import "@fontsource-variable/jetbrains-mono";
 import App from "./App";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./styles.css";
 import "./components/experience.css";
+import "./components/navigation.css";
+import "./components/showcase.css";
 const client = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
 });
+const router = createBrowserRouter([{ path: "*", element: <App /> }]);
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={client}>
-      <App />
+      <RouterProvider router={router} />
     </QueryClientProvider>
   </React.StrictMode>,
 );

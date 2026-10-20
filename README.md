@@ -6,7 +6,11 @@
 
 最新布局整理：[设计依据、操作分区与验收](docs/EDITOR-LAYOUT.md)。
 
-![绘图编辑器](docs/screenshots/focused-browser.png)
+首页现已加入本地图表示例图廊，并提供独立工作台地址、刷新恢复和导航动效。见 [首页与路由说明](docs/HOME-AND-ROUTING.md)。
+
+![产品首页](docs/screenshots/home-showcase.png)
+
+[查看绘图工作台截图](docs/screenshots/routed-workbench.png)
 
 ## 启动（本机 Windows）
 

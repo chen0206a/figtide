@@ -35,7 +35,7 @@ test("true/predicted labels → multiclass counts → common normalized matrix �
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await page
     .getByLabel("图表名称")
     .fill("Multiclass common samples · synthetic");
@@ -102,9 +102,6 @@ test("true/predicted labels → multiclass counts → common normalized matrix �
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
   await page.reload();
-  await page
-    .getByRole("button", { name: /Multiclass common samples · synthetic/ })
-    .click();
   await expect
     .poll(() =>
       page
@@ -203,7 +200,7 @@ test("paired ROC retains the full model intersection in series facets and reject
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await page.getByLabel("图表名称").fill("Common ROC · synthetic");
   await page.getByRole("button", { name: "图表", exact: true }).click();
   await page

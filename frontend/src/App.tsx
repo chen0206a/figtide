@@ -1,4 +1,11 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { Link, useLocation, useNavigate, useBlocker } from "react-router-dom";
+import { WorkspaceNav } from "./components/WorkspaceNav";
+import {
+  readWorkspaceRoute,
+  workspaceUrl,
+  type WorkspacePage as Page,
+} from "./lib/routes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Database,
@@ -27,19 +34,23 @@ import { Experiments } from "./experiments/Experiments";
 import { SourceProvenance } from "./experiments/SourceProvenance";
 import { ProcessingDialog } from "./processing/ProcessingDialog";
 const Editor = lazy(() => import("./editor/Editor"));
-type Page = "home" | "experiments" | "data" | "editor";
 export default function App() {
   const qc = useQueryClient();
+  const location = useLocation();
+  const go = useNavigate();
+  const route = readWorkspaceRoute(location.pathname, location.search);
+  const page = route.page;
+  const chart = route.chart;
+  const dataset = route.dataset;
   const { confirm, dialog: confirmDialog } = useConfirm();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [manage, setManage] = useState(false);
-  const [page, setPage] = useState<Page>("home"),
-    [project, setProject] = useState(
-      Number(localStorage.getItem("labflow-project")) || 0,
-    ),
-    [chart, setChart] = useState<number | null>(null),
-    [dataset, setDataset] = useState(0),
-    [modal, setModal] = useState(false),
+  const [workspaceProject, setProject] = useState(
+    () => Number(localStorage.getItem("labflow-project")) || 0,
+  );
+  const project = route.project || workspaceProject;
+  const lastDataset = useRef(0);
+  const [modal, setModal] = useState(false),
     [name, setName] = useState(""),
     [description, setDescription] = useState(""),
     [busy, setBusy] = useState(false),
@@ -47,6 +58,45 @@ export default function App() {
     [uploadVersion, setUploadVersion] = useState<number | null>(null);
   const upload = useRef<HTMLInputElement>(null);
   const dirty = useRef(false);
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      dirty.current && currentLocation.pathname !== nextLocation.pathname,
+  );
+  const confirmingRoute = useRef(false);
+  useEffect(() => {
+    if (blocker.state !== "blocked" || confirmingRoute.current) return;
+    confirmingRoute.current = true;
+    void confirm("当前图表尚未正式保存，离开后可从本机草稿恢复。继续？").then(
+      (leave) => {
+        confirmingRoute.current = false;
+        if (leave) {
+          dirty.current = false;
+          blocker.proceed?.();
+        } else blocker.reset?.();
+      },
+    );
+  }, [blocker, confirm]);
+  const setDataset = (id: number) => {
+    lastDataset.current = id;
+    if (page === "data")
+      void go(workspaceUrl("data", project, null, id), { replace: true });
+  };
+  useEffect(() => {
+    if (route.project) setProject(route.project);
+    lastDataset.current = route.dataset;
+  }, [route.project, route.dataset]);
+  const routeFocus = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const names = {
+      home: "首页",
+      experiments: "实验记录",
+      data: "数据管理",
+      editor: "绘图工作台",
+    };
+    document.title = `${names[page]} · LabFlow`;
+    routeFocus.current?.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [page, project]);
   const projects = useQuery({
     queryKey: ["projects"],
     queryFn: () => api<Project[]>("/projects"),
@@ -63,28 +113,27 @@ export default function App() {
   });
   useEffect(() => {
     if (
+      !route.project &&
       projects.data &&
       !projects.data.some((p) => p.id === project && !p.archived)
     ) {
       setProject(projects.data.find((p) => !p.archived)?.id || 0);
-      setChart(null);
-      setDataset(0);
+      lastDataset.current = 0;
     }
-  }, [projects.data, project]);
+  }, [projects.data, project, route.project]);
   useEffect(() => {
     localStorage.setItem("labflow-project", String(project));
   }, [project]);
   const current = projects.data?.find((p) => p.id === project);
-  const navigate = async (p: Page, id?: number) => {
-    if (
-      dirty.current &&
-      !(await confirm("当前图表尚未正式保存，离开后可从本机草稿恢复。继续？"))
-    )
-      return;
-    dirty.current = false;
-    setPage(p);
-    if (id !== undefined) setChart(id);
-  };
+  const navigate = (p: Page, id?: number, dataId?: number) =>
+    go(
+      workspaceUrl(
+        p,
+        project,
+        p === "editor" ? (id ?? chart) : null,
+        dataId ?? lastDataset.current,
+      ),
+    );
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["style-templates"] });
     qc.invalidateQueries({ queryKey: ["projects"] });
@@ -100,6 +149,7 @@ export default function App() {
         send("POST", { name, description }),
       );
       setProject(p.id);
+      if (page !== "home") void go(workspaceUrl("data", p.id));
       setModal(false);
       setName("");
       setDescription("");
@@ -117,9 +167,9 @@ export default function App() {
   function imported(d: Dataset) {
     setPendingFile(null);
     setUploadVersion(null);
-    setDataset(d.id);
+    lastDataset.current = d.id;
     refresh();
-    void navigate("data");
+    void navigate("data", undefined, d.id);
     setMessage(`已导入 ${d.row_count} 行，原始文件与解析规则已归档`);
     if (upload.current) upload.current.value = "";
   }
@@ -128,23 +178,30 @@ export default function App() {
     upload.current?.click();
   };
   return (
-    <div className="app-shell home-shell refined-shell">
+    <div
+      className={`app-shell refined-shell ${page === "home" ? "home-shell" : "workbench-shell"}`}
+      data-workspace-page={page}
+    >
       <div className="main-shell">
         <header className="masthead">
           <div className="masthead-bar">
-            <a
-              className="brand"
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("home");
-              }}
-              title="LabFlow 首页"
-            >
+            <Link className="brand" to="/" title="LabFlow 首页">
               <LabFlowMark size={29} />
               <span>LabFlow</span>
-            </a>
-            <span className="masthead-meta">Research data · Figure plates</span>
+            </Link>
+            <WorkspaceNav page={page} project={project} />
+            {page !== "home" && (
+              <div className="workbench-context">
+                <span>/</span>
+                <span>
+                  {page === "editor"
+                    ? "绘图工作台"
+                    : page === "data"
+                      ? "数据工作台"
+                      : "实验工作台"}
+                </span>
+              </div>
+            )}
             <div className="global-right">
               <span className="local-badge">
                 <span /> 本地工作区
@@ -163,9 +220,8 @@ export default function App() {
                     return;
                   dirty.current = false;
                   setProject(nextProject);
-                  setChart(null);
-                  setDataset(0);
-                  setPage("home");
+                  lastDataset.current = 0;
+                  if (page !== "home") void go("/");
                 }}
               >
                 <option value={0} disabled>
@@ -192,29 +248,6 @@ export default function App() {
               </Button>
             </div>
           </div>
-          <nav className="site-nav" aria-label="主导航">
-            {(
-              [
-                ["home", "项目概览", "01"],
-                ["experiments", "实验记录", "02"],
-                ["data", "数据管理", "03"],
-                ["editor", "科研绘图", "04"],
-              ] as const
-            ).map(([id, label, index]) => (
-              <button
-                key={id}
-                className={page === id ? "nav-link active" : "nav-link"}
-                aria-label={label}
-                title={label}
-                onClick={() => navigate(id)}
-              >
-                <span className="nav-index">{index}</span>
-                {label}
-              </button>
-            ))}
-            <span className="nav-spacer" />
-            <span className="nav-note">本地运行 · 数据不外传</span>
-          </nav>
         </header>
         {message && (
           <div className="toast" role="status">
@@ -233,114 +266,137 @@ export default function App() {
           hidden
           onChange={(e) => e.target.files?.[0] && importFile(e.target.files[0])}
         />
-        {projects.isPending ? (
-          <div className="empty-state">
-            <span className="spinner" />
-            正在连接本地工作区…
-          </div>
-        ) : projects.isError ? (
-          <div className="empty-state">
-            <AlertCircle />
-            <h2>无法连接 Java 服务</h2>
-            <p>{projects.error.message}</p>
-            <Button onClick={() => projects.refetch()}>重新连接</Button>
-          </div>
-        ) : page === "editor" && project ? (
-          <Suspense fallback={<WorkbenchSkeleton />}>
-            <Editor
-              key={`${project}-${chart}`}
-              project={project}
-              projectName={current?.name || ""}
-              datasets={datasets.data || []}
-              chartId={chart}
-              initialDataset={dataset}
-              onSaved={(id) => {
-                setChart(id);
-                refresh();
-              }}
-              onUpload={() => chooseUpload()}
-              onDirty={(v) => {
-                dirty.current = v;
-              }}
-              notify={setMessage}
-            />
-          </Suspense>
-        ) : (
-          <main
-            className={`page-content ${page === "home" || !project ? "home-page" : ""}`}
-          >
-            {page === "home" || !project ? (
-              <HomePage
-                projects={projects.data?.filter((p) => !p.archived) || []}
-                currentId={project}
-                charts={charts.data || []}
-                chartsLoading={charts.isPending}
-                chartsError={charts.error?.message}
-                busy={busy}
-                onCreate={() => setModal(true)}
-                onProject={(id) => {
-                  setProject(id);
-                  setDataset(0);
-                  setChart(null);
-                }}
-                onPlot={() => {
-                  setChart(null);
-                  navigate("editor");
+        <div
+          ref={routeFocus}
+          tabIndex={-1}
+          className="route-view"
+          key={`${page}-${project}`}
+          aria-label={page === "home" ? "首页内容" : "工作台内容"}
+        >
+          {!route.valid ? (
+            <div className="empty-state">
+              <h1>页面不存在</h1>
+              <p>请检查网址，或返回首页选择工作台。</p>
+              <Button onClick={() => go("/")}>返回首页</Button>
+            </div>
+          ) : projects.isPending ? (
+            <div className="empty-state">
+              <span className="spinner" />
+              正在连接本地工作区…
+            </div>
+          ) : projects.isError ? (
+            <div className="empty-state">
+              <AlertCircle />
+              <h2>无法连接 Java 服务</h2>
+              <p>{projects.error.message}</p>
+              <Button onClick={() => projects.refetch()}>重新连接</Button>
+            </div>
+          ) : route.project && (!current || current.archived) ? (
+            <div className="empty-state">
+              <h1>项目不可用</h1>
+              <p>这个项目不存在或已归档，请从首页重新选择。</p>
+              <Button onClick={() => go("/")}>返回首页</Button>
+            </div>
+          ) : page !== "home" && !project ? (
+            <div className="empty-state">
+              <h1>创建你的第一个研究项目</h1>
+              <p>工作台会将实验、数据和图表保存在项目中。</p>
+              <Button onClick={() => setModal(true)}>新建项目</Button>
+            </div>
+          ) : page === "editor" && project ? (
+            <Suspense fallback={<WorkbenchSkeleton />}>
+              <Editor
+                key={`${project}-${chart}`}
+                project={project}
+                projectName={current?.name || ""}
+                datasets={datasets.data || []}
+                chartId={chart}
+                initialDataset={dataset}
+                onSaved={(id) => {
+                  dirty.current = false;
+                  void go(workspaceUrl("editor", project, id), {
+                    replace: true,
+                  });
+                  refresh();
                 }}
                 onUpload={() => chooseUpload()}
-                onExperiments={() => navigate("experiments")}
-                onData={() => navigate("data")}
-                onChart={(id) => navigate("editor", id)}
-                onRetry={() => charts.refetch()}
-              />
-            ) : page === "data" ? (
-              <DataPage
-                project={project}
-                selected={dataset}
-                onSelect={setDataset}
-                datasets={datasets.data || []}
-                loading={datasets.isPending}
-                error={datasets.error?.message}
-                onRetry={() => datasets.refetch()}
-                onUpload={chooseUpload}
-                busy={busy}
-                onPlot={() => {
-                  setChart(null);
-                  navigate("editor");
+                onDirty={(v) => {
+                  dirty.current = v;
                 }}
-                onProcessed={(d, plot) => {
-                  qc.setQueryData(["data", project, d.id], d);
-                  setDataset(d.id);
-                  setChart(null);
-                  refresh();
-                  setMessage("处理结果已保存为独立数据集，源数据保持不变");
-                  if (plot) void navigate("editor");
-                }}
-              />
-            ) : page === "experiments" ? (
-              <Experiments
-                key={project}
-                project={project}
-                datasets={datasets.data || []}
                 notify={setMessage}
-                onData={(id) => {
-                  if (id) setDataset(id);
-                  void navigate("data");
-                }}
-                onGenerated={async (d) => {
-                  qc.setQueryData(["data", project, d.id], d);
-                  await qc.invalidateQueries({
-                    queryKey: ["datasets", project],
-                  });
-                  setDataset(d.id);
-                  setChart(null);
-                  refresh();
-                  void navigate("editor");
-                }}
               />
-            ) : null}
-          </main>
-        )}
+            </Suspense>
+          ) : (
+            <main
+              className={`page-content ${page === "home" || !project ? "home-page" : ""}`}
+            >
+              {page === "home" || !project ? (
+                <HomePage
+                  projects={projects.data?.filter((p) => !p.archived) || []}
+                  currentId={project}
+                  charts={charts.data || []}
+                  chartsLoading={charts.isPending}
+                  chartsError={charts.error?.message}
+                  busy={busy}
+                  onCreate={() => setModal(true)}
+                  onProject={(id) => {
+                    setProject(id);
+                    lastDataset.current = 0;
+                  }}
+                  onPlot={() => {
+                    void navigate("editor", 0);
+                  }}
+                  onUpload={() => chooseUpload()}
+                  onExperiments={() => navigate("experiments")}
+                  onData={() => navigate("data")}
+                  onChart={(id) => navigate("editor", id)}
+                  onRetry={() => charts.refetch()}
+                />
+              ) : page === "data" ? (
+                <DataPage
+                  project={project}
+                  selected={dataset}
+                  onSelect={setDataset}
+                  datasets={datasets.data || []}
+                  loading={datasets.isPending}
+                  error={datasets.error?.message}
+                  onRetry={() => datasets.refetch()}
+                  onUpload={chooseUpload}
+                  busy={busy}
+                  onPlot={() => {
+                    void navigate("editor", 0);
+                  }}
+                  onProcessed={(d, plot) => {
+                    qc.setQueryData(["data", project, d.id], d);
+                    setDataset(d.id);
+                    refresh();
+                    setMessage("处理结果已保存为独立数据集，源数据保持不变");
+                    if (plot) void navigate("editor", 0, d.id);
+                  }}
+                />
+              ) : page === "experiments" ? (
+                <Experiments
+                  key={project}
+                  project={project}
+                  datasets={datasets.data || []}
+                  notify={setMessage}
+                  onData={(id) => {
+                    void navigate("data", undefined, id || 0);
+                  }}
+                  onGenerated={async (d) => {
+                    qc.setQueryData(["data", project, d.id], d);
+                    await qc.invalidateQueries({
+                      queryKey: ["datasets", project],
+                    });
+                    setDataset(d.id);
+                    refresh();
+                    void navigate("editor", 0, d.id);
+                  }}
+                />
+              ) : null}
+            </main>
+          )}
+        </div>
       </div>
       {confirmDialog}
       {manage && (

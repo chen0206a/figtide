@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Dialog } from "./ui/dialog";
 import { Button } from "./ui/button";
 export function useConfirm() {
@@ -10,12 +10,15 @@ export function useConfirm() {
     resolve.current = null;
     setMessage("");
   }
-  const confirm = (text: string) =>
-    new Promise<boolean>((r) => {
-      resolve.current?.(false);
-      resolve.current = r;
-      setMessage(text);
-    });
+  const confirm = useCallback(
+    (text: string) =>
+      new Promise<boolean>((r) => {
+        resolve.current?.(false);
+        resolve.current = r;
+        setMessage(text);
+      }),
+    [],
+  );
   const dialog = (
     <Dialog
       open={!!message}

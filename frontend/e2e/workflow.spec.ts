@@ -68,7 +68,6 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
     colors: el.data.map((t: any) => t.line.color),
   }));
   await page.reload();
-  await page.getByRole("button", { name: /Learning dynamics/ }).click();
   await expect(page.getByText("已保存 v1", { exact: false })).toBeVisible();
   const configAfter = await page.getByTestId("plot").evaluate((el: any) => ({
     font: el.layout.font,

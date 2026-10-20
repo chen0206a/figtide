@@ -24,6 +24,7 @@
     "plotly.js-cartesian-dist-min": "3.7.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-router-dom": "^7.18.4",
     "svg2pdf.js": "^2.8.1",
     "tailwind-merge": "^3.3.1"
   },

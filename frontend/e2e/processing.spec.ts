@@ -48,7 +48,7 @@ test("raw repeated observations → exact SEM preview → MySQL → auto mapped 
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "数据管理", exact: true }).click();
+  await page.getByRole("link", { name: "数据管理", exact: true }).click();
   await page.getByRole("button", { name: "处理与统计", exact: true }).click();
   await page.getByLabel("结果名称").fill("Known means SEM · synthetic");
   await group(page);
@@ -109,7 +109,6 @@ test("raw repeated observations → exact SEM preview → MySQL → auto mapped 
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v1", { exact: false })).toBeVisible();
   await page.reload();
-  await page.getByRole("button", { name: /Grouped SEM · synthetic/ }).click();
   await expect
     .poll(() =>
       page
@@ -175,7 +174,7 @@ test("duplicate run guard → repair groups → interval preview invalidation �
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "数据管理", exact: true }).click();
+  await page.getByRole("link", { name: "数据管理", exact: true }).click();
   await page.getByRole("button", { name: "处理与统计", exact: true }).click();
   await page.getByLabel("分组字段 model", { exact: true }).check();
   await page
@@ -259,7 +258,7 @@ test("explicit filter and numeric stable sort save as an independent dataset", a
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "数据管理", exact: true }).click();
+  await page.getByRole("link", { name: "数据管理", exact: true }).click();
   await page.getByRole("button", { name: "处理与统计", exact: true }).click();
   await page.getByLabel("处理方式").selectOption("sort");
   await page

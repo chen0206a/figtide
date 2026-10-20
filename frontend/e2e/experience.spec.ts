@@ -182,7 +182,6 @@ test("auto-fit, layout-only axis reset, latest SVG and MySQL reopen remain consi
   expect(svg).toContain("<text");
   expect(svg).not.toContain("<image");
   await page.reload();
-  await page.getByRole("button", { name: /体验回归图 · 合成/ }).click();
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(title);
   await expect
@@ -210,7 +209,6 @@ test("refresh during the debounce window flushes the latest draft without changi
     .fill("Refresh should preserve this exact draft");
   page.once("dialog", (dialog) => dialog.accept());
   await page.reload();
-  await page.getByRole("button", { name: /体验回归图 · 合成/ }).click();
   await expect(
     page.getByRole("dialog", { name: "发现未完成的草稿" }),
   ).toBeVisible();

@@ -40,7 +40,7 @@ test("real repeated samples → box/violin → facets → save/reopen → vector
     project.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await expect(page.getByTestId("plot")).toBeVisible();
   await page.getByLabel("图表名称").fill("Repeated experiments · synthetic");
   await page.getByRole("button", { name: "外观", exact: true }).click();
@@ -186,9 +186,6 @@ test("real repeated samples → box/violin → facets → save/reopen → vector
     shareY: true,
   });
   await page.reload();
-  await page
-    .getByRole("button", { name: /Repeated experiments · synthetic/ })
-    .click();
   await expect
     .poll(() =>
       page
@@ -266,7 +263,7 @@ test("sparse violin warns and shows only actual samples, invalid bandwidth canno
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await expect(page.locator(".chart-picker > summary")).toBeVisible();
   if (
     !(await page
@@ -323,7 +320,7 @@ test("quartile methods compute known sample statistics in the actual plotting en
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await expect(page.locator(".chart-picker > summary")).toBeVisible();
   if (
     !(await page

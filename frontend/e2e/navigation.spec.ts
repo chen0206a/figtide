@@ -1,0 +1,174 @@
+import { test, expect } from "@playwright/test";
+import fs from "node:fs";
+test("independent workspace URLs, hover feedback, browser history and unsaved guard", async ({
+  page,
+  request,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  const project = await (
+    await request.post("/api/projects", {
+      data: { name: `导航工作台验收 ${Date.now()}`, description: "合成数据" },
+    })
+  ).json();
+  const data = await (
+    await request.post(`/api/projects/${project.id}/datasets`, {
+      multipart: {
+        file: {
+          name: "navigation-synthetic.csv",
+          mimeType: "text/csv",
+          buffer: Buffer.from(
+            "epoch,accuracy,loss\n1,0.7,0.8\n2,0.8,0.5\n3,0.9,0.2",
+          ),
+        },
+      },
+    })
+  ).json();
+  const config = JSON.parse(
+    fs.readFileSync("../docs/config-v1.example.json", "utf8"),
+  );
+  config.datasetVersionId = data.id;
+  config.series[0].error = "";
+  const chart = await (
+    await request.post(`/api/projects/${project.id}/charts`, {
+      data: { name: "导航体验 · 合成", config },
+    })
+  ).json();
+  await page.addInitScript(
+    (id) => localStorage.setItem("labflow-project", String(id)),
+    project.id,
+  );
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "主导航" });
+  const home = nav.getByRole("link", { name: "项目概览", exact: true });
+  await expect(home).toHaveAttribute("aria-current", "page");
+  const indicator = page.locator(".nav-indicator");
+  const before = await indicator.evaluate(
+    (el) => getComputedStyle(el).transform,
+  );
+  const dataLink = nav.getByRole("link", { name: "数据管理", exact: true });
+  await dataLink.hover();
+  await expect
+    .poll(() => indicator.evaluate((el) => getComputedStyle(el).transform))
+    .not.toBe(before);
+  await dataLink.click();
+  await expect(page).toHaveURL(new RegExp(`/projects/${project.id}/data`));
+  await expect(page.locator(".launch-home")).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", {
+      name: "navigation-synthetic.csv",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", {
+      name: "navigation-synthetic.csv",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator(".launch-home")).toBeVisible();
+  await page.goForward();
+  await expect(page).toHaveURL(new RegExp(`/projects/${project.id}/data`));
+  await page.getByRole("button", { name: "用于绘图", exact: true }).click();
+  await expect(page).toHaveURL(
+    new RegExp(`/projects/${project.id}/figures/new\\?dataset=${data.id}`),
+  );
+  await expect(
+    page.getByTestId("plot").locator(".main-svg").first(),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "项目概览", exact: true }).click();
+  await page
+    .getByRole("dialog", { name: "确认操作" })
+    .getByRole("button", { name: "继续", exact: true })
+    .click();
+  await page.getByRole("button", { name: /导航体验 · 合成/ }).click();
+  const chartUrl = `/projects/${project.id}/figures/${chart.id}`;
+  await expect(page).toHaveURL(new RegExp(chartUrl + "$"));
+  await page.reload();
+  await expect(page.getByLabel("图表名称", { exact: true })).toHaveValue(
+    "导航体验 · 合成",
+  );
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  await page
+    .getByLabel("图表标题", { exact: true })
+    .fill("Unsaved navigation title");
+  await page.goBack();
+  await expect(page.getByRole("dialog", { name: "确认操作" })).toBeVisible();
+  await page.getByRole("button", { name: "取消", exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(chartUrl + "$"));
+  await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
+    "Unsaved navigation title",
+  );
+  await page.getByRole("link", { name: "数据管理", exact: true }).click();
+  await page
+    .getByRole("dialog", { name: "确认操作" })
+    .getByRole("button", { name: "继续", exact: true })
+    .click();
+  await expect(page).toHaveURL(new RegExp(`/projects/${project.id}/data`));
+  // Explicit route identity wins over the locally remembered project.
+  await page.goto(`/projects/${project.id}/figures/${chart.id}`);
+  await page.getByRole("button", { name: "恢复草稿", exact: true }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
+    "Unsaved navigation title",
+  );
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.screenshot({ path: "../docs/screenshots/routed-workbench.png" });
+  await page.getByRole("link", { name: "项目概览", exact: true }).click();
+  await expect(page.locator(".launch-home")).toBeVisible();
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+        .map((a) => a.finished.catch(() => {})),
+    ),
+  );
+  await page.screenshot({ path: "../docs/screenshots/routed-home.png" });
+  await page.getByRole("link", { name: "实验记录", exact: true }).click();
+  await expect(page).toHaveURL(`/projects/${project.id}/experiments`);
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "把探索，沉淀为记录。" }),
+  ).toBeVisible();
+  await page.goto("/invalid-workspace");
+  await expect(page.getByRole("heading", { name: "页面不存在" })).toBeVisible();
+  await page.goto("/projects/999999999/data");
+  await expect(page.getByRole("heading", { name: "项目不可用" })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+test("reduced motion retains keyboard navigation and direct figure links", async ({
+  page,
+  request,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const projects = await (await request.get("/api/projects")).json();
+  const p = projects.find((p: any) => !p.archived && p.dataset_count > 0);
+  await page.goto(`/projects/${p.id}/data`);
+  const link = page.getByRole("link", { name: "科研绘图", exact: true });
+  await link.focus();
+  await expect(link).toBeFocused();
+  expect(
+    await page
+      .locator(".nav-indicator")
+      .evaluate((el) => getComputedStyle(el).transitionDuration),
+  ).toBe("0s");
+  await link.press("Enter");
+  await expect(page).toHaveURL(`/projects/${p.id}/figures/new`);
+  await expect(
+    page.getByTestId("plot").locator(".main-svg").first(),
+  ).toBeVisible();
+  for (const width of [1280, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      )
+      .toBe(true);
+  }
+});

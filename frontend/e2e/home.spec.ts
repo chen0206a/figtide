@@ -35,7 +35,10 @@ test("brand entrance is sequenced, real navigation works, return skips intro", a
   ).toBe("0.35s");
   await page.evaluate(() =>
     Promise.all(
-      document.getAnimations().map((a) => a.finished.catch(() => {})),
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+        .map((a) => a.finished.catch(() => {})),
     ),
   );
   await expect(page.getByRole("heading", { name: "LabFlow." })).toBeVisible();
@@ -47,13 +50,13 @@ test("brand entrance is sequenced, real navigation works, return skips intro", a
   await expect(
     page.getByRole("heading", { name: "把探索，沉淀为记录。" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "项目概览", exact: true }).click();
+  await page.getByRole("link", { name: "项目概览", exact: true }).click();
   await expect(page.locator(".launch-home")).toHaveClass(/intro-seen/);
   await page.getByRole("button", { name: /^数据资料库/ }).click();
   await expect(
     page.getByRole("heading", { name: "每一份数据，都有来源。" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "项目概览", exact: true }).click();
+  await page.getByRole("link", { name: "项目概览", exact: true }).click();
   const chooser = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: /^导入数据/ }).click();
   expect(await chooser).toBeTruthy();
@@ -100,7 +103,10 @@ test("1280px workspace remains accessible without horizontal overflow", async ({
   await openHome(page, request);
   await page.evaluate(() =>
     Promise.all(
-      document.getAnimations().map((a) => a.finished.catch(() => {})),
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+        .map((a) => a.finished.catch(() => {})),
     ),
   );
   expect(

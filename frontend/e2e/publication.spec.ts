@@ -32,7 +32,7 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await page
     .getByLabel("图表名称")
     .fill("Publication distributions · synthetic");
@@ -130,9 +130,6 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
   });
   expect(saved.config.empirical.bins).toBe(2);
   await page.reload();
-  await page
-    .getByRole("button", { name: /Publication distributions · synthetic/ })
-    .click();
   await expect
     .poll(() =>
       page.getByTestId("plot").evaluate((el: any) => el.data[0]?.line.shape),
@@ -189,7 +186,7 @@ test("scientific heatmap scale, contrasting numeric labels, and rejected invalid
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })

@@ -23,6 +23,7 @@ import {
 import type { Project } from "../lib/api";
 import { LabFlowMark } from "./LabFlowMark";
 import "./home.css";
+import { FigureShowcase } from "./FigureShowcase";
 
 type ChartSummary = {
   id: number;
@@ -144,6 +145,7 @@ export function HomePage(p: Props) {
           <span className="local-divider">·</span>随时继续
         </div>
       </section>
+      <FigureShowcase />
       <section className="launch-tools" aria-label="功能入口">
         {actions.map(({ title, desc, detail, Icon, color, run }, i) => (
           <button

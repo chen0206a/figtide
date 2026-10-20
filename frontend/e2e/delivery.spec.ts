@@ -39,7 +39,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await page
     .getByLabel("图表名称", { exact: true })
     .fill("可复用成果 · 合成数据");
@@ -196,10 +196,6 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
     copy.name,
   );
   await page.reload();
-  await page
-    .getByRole("button", { name: copy.name, exact: false })
-    .first()
-    .click();
   await expect(page.getByLabel("图表名称", { exact: true })).toHaveValue(
     copy.name,
   );

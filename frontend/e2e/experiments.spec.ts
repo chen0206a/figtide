@@ -31,7 +31,7 @@ test("three experiments → linked versions → comparison → immutable chart �
     project.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "实验记录", exact: true }).click();
+  await page.getByRole("link", { name: "实验记录", exact: true }).click();
   const names = [
     "Baseline · 合成演示",
     "Augmentation · 合成演示",
@@ -40,7 +40,9 @@ test("three experiments → linked versions → comparison → immutable chart �
   for (let i = 0; i < 3; i++) {
     await page.getByRole("button", { name: "记录实验", exact: true }).click();
     await page.getByLabel("实验名称").fill(names[i]);
-    await page.getByLabel("实验状态", { exact: true }).selectOption("completed");
+    await page
+      .getByLabel("实验状态", { exact: true })
+      .selectOption("completed");
     await page.getByLabel("标签", { exact: true }).fill("vision, synthetic");
     await page.getByRole("button", { name: "添加参数", exact: true }).click();
     await page.getByLabel("参数 1 名称").fill("learning_rate");
@@ -57,7 +59,9 @@ test("three experiments → linked versions → comparison → immutable chart �
       .getByLabel("备注", { exact: true })
       .fill("合成演示，不代表真实实验结果。");
     if (i === 0) {
-      await page.getByRole("dialog").evaluate((el) => { el.scrollTop = 0; });
+      await page.getByRole("dialog").evaluate((el) => {
+        el.scrollTop = 0;
+      });
       await page.screenshot({
         path: "../docs/screenshots/experiment-form.png",
         animations: "disabled",
@@ -91,7 +95,9 @@ test("three experiments → linked versions → comparison → immutable chart �
   await expect(page.locator(".parameter-diff")).toContainText("learning_rate");
   await expect(page.getByText("+5 · 改善", { exact: true })).toBeVisible();
   await expect(page.getByText("-0.1 · 改善", { exact: true })).toBeVisible();
-  await expect(page.getByText("实验记录已保存", { exact: true })).not.toBeVisible();
+  await expect(
+    page.getByText("实验记录已保存", { exact: true }),
+  ).not.toBeVisible();
   await page.screenshot({
     path: "../docs/screenshots/experiment-compare.png",
     animations: "disabled",
@@ -129,7 +135,6 @@ test("three experiments → linked versions → comparison → immutable chart �
   );
   expect(updated.ok()).toBeTruthy();
   await page.reload();
-  await page.getByRole("button", { name: /accuracy · 实验对比/ }).click();
   await expect
     .poll(() => page.getByTestId("plot").evaluate((e: any) => e.data[0]?.y))
     .toEqual([90, 93, 95]);

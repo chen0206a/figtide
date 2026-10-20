@@ -34,7 +34,7 @@ test("raw labels/scores → ROC/AP → MySQL reopen → PR and vector export", a
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await page.getByLabel("图表名称").fill("Binary evaluation · synthetic");
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
@@ -93,9 +93,6 @@ test("raw labels/scores → ROC/AP → MySQL reopen → PR and vector export", a
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
   await page.reload();
-  await page
-    .getByRole("button", { name: /Binary evaluation · synthetic/ })
-    .click();
   await expect
     .poll(() =>
       page.getByTestId("plot").evaluate((el: any) => el.data[0]?.line.shape),
@@ -158,7 +155,7 @@ test("actual bound columns → gap-safe interval → save reopen → SVG/PNG", a
     p.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await page.getByLabel("图表名称").fill("Actual intervals · synthetic");
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
@@ -186,9 +183,6 @@ test("actual bound columns → gap-safe interval → save reopen → SVG/PNG", a
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v1", { exact: false })).toBeVisible();
   await page.reload();
-  await page
-    .getByRole("button", { name: /Actual intervals · synthetic/ })
-    .click();
   await expect
     .poll(() =>
       page

@@ -1,0 +1,46 @@
+{
+  "license_url": "https://matplotlib.org/stable/project/license.html",
+  "copyright": "Copyright (c) 2012- Matplotlib Development Team; All Rights Reserved",
+  "assets": [
+    {
+      "file": "intervals.png",
+      "title": "曲线与区间",
+      "page": "https://matplotlib.org/stable/gallery/lines_bars_and_markers/fill_between_demo.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_fill_between_demo_002.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": false,
+      "sha256": "0892e5d67f59ae0ba65c051ec9d2065fed02e9c3cbd7b5dcb661806f6a0f0f25"
+    },
+    {
+      "file": "heatmap.png",
+      "title": "矩阵与关联",
+      "page": "https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_image_annotated_heatmap_001.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": false,
+      "sha256": "9d1bb3cdc2c4d8f456ed5ffedb6f068a758b0907320a2f361d6ba694e8ee0cbd"
+    },
+    {
+      "file": "distributions.png",
+      "title": "分布与比较",
+      "page": "https://matplotlib.org/stable/gallery/statistics/boxplot_color.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_boxplot_color_001.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": false,
+      "sha256": "ce4dc9938539be394d813a600a625dccd3ef4b17376ecc6c10bd04fdd596aa3e"
+    },
+    {
+      "file": "bars.png",
+      "title": "分组与对比",
+      "page": "https://matplotlib.org/stable/gallery/lines_bars_and_markers/barchart.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_barchart_001.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": false,
+      "sha256": "be59ddaa4bcf00d41a41d84217005218f802d44401ef6a6cf200cbd104685d35"
+    }
+  ]
+}
