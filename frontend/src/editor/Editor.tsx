@@ -1,6 +1,15 @@
-import { useState, useEffect, useReducer, useRef, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useReducer,
+  useRef,
+  useMemo,
+  useDeferredValue,
+} from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Plotly from "plotly.js-dist-min";
+import Plotly from "plotly.js-cartesian-dist-min";
+import { DraftWriter } from "../lib/draftWriter";
+import { layoutPatch } from "./layoutPatch";
 import {
   ArrowLeft,
   ChevronDown,
@@ -67,6 +76,20 @@ import {
   physicalSvg,
   pngDensity,
 } from "./publication";
+
+const fittedZoom = (stage: HTMLElement, width: number, height: number) =>
+  Math.max(
+    5,
+    Math.min(
+      100,
+      Math.floor(
+        Math.min(
+          (stage.clientWidth - 64) / width,
+          (stage.clientHeight - 88) / height,
+        ) * 100,
+      ),
+    ),
+  );
 type Props = {
   project: number;
   projectName: string;
@@ -157,10 +180,15 @@ function Workbench(
       return { left: 236, right: 292 };
     }
   });
+  const stage = useRef<HTMLDivElement>(null);
+  const [autoFit, setAutoFit] = useState(true);
   useEffect(() => {
-    try {
-      localStorage.setItem("labflow-panel-widths", JSON.stringify(widths));
-    } catch {}
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem("labflow-panel-widths", JSON.stringify(widths));
+      } catch {}
+    }, 150);
+    return () => clearTimeout(timer);
   }, [widths]);
   function resizer(side: "left" | "right") {
     return (
@@ -261,6 +289,15 @@ function Workbench(
     c.type === "confusion" &&
     (c.classification?.input || "labels") === "labels";
   const output = publicationMetrics(c);
+  useEffect(() => {
+    const el = stage.current;
+    if (!el || !autoFit) return;
+    const fit = () => setZoom(fittedZoom(el, c.style.width, c.style.height));
+    const observer = new ResizeObserver(fit);
+    observer.observe(el);
+    fit();
+    return () => observer.disconnect();
+  }, [autoFit, c.style.width, c.style.height]);
   const [name, setName] = useState(
       p.original?.name ||
         (p.data.source_meta?.kind === "experiment_comparison"
@@ -287,6 +324,15 @@ function Workbench(
     [historyOpen, setHistoryOpen] = useState(false),
     [logs, setLogs] = useState<string[]>(["工作台已就绪"]);
   const graph = useRef<any>(null);
+  const drawn = useRef<{
+    signature: string;
+    layout: Record<string, any>;
+    data: Dataset;
+  } | null>(null);
+  const [rendered, setRendered] = useState<{
+    config: Config;
+    data: Dataset;
+  } | null>(null);
   const [plotError, setPlotError] = useState("");
   const [reuseOpen, setReuseOpen] = useState(false);
   const plotReady = useRef<Promise<any>>(Promise.resolve());
@@ -297,7 +343,29 @@ function Workbench(
     queryFn: () => api<any[]>(`/projects/${p.project}/charts/${id}/versions`),
     enabled: !!id && historyOpen,
   });
-  const dirty = baseline !== JSON.stringify({ config: c, name });
+  const serialized = useMemo(
+    () => JSON.stringify({ config: c, name }),
+    [c, name],
+  );
+  const dirty = baseline !== serialized;
+  const draftWriter = useRef<DraftWriter | null>(null);
+  useEffect(() => {
+    const writer = new DraftWriter(
+      localStorage,
+      () => setDraftStatus("本机草稿已保存"),
+      () => setDraftStatus("本机草稿保存失败，请正式保存图表"),
+    );
+    draftWriter.current = writer;
+    const flush = () => writer.flush();
+    window.addEventListener("pagehide", flush);
+    window.addEventListener("beforeunload", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      window.removeEventListener("beforeunload", flush);
+      writer.flush();
+      draftWriter.current = null;
+    };
+  }, []);
   useEffect(() => {
     p.onDirty(dirty);
     const handler = (e: BeforeUnloadEvent) => {
@@ -308,24 +376,20 @@ function Workbench(
   }, [dirty]);
   useEffect(() => {
     if (recovery) return;
-    try {
-      if (dirty) {
-        localStorage.setItem(
-          draftKey,
-          JSON.stringify({
-            config: c,
-            name,
-            revision,
-            at: new Date().toISOString(),
-          }),
-        );
-        setDraftStatus("本机草稿已保存");
-      } else {
-        localStorage.removeItem(draftKey);
-        setDraftStatus("");
-      }
-    } catch {
-      setDraftStatus("本机草稿保存失败，请正式保存图表");
+    if (dirty) {
+      draftWriter.current?.schedule(
+        draftKey,
+        JSON.stringify({
+          config: c,
+          name,
+          revision,
+          at: new Date().toISOString(),
+        }),
+      );
+      setDraftStatus("正在保存本机草稿…");
+    } else {
+      draftWriter.current?.clear(draftKey);
+      setDraftStatus("");
     }
   }, [c, name, revision, dirty, draftKey, recovery]);
   const change = (value: Config) => dispatch({ type: "edit", value });
@@ -343,7 +407,16 @@ function Workbench(
     .filter((f) => f.type === "number")
     .map((f) => f.name);
   const fields = p.data.fields.map((f) => f.name);
-  const plot = useMemo(() => buildPlot(c, p.data), [c, p.data]);
+  const deferred = useDeferredValue(c);
+  const renderConfig = deferred.datasetVersionId === p.data.id ? deferred : c;
+  const plot = useMemo(
+    () => buildPlot(renderConfig, p.data),
+    [renderConfig, p.data],
+  );
+  const plotPending =
+    renderConfig !== c ||
+    rendered?.config !== renderConfig ||
+    rendered?.data !== p.data;
   useEffect(() => {
     if (c.datasetVersionId !== p.data.id) p.onDataset(c.datasetVersionId);
   }, [c.datasetVersionId, p.data.id]);
@@ -355,19 +428,37 @@ function Workbench(
       .catch(() => {})
       .then(async () => {
         if (!active) return;
-        if (c.style.font === "Noto Sans SC")
+        if (renderConfig.style.font === "Noto Sans SC")
           await document.fonts.load(
-            `${c.style.bold ? 700 : 400} ${c.style.fontSize}px "Noto Sans SC"`,
+            `${renderConfig.style.bold ? 700 : 400} ${renderConfig.style.fontSize}px "Noto Sans SC"`,
           );
         if (!active) return;
-        return Plotly.react(el, plot.traces, plot.layout, {
-          displayModeBar: false,
-          responsive: false,
-          editable: false,
-          scrollZoom: false,
-          doubleClick: false,
-        }).then(() => {
+        await new Promise<void>((resolve) =>
+          requestAnimationFrame(() => resolve()),
+        );
+        if (!active) return;
+        const signature = JSON.stringify(plot.traces),
+          snapshot = structuredClone(plot.layout);
+        const previous = drawn.current;
+        const update =
+          previous?.data === p.data && previous.signature === signature
+            ? (() => {
+                const changes = layoutPatch(previous.layout, snapshot);
+                return Object.keys(changes).length
+                  ? Plotly.relayout(el, changes)
+                  : Promise.resolve(el);
+              })()
+            : Plotly.react(el, plot.traces, plot.layout, {
+                displayModeBar: false,
+                responsive: false,
+                editable: false,
+                scrollZoom: false,
+                doubleClick: false,
+              });
+        return update.then(() => {
+          drawn.current = { signature, layout: snapshot, data: p.data };
           if (!active) return;
+          setRendered({ config: renderConfig, data: p.data });
           setPlotError("");
           el.removeAllListeners?.("plotly_click");
           el.removeAllListeners?.("plotly_legendclick");
@@ -394,7 +485,7 @@ function Workbench(
     return () => {
       active = false;
     };
-  }, [plot]);
+  }, [plot, renderConfig, p.data]);
   useEffect(
     () => () => {
       if (graph.current) Plotly.purge(graph.current);
@@ -419,7 +510,7 @@ function Workbench(
       queryClient.setQueryData(["chart", p.project, result.id], result);
       if (!asCopy)
         try {
-          localStorage.removeItem(draftKey);
+          draftWriter.current?.clear(draftKey);
         } catch {}
       setConflict(false);
       setId(result.id);
@@ -462,6 +553,7 @@ function Workbench(
     return () => window.removeEventListener("keydown", handler);
   });
   async function download() {
+    if (exporting || plotPending) return;
     setExporting(true);
     try {
       await plotReady.current;
@@ -582,6 +674,14 @@ function Workbench(
           <Button
             variant="ghost"
             size="sm"
+            onClick={() => setReuseOpen(true)}
+            disabled={saving || c.datasetVersionId !== p.data.id}
+          >
+            复用
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             disabled={
               saving || !name.trim() || c.datasetVersionId !== p.data.id
             }
@@ -636,6 +736,7 @@ function Workbench(
             size="sm"
             disabled={
               exporting ||
+              plotPending ||
               !!plotError ||
               !plot.traces.length ||
               c.datasetVersionId !== p.data.id
@@ -887,14 +988,20 @@ function Workbench(
                 variant="ghost"
                 size="icon"
                 aria-label="缩小"
-                onClick={() => setZoom(Math.max(30, zoom - 10))}
+                onClick={() => {
+                  setAutoFit(false);
+                  setZoom(Math.max(5, zoom - 10));
+                }}
               >
                 <ZoomOut size={14} />
               </Button>
               <button
                 className="zoom-value"
-                onClick={() => setZoom(85)}
-                title="重置缩放"
+                onClick={() => {
+                  setAutoFit(false);
+                  setZoom(100);
+                }}
+                title="重置为 100%"
               >
                 {zoom}%
               </button>
@@ -902,7 +1009,10 @@ function Workbench(
                 variant="ghost"
                 size="icon"
                 aria-label="放大"
-                onClick={() => setZoom(Math.min(150, zoom + 10))}
+                onClick={() => {
+                  setAutoFit(false);
+                  setZoom(Math.min(150, zoom + 10));
+                }}
               >
                 <ZoomIn size={14} />
               </Button>
@@ -912,30 +1022,24 @@ function Workbench(
                 title="适合窗口"
                 aria-label="适合窗口"
                 onClick={() => {
-                  const el = document.querySelector(".canvas-stage")!;
-                  setZoom(
-                    Math.min(
-                      100,
-                      Math.floor(
-                        Math.min(
-                          (el.clientWidth - 80) / c.style.width,
-                          (el.clientHeight - 100) / c.style.height,
-                        ) * 100,
-                      ),
-                    ),
-                  );
+                  setAutoFit(true);
+                  const el = stage.current!;
+                  setZoom(fittedZoom(el, c.style.width, c.style.height));
                 }}
               >
                 <Maximize2 size={14} />
               </Button>
             </div>
           </div>
-          <div className="canvas-stage">
+          <div ref={stage} className="canvas-stage" aria-busy={plotPending}>
             <div
               className="paper-group"
               style={{
                 visibility:
-                  c.datasetVersionId === p.data.id ? "visible" : "hidden",
+                  c.datasetVersionId === p.data.id &&
+                  rendered?.data.id === p.data.id
+                    ? "visible"
+                    : "hidden",
               }}
             >
               <div className="paper-caption">
@@ -979,7 +1083,7 @@ function Workbench(
                 <span>点击曲线选择序列 · 样式即时更新</span>
               </div>
             </div>
-            {c.datasetVersionId !== p.data.id && (
+            {(c.datasetVersionId !== p.data.id || !rendered) && !plotError && (
               <div className="canvas-loading">正在读取所选数据版本…</div>
             )}
             {plotError && (
@@ -1051,20 +1155,27 @@ function Workbench(
             </button>
             <span className="bottom-status">
               <span className="green-dot" />
-              实时画布
+              {plotPending ? "正在更新预览…" : "实时画布"}
             </span>
           </div>
           {bottom && (
-            <div className="bottom-content">
+            <div
+              className="bottom-content"
+              aria-busy={plotPending}
+              inert={plotPending}
+            >
               {bottom === "evaluation" ? (
                 c.type === "confusion" ? (
                   <ClassificationResults
                     reports={plot.classificationReports}
-                    config={c}
+                    config={renderConfig}
                     project={p.project}
                   />
                 ) : (
-                  <EvaluationResults metrics={plot.metrics} config={c} />
+                  <EvaluationResults
+                    metrics={plot.metrics}
+                    config={renderConfig}
+                  />
                 )
               ) : bottom === "samples" ? (
                 <>
@@ -1977,7 +2088,9 @@ function Workbench(
         <div className="dialog-actions">
           <Button
             disabled={
-              exporting || (format === "pdf" && c.style.font !== "Noto Sans SC")
+              exporting ||
+              plotPending ||
+              (format === "pdf" && c.style.font !== "Noto Sans SC")
             }
             onClick={download}
           >

@@ -26,13 +26,13 @@ test("brand entrance is sequenced, real navigation works, return skips intro", a
     await page
       .locator(".launch-brand h1")
       .evaluate((el) => getComputedStyle(el).animationDelay),
-  ).toBe("0.3s");
+  ).toBe("0.14s");
   expect(
     await page
       .locator(".launch-tool")
       .first()
       .evaluate((el) => getComputedStyle(el).animationDelay),
-  ).toBe("0.72s");
+  ).toBe("0.35s");
   await page.evaluate(() =>
     Promise.all(
       document.getAnimations().map((a) => a.finished.catch(() => {})),

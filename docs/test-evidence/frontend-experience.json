@@ -1,0 +1,222 @@
+{
+  "date": "2026-10-20",
+  "timezone": "Asia/Tokyo",
+  "baseCommit": "c20d29e",
+  "method": "Same local production preview, 3 fresh browser contexts per build; chart page CPU throttle=2, cache disabled; separate table page unthrottled; synthetic 1200-point curve and 10000-row table. Input metric is event-to-next-rAF P95 per trial, not Web Vitals INP. Real project count grows during E2E; DOM totals are observational.",
+  "before": {
+    "label": "before",
+    "cpuThrottle": 2,
+    "rows": 1200,
+    "tableRows": 10000,
+    "runs": [
+      {
+        "homeNodes": 2258,
+        "coldEditorMs": 2625,
+        "typingMs": 7350,
+        "inputFrameP95Ms": 434,
+        "plotDraws": 27,
+        "draftWrites": 27,
+        "tableFilterMs": 247
+      },
+      {
+        "homeNodes": 2258,
+        "coldEditorMs": 2545,
+        "typingMs": 10454,
+        "inputFrameP95Ms": 485,
+        "plotDraws": 27,
+        "draftWrites": 27,
+        "tableFilterMs": 301
+      },
+      {
+        "homeNodes": 2258,
+        "coldEditorMs": 2780,
+        "typingMs": 10808,
+        "inputFrameP95Ms": 470,
+        "plotDraws": 27,
+        "draftWrites": 27,
+        "tableFilterMs": 319
+      }
+    ],
+    "assets": [
+      {
+        "name": "Editor-DTwofiiE.js",
+        "bytes": 4957544,
+        "gzipBytes": 1507777
+      },
+      {
+        "name": "index-DnjhUr9D.js",
+        "bytes": 448163,
+        "gzipBytes": 137890
+      },
+      {
+        "name": "jspdf.es.min-DxWm7kDM.js",
+        "bytes": 386223,
+        "gzipBytes": 126409
+      },
+      {
+        "name": "html2canvas.esm-DXEQVQnt.js",
+        "bytes": 201041,
+        "gzipBytes": 47431
+      },
+      {
+        "name": "index.es-C1HTe2RU.js",
+        "bytes": 158969,
+        "gzipBytes": 53059
+      },
+      {
+        "name": "svg2pdf.es.min-CBjs2kC_.js",
+        "bytes": 87526,
+        "gzipBytes": 25766
+      },
+      {
+        "name": "purify.es-18JuyMri.js",
+        "bytes": 30118,
+        "gzipBytes": 11509
+      },
+      {
+        "name": "pdf-DIEs9HA2.js",
+        "bytes": 4157,
+        "gzipBytes": 2129
+      }
+    ]
+  },
+  "after": {
+    "label": "after",
+    "browserVersion": "155.0.8059.84",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "chartPageCacheDisabled": true,
+    "tablePageCpuThrottle": 1,
+    "cpuThrottle": 2,
+    "rows": 1200,
+    "tableRows": 10000,
+    "runs": [
+      {
+        "homeNodes": 530,
+        "coldEditorMs": 1085,
+        "typingMs": 822,
+        "inputFrameP95Ms": 5,
+        "plotDraws": 27,
+        "draftWrites": 1,
+        "tableFilterMs": 264
+      },
+      {
+        "homeNodes": 530,
+        "coldEditorMs": 1125,
+        "typingMs": 593,
+        "inputFrameP95Ms": 29,
+        "plotDraws": 11,
+        "draftWrites": 1,
+        "tableFilterMs": 251
+      },
+      {
+        "homeNodes": 530,
+        "coldEditorMs": 1102,
+        "typingMs": 581,
+        "inputFrameP95Ms": 37,
+        "plotDraws": 10,
+        "draftWrites": 1,
+        "tableFilterMs": 255
+      }
+    ],
+    "assets": [
+      {
+        "name": "Editor-B0YYaB3e.js",
+        "bytes": 1544904,
+        "gzipBytes": 514851
+      },
+      {
+        "name": "index-CM4zIgDP.js",
+        "bytes": 449889,
+        "gzipBytes": 138319
+      },
+      {
+        "name": "jspdf.es.min-Be-2wKvj.js",
+        "bytes": 386223,
+        "gzipBytes": 126409
+      },
+      {
+        "name": "html2canvas.esm-DXEQVQnt.js",
+        "bytes": 201041,
+        "gzipBytes": 47431
+      },
+      {
+        "name": "index.es-DI8QyeaZ.js",
+        "bytes": 158969,
+        "gzipBytes": 53059
+      },
+      {
+        "name": "svg2pdf.es.min-BWmxC1OX.js",
+        "bytes": 87526,
+        "gzipBytes": 25768
+      },
+      {
+        "name": "purify.es-18JuyMri.js",
+        "bytes": 30118,
+        "gzipBytes": 11509
+      },
+      {
+        "name": "pdf-CSp9N8FJ.js",
+        "bytes": 4157,
+        "gzipBytes": 2127
+      }
+    ]
+  },
+  "medianByMetric": {
+    "homeNodes": {
+      "before": 2258,
+      "after": 530
+    },
+    "coldEditorMs": {
+      "before": 2625,
+      "after": 1102
+    },
+    "typingMs": {
+      "before": 10454,
+      "after": 593
+    },
+    "inputFrameP95Ms": {
+      "before": 470,
+      "after": 29
+    },
+    "plotDraws": {
+      "before": 27,
+      "after": 11
+    },
+    "draftWrites": {
+      "before": 27,
+      "after": 1
+    },
+    "tableFilterMs": {
+      "before": 301,
+      "after": 255
+    }
+  },
+  "tests": {
+    "frontend": {
+      "passed": 74,
+      "total": 74
+    },
+    "browser": {
+      "casesValidated": 25,
+      "latestFullRun": {
+        "passed": 23,
+        "failed": 2
+      },
+      "targetedRerun": {
+        "passed": 2,
+        "failed": 0
+      },
+      "notes": [
+        "Windows worker exited with code 3221226505 during concurrent build.",
+        "One PDF dependency request failed with Chrome net::ERR_NO_BUFFER_SPACE; confirmed in network trace.",
+        "Both cases passed when rerun sequentially without concurrent build. No failed case was removed or marked skip."
+      ]
+    },
+    "productionBuild": "passed; Plotly chunk-size warning retained",
+    "javaRerun": false,
+    "previousJavaPassCount": 56
+  }
+}

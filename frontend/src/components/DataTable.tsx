@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { memo, useDeferredValue, useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -6,11 +6,13 @@ import {
   getSortedRowModel,
   getFilteredRowModel,
   flexRender,
+  type Row,
 } from "@tanstack/react-table";
 import type { Dataset } from "../lib/api";
 import { Button } from "./ui/button";
-export function DataTable({ data }: { data: Dataset }) {
+export const DataTable = memo(function DataTable({ data }: { data: Dataset }) {
   const [search, setSearch] = useState("");
+  const filter = useDeferredValue(search);
   const [missingOnly, setMissingOnly] = useState(false);
   const viewed = useMemo(
     () =>
@@ -43,7 +45,7 @@ export function DataTable({ data }: { data: Dataset }) {
   );
   const table = useReactTable({
     data: viewed,
-    state: { globalFilter: search },
+    state: { globalFilter: filter },
     onGlobalFilterChange: setSearch,
     getColumnCanGlobalFilter: () => true,
     globalFilterFn: (row, column, value) =>
@@ -96,7 +98,7 @@ export function DataTable({ data }: { data: Dataset }) {
         </details>
         <span>仅影响表格查看，不改变图表或原数据</span>
       </div>
-      <div className="table-scroll">
+      <div className="table-scroll" aria-busy={filter !== search}>
         <table>
           <thead>
             {table.getHeaderGroups().map((g) => (
@@ -137,25 +139,18 @@ export function DataTable({ data }: { data: Dataset }) {
               </tr>
             ))}
           </thead>
-          <tbody>
-            {table.getRowModel().rows.map((r) => (
-              <tr key={r.id}>
-                <td className="row-number">{r.index + 1}</td>
-                {r.getVisibleCells().map((c) => (
-                  <td
-                    key={c.id}
-                    className={c.getValue() === null ? "missing-cell" : ""}
-                  >
-                    {flexRender(c.column.columnDef.cell, c.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
+          <TableRows
+            rows={table.getRowModel().rows}
+            visibility={table
+              .getVisibleLeafColumns()
+              .map((c) => c.id)
+              .join("\0")}
+          />
         </table>
       </div>
       <div className="table-footer">
         <span>
+          {filter !== search ? "正在筛选… · " : ""}
           查看 {table.getFilteredRowModel().rows.length} / {data.row_count} 行 ·{" "}
           {data.fields.length} 个字段 · 原始数据只读
         </span>
@@ -184,4 +179,28 @@ export function DataTable({ data }: { data: Dataset }) {
       </div>
     </div>
   );
-}
+});
+const TableRows = memo(function TableRows({
+  rows,
+}: {
+  rows: Row<Record<string, string | number | null>>[];
+  visibility: string;
+}) {
+  return (
+    <tbody>
+      {rows.map((r) => (
+        <tr key={r.id}>
+          <td className="row-number">{r.index + 1}</td>
+          {r.getVisibleCells().map((c) => (
+            <td
+              key={c.id}
+              className={c.getValue() === null ? "missing-cell" : ""}
+            >
+              {flexRender(c.column.columnDef.cell, c.getContext())}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  );
+});

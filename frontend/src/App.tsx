@@ -17,6 +17,7 @@ import { Button } from "./components/ui/button";
 import { Dialog } from "./components/ui/dialog";
 import { DataTable } from "./components/DataTable";
 import { HomePage } from "./components/HomePage";
+import { WorkbenchSkeleton } from "./components/WorkbenchSkeleton";
 import { LabFlowMark } from "./components/LabFlowMark";
 import { UploadDialog } from "./components/UploadDialog";
 import { ProjectManager } from "./components/ProjectManager";
@@ -245,9 +246,7 @@ export default function App() {
             <Button onClick={() => projects.refetch()}>重新连接</Button>
           </div>
         ) : page === "editor" && project ? (
-          <Suspense
-            fallback={<div className="empty-state">正在加载绘图引擎…</div>}
-          >
+          <Suspense fallback={<WorkbenchSkeleton />}>
             <Editor
               key={`${project}-${chart}`}
               project={project}

@@ -1,4 +1,10 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+} from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -46,12 +52,35 @@ export function HomePage(p: Props) {
     sessionStorage.setItem("labflow-intro-v2", "seen");
   }, []);
   const current = p.projects.find((project) => project.id === p.currentId);
+  const [search, setSearch] = useState("");
+  const deferredSearch = useDeferredValue(search);
+  const [projectLimit, setProjectLimit] = useState(8);
+  const [chartLimit, setChartLimit] = useState(8);
+  const projects = useMemo(
+    () =>
+      p.projects
+        .filter((project) =>
+          `${project.name} ${project.description}`
+            .toLowerCase()
+            .includes(deferredSearch.trim().toLowerCase()),
+        )
+        .sort(
+          (a, b) => Number(b.id === p.currentId) - Number(a.id === p.currentId),
+        ),
+    [p.projects, p.currentId, deferredSearch],
+  );
+  useEffect(() => {
+    setProjectLimit(8);
+  }, [deferredSearch]);
+  useEffect(() => {
+    setChartLimit(8);
+  }, [p.currentId]);
   const act = (callback: () => void) => (current ? callback() : p.onCreate());
   const actions = [
     {
       title: "绘图工作台",
       desc: "让数据，成为清晰的表达。",
-      detail: "折线 / 柱状 / 散点 / 热力图",
+      detail: "11 种图表 · 模板复用 · 矢量导出",
       Icon: ChartNoAxesCombined,
       color: "blue",
       run: () => act(p.onPlot),
@@ -157,36 +186,53 @@ export function HomePage(p: Props) {
                 <Plus size={17} />
               </button>
             </div>
+            {p.projects.length > 8 && (
+              <div className="workspace-search">
+                <input
+                  aria-label="搜索工作区项目"
+                  placeholder="搜索项目名称或简介…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            )}
             <div className="workspace-projects">
               {p.projects.length ? (
-                p.projects.map((project) => (
-                  <button
-                    className={`workspace-project ${project.id === p.currentId ? "is-current" : ""}`}
-                    key={project.id}
-                    onClick={() => p.onProject(project.id)}
-                    aria-pressed={project.id === p.currentId}
-                  >
-                    <span className="workspace-folder">
-                      <FolderOpen size={20} />
-                    </span>
-                    <span className="workspace-project-text">
-                      <strong>{project.name}</strong>
-                      <small>
-                        {project.experiment_count} 个实验<span>·</span>
-                        {project.dataset_count} 份数据<span>·</span>
-                        {project.chart_count} 张图表
-                      </small>
-                    </span>
-                    {project.id === p.currentId ? (
-                      <span className="project-check">
-                        <Check size={13} />
-                        当前
+                projects.length ? (
+                  projects.slice(0, projectLimit).map((project) => (
+                    <button
+                      className={`workspace-project ${project.id === p.currentId ? "is-current" : ""}`}
+                      key={project.id}
+                      onClick={() => p.onProject(project.id)}
+                      aria-pressed={project.id === p.currentId}
+                    >
+                      <span className="workspace-folder">
+                        <FolderOpen size={20} />
                       </span>
-                    ) : (
-                      <ChevronRight size={16} />
-                    )}
-                  </button>
-                ))
+                      <span className="workspace-project-text">
+                        <strong>{project.name}</strong>
+                        <small>
+                          {project.experiment_count} 个实验<span>·</span>
+                          {project.dataset_count} 份数据<span>·</span>
+                          {project.chart_count} 张图表
+                        </small>
+                      </span>
+                      {project.id === p.currentId ? (
+                        <span className="project-check">
+                          <Check size={13} />
+                          当前
+                        </span>
+                      ) : (
+                        <ChevronRight size={16} />
+                      )}
+                    </button>
+                  ))
+                ) : (
+                  <div className="workspace-empty">
+                    <p>没有匹配的项目</p>
+                    <button onClick={() => setSearch("")}>清除搜索</button>
+                  </div>
+                )
               ) : (
                 <div className="workspace-empty">
                   <FolderOpen size={28} />
@@ -198,6 +244,15 @@ export function HomePage(p: Props) {
                 </div>
               )}
             </div>
+            {projects.length > projectLimit && (
+              <button
+                className="workspace-more"
+                onClick={() => setProjectLimit((n) => n + 12)}
+              >
+                显示更多项目（剩余 {projects.length - projectLimit}）
+                <ChevronRight size={14} />
+              </button>
+            )}
             {current && (
               <div className="workspace-current-note">
                 <span className="current-indicator" />
@@ -232,7 +287,7 @@ export function HomePage(p: Props) {
                   </button>
                 </div>
               ) : p.charts.length ? (
-                p.charts.map((chart) => (
+                p.charts.slice(0, chartLimit).map((chart) => (
                   <button
                     className="workspace-chart"
                     key={chart.id}
@@ -263,6 +318,15 @@ export function HomePage(p: Props) {
                 </div>
               )}
             </div>
+            {p.charts.length > chartLimit && (
+              <button
+                className="workspace-more"
+                onClick={() => setChartLimit((n) => n + 12)}
+              >
+                显示更多图表（剩余 {p.charts.length - chartLimit}）
+                <ChevronRight size={14} />
+              </button>
+            )}
           </section>
         </div>
       </section>

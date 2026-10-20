@@ -6,6 +6,7 @@ import "@fontsource-variable/newsreader";
 import "@fontsource-variable/jetbrains-mono";
 import App from "./App";
 import "./styles.css";
+import "./components/experience.css";
 const client = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
 });
