@@ -43,7 +43,9 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   await page
     .getByLabel("图表名称", { exact: true })
     .fill("可复用成果 · 合成数据");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("图表标题", { exact: true }).fill("合成实验 · Model α");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("字体", { exact: true }).selectOption("Noto Sans SC");
   await page.getByRole("button", { name: "专业", exact: true }).click();
   await page.getByRole("switch", { name: "按论文物理尺寸输出" }).check();
@@ -62,7 +64,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   await expect(page.getByLabel("图表名称", { exact: true })).toHaveValue(
     "可复用成果 · 合成数据",
   );
-  await page.getByRole("button", { name: "样式与图表复用" }).click();
+  await page.getByRole("button", { name: "复用", exact: true }).click();
   const templateName = `交付风格 ${p.id}`;
   await page.getByLabel("模板名称").fill(templateName);
   await page.getByRole("button", { name: "保存当前样式" }).click();
@@ -74,15 +76,17 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
     .getByRole("button", { name: "关闭", exact: true })
     .click();
   await page.getByRole("button", { name: "图表", exact: true }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("字体", { exact: true }).selectOption("Arial");
-  await page.getByRole("button", { name: "样式与图表复用" }).click();
+  await page.getByRole("button", { name: "复用", exact: true }).click();
   await page
     .getByRole("button", { name: `应用样式 ${templateName}`, exact: true })
     .click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("字体", { exact: true })).toHaveValue(
     "Noto Sans SC",
   );
-  await page.getByRole("button", { name: "样式与图表复用" }).click();
+  await page.getByRole("button", { name: "复用", exact: true }).click();
   await page
     .getByRole("button", { name: "复用到其他数据集", exact: true })
     .click();

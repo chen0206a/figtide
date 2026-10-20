@@ -16,13 +16,11 @@ test("import preview → explicit rules → mapping → draft recovery → confl
     project.id,
   );
   await page.goto("/");
-  await page
-    .getByTestId("file-upload")
-    .setInputFiles({
-      name: "确认演示.csv",
-      mimeType: "text/csv",
-      buffer: Buffer.from("epoch,score,std\n1,NA,0.1\n2,92,0.2\n3,95,0.3"),
-    });
+  await page.getByTestId("file-upload").setInputFiles({
+    name: "确认演示.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from("epoch,score,std\n1,NA,0.1\n2,92,0.2\n3,95,0.3"),
+  });
   await expect(page.getByLabel("score 类型")).toBeVisible();
   expect(
     await (await request.get(`/api/projects/${project.id}/datasets`)).json(),
@@ -62,12 +60,14 @@ test("import preview → explicit rules → mapping → draft recovery → confl
     )
     .toEqual([0.1, 0.2, 0.3]);
   await page.getByLabel("图表名称").fill("草稿恢复验收");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("图表标题", { exact: true }).fill("Recovered research");
   await expect(page.getByText("本机草稿已保存", { exact: true })).toBeVisible();
   page.on("dialog", (d) => d.accept());
   await page.reload();
   await page.getByRole("button", { name: "科研绘图", exact: true }).click();
   await page.getByRole("button", { name: "恢复草稿", exact: true }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Recovered research",
   );
@@ -84,6 +84,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await request.put(`/api/projects/${project.id}/charts/${chart.id}`, {
     data: { name: chart.name, revision: chart.revision, config: chart.config },
   });
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Local conflicting title");
@@ -104,6 +105,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await expect(
     page.getByRole("separator", { name: "调整数据栏宽度" }),
   ).toHaveAttribute("aria-valuenow", "246");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Learning accuracy · synthetic data");
@@ -111,6 +113,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "项目概览", exact: true }).click();
   await page.getByRole("button", { name: /草稿恢复验收 · 副本/ }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Learning accuracy · synthetic data",
   );

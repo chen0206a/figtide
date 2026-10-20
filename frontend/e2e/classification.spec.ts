@@ -39,9 +39,17 @@ test("true/predicted labels → multiclass counts → common normalized matrix �
   await page
     .getByLabel("图表名称")
     .fill("Multiclass common samples · synthetic");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Synthetic classification · common samples");
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "混淆矩阵", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "混淆矩阵", exact: true }).click();
   await page.getByLabel("分类真实标签列").selectOption("truth");
   await page.getByRole("button", { name: "序列", exact: true }).click();
@@ -197,11 +205,16 @@ test("paired ROC retains the full model intersection in series facets and reject
   await page.goto("/");
   await page.getByRole("button", { name: "科研绘图", exact: true }).click();
   await page.getByLabel("图表名称").fill("Common ROC · synthetic");
+  await page.getByRole("button", { name: "图表", exact: true }).click();
   await page
     .getByLabel("Y 轴字段 · 当前序列", { exact: true })
     .selectOption("a");
   await page.getByRole("button", { name: "添加序列", exact: true }).click();
   await page.getByLabel("Y 数值字段", { exact: true }).selectOption("b");
+  if (
+    !(await page.getByRole("button", { name: "ROC", exact: true }).isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "ROC", exact: true }).click();
   await page.getByLabel("真实标签列", { exact: true }).selectOption("label");
   await page.getByLabel("正类值", { exact: true }).selectOption("1");

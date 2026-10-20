@@ -36,12 +36,18 @@ test("raw labels/scores → ROC/AP → MySQL reopen → PR and vector export", a
   await page.goto("/");
   await page.getByRole("button", { name: "科研绘图", exact: true }).click();
   await page.getByLabel("图表名称").fill("Binary evaluation · synthetic");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Binary model evaluation · synthetic");
+  await page.getByRole("button", { name: "图表", exact: true }).click();
   await page
     .getByLabel("Y 轴字段 · 当前序列", { exact: true })
     .selectOption("score");
+  if (
+    !(await page.getByRole("button", { name: "ROC", exact: true }).isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "ROC", exact: true }).click();
   await page.getByLabel("真实标签列").selectOption("label");
   await page.getByLabel("正类值").selectOption("1");
@@ -73,6 +79,10 @@ test("raw labels/scores → ROC/AP → MySQL reopen → PR and vector export", a
   expect(report.datasetVersionId).toBe(dataset.id);
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v1", { exact: false })).toBeVisible();
+  if (
+    !(await page.getByRole("button", { name: "PR", exact: true }).isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "PR", exact: true }).click();
   await page.getByLabel("决策阈值").fill("0.3");
   await expect
@@ -150,6 +160,7 @@ test("actual bound columns → gap-safe interval → save reopen → SVG/PNG", a
   await page.goto("/");
   await page.getByRole("button", { name: "科研绘图", exact: true }).click();
   await page.getByLabel("图表名称").fill("Actual intervals · synthetic");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Learning dynamics · supplied intervals");

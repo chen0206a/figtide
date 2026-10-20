@@ -58,6 +58,13 @@ test("brand entrance is sequenced, real navigation works, return skips intro", a
   await page.getByRole("button", { name: /^导入数据/ }).click();
   expect(await chooser).toBeTruthy();
   await page.getByRole("button", { name: /^绘图工作台/ }).click();
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "折线图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await expect(
     page.getByRole("button", { name: "折线图", exact: true }),
   ).toBeVisible();

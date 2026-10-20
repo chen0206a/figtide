@@ -101,9 +101,6 @@
   font-size: 11.5px;
   padding: 0 13px;
 }
-.refined-shell .chart-type-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
 .refined-shell .chart-type-grid button span {
   white-space: nowrap;
 }

@@ -28,9 +28,11 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
   await page.getByRole("button", { name: "用于绘图" }).click();
   await expect(page.locator(".main-svg").first()).toBeVisible();
   await page.getByLabel("图表名称").fill("Learning dynamics");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Learning dynamics on CIFAR-10");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("字体", { exact: true }).selectOption("Arial");
   await page.getByLabel("字号", { exact: true }).fill("16");
   await page.getByRole("button", { name: "添加序列", exact: true }).click();
@@ -74,6 +76,13 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
     colors: el.data.map((t: any) => t.line.color),
   }));
   expect(configAfter).toEqual(configBefore);
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "散点图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "散点图", exact: true }).click();
   await expect
     .poll(() => page.getByTestId("plot").evaluate((el: any) => el.data[0].mode))

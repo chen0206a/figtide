@@ -43,9 +43,17 @@ test("real repeated samples → box/violin → facets → save/reopen → vector
   await page.getByRole("button", { name: "科研绘图", exact: true }).click();
   await expect(page.getByTestId("plot")).toBeVisible();
   await page.getByLabel("图表名称").fill("Repeated experiments · synthetic");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Repeated experiments · synthetic observations");
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "箱线图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "箱线图", exact: true }).click();
   await page.getByLabel("四分位算法").selectOption("exclusive");
   await page.getByRole("switch", { name: "显示均值线", exact: true }).check();
@@ -89,6 +97,13 @@ test("real repeated samples → box/violin → facets → save/reopen → vector
     path: "../docs/screenshots/professional-box.png",
     fullPage: true,
   });
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "小提琴图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "小提琴图", exact: true }).click();
   await page.getByLabel("密度带宽").fill("0.4");
   await page.getByLabel("分面方式").selectOption("field");
@@ -208,6 +223,13 @@ test("real repeated samples → box/violin → facets → save/reopen → vector
   expect(png.readUInt32BE(16)).toBe(saved.config.style.width * 2);
   expect(png.readUInt32BE(20)).toBe(saved.config.style.height * 2);
   // Switching types retains distribution and facet settings and can be undone.
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "折线图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "折线图", exact: true }).click();
   await page.getByRole("button", { name: "撤销", exact: true }).click();
   await page.getByRole("button", { name: "专业", exact: true }).click();
@@ -245,6 +267,13 @@ test("sparse violin warns and shows only actual samples, invalid bandwidth canno
   );
   await page.goto("/");
   await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "小提琴图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "小提琴图", exact: true }).click();
   await expect
     .poll(() =>
@@ -295,6 +324,13 @@ test("quartile methods compute known sample statistics in the actual plotting en
   );
   await page.goto("/");
   await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "箱线图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "箱线图", exact: true }).click();
   for (const [method, q1, q3] of [
     ["exclusive", 1.5, 4.5],

@@ -36,9 +36,17 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
   await page
     .getByLabel("图表名称")
     .fill("Publication distributions · synthetic");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Synthetic observations");
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "直方图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "直方图", exact: true }).click();
   await page.getByLabel("等宽分箱数量").fill("2");
   await page.getByLabel("分箱起点", { exact: true }).fill("0");
@@ -96,6 +104,10 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
   expect(phys).toBeGreaterThan(0);
   expect(png.readUInt32BE(phys + 4)).toBe(Math.round(1051 / 0.089));
   expect(png[phys + 12]).toBe(1);
+  if (
+    !(await page.getByRole("button", { name: "ECDF", exact: true }).isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "ECDF", exact: true }).click();
   await expect
     .poll(() => page.getByTestId("plot").evaluate((el: any) => el.data[0]?.y))
@@ -178,9 +190,17 @@ test("scientific heatmap scale, contrasting numeric labels, and rejected invalid
   );
   await page.goto("/");
   await page.getByRole("button", { name: "科研绘图", exact: true }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Synthetic effect matrix");
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "热力图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "热力图", exact: true }).click();
   await page.getByRole("button", { name: "专业", exact: true }).click();
   await page.getByLabel("连续色阶").selectOption("blueRed");

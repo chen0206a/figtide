@@ -383,3 +383,166 @@
     animation: none !important;
   }
 }
+/* Task-focused editor: resources on the left, selected properties on the right. */
+.editor .panel-title {
+  height: 48px;
+  min-height: 48px;
+  font-size: 13px;
+  letter-spacing: 0;
+  background: #fff;
+}
+.editor .editor-left,
+.editor .editor-right {
+  background: #fafbfc;
+}
+.editor .section-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.editor .chart-type-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+.editor .chart-type-grid button {
+  height: 35px;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: 0 8px;
+  gap: 7px;
+  border-color: transparent;
+  background: transparent;
+  border-radius: 6px;
+}
+.editor .chart-type-grid button svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.editor .chart-type-grid button.active {
+  background: #eaf0ff;
+  color: #3458b0;
+  border-color: #d5e0fa;
+}
+.editor .chart-type-grid button:hover {
+  background: #eef1f6;
+}
+.editor .inspector-tabs {
+  height: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 9px;
+  background: #fff;
+}
+.editor .inspector-tabs button {
+  min-height: 32px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.editor .inspector-tabs button.active {
+  background: #eaf0ff;
+  color: #3458b0;
+  box-shadow: none;
+}
+.editor .field-disclosure summary,
+.editor .preset-disclosure summary,
+.editor .property-disclosure summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #465164;
+}
+.editor summary::-webkit-details-marker {
+  display: none;
+}
+.editor .field-disclosure summary::after,
+.editor .preset-disclosure summary::after {
+  content: "›";
+  margin-left: auto;
+  font-size: 17px;
+  transition: transform 150ms ease;
+}
+.editor .field-disclosure[open] > summary::after,
+.editor .preset-disclosure[open] > summary::after {
+  transform: rotate(90deg);
+}
+.editor .field-disclosure summary {
+  padding: 7px 0 0;
+  font-weight: 400;
+}
+.editor .field-disclosure summary span {
+  color: #7b8596;
+}
+.editor .field-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+.editor .preset-disclosure[open] > summary {
+  margin-bottom: 14px;
+}
+.editor .property-disclosure {
+  padding: 0;
+}
+.editor .property-disclosure > summary {
+  min-height: 46px;
+  padding: 12px 16px;
+}
+.editor .property-disclosure > summary > svg:last-child {
+  margin-left: auto;
+  transform: rotate(-90deg);
+}
+.editor .property-disclosure[open] > summary > svg:last-child {
+  transform: rotate(0);
+}
+.editor .property-content {
+  padding: 0 16px 17px;
+}
+.editor summary:focus-visible {
+  outline: 2px solid #668be0;
+  outline-offset: -3px;
+  border-radius: 5px;
+}
+.editor .left-foot {
+  padding: 12px 16px;
+  font-size: 11.5px;
+}
+.editor .canvas-stage {
+  background-color: #f0f2f5;
+  background-image: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .editor summary::after {
+    transition: none;
+  }
+}
+.editor .chart-picker > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+.editor .chart-picker > summary span {
+  margin-left: auto;
+  color: #526fae;
+  font-weight: 400;
+}
+.editor .chart-picker > summary svg {
+  transform: rotate(-90deg);
+}
+.editor .chart-picker[open] > summary svg {
+  transform: none;
+}
+.editor .chart-picker[open] > summary {
+  margin-bottom: 12px;
+}

@@ -796,26 +796,49 @@ function Workbench(
               {p.data.row_count} 行 <span>·</span> {p.data.fields.length} 字段{" "}
               <span className="version-tag">v{p.data.version}</span>
             </div>
-            <div className="field-list">
-              {p.data.fields.map((f) => (
-                <div key={f.name}>
-                  <span
-                    className={
-                      f.type === "number" ? "number-symbol" : "string-symbol"
-                    }
-                  >
-                    {f.type === "number" ? "#" : "Aa"}
-                  </span>
-                  <span>{f.name}</span>
-                  <small>{f.type === "number" ? "数值" : "文本"}</small>
-                </div>
-              ))}
-            </div>
+            <details className="field-disclosure">
+              <summary>
+                查看字段 <span>{p.data.fields.length}</span>
+              </summary>
+              <div className="field-list">
+                {p.data.fields.map((f) => (
+                  <div key={f.name}>
+                    <span
+                      className={
+                        f.type === "number" ? "number-symbol" : "string-symbol"
+                      }
+                    >
+                      {f.type === "number" ? "#" : "Aa"}
+                    </span>
+                    <span>{f.name}</span>
+                    <small>{f.type === "number" ? "数值" : "文本"}</small>
+                  </div>
+                ))}
+              </div>
+            </details>
           </section>
-          <section className="left-section">
-            <div className="section-label">
-              图表类型<span className="tiny-label">11 种</span>
-            </div>
+          <details className="left-section chart-picker" open={!p.original}>
+            <summary>
+              图表类型{" "}
+              <span>
+                {
+                  {
+                    line: "折线图",
+                    bar: "柱状图",
+                    scatter: "散点图",
+                    heatmap: "热力图",
+                    box: "箱线图",
+                    violin: "小提琴图",
+                    histogram: "直方图",
+                    ecdf: "ECDF",
+                    roc: "ROC",
+                    pr: "PR",
+                    confusion: "混淆矩阵",
+                  }[c.type]
+                }
+              </span>
+              <ChevronDown size={13} />
+            </summary>
             <div className="chart-type-grid">
               {(
                 [
@@ -867,7 +890,7 @@ function Workbench(
                 </button>
               ))}
             </div>
-          </section>
+          </details>
           <section className="left-section">
             <div className="section-label">
               图层 / 序列{" "}
@@ -917,34 +940,12 @@ function Workbench(
                 <ChevronRight size={12} />
               </button>
             ))}
-            <button
-              className={`layer-item ${panel === "axes" ? "active" : ""}`}
-              onClick={() => setPanel("axes")}
-            >
-              <Hash size={15} />
-              <span>坐标轴</span>
-            </button>
-            <button
-              className={`layer-item ${panel === "annotations" ? "active" : ""}`}
-              onClick={() => setPanel("annotations")}
-            >
-              <Type size={15} />
-              <span>文本注释</span>
-              <small>{c.annotations.length || ""}</small>
-            </button>
-            <button
-              className={`layer-item ${panel === "professional" ? "active" : ""}`}
-              onClick={() => setPanel("professional")}
-            >
-              <Grid2X2 size={15} />
-              <span>分布与子图</span>
-              <small>{plot.panelCount > 1 ? plot.panelCount : ""}</small>
-            </button>
           </section>
-          <section className="left-section presets">
-            <div className="section-label">
-              视觉预设 <Palette size={13} />
-            </div>
+          <details className="left-section presets preset-disclosure">
+            <summary>
+              <Palette size={13} />
+              视觉预设
+            </summary>
             {Object.entries(palettes).map(([key, colors]) => (
               <button
                 className={c.style.preset === key ? "preset active" : "preset"}
@@ -966,7 +967,7 @@ function Workbench(
             <Button variant="outline" onClick={() => setReuseOpen(true)}>
               样式与图表复用
             </Button>
-          </section>
+          </details>
           <div className="left-foot">
             <span className="green-dot" />
             原始实验数据始终保持不变
@@ -1249,6 +1250,7 @@ function Workbench(
           <div className="inspector-tabs">
             {[
               ["chart", "图表"],
+              ["appearance", "外观"],
               ["series", "序列"],
               ["axes", "坐标轴"],
               ["annotations", "注释"],
@@ -1256,6 +1258,7 @@ function Workbench(
             ].map(([key, label]) => (
               <button
                 className={panel === key ? "active" : ""}
+                aria-pressed={panel === key}
                 key={key}
                 onClick={() => setPanel(key)}
               >
@@ -1327,6 +1330,10 @@ function Workbench(
                     </>
                   )}
                 </Section>
+              </>
+            )}
+            {panel === "appearance" && (
+              <>
                 <Section title="标题与字体" icon={<Type size={13} />}>
                   <Text
                     label="图表标题"
@@ -1456,6 +1463,10 @@ function Workbench(
                     </div>
                   </Section>
                 )}
+              </>
+            )}
+            {panel === "chart" && (
+              <>
                 <Section title="数据过滤 · 可复现" icon={<Filter size={13} />}>
                   <p className="tiny-note">仅影响展示，不覆盖原始数据。</p>
                   {c.transforms.map((t, i) => (
@@ -2145,13 +2156,19 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="property-section">
-      <h3>
+    <details
+      className="property-section property-disclosure"
+      open={
+        !["画布设置", "图例", "数据过滤 · 可复现", "图层操作"].includes(title)
+      }
+    >
+      <summary>
         {icon}
-        {title}
-      </h3>
-      {children}
-    </section>
+        <span>{title}</span>
+        <ChevronDown size={13} />
+      </summary>
+      <div className="property-content">{children}</div>
+    </details>
   );
 }
 function Text({

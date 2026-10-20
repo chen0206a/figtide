@@ -87,14 +87,28 @@ test("auto-fit, layout-only axis reset, latest SVG and MySQL reopen remain consi
   await paperFits(page);
   await page.setViewportSize({ width: 1280, height: 800 });
   await paperFits(page);
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  if (!(await page.getByLabel("宽度 / px", { exact: true }).isVisible()))
+    await page.locator("summary").filter({ hasText: "画布设置" }).click();
   await page.getByLabel("宽度 / px", { exact: true }).fill("2400");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  if (!(await page.getByLabel("宽度 / px", { exact: true }).isVisible()))
+    await page.locator("summary").filter({ hasText: "画布设置" }).click();
   await page.getByLabel("高度 / px", { exact: true }).fill("2400");
   await paperFits(page);
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  if (!(await page.getByLabel("宽度 / px", { exact: true }).isVisible()))
+    await page.locator("summary").filter({ hasText: "画布设置" }).click();
   await page.getByLabel("宽度 / px", { exact: true }).fill("760");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  if (!(await page.getByLabel("宽度 / px", { exact: true }).isVisible()))
+    await page.locator("summary").filter({ hasText: "画布设置" }).click();
   await page.getByLabel("高度 / px", { exact: true }).fill("500");
   await paperFits(page);
   const title = "Final responsive title";
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("图表标题", { exact: true }).fill("");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .pressSequentially(title, { delay: 5 });
@@ -103,6 +117,7 @@ test("auto-fit, layout-only axis reset, latest SVG and MySQL reopen remain consi
       page.getByTestId("plot").evaluate((el: any) => el.layout.title.text),
     )
     .toBe(title);
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("字体", { exact: true }).selectOption("Georgia");
   await page
     .locator(".inspector-tabs")
@@ -168,6 +183,7 @@ test("auto-fit, layout-only axis reset, latest SVG and MySQL reopen remain consi
   expect(svg).not.toContain("<image");
   await page.reload();
   await page.getByRole("button", { name: /体验回归图 · 合成/ }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(title);
   await expect
     .poll(() =>
@@ -188,6 +204,7 @@ test("refresh during the debounce window flushes the latest draft without changi
   request,
 }) => {
   const { project, chart } = await fixture(page, request);
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByLabel("图表标题", { exact: true })
     .fill("Refresh should preserve this exact draft");
@@ -198,6 +215,7 @@ test("refresh during the debounce window flushes the latest draft without changi
     page.getByRole("dialog", { name: "发现未完成的草稿" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "恢复草稿", exact: true }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Refresh should preserve this exact draft",
   );
@@ -207,4 +225,51 @@ test("refresh during the debounce window flushes the latest draft without changi
   expect(saved.config).toEqual(chart.config);
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
+});
+
+test("focused inspector keeps data and appearance separate without changing the saved chart", async ({
+  page,
+  request,
+}) => {
+  const { project, chart } = await fixture(page, request);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page.getByLabel("X 轴字段", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("图表标题", { exact: true })).toHaveCount(0);
+  await expect(page.locator(".field-disclosure")).not.toHaveAttribute(
+    "open",
+    "",
+  );
+  await expect(page.locator(".preset-disclosure")).not.toHaveAttribute(
+    "open",
+    "",
+  );
+  await page.locator(".field-disclosure summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".field-list")).toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".field-list")).toBeHidden();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  await expect(page.getByLabel("图表标题", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("X 轴字段", { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel("宽度 / px", { exact: true })).toBeHidden();
+  await page.locator("summary").filter({ hasText: "画布设置" }).click();
+  await expect(page.getByLabel("宽度 / px", { exact: true })).toBeVisible();
+  await page.locator("summary").filter({ hasText: "画布设置" }).click();
+  await expect(
+    page.getByRole("button", { name: "保存", exact: true }),
+  ).toBeDisabled();
+  for (const width of [1280, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await paperFits(page);
+    await page.screenshot({
+      path: `../docs/screenshots/focused-editor-${width}.png`,
+    });
+  }
+  await page.getByRole("button", { name: "图表", exact: true }).click();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.screenshot({ path: "../docs/screenshots/focused-mapping.png" });
+  const saved = await (
+    await request.get(`/api/projects/${project.id}/charts/${chart.id}`)
+  ).json();
+  expect(saved.revision).toBe(chart.revision);
 });

@@ -34,15 +34,19 @@ test("dataset switch, undo, styles, annotations, heatmap and history", async ({
   await page.goto("/");
   await page.getByRole("button", { name: "科研绘图", exact: true }).click();
   await expect(page.locator(".main-svg").first()).toBeVisible();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("图表标题", { exact: true }).fill("Preserved title");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("字体", { exact: true }).selectOption("Georgia");
   await page.getByLabel("绘图数据集").selectOption(String(first.id));
   await expect
     .poll(() => page.getByTestId("plot").evaluate((el: any) => el.data[0].y[0]))
     .toBe(10);
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Preserved title",
   );
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("字体", { exact: true })).toHaveValue("Georgia");
   await page.getByRole("button", { name: "撤销", exact: true }).click();
   await expect
@@ -61,6 +65,13 @@ test("dataset switch, undo, styles, annotations, heatmap and history", async ({
       page.getByTestId("plot").evaluate((el: any) => el.data[0].marker.color),
     )
     .toBe("#d99641");
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "柱状图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "柱状图", exact: true }).click();
   await expect
     .poll(() => page.getByTestId("plot").evaluate((el: any) => el.data[0].type))
@@ -77,6 +88,7 @@ test("dataset switch, undo, styles, annotations, heatmap and history", async ({
     .toBe("Synthetic data");
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v1", { exact: false })).toBeVisible();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("图表标题", { exact: true }).fill("Version two");
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
@@ -86,13 +98,23 @@ test("dataset switch, undo, styles, annotations, heatmap and history", async ({
     .filter({ hasText: "版本 1" })
     .getByRole("button", { name: "载入快照" })
     .click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Preserved title",
   );
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v3", { exact: false })).toBeVisible();
+  await expect(page.locator(".chart-picker > summary")).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "热力图", exact: true })
+      .isVisible())
+  )
+    await page.locator(".chart-picker > summary").click();
   await page.getByRole("button", { name: "热力图", exact: true }).click();
+  await page.getByRole("button", { name: "图表", exact: true }).click();
   await page.getByLabel("Y 分类字段").selectOption("epoch");
+  await page.getByRole("button", { name: "图表", exact: true }).click();
   await page.getByLabel("Z 数值字段").selectOption("value");
   await expect
     .poll(() => page.getByTestId("plot").evaluate((el: any) => el.data[0].type))
