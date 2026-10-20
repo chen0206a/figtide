@@ -17,18 +17,24 @@
 
 ## 视觉与图廊
 
-参考 [Mobbin](https://mobbin.com/) 收录的真实产品界面，采用暖白、浅石墨和低饱和蓝色，图廊用浅蓝、薄荷绿、淡紫与米色区分图版。Mobbin 是参考库，本项目没有复制其品牌素材或付费截图。
+借鉴用户提供的 [Mobbin](https://mobbin.com/) 截图的居中内容与黑白卡片层级。首页页头限定 1200 px 并居中，工作台保留完整工具栏宽度；功能入口以白底黑字为主、绘图入口黑底白字，增加明确的操作文字、键盘焦点与轻微悬停反馈。没有复制品牌素材或商业截图。
 
-图廊为本地 PNG 参考图片，65 秒无缝循环；悬停、键盘焦点、手动暂停和移出视口会暂停。开启减少动画时展示静态横向图库。复制轨道对辅助技术隐藏且 inert。图片总计约 79 KB，同一地址的复制图片可复用浏览器缓存。
+图廊包含 10 张统一字体与留白、蓝/青/暖橙配色的本地 PNG，150 秒匀速无缝循环，移除播放/暂停按钮，悬停与聚焦时持续滚动。移出视口时暂停计算；系统开启减少动画时展示静态横向图库。复制轨道对辅助技术隐藏且 inert，图片没有外部运行时请求。图廊采用浅灰圆角外框、宽窄交错的画幅与图表类型角标，其中一张密度图使用深色画布形成明暗节奏；功能入口保持黑白，图表保留科研配色。
 
-首页按用户要求统一使用“图表示例”，不加“合成数据”标签。图片来自 Matplotlib 官方图库，素材说明明确为外部参考图，并非 LabFlow 导出截图；没有改动既有 CSV、实验记录或科研结果。
+原先紫绿热力图改为蓝白相关性矩阵；分组柱图、箱线图、等高线、密度图和堆积图等统一线条、字体、留白与配色。通过 `scripts/render-showcase.py` 使用 Matplotlib 示例的数据、固定随机种子与计算公式重新渲染，保留来源及改编记录，不将参考图版宣称为 LabFlow 导出截图。示例误差是上游教学数据的固定误差，不代表真实实验统计结果。没有改变用户的原始文件、图表配置或统计计算。
 
-四张图片及对应许可保存在 `frontend/public/showcase/`；`sources.json` 记录每张图片的原始页面、图片地址、作者、许可与 SHA-256。素材说明弹窗提供各原始页面链接及完整本地许可。图片原样保存，仅通过 CSS 等比缩放与排版。
+运行 `python scripts/render-showcase.py` 可重建这些静态图版（可选开发依赖：Matplotlib 3.10.0、NumPy 2.1.3；应用运行不需要 Python）。`frontend/public/showcase/sources.json` 记录上游页面/原始图片地址、作者、许可、改编说明、输出 SHA-256 与渲染器版本。首页不显示“合成数据”标签，素材说明保留真实来源；原有科研数据元信息不变。
 
-- [区间示例](https://matplotlib.org/stable/gallery/lines_bars_and_markers/fill_between_demo.html)
-- [带标注热力图](https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html)
-- [彩色箱线图](https://matplotlib.org/stable/gallery/statistics/boxplot_color.html)
+- [曲线与区间](https://matplotlib.org/stable/gallery/lines_bars_and_markers/fill_between_demo.html)
+- [相关性矩阵](https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html)
+- [箱线图](https://matplotlib.org/stable/gallery/statistics/boxplot_color.html)
 - [分组柱状图](https://matplotlib.org/stable/gallery/lines_bars_and_markers/barchart.html)
+- [散点及边际分布](https://matplotlib.org/stable/gallery/lines_bars_and_markers/scatter_hist.html)
+- [直方图](https://matplotlib.org/stable/gallery/statistics/hist.html)
+- [等高线](https://matplotlib.org/stable/gallery/images_contours_and_fields/contour_demo.html)
+- [密度图](https://matplotlib.org/stable/gallery/statistics/hexbin_demo.html)
+- [误差棒示例](https://matplotlib.org/stable/gallery/statistics/errorbar.html)
+- [流图](https://matplotlib.org/stable/gallery/lines_bars_and_markers/stackplot_demo.html)（使用固定种子的 Gaussian mixture 示例，不使用联合国人口数据）
 - [Matplotlib 许可](https://matplotlib.org/stable/project/license.html)
 
 Copyright (c) 2012- Matplotlib Development Team; All Rights Reserved.
@@ -43,8 +49,6 @@ Vite 开发服务器支持 history fallback；将来使用其他静态服务器�
 
 ## 验收
 
-新增路由解析与恢复单元测试、图廊暂停与许可交互测试；浏览器覆盖独立地址、刷新、浏览器前进/后退、取消离开不丢设置、确认离开后恢复草稿、键盘导航、减少动画、无外部图片请求，以及首页 900/1280/1920 宽度。
+图廊单元测试验证没有播放控件、复制轨道可访问性、许可说明和减少动画。浏览器覆盖 390/900/1280/1920/2560 宽度、2560 px 屏幕下页头居中、悬停与聚焦持续滚动、黑白卡片的实际计算颜色、十张图片全部加载、无外部图片请求，以及各模块跳转、前进/后退、未保存离开确认和草稿恢复。
 
-截图：`screenshots/home-showcase.png`、`screenshots/routed-workbench.png`、`screenshots/routed-home.png`。
-
-最终验证：Vitest 90/90；完整 Chrome E2E 29/29（2.1 分钟）；TypeScript / Vite 生产构建通过，保留已有大分包提示。没有改动 Java 或重跑 Java 单测。过程中曾因前端服务退出而出现 ECONNREFUSED；恢复服务后重新完整执行，最终运行没有失败或跳过。
+截图：`screenshots/home-centered.png`、`screenshots/home-wide.png`、`screenshots/home-actions.png`、`screenshots/home-gallery-actions.png`。验证结果见 `TEST-RESULTS.md` 顶部最新增量。

@@ -84,6 +84,7 @@ export function HomePage(p: Props) {
       detail: "11 种图表 · 模板复用 · 矢量导出",
       Icon: ChartNoAxesCombined,
       color: "blue",
+      action: "进入工作台",
       run: () => act(p.onPlot),
     },
     {
@@ -92,6 +93,7 @@ export function HomePage(p: Props) {
       detail: "CSV / XLSX · 原始文件保留",
       Icon: Upload,
       color: "violet",
+      action: "选择数据文件",
       run: () => act(p.onUpload),
     },
     {
@@ -100,6 +102,7 @@ export function HomePage(p: Props) {
       detail: "参数 / 指标 / 研究备注",
       Icon: NotebookPen,
       color: "amber",
+      action: "记录新发现",
       run: () => act(p.onExperiments),
     },
     {
@@ -108,6 +111,7 @@ export function HomePage(p: Props) {
       detail: "字段预览 / 版本 / 内容指纹",
       Icon: Database,
       color: "teal",
+      action: "浏览数据版本",
       run: () => act(p.onData),
     },
   ];
@@ -147,7 +151,7 @@ export function HomePage(p: Props) {
       </section>
       <FigureShowcase />
       <section className="launch-tools" aria-label="功能入口">
-        {actions.map(({ title, desc, detail, Icon, color, run }, i) => (
+        {actions.map(({ title, desc, detail, Icon, color, action, run }, i) => (
           <button
             key={color}
             className={`launch-tool tool-${color}`}
@@ -159,11 +163,17 @@ export function HomePage(p: Props) {
               <span className="tool-icon">
                 <Icon size={24} strokeWidth={1.6} />
               </span>
-              <ArrowUpRight className="tool-arrow" size={18} />
+              <span className="tool-index" aria-hidden="true">
+                0{i + 1}
+              </span>
             </div>
             <h2>{title}</h2>
             <p>{desc}</p>
             <small>{detail}</small>
+            <span className="tool-action">
+              {color === "violet" && p.busy ? "正在导入…" : action}
+              <ArrowRight className="tool-arrow" size={16} />
+            </span>
           </button>
         ))}
       </section>

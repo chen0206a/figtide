@@ -9,18 +9,26 @@
       "image": "https://matplotlib.org/stable/_images/sphx_glr_fill_between_demo_002.png",
       "author": "Matplotlib Development Team",
       "license": "Matplotlib license (associated documentation)",
-      "modified": false,
-      "sha256": "0892e5d67f59ae0ba65c051ec9d2065fed02e9c3cbd7b5dcb661806f6a0f0f25"
+      "modified": true,
+      "sha256": "0994ab284b94961e91dc54938a00df078f6feeecfae8f0084deddc9d0416c12e",
+      "original_image_sha256": "0892e5d67f59ae0ba65c051ec9d2065fed02e9c3cbd7b5dcb661806f6a0f0f25",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py"
     },
     {
       "file": "heatmap.png",
-      "title": "矩阵与关联",
+      "title": "相关性矩阵",
       "page": "https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html",
       "image": "https://matplotlib.org/stable/_images/sphx_glr_image_annotated_heatmap_001.png",
       "author": "Matplotlib Development Team",
       "license": "Matplotlib license (associated documentation)",
-      "modified": false,
-      "sha256": "9d1bb3cdc2c4d8f456ed5ffedb6f068a758b0907320a2f361d6ba694e8ee0cbd"
+      "modified": true,
+      "sha256": "5a7386ab52ea751615d49023dbea03230b0fc5851e1f8ecb9b99f59cf5565d81",
+      "original_image_sha256": "9d1bb3cdc2c4d8f456ed5ffedb6f068a758b0907320a2f361d6ba694e8ee0cbd",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py"
     },
     {
       "file": "distributions.png",
@@ -29,8 +37,12 @@
       "image": "https://matplotlib.org/stable/_images/sphx_glr_boxplot_color_001.png",
       "author": "Matplotlib Development Team",
       "license": "Matplotlib license (associated documentation)",
-      "modified": false,
-      "sha256": "ce4dc9938539be394d813a600a625dccd3ef4b17376ecc6c10bd04fdd596aa3e"
+      "modified": true,
+      "sha256": "70e2bb0bc73c65f8e1d06ba4761e2d998203bdb41c5a12e0e8bfea218d54e92a",
+      "original_image_sha256": "ce4dc9938539be394d813a600a625dccd3ef4b17376ecc6c10bd04fdd596aa3e",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py"
     },
     {
       "file": "bars.png",
@@ -39,8 +51,105 @@
       "image": "https://matplotlib.org/stable/_images/sphx_glr_barchart_001.png",
       "author": "Matplotlib Development Team",
       "license": "Matplotlib license (associated documentation)",
-      "modified": false,
-      "sha256": "be59ddaa4bcf00d41a41d84217005218f802d44401ef6a6cf200cbd104685d35"
+      "modified": true,
+      "sha256": "4a318f3f0d5623f04e6a989d8b9850b9451816b27c98ab894f2cb935c667cfb3",
+      "original_image_sha256": "be59ddaa4bcf00d41a41d84217005218f802d44401ef6a6cf200cbd104685d35",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py",
+      "data_source": "Palmer Penguins summary values as provided by Matplotlib barchart example; https://allisonhorst.github.io/palmerpenguins/"
+    },
+    {
+      "file": "scatter.png",
+      "title": "散点与边际分布",
+      "page": "https://matplotlib.org/stable/gallery/lines_bars_and_markers/scatter_hist.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_scatter_hist_001.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": true,
+      "sha256": "56f6b5486e1100a072697124023d9214e1c4dd6ed05a173ea02cbed5411dea0d",
+      "original_image_sha256": "3d4dd2675f4200458e02be9648ad550240ee9a8496de0fc7cd2822e57aabb692",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py"
+    },
+    {
+      "file": "histogram.png",
+      "title": "频率与分布",
+      "page": "https://matplotlib.org/stable/gallery/statistics/hist.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_hist_001.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": true,
+      "sha256": "48592bc9b67c15818753e64c28142d54a79ed03d79a709113b80e803c6828782",
+      "original_image_sha256": "a94a627e80e67c45c2e1439dcb24656ef6120839648fad194992546378cefc4c",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py"
+    },
+    {
+      "file": "contour.png",
+      "title": "等高线与响应",
+      "page": "https://matplotlib.org/stable/gallery/images_contours_and_fields/contour_demo.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_contour_demo_001.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": true,
+      "sha256": "4ee0919f660bb690cc30e82f3d31b3dea7035d01ae3cf44772e4a3c1f83760c9",
+      "original_image_sha256": "78f44fa8afe2e9556135d4593367e61f04718aa5947b7b2d6e32bd9f8de7510e",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py"
+    },
+    {
+      "file": "density.png",
+      "title": "密度与聚集",
+      "page": "https://matplotlib.org/stable/gallery/statistics/hexbin_demo.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_hexbin_demo_001.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": true,
+      "sha256": "fc4a50c68dd3e186e897bbe733b579cf137de45dfce395e49e01363c2500fae5",
+      "original_image_sha256": "22beff89f1fa1aedf1ebfc77d2c0f936d656eaa98762c52863fd25717549606e",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py"
+    },
+    {
+      "file": "errors.png",
+      "title": "测量与误差",
+      "page": "https://matplotlib.org/stable/gallery/statistics/errorbar.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_errorbar_001.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": true,
+      "sha256": "a54470cc4efced5755ac51dd7d5f790c88a29228b32792ffa9d7d5be2c007aa7",
+      "original_image_sha256": "00815ba81acf0b30c1a7f1e50ae5cb4c12477f873905d7c16ae372974fc48806",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py"
+    },
+    {
+      "file": "areas.png",
+      "title": "构成与变化",
+      "page": "https://matplotlib.org/stable/gallery/lines_bars_and_markers/stackplot_demo.html",
+      "image": "https://matplotlib.org/stable/_images/sphx_glr_stackplot_demo_001.png",
+      "author": "Matplotlib Development Team",
+      "license": "Matplotlib license (associated documentation)",
+      "modified": true,
+      "sha256": "b76a1a8e7c53f8f7af2c700c10589d11863f61e86ea52452d2f5754525692277",
+      "original_image_sha256": "6369a242fb588f322c9f3667694b2de52590b3b3c2fd0d1a2065c0e05e35e558",
+      "changes": "Re-rendered from upstream example data recipes: coordinated blue/teal/copper palette, typography, dimensions and layout; selected correlation matrix and streamgraph examples.",
+      "data_kind": "upstream_illustrative_example",
+      "render_script": "scripts/render-showcase.py",
+      "data_source": "Seeded Gaussian mixture from stackplot_demo streamgraph section; does not use UN population data."
     }
-  ]
+  ],
+  "rendering": {
+    "matplotlib": "3.10.0",
+    "numpy": "2.1.3",
+    "recipe": "scripts/render-showcase.py",
+    "palette": "blue-teal-copper with one dark plate",
+    "seed": 19680801
+  }
 }

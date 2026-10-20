@@ -2,15 +2,17 @@ import { afterEach, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { FigureShowcase } from "./FigureShowcase";
 afterEach(() => vi.unstubAllGlobals());
-it("pauses the gallery explicitly and keeps cloned plates out of the accessibility tree", () => {
+it("keeps the gallery moving without playback controls and hides duplicate plates from assistive technology", () => {
   render(<FigureShowcase />);
-  expect(screen.getAllByRole("img")).toHaveLength(4);
-  fireEvent.click(screen.getByRole("button", { name: "暂停示例播放" }));
-  expect(document.querySelector(".showcase-track")).toHaveAttribute(
-    "data-playing",
-    "false",
+  expect(screen.getAllByRole("img")).toHaveLength(10);
+  expect(
+    screen.queryByRole("button", { name: /暂停|播放/ }),
+  ).not.toBeInTheDocument();
+  expect(document.querySelector(".showcase-copy")).toHaveAttribute(
+    "aria-hidden",
+    "true",
   );
-  fireEvent.click(screen.getByRole("button", { name: "播放示例" }));
+  expect(document.querySelector(".showcase-copy")).toHaveAttribute("inert");
   expect(document.querySelector(".showcase-track")).toHaveAttribute(
     "data-playing",
     "true",
@@ -31,7 +33,6 @@ it("uses a static gallery for reduced-motion users", () => {
     removeEventListener: vi.fn(),
   }));
   render(<FigureShowcase />);
-  expect(screen.getByText("静态浏览")).toBeVisible();
   expect(
     screen.queryByRole("button", { name: "播放示例" }),
   ).not.toBeInTheDocument();
