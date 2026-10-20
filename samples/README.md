@@ -1,5 +1,7 @@
 # 演示数据声明
 
+`LabFlow-合成演示-学习曲线.csv` 是可直接上传试绘的 180 行长表（3 个演示模型 × 60 轮）。X=`epoch`，Y=`accuracy_pct`，按 `model` 分组；可选误差列 `accuracy_std_pct`。准确率和标准差的单位均为百分点；`loss` 可单独作为 Y 绘制损失曲线，`n=5`，`data_kind=synthetic_demo`。每个模型/轮次用确定性的指数趋势、正弦扰动和五组固定偏移生成合成重复观测，再计算均值和样本 SD（分母 n−1）。没有进行训练，误差不具有真实实验或置信区间含义。文件为 UTF-8 BOM，含标准表头，不含公式、代码或注释行。
+
 `synthetic-reuse-source.csv` 与 `synthetic-reuse-target.csv` 为第八批两份人工合成学习曲线，使用不同字段名演示显式映射。未进行模型训练，也不带推断统计或误差结论。`node scripts/seed-delivery-demo.mjs` 会用它们创建独立的“成果复用与交付 · 合成演示”。
 这里的 CSV 完全由人工合成，用于测试导入、映射、绘图和导出，不来自真实模型训练，不可作为论文实验依据。
 `demo-learning-curves.csv` 模拟训练曲线；`measured_std` 也是合成的示例数值，只有显式映射后才显示误差棒。
