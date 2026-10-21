@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -19,9 +20,11 @@ import org.springframework.web.bind.annotation.*;
 @ConditionalOnProperty(name = "labflow.test-support", havingValue = "true")
 public class TestSupportController {
   private final WorkspaceRepository db;
+  private final boolean isolated;
 
-  public TestSupportController(WorkspaceRepository db) {
+  public TestSupportController(WorkspaceRepository db, @Value("${spring.datasource.url}") String url) {
     this.db = db;
+    this.isolated = url.matches("jdbc:mysql://[^/]+/labflow_(test|e2e)(\\?.*)?");
   }
 
   /** Deletes every project with {@code id > after}, children first (no cascades in the schema). */
@@ -29,6 +32,7 @@ public class TestSupportController {
   @Transactional
   Map<String, Object> cleanup(
       @RequestParam long after, @RequestHeader(value = "X-LabFlow-Test-Run", required = false) String run) {
+    if (!isolated) throw new ApiException(403, "测试清理仅允许用于独立 labflow_test / labflow_e2e 数据库");
     if (!"1".equals(run) || after < 1)
       throw new ApiException(400, "测试清理需要 X-LabFlow-Test-Run: 1 且 after>=1，避免误删全部项目");
     var doomed = db.query("SELECT id,name FROM projects WHERE id>? ORDER BY id", after);

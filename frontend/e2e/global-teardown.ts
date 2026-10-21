@@ -13,7 +13,7 @@ export default async function globalTeardown() {
     const response = await context.delete(`/api/test/projects?after=${watermark}`);
     if (response.status() === 404) {
       console.warn(
-        "[e2e] 后端未开启 labflow.test-support，跳过清理；用 scripts/start.ps1 启动后端可开启",
+        "[e2e] 后端未开启测试清理；仅独立 labflow_test / labflow_e2e 库可显式开启 labflow.test-support",
       );
       return;
     }
