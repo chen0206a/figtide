@@ -215,6 +215,8 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 
 `GET /projects/{p}/data/{versionId}/original` 返回原始字节，`Content-Disposition: attachment`；SHA-256 可与上传前比对。
 
+`GET /projects/{p}/data/{versionId}/profile` 返回该版本的字段画像与前 10 行（供结构类工具与后续模型读取）：`{dataset_version_id,dataset_id,filename,version,sha256,row_count,fields,head,truncated}`。`fields` 沿用导入时写入的 `fields_json`（`name/type/inferred_type/missing/unique/constant/role/suggested_role/samples`，数值列另有 `min/max`），不重算、不重读原文件、不写库；最多 80 列，超出只置 `truncated.columns`。
+
 ## 图表快照
 
 `GET /projects/{p}/charts` 列出图表；`POST /projects/{p}/charts` 创建：
@@ -233,9 +235,9 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 
 ## 绘图工具协议
 
-`GET /figure-tools/catalog` 提供 protocol_version=1、config_schema_version=1 的五种参数白名单与 JSON Schema；`POST /projects/{p}/figure-tools/preview` 接收 `{protocol_version,chart_id,base_revision,config,operations}`，只校验并返回结果，不写图表、数据或版本。
+`GET /figure-tools/catalog` 提供 protocol_version=1、config_schema_version=1 的十个参数白名单与 JSON Schema，并用 `categories`（`[{id:"presentation",label:"外观"},{id:"structure",label:"结构"}]`）与每个工具的 `category` 区分“只改呈现”与“改取数列”；`POST /projects/{p}/figure-tools/preview` 接收 `{protocol_version,chart_id,base_revision,config,operations}`，只校验并返回结果，不写图表、数据或版本。
 
-操作格式 `{tool,arguments}`；类型为 set_style / set_axis / set_legend / set_series / set_canvas，一次 1–30 项。返回 `{protocol_version,config,changes,operation_count,base_revision,source}`，source 包含不可变数据版本 ID 与 SHA-256，changes 为 JSON Pointer 路径的 before/after。旧保存版本返回 409，跨项目资源 404，未知属性、无效参数或不适用于当前图表的操作 400。完整范围与专业图表说明见 [绘图工具协议](FIGURE-TOOLS.md)。
+操作格式 `{tool,arguments}`；外观类为 set_style / set_axis / set_legend / set_series / set_canvas，结构类为 set_chart / set_mapping / map_series / add_series / remove_series，一次 1–30 项。返回 `{protocol_version,config,changes,operation_count,base_revision,source}`，source 包含不可变数据版本 ID 与 SHA-256，changes 为 JSON Pointer 路径的 before/after（结构类的 /series 为粗粒度路径）。旧保存版本返回 409，跨项目资源 404，未知属性、无效参数、不适用于当前图表的操作、缺少专业配置的类型切换、悬空列/序列引用一律 400。完整范围与专业图表说明见 [绘图工具协议](FIGURE-TOOLS.md)。
 
 ## 样式模板接口
 

@@ -26,6 +26,28 @@ public final class FigureOperations {
   private static final JsonNode TEXT = schema("{\"type\":\"string\",\"maxLength\":500}");
   private static final JsonNode COLOR =
       schema("{\"type\":\"string\",\"pattern\":\"^#[0-9a-fA-F]{6}$\"}");
+  private static final JsonNode SERIES_ID =
+      schema("{\"type\":\"string\",\"minLength\":1,\"maxLength\":80}");
+  private static final JsonNode COLUMN =
+      schema("{\"type\":\"string\",\"minLength\":1,\"maxLength\":120}");
+  private static final JsonNode OPTIONAL_COLUMN = schema("{\"type\":\"string\",\"maxLength\":120}");
+
+  private static final String PRESENTATION = "presentation";
+  private static final String STRUCTURE = "structure";
+  private static final Set<String> STRUCTURAL =
+      Set.of("set_chart", "set_mapping", "map_series", "add_series", "remove_series");
+  private static final Map<String, String> CATEGORIES =
+      Map.of(
+          "set_style", PRESENTATION,
+          "set_axis", PRESENTATION,
+          "set_legend", PRESENTATION,
+          "set_series", PRESENTATION,
+          "set_canvas", PRESENTATION,
+          "set_chart", STRUCTURE,
+          "set_mapping", STRUCTURE,
+          "map_series", STRUCTURE,
+          "add_series", STRUCTURE,
+          "remove_series", STRUCTURE);
 
   private static JsonNode number(double min, double max) {
     return JSON.createObjectNode().put("type", "number").put("minimum", min).put("maximum", max);
@@ -96,7 +118,7 @@ public final class FigureOperations {
               "序列外观",
               Map.of(
                   "seriesId",
-                  schema("{\"type\":\"string\",\"minLength\":1,\"maxLength\":80}"),
+                  SERIES_ID,
                   "name",
                   TEXT,
                   "color",
@@ -132,17 +154,63 @@ public final class FigureOperations {
                   number(0, 300),
                   "background",
                   COLOR),
-              List.of()));
+              List.of()),
+          new Spec(
+              "set_chart",
+              "图表类型",
+              Map.of(
+                  "type",
+                  enumeration(
+                      "line",
+                      "bar",
+                      "scatter",
+                      "heatmap",
+                      "box",
+                      "violin",
+                      "histogram",
+                      "ecdf",
+                      "roc",
+                      "pr",
+                      "confusion")),
+              List.of("type")),
+          new Spec(
+              "set_mapping",
+              "字段映射",
+              Map.of("x", COLUMN, "group", OPTIONAL_COLUMN, "heatY", COLUMN, "heatZ", COLUMN),
+              List.of()),
+          new Spec(
+              "map_series",
+              "序列取数",
+              Map.of("seriesId", SERIES_ID, "y", COLUMN, "error", OPTIONAL_COLUMN),
+              List.of("seriesId", "y")),
+          new Spec(
+              "add_series",
+              "新增序列",
+              Map.of("id", SERIES_ID, "y", COLUMN, "name", TEXT, "error", OPTIONAL_COLUMN),
+              List.of("id", "y")),
+          new Spec(
+              "remove_series",
+              "删除序列",
+              Map.of("seriesId", SERIES_ID),
+              List.of("seriesId")));
 
   public static ObjectNode catalog() {
     var result = JSON.createObjectNode().put("protocol_version", 1).put("config_schema_version", 1);
     result.put("execution", "preview-only");
+    var categories = result.putArray("categories");
+    categories.addObject().put("id", PRESENTATION).put("label", "外观");
+    categories.addObject().put("id", STRUCTURE).put("label", "结构");
     var tools = result.putArray("tools");
     for (var spec : SPECS) {
-      var tool = tools.addObject().put("name", spec.name()).put("label", spec.label());
+      var tool =
+          tools
+              .addObject()
+              .put("name", spec.name())
+              .put("label", spec.label())
+              .put("category", CATEGORIES.getOrDefault(spec.name(), PRESENTATION));
       var input =
           tool.putObject("input_schema").put("type", "object").put("additionalProperties", false);
-      input.put("minProperties", spec.required().size() + 1);
+      input.put("minProperties", minProperties(spec));
       var properties = input.putObject("properties");
       spec.fields().entrySet().stream()
           .sorted(Map.Entry.comparingByKey())
@@ -155,6 +223,12 @@ public final class FigureOperations {
 
   private static void require(boolean value, String message) {
     if (!value) throw ApiException.bad("绘图操作：" + message);
+  }
+
+  /** 目标标识本身不算调整：这些工具至少要再带一项属性。 */
+  private static int minProperties(Spec spec) {
+    boolean identityOnly = Set.of("set_axis", "set_series").contains(spec.name());
+    return Math.max(1, spec.required().size() + (identityOnly ? 1 : 0));
   }
 
   private static void keys(JsonNode node, Set<String> allowed) {
@@ -223,7 +297,7 @@ public final class FigureOperations {
               .orElseThrow(() -> ApiException.bad("不支持的绘图工具"));
       var args = operation.path("arguments");
       keys(args, spec.fields().keySet());
-      require(args.size() > spec.required().size(), "操作不能只有目标标识");
+      require(args.size() >= minProperties(spec), "操作不能只有目标标识");
       spec.required().forEach(key -> require(args.has(key), "缺少 " + key));
       args.fields()
           .forEachRemaining(
@@ -253,6 +327,10 @@ public final class FigureOperations {
         require(
             Set.of("line", "roc", "pr", "ecdf").contains(type) || !args.has("dash"),
             "当前图表不使用序列虚实线");
+      }
+      if (STRUCTURAL.contains(spec.name())) {
+        applyStructural(result, spec.name(), args);
+        continue;
       }
       ObjectNode target;
       switch (spec.name()) {
@@ -330,6 +408,80 @@ public final class FigureOperations {
             && s.path("top").asDouble() + s.path("bottom").asDouble() < s.path("height").asDouble(),
         "边距不能覆盖整个画布");
     return result;
+  }
+
+  /**
+   * Structural operations change which columns the figure reads. They never invent professional
+   * configuration (evaluation, classification) and never rename or duplicate a series silently.
+   */
+  private static void applyStructural(ObjectNode result, String tool, JsonNode args) {
+    switch (tool) {
+      case "set_chart" -> {
+        String next = args.path("type").asText();
+        if (next.equals("heatmap"))
+          require(
+              !result.path("heatY").asText("").isBlank()
+                  && !result.path("heatZ").asText("").isBlank(),
+              "切换为热力图前，请先用字段映射指定 Y 分类列与 Z 数值列");
+        if (Set.of("roc", "pr").contains(next))
+          require(result.path("evaluation").isObject(), "切换为 ROC/PR 前，请先完成评估配置");
+        if (next.equals("confusion"))
+          require(result.path("classification").isObject(), "切换为混淆矩阵前，请先完成分类配置");
+        result.put("type", next);
+      }
+      case "set_mapping" -> {
+        String chartType = result.path("type").asText();
+        if (args.has("x")) {
+          require(
+              !Set.of("histogram", "ecdf", "roc", "pr", "confusion").contains(chartType),
+              "当前图表的 X 轴由图形结构决定，不能改映射");
+          result.put("x", args.get("x").asText());
+        }
+        if (args.has("group")) result.put("group", args.get("group").asText());
+        for (String key : List.of("heatY", "heatZ"))
+          if (args.has(key)) result.put(key, args.get(key).asText());
+      }
+      case "map_series" -> {
+        ObjectNode series = series(result, args.path("seriesId").asText());
+        if (args.has("y")) series.put("y", args.get("y").asText());
+        if (args.has("error")) series.put("error", args.get("error").asText());
+      }
+      case "add_series" -> {
+        String id = args.path("id").asText();
+        var series = (ArrayNode) result.path("series");
+        require(series.size() < 20, "序列最多 20 条");
+        for (JsonNode existing : series)
+          require(!existing.path("id").asText().equals(id), "序列 ID 已存在");
+        ObjectNode added = series.get(0).deepCopy();
+        added.put("id", id);
+        added.put("y", args.path("y").asText());
+        added.put("name", args.has("name") ? args.get("name").asText() : args.path("y").asText());
+        added.put("error", args.path("error").asText(""));
+        added.put("visible", true);
+        if (added.path("band").isObject()) ((ObjectNode) added.path("band")).put("enabled", false);
+        added.remove("prediction");
+        series.add(added);
+      }
+      default -> {
+        String id = args.path("seriesId").asText();
+        require(
+            !id.equals(result.path("classification").path("seriesId").asText("")),
+            "该序列被分类评估配置引用，请先调整评估配置");
+        var series = (ArrayNode) result.path("series");
+        require(series.size() > 1, "至少保留一条序列");
+        int index = -1;
+        for (int i = 0; i < series.size(); i++)
+          if (series.get(i).path("id").asText().equals(id)) index = i;
+        require(index >= 0, "序列 ID 不存在");
+        series.remove(index);
+      }
+    }
+  }
+
+  private static ObjectNode series(ObjectNode result, String id) {
+    for (JsonNode item : result.path("series"))
+      if (item.path("id").asText().equals(id)) return (ObjectNode) item;
+    throw ApiException.bad("绘图操作：序列 ID 不存在");
   }
 
   private static Double axisNumber(JsonNode n) {

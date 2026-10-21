@@ -1,5 +1,19 @@
 # 第一阶段验收记录
 
+## 最新增量：结构工具与数据画像（2026-10-21 晚，Asia/Tokyo）
+
+Java **70/70**、Vitest **124/124（20 个文件）**、完整 Chrome E2E **42/42（3.2 分钟）**、TypeScript（`tsc -b --force`）与 Vite 生产构建通过；保留既有大分包提示（编辑器分包 1.58 MB）。本次新增 3 项 Java、9 项前端与 3 条真实浏览器用例；仍未接模型、未使用付费 API。
+
+工具面从 5 个外观工具扩到 10 个，目录用 `categories` + 每个工具的 `category` 分出「外观 / 结构」。新增 `set_chart`、`set_mapping`、`map_series`、`add_series`、`remove_series`：只改“图读哪几列、有几条序列”，不代造专业配置——切热力图缺 `heatY/heatZ`、切 ROC/PR 缺评估、切混淆矩阵缺分类配置都直接 400；`add_series` 的 `id` 由调用方给、服务端只查重，新序列深拷贝既有首条序列的外观再改 `id/y/name/error`，因此不会引入第二套配色；`remove_series` 拒绝删到 0 条，也拒绝删被分类评估引用的序列。新增只读 `GET /projects/{p}/data/{id}/profile`，直接返回导入时算好的字段画像与前 10 行，不重算、不重读原文件、不写库。
+
+修复一处真问题：目录的 `minProperties` 原先对 `set_chart`/`add_series` 要求“必填之外再加一项”，界面因此连清单都加不进去（首轮 E2E 6 条挂 2 条即此因）。现改为“目标标识不算调整”的统一规则（`set_axis`/`set_series` 为 `required+1`，其余 `max(1, required.size())`），服务端守卫复用同一函数；列参数也分成 `COLUMN`（`minLength:1`）与 `OPTIONAL_COLUMN`（`group` 清空分组、`error` 取消误差列可传空串）。
+
+真实浏览器覆盖：结构类新增序列 → 预览 → 应用 → 一步撤销（图例 3→2）、切换图表类型后保存重载仍生效、删除最后一条序列被拒且不产生预览、ROC 类型不出现在不可用选项里。既有 39 条全部继续通过（含导入修订、统计评估、样式库、导航草稿、PNG/PDF、备份恢复）。
+
+测试期写入的 476 个带时间戳的 `…验收 <epoch>` 项目已按外键顺序清理（chart_versions → charts → experiment_datasets → dataset_versions → datasets → experiments → style_templates → projects），保留 6 个演示项目与 46 个早期「第一批验收/成果恢复验收」项目未动。另把 `playwright.config.ts` 的 dev server 改成 `webServer`（`reuseExistingServer: true`），避免服务器未启动时整批报 `ECONNREFUSED`。
+
+边界：新建图表向导（类型卡 → 映射 → `operations: []` 校验）未做；结构类下拉复用编辑器已加载的字段，`/profile` 目前只服务后续模型适配。协议细节见 [工具协议](FIGURE-TOOLS.md)，接入顺序与未落地项见 [Step 1 清单](AGENT-STEP1-PLAN.md)。
+
 ## 最新增量：确定性绘图工具与批量快捷操作（2026-10-21，Asia/Tokyo）
 
 Java **67/67**、Vitest **117/117（20 个文件）**、完整 Chrome E2E **39/39（3.5 分钟）**、TypeScript/Vite 生产构建通过。后端已重新打包启动，浏览器请求真实 Java/MySQL；保留已有大分包提示。新增 10 项 Java、7 项前端与 3 条真实浏览器用例；未接模型、未使用付费 API。

@@ -15,4 +15,12 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   reporter: [["list"], ["html", { open: "never" }]],
+  // 开发服务器缺失时自动拉起，已有实例则直接复用（后端与 MySQL 仍需外部就绪）。
+  webServer: {
+    command:
+      "node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5176 --strictPort",
+    url: "http://127.0.0.1:5176",
+    reuseExistingServer: true,
+    timeout: 120000,
+  },
 });

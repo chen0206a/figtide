@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.*;
 import dev.labflow.api.ApiException;
 import dev.labflow.service.FigureOperations;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class FigureOperationsTest {
@@ -100,9 +101,103 @@ class FigureOperationsTest {
     var catalog = FigureOperations.catalog();
     assertEquals(1, catalog.path("protocol_version").asInt());
     assertEquals("preview-only", catalog.path("execution").asText());
-    assertEquals(5, catalog.path("tools").size());
-    for (var tool : catalog.path("tools"))
+    assertEquals(10, catalog.path("tools").size());
+    assertEquals(2, catalog.path("categories").size());
+    assertEquals("presentation", catalog.path("categories").get(0).path("id").asText());
+    assertEquals("结构", catalog.path("categories").get(1).path("label").asText());
+    int structure = 0;
+    for (var tool : catalog.path("tools")) {
       assertFalse(tool.path("input_schema").path("additionalProperties").asBoolean());
+      assertTrue(Set.of("presentation", "structure").contains(tool.path("category").asText()));
+      if (tool.path("category").asText().equals("structure")) structure++;
+    }
+    assertEquals(5, structure);
+  }
+
+  @Test
+  void structuralToolsMoveBindingsAndSeriesWithoutTouchingAppearance() throws Exception {
+    var c = config();
+    var result =
+        FigureOperations.apply(
+            c,
+            operations(
+                """
+                [{"tool":"set_chart","arguments":{"type":"bar"}},
+                 {"tool":"set_mapping","arguments":{"x":"accuracy","group":"0"}},
+                 {"tool":"map_series","arguments":{"seriesId":"s1","y":"epoch","error":""}},
+                 {"tool":"add_series","arguments":{"id":"s2","y":"error"}}]
+                """));
+    assertEquals("bar", result.path("type").asText());
+    assertEquals("accuracy", result.path("x").asText());
+    assertEquals("0", result.path("group").asText());
+    assertEquals("epoch", result.path("series").get(0).path("y").asText());
+    assertEquals("", result.path("series").get(0).path("error").asText());
+    assertEquals("s2", result.path("series").get(1).path("id").asText());
+    assertEquals("error", result.path("series").get(1).path("y").asText());
+    assertEquals(c.path("series").get(0).path("color"), result.path("series").get(1).path("color"));
+    assertEquals(c.path("series").get(0).path("color"), result.path("series").get(0).path("color"));
+    assertEquals(4, FigureOperations.changes(c, result).size());
+    var removed =
+        FigureOperations.apply(
+            result, operations("[{\"tool\":\"remove_series\",\"arguments\":{\"seriesId\":\"s2\"}}]"));
+    assertEquals(1, removed.path("series").size());
+    assertEquals("s1", removed.path("series").get(0).path("id").asText());
+  }
+
+  @Test
+  void structuralToolsRejectDanglingBindingsInsteadOfGuessing() throws Exception {
+    var c = config();
+    assertThrows(
+        ApiException.class,
+        () ->
+            FigureOperations.apply(
+                c, operations("[{\"tool\":\"remove_series\",\"arguments\":{\"seriesId\":\"s1\"}}]")));
+    assertThrows(
+        ApiException.class,
+        () ->
+            FigureOperations.apply(
+                c,
+                operations(
+                    "[{\"tool\":\"add_series\",\"arguments\":{\"id\":\"s1\",\"y\":\"accuracy\"}}]")));
+    assertThrows(
+        ApiException.class,
+        () ->
+            FigureOperations.apply(
+                c, operations("[{\"tool\":\"set_chart\",\"arguments\":{\"type\":\"roc\"}}]")));
+    var noHeat = config();
+    noHeat.put("heatY", "").put("heatZ", "");
+    assertThrows(
+        ApiException.class,
+        () ->
+            FigureOperations.apply(
+                noHeat, operations("[{\"tool\":\"set_chart\",\"arguments\":{\"type\":\"heatmap\"}}]")));
+    var roc = config();
+    roc.put("type", "roc");
+    assertThrows(
+        ApiException.class,
+        () ->
+            FigureOperations.apply(
+                roc, operations("[{\"tool\":\"set_mapping\",\"arguments\":{\"x\":\"accuracy\"}}]")));
+    var referenced = config();
+    var classification = referenced.putObject("classification");
+    classification
+        .put("algorithm", "classification-v1")
+        .put("label", "accuracy")
+        .put("positive", "")
+        .put("input", "labels")
+        .put("normalization", "count")
+        .put("threshold", 0.5)
+        .put("xTitle", "")
+        .put("yTitle", "")
+        .put("seriesId", "s1")
+        .put("groupValue", "");
+    classification.putArray("classes");
+    assertThrows(
+        ApiException.class,
+        () ->
+            FigureOperations.apply(
+                referenced,
+                operations("[{\"tool\":\"remove_series\",\"arguments\":{\"seriesId\":\"s1\"}}]")));
   }
 
   @Test

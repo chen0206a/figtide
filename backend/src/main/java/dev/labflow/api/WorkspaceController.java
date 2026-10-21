@@ -96,6 +96,11 @@ public class WorkspaceController {
     return service.data(p, id);
   }
 
+  @GetMapping("/projects/{p}/data/{id}/profile")
+  Object profile(@PathVariable long p, @PathVariable long id) {
+    return service.profile(p, id);
+  }
+
   @GetMapping("/projects/{p}/data/{id}/original")
   ResponseEntity<byte[]> original(@PathVariable long p, @PathVariable long id) {
     var data = service.original(p, id);

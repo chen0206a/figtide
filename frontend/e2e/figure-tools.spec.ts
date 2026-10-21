@@ -361,3 +361,110 @@ test("ROC tools use the displayed axis title and do not offer fixed range contro
   expect(original.revision).toBe(1);
   expect(original.config.evaluation.rocXTitle).toBe("");
 });
+
+test("structure tools add a series, apply as one step, and undo in one step", async ({
+  page,
+  request,
+}) => {
+  const f = await fixture(request);
+  await page.goto(f.url);
+  await expect(page.getByTestId("plot")).toBeVisible();
+  await page.keyboard.press("Control+k");
+  const dialog = page.getByRole("dialog", { name: "快捷操作", exact: true });
+  await dialog
+    .getByLabel("选择快捷操作", { exact: true })
+    .selectOption("add_series");
+  await expect(dialog.getByRole("textbox", { name: "序列标识", exact: true }))
+    .toHaveValue(/^s\d+$/);
+  await dialog
+    .getByRole("combobox", { name: "Y 数值字段", exact: true })
+    .selectOption("baseline");
+  await dialog
+    .getByRole("button", { name: "加入调整清单", exact: true })
+    .click();
+  const response = page.waitForResponse((r) =>
+    r.url().endsWith("/figure-tools/preview"),
+  );
+  await dialog.getByRole("button", { name: "验证并预览", exact: true }).click();
+  const result = await (await response).json();
+  expect(result.config.series).toHaveLength(3);
+  expect(result.changes.map((c: { path: string }) => c.path)).toEqual([
+    "/series",
+  ]);
+  await dialog
+    .getByRole("button", { name: "应用这组调整", exact: true })
+    .click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByTestId("plot").locator(".legendtext")).toHaveCount(3);
+  await page.getByRole("button", { name: "撤销", exact: true }).click();
+  await expect(page.getByTestId("plot").locator(".legendtext")).toHaveCount(2);
+  expect((await (await request.get(f.api)).json()).config).toEqual(f.config);
+});
+
+test("switching chart type is validated, persisted, and survives reload", async ({
+  page,
+  request,
+}) => {
+  const f = await fixture(request);
+  await page.goto(f.url);
+  await expect(page.getByTestId("plot")).toBeVisible();
+  await page.keyboard.press("Control+k");
+  const dialog = page.getByRole("dialog", { name: "快捷操作", exact: true });
+  await dialog
+    .getByLabel("选择快捷操作", { exact: true })
+    .selectOption("set_chart");
+  const types = dialog.getByRole("combobox", {
+    name: "图表类型",
+    exact: true,
+  });
+  await expect(types.locator("option", { hasText: "ROC 曲线" })).toHaveCount(0);
+  await types.selectOption("scatter");
+  await dialog
+    .getByRole("button", { name: "加入调整清单", exact: true })
+    .click();
+  await dialog.getByRole("button", { name: "验证并预览", exact: true }).click();
+  await dialog
+    .getByRole("button", { name: "应用这组调整", exact: true })
+    .click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect(page.getByText("已保存 v2", { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId("plot")).toBeVisible();
+  const saved = await (await request.get(f.api)).json();
+  expect(saved.config.type).toBe("scatter");
+  expect(saved.config.series).toHaveLength(2);
+});
+
+test("deleting the last series is rejected and never yields a preview", async ({
+  page,
+  request,
+}) => {
+  const f = await fixture(request);
+  const single = { ...f.config, series: [f.config.series[0]] };
+  const chart = await (
+    await request.post(`/api/projects/${f.project.id}/charts`, {
+      data: { name: "单序列 · 合成", config: single },
+    })
+  ).json();
+  await page.goto(`/projects/${f.project.id}/figures/${chart.id}`);
+  await expect(page.getByTestId("plot")).toBeVisible();
+  await page.keyboard.press("Control+k");
+  const dialog = page.getByRole("dialog", { name: "快捷操作", exact: true });
+  await dialog
+    .getByLabel("选择快捷操作", { exact: true })
+    .selectOption("remove_series");
+  await dialog
+    .getByRole("button", { name: "加入调整清单", exact: true })
+    .click();
+  await dialog.getByRole("button", { name: "验证并预览", exact: true }).click();
+  await expect(dialog.getByRole("alert")).toContainText("至少保留一条序列");
+  await expect(
+    dialog.getByRole("button", { name: "应用这组调整", exact: true }),
+  ).toBeDisabled();
+  await expect(page.getByTestId("plot").locator(".legendtext")).toHaveCount(1);
+  const stored = await (
+    await request.get(`/api/projects/${f.project.id}/charts/${chart.id}`)
+  ).json();
+  expect(stored.revision).toBe(1);
+  expect(stored.config.series).toHaveLength(1);
+});

@@ -9,6 +9,9 @@ import { StylePreview } from "./StylePreview";
 import {
   operationValues,
   sameProtectedFigure,
+  structuralAllowance,
+  chartTypeAvailable,
+  columnFields,
   toolFieldAvailable,
   makeToolOperation,
   changeLabel,
@@ -67,21 +70,26 @@ export function QuickActions(p: {
     setTool(name);
     setValues(operationValues(name, p.config));
     setError("");
-    setEnabled([
-      name === "set_style"
-        ? p.config.publication?.enabled
-          ? "fontPt"
-          : "fontSize"
-        : name === "set_axis"
-          ? ["heatmap", "confusion"].includes(p.config.type)
-            ? "title"
-            : "grid"
-          : name === "set_legend"
-            ? "position"
-            : name === "set_series"
-              ? "color"
-              : "width",
-    ]);
+    setEnabled(
+      ["set_chart", "set_mapping", "map_series", "add_series", "remove_series"]
+        .includes(name)
+        ? []
+        : [
+            name === "set_style"
+              ? p.config.publication?.enabled
+                ? "fontPt"
+                : "fontSize"
+              : name === "set_axis"
+                ? ["heatmap", "confusion"].includes(p.config.type)
+                  ? "title"
+                  : "grid"
+                : name === "set_legend"
+                  ? "position"
+                  : name === "set_series"
+                    ? "color"
+                    : "width",
+          ],
+    );
   }
   async function check() {
     setBusy(true);
@@ -101,7 +109,11 @@ export function QuickActions(p: {
       );
       if (
         result.protocol_version !== 1 ||
-        !sameProtectedFigure(p.config, result.config) ||
+        !sameProtectedFigure(
+          p.config,
+          result.config,
+          structuralAllowance(operations),
+        ) ||
         result.config.datasetVersionId !== p.config.datasetVersionId ||
         result.source.dataset_version_id !== p.data.id ||
         result.source.sha256 !== p.data.sha256
@@ -121,7 +133,7 @@ export function QuickActions(p: {
         if (!open && !busy) p.onClose();
       }}
       title="快捷操作"
-      description="把多项调整一起预览、一起应用。字段映射与实验数据保持原样。"
+      description="把多项调整一起预览、一起应用。数据版本与实验记录不会被改写。"
       wide
       className="quick-actions-dialog"
     >
@@ -146,11 +158,25 @@ export function QuickActions(p: {
                     value={tool}
                     onChange={(e) => selectTool(e.target.value)}
                   >
-                    {availableTools.map((v) => (
-                      <option key={v.name} value={v.name}>
-                        {v.label}
-                      </option>
-                    ))}
+                    {(
+                      catalog.data.categories || [
+                        { id: "presentation", label: "外观" },
+                        { id: "structure", label: "结构" },
+                      ]
+                    ).map((group) => {
+                      const options = availableTools.filter(
+                        (v) => (v.category || "presentation") === group.id,
+                      );
+                      return options.length ? (
+                        <optgroup key={group.id} label={group.label}>
+                          {options.map((v) => (
+                            <option key={v.name} value={v.name}>
+                              {v.label}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ) : null;
+                    })}
                   </select>
                 </label>
                 <p className="quick-actions-note">
@@ -244,6 +270,35 @@ export function QuickActions(p: {
                                   </option>
                                 ))}
                               </select>
+                            ) : columnFields.has(key) ? (
+                              <select
+                                aria-label={label}
+                                disabled={!active}
+                                value={String(values[key] ?? "")}
+                                onChange={(e) => update(e.target.value)}
+                              >
+                                {!required && (
+                                  <option value="">
+                                    {key === "group"
+                                      ? "不分组"
+                                      : key === "error"
+                                        ? "无误差列"
+                                        : "不指定"}
+                                  </option>
+                                )}
+                                {p.data.fields
+                                  .filter(
+                                    (f) =>
+                                      !["y", "heatZ"].includes(key) ||
+                                      f.type === "number",
+                                  )
+                                  .map((f) => (
+                                    <option key={f.name} value={f.name}>
+                                      {f.name} ·{" "}
+                                      {f.type === "number" ? "数值" : "文本"}
+                                    </option>
+                                  ))}
+                              </select>
                             ) : rule.enum ? (
                               <select
                                 aria-label={label}
@@ -251,11 +306,17 @@ export function QuickActions(p: {
                                 value={String(values[key] ?? rule.enum[0])}
                                 onChange={(e) => update(e.target.value)}
                               >
-                                {rule.enum.map((v) => (
-                                  <option key={v} value={v}>
-                                    {toolValueNames[v] || v}
-                                  </option>
-                                ))}
+                                {rule.enum
+                                  .filter(
+                                    (v) =>
+                                      key !== "type" ||
+                                      chartTypeAvailable(v, p.config),
+                                  )
+                                  .map((v) => (
+                                    <option key={v} value={v}>
+                                      {toolValueNames[v] || v}
+                                    </option>
+                                  ))}
                               </select>
                             ) : rule.type === "boolean" ? (
                               <select
@@ -305,7 +366,11 @@ export function QuickActions(p: {
                 </div>
                 <Button
                   variant="outline"
-                  disabled={!spec || !enabled.length || operations.length >= 30}
+                  disabled={
+                    !spec ||
+                    (!enabled.length && !spec.input_schema.required.length) ||
+                    operations.length >= 30
+                  }
                   onClick={() => {
                     try {
                       const operation = makeToolOperation(

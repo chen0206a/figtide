@@ -13,6 +13,10 @@ import {
   makeToolOperation,
   operationValues,
   sameProtectedFigure,
+  structuralAllowance,
+  chartTypeAvailable,
+  describeFigure,
+  createConfigFromSpec,
   displayToolValue,
   toolFieldAvailable,
   type ToolSpec,
@@ -259,5 +263,164 @@ describe("figure tool preparation", () => {
     expect(
       screen.queryByRole("spinbutton", { name: "字号（px）" }),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("figure description", () => {
+  it("summarises a configuration in one bounded line", () => {
+    const text = describeFigure(config);
+    expect(text).toContain(`数据版本 #${config.datasetVersionId}`);
+    expect(text).toContain(`X=${config.x}`);
+    expect(text).toContain(config.series[0].y);
+    expect(text.length).toBeLessThanOrEqual(1024);
+  });
+
+  it("builds a new figure from the shared defaults", () => {
+    const c = createConfigFromSpec(data, {
+      type: "scatter",
+      x: "x",
+      y: "y",
+      title: "新图",
+    });
+    expect(c.schema_version).toBe(1);
+    expect(c.type).toBe("scatter");
+    expect(c.series).toHaveLength(1);
+    expect(c.series[0]).toMatchObject({ y: "y", error: "", name: "y" });
+    expect(c.style.title).toBe("新图");
+    expect(c.series[0].color).toBe(defaults(data).series[0].color);
+  });
+});
+
+const chartTool: ToolSpec = {
+  name: "set_chart",
+  label: "图表类型",
+  category: "structure",
+  input_schema: {
+    required: ["type"],
+    minProperties: 1,
+    properties: {
+      type: {
+        type: "string",
+        enum: ["line", "bar", "heatmap", "roc"],
+      },
+    },
+  },
+};
+const mappingTool: ToolSpec = {
+  name: "set_mapping",
+  label: "字段映射",
+  category: "structure",
+  input_schema: {
+    required: [],
+    minProperties: 1,
+    properties: {
+      x: { type: "string" },
+      group: { type: "string" },
+      heatY: { type: "string" },
+      heatZ: { type: "string" },
+    },
+  },
+};
+
+describe("structural tools", () => {
+  it("starts from the live binding and supports required-only operations", () => {
+    expect(operationValues("set_chart", config)).toEqual({ type: config.type });
+    expect(operationValues("set_mapping", config)).toMatchObject({
+      x: config.x,
+      group: config.group,
+    });
+    expect(makeToolOperation(chartTool, { type: "bar" }, [])).toEqual({
+      tool: "set_chart",
+      arguments: { type: "bar" },
+    });
+    expect(() =>
+      makeToolOperation(mappingTool, { x: config.x }, []),
+    ).toThrow("至少选择一项");
+  });
+
+  it("allocates a fresh series id instead of reusing an existing one", () => {
+    const values = operationValues("add_series", config);
+    expect(values).toMatchObject({ y: config.series[0].y });
+    expect(config.series.some((s) => s.id === values.id)).toBe(false);
+  });
+
+  it("only offers chart types the configuration can already render", () => {
+    expect(chartTypeAvailable("bar", config)).toBe(true);
+    expect(chartTypeAvailable("roc", config)).toBe(false);
+    const mapped = { ...config, evaluation: {} as any };
+    expect(chartTypeAvailable("roc", mapped)).toBe(true);
+  });
+
+  it("declares allowances per operation and still guards appearance", () => {
+    expect(
+      structuralAllowance([
+        { tool: "set_chart", arguments: { type: "bar" } },
+        { tool: "add_series", arguments: { id: "s2", y: "y" } },
+        { tool: "set_mapping", arguments: { x: "x" } },
+      ]),
+    ).toEqual(["/type", "/series", "/x", "/group", "/heatY", "/heatZ"]);
+    const retyped = structuredClone(config);
+    retyped.type = "bar";
+    expect(sameProtectedFigure(config, retyped)).toBe(false);
+    expect(sameProtectedFigure(config, retyped, ["/type"])).toBe(true);
+    const rebound = structuredClone(config);
+    rebound.series[0].y = "y";
+    expect(sameProtectedFigure(config, rebound, ["/series"])).toBe(true);
+    const recolored = structuredClone(config);
+    recolored.series[0].color = "#000000";
+    expect(sameProtectedFigure(config, recolored, ["/series"])).toBe(false);
+  });
+
+  it("groups structure tools and queues a required-only operation", async () => {
+    const fetcher = vi.fn(
+      async (url: string) =>
+        new Response(
+          JSON.stringify(
+            url.endsWith("catalog")
+              ? {
+                  protocol_version: 1,
+                  config_schema_version: 1,
+                  execution: "preview-only",
+                  categories: [
+                    { id: "presentation", label: "外观" },
+                    { id: "structure", label: "结构" },
+                  ],
+                  tools: [style, chartTool, mappingTool],
+                }
+              : {},
+          ),
+          { status: 200 },
+        ),
+    );
+    vi.stubGlobal("fetch", fetcher);
+    render(
+      <QueryClientProvider
+        client={
+          new QueryClient({ defaultOptions: { queries: { retry: false } } })
+        }
+      >
+        <QuickActions
+          project={1}
+          chartId={2}
+          revision={1}
+          config={config}
+          data={data}
+          token="snapshot"
+          onClose={vi.fn()}
+          onApply={vi.fn(() => true)}
+        />
+      </QueryClientProvider>,
+    );
+    const select = await screen.findByLabelText("选择快捷操作");
+    expect(
+      [...select.querySelectorAll("optgroup")].map((g) => g.label),
+    ).toEqual(["外观", "结构"]);
+    fireEvent.change(select, { target: { value: "set_chart" } });
+    const label = screen.getByLabelText("图表类型") as HTMLSelectElement;
+    expect([...label.options].map((o) => o.value)).not.toContain("roc");
+    const add = screen.getByRole("button", { name: "加入调整清单" });
+    expect(add).toBeEnabled();
+    fireEvent.click(add);
+    expect(screen.getByRole("heading", { name: /待调整 · 1\/30/ })).toBeInTheDocument();
   });
 });

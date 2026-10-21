@@ -2,6 +2,8 @@
 
 本轮承接“编辑器稳定 → 工具接口 → 模型接入”的顺序，实现可被未来 Agent 调用的确定性工具层，并用真实快捷操作界面验收。没有接入模型、聊天界面、API Key、自动执行循环、任意 Python 或第三方 Skill；不是完整 Agent/Harness。
 
+工具面分两组：**外观（presentation）**只改呈现，**结构（structure）**改“图从哪几列取数”。结构组在 2026-10-21 第二批补齐，同一份 `protocol_version=1`，目录里用 `category` 区分；两组的校验链完全相同（预览 → 差异 → 用户确认 → 一步撤销 → 原“保存”写版本）。
+
 ## 执行流程
 
 用户在编辑器点“快捷操作”，或按 Ctrl/Cmd+K。选操作、勾选属性、加入清单；一次最多 30 项。前端将当前草稿快照与操作清单交给 Java，Java 校验并返回配置与逐字段差异，浏览器使用同一 Plotly 渲染器预览。确认应用后统一进入现有撤销栈，可一步撤销/重做。正式 MySQL 版本仍由原“保存”创建。
@@ -12,15 +14,24 @@
 
 ## 协议
 
-`GET /api/figure-tools/catalog`：返回协议版本、配置版本、`execution: "preview-only"` 与五个工具的名称、中文标签及 `input_schema`。所有参数对象拒绝额外属性。
+`GET /api/figure-tools/catalog`：返回协议版本、配置版本、`execution: "preview-only"`、`categories` 与十个工具的名称、中文标签、`category` 及 `input_schema`。所有参数对象拒绝额外属性。
 
-| 工具 | 接收的属性 |
-| --- | --- |
-| `set_style` | title / font / fontSize / fontPt / bold |
-| `set_axis` | axis（x/y，必填） / title / min / max / dtick / log / grid |
-| `set_legend` | show / position / orientation |
-| `set_series` | seriesId（必填） / name / color / opacity / width / dash / symbol / size / visible |
-| `set_canvas` | width / height / top / bottom / left / right / background |
+| 工具 | 分类 | 接收的属性 |
+| --- | --- | --- |
+| `set_style` | 外观 | title / font / fontSize / fontPt / bold |
+| `set_axis` | 外观 | axis（x/y，必填） / title / min / max / dtick / log / grid |
+| `set_legend` | 外观 | show / position / orientation |
+| `set_series` | 外观 | seriesId（必填） / name / color / opacity / width / dash / symbol / size / visible |
+| `set_canvas` | 外观 | width / height / top / bottom / left / right / background |
+| `set_chart` | 结构 | type（必填，11 种图表类型） |
+| `set_mapping` | 结构 | x / group / heatY / heatZ |
+| `map_series` | 结构 | seriesId / y（必填） / error |
+| `add_series` | 结构 | id / y（必填） / name / error |
+| `remove_series` | 结构 | seriesId（必填） |
+
+`minProperties` 由服务端按“目标标识不算调整”计算：`set_axis`、`set_series` 至少再带一项属性；`set_chart`、`map_series`、`add_series`、`remove_series` 的必填项本身就是载荷，只带必填即成立。客户端 `makeToolOperation` 与服务端使用同一条规则，否则界面能拼出服务端拒绝的操作。
+
+`GET /api/projects/{p}/data/{v}/profile`：返回某数据版本的字段画像与首批行数据，供模型或界面在改映射前“读一眼”数据。响应含 `dataset_version_id, dataset_id, filename, version, sha256, row_count, fields[], head[][], truncated{columns, rows}`；`fields` 每项是 `name, type, inferred_type, missing, unique, constant, role, suggested_role, samples, min, max`（数值列才有 min/max，样本截断 40 字符）。最多 80 列、10 行，画像直接复用导入时算好的 `fields_json`，不重算、不重读原文件，也不写库。
 
 `POST /api/projects/{p}/figure-tools/preview`：
 
@@ -54,7 +65,20 @@
 - ROC/PR 标题写入各自的 evaluation 轴标题，矩阵标题写入 classification，直方图/ECDF 写入 empirical 的展示标题；不改变标签列、正类、阈值、分箱或统计方法。旧分布图缺少 empirical 配置时，需先在专业属性中设置。
 - ROC/PR 和矩阵的固定范围、刻度、对数设置不作为快捷操作暴露；分布图的类别 X 轴、分面自动轴也限制范围/对数操作。矩阵网格由单元格决定，色阶在原专业属性中调整。
 - 矩阵不提供序列/图例工具；柱图与直方图不提供点大小/点形/序列线宽，散点不提供线宽，虚实线只在实际使用该属性的类型中提供。后端同样拒绝无效组合，不能靠绕过前端获得一个无效成功响应。
-- 工具仅改现有序列外观，不增加序列、不换字段、不生成误差、显著性或曲线。
+- 外观工具仅改现有序列外观，不增加序列、不换字段、不生成误差、显著性或曲线。结构工具见下节，同样不生成数据。
+
+## 结构工具：改映射，不猜配置
+
+结构操作只回答“图读哪几列、有几条序列”，绝不代造专业配置：
+
+- `set_chart` 切换类型时不补齐配置：切热力图要求 `heatY`/`heatZ` 已指定，切 ROC/PR 要求 `evaluation` 已存在，切混淆矩阵要求 `classification` 已存在，否则 400 并提示先完成对应配置。
+- `set_mapping` 只写给出的字段；`group` 允许写空串清空分组，`x` 在直方图/ECDF/ROC/PR/混淆矩阵下拒绝修改（X 由图形结构决定）。
+- `map_series` 改指定序列的 `y`/`error`；`error` 写空串即取消误差列。
+- `add_series` 的 `id` 由调用方生成（前端用自增且不复用的 `sN`），服务端只查重；新序列**深拷贝首条序列的外观**再改 `id`/`y`/`name`/`error`，因此一定通过配置校验，也保证新增序列不会凭空引入新颜色或新线型。
+- `remove_series` 拒绝删除被 `classification.seriesId` 引用的序列，也拒绝删到 0 条。
+- 列名合法性（是否属于该数据版本、Y 是否数值、误差列是否非负）不在工具层重写，统一交给既有 `WorkspaceService.validateAndReport`，避免两套规则漂移。
+
+`changes` 对结构操作返回粗粒度路径（`/type`、`/x`、`/series`），前端 `sameProtectedFigure(before, after, allowed)` 据此只放行这些路径：`/series` 命中时按 `id` 比对存活序列的七个外观键（color/opacity/width/dash/symbol/size/visible），新增或删除放行，偷改外观仍然被判为篡改。
 
 ## 草稿与冲突保护
 
@@ -68,9 +92,9 @@
 
 ## 验证与运行
 
-Java 测试覆盖严格参数、整批失败不变、自动范围、目标序列、物理字号、专业图标题、固定轴拒绝、未来字段保留、真实 MySQL/MockMvc 只读预览、跨项目与旧版本拒绝。
+Java 测试覆盖严格参数、整批失败不变、自动范围、目标序列、物理字号、专业图标题、固定轴拒绝、未来字段保留、真实 MySQL/MockMvc 只读预览、跨项目与旧版本拒绝；结构部分覆盖改映射/改取数/增删序列、模板外观继承、悬空绑定的六种拒绝（删最后一条、重复 ID、切 ROC 缺评估、清空 heatY/heatZ 后切热力图、ROC 下改 X、删除被分类配置引用的序列），以及字段画像与结构预览都不写库。
 
-浏览器覆盖五种操作合并、预览未应用时原图/数据库不变、一步撤销/重做、保存重开、原文件逐字节一致、SVG、错误范围、并发版本冲突、成品 pt、ROC 真实轴标题及窗口布局。最终计数见 [验收记录](TEST-RESULTS.md)。
+浏览器覆盖五种外观操作合并、预览未应用时原图/数据库不变、一步撤销/重做、保存重开、原文件逐字节一致、SVG、错误范围、并发版本冲突、成品 pt、ROC 真实轴标题及窗口布局；结构部分覆盖新增序列一步应用一步撤销、切换图表类型后保存重载仍生效、删除最后一条序列被拒且不产生预览。最终计数见 [验收记录](TEST-RESULTS.md)。
 
 ```powershell
 # 仓库根目录，使用便携 Java 21

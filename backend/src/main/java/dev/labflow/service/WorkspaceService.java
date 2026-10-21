@@ -262,6 +262,49 @@ public class WorkspaceService {
             p));
   }
 
+  /** Bounded column profile for agents: no rows are recomputed, no files are re-read. */
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> profile(long p, long id) {
+    var data = data(p, id);
+    var fields = (List<Map<String, Object>>) data.get("fields");
+    var rows = (List<Map<String, Object>>) data.get("rows");
+    var summarized = new ArrayList<Map<String, Object>>();
+    for (var field : fields) {
+      if (summarized.size() >= 80) break;
+      var item = new LinkedHashMap<String, Object>();
+      item.put("name", field.get("name"));
+      item.put("type", field.get("type"));
+      item.put("role", field.get("role"));
+      item.put("suggested_role", field.get("suggestedRole"));
+      item.put("missing", field.get("missing"));
+      item.put("unique", field.get("unique"));
+      item.put("constant", field.get("constant"));
+      if (field.containsKey("min")) {
+        item.put("min", field.get("min"));
+        item.put("max", field.get("max"));
+      }
+      var samples = new ArrayList<String>();
+      for (Object value : (List<Object>) field.get("samples")) {
+        String text = String.valueOf(value);
+        samples.add(text.length() > 40 ? text.substring(0, 40) : text);
+        if (samples.size() == 3) break;
+      }
+      item.put("samples", samples);
+      summarized.add(item);
+    }
+    var profile = new LinkedHashMap<String, Object>();
+    profile.put("dataset_version_id", data.get("id"));
+    profile.put("dataset_id", data.get("dataset_id"));
+    profile.put("filename", data.get("filename"));
+    profile.put("version", data.get("version"));
+    profile.put("sha256", data.get("sha256"));
+    profile.put("row_count", data.get("row_count"));
+    profile.put("fields", summarized);
+    profile.put("head", rows.subList(0, Math.min(10, rows.size())));
+    profile.put("truncated", Map.of("columns", fields.size() > 80, "rows", rows.size() > 10));
+    return profile;
+  }
+
   public Map<String, Object> original(long p, long id) {
     return db.one(
         "SELECT v.filename,v.original_file FROM dataset_versions v JOIN datasets d ON"

@@ -60,7 +60,7 @@ class FigureToolsIntegrationTest {
   void catalogAndPreviewUseRealDataWithoutCreatingAnyVersions() throws Exception {
     mvc.perform(get("/api/figure-tools/catalog"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.tools.length()").value(5));
+        .andExpect(jsonPath("$.tools.length()").value(10));
     long p = project(), data = dataset(p);
     var c = config(data);
     var saved = workspace.saveChart(p, null, "Original", null, c);
@@ -91,6 +91,55 @@ class FigureToolsIntegrationTest {
                 .contentType("application/json")
                 .content(req.toString()))
         .andExpect(status().isConflict());
+  }
+
+  @Test
+  void profileAndStructuralPreviewReadTheSameVersionWithoutWriting() throws Exception {
+    long p = project(), data = dataset(p);
+    mvc.perform(get("/api/projects/" + p + "/data/" + data + "/profile"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.dataset_version_id").value(data))
+        .andExpect(jsonPath("$.row_count").value(2))
+        .andExpect(jsonPath("$.fields[0].name").value("epoch"))
+        .andExpect(jsonPath("$.fields[1].type").value("number"))
+        .andExpect(jsonPath("$.head.length()").value(2))
+        .andExpect(jsonPath("$.truncated.columns").value(false));
+    var req = json.createObjectNode().put("protocol_version", 1);
+    req.set("config", config(data));
+    req.set(
+        "operations",
+        json.readTree(
+            """
+            [{"tool":"set_chart","arguments":{"type":"bar"}},
+             {"tool":"set_mapping","arguments":{"x":"epoch","group":""}},
+             {"tool":"map_series","arguments":{"seriesId":"s1","y":"accuracy"}},
+             {"tool":"add_series","arguments":{"id":"s2","y":"error"}}]
+            """));
+    mvc.perform(
+            post("/api/projects/" + p + "/figure-tools/preview")
+                .contentType("application/json")
+                .content(req.toString()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.config.type").value("bar"))
+        .andExpect(jsonPath("$.config.series.length()").value(2))
+        .andExpect(jsonPath("$.source.dataset_version_id").value(data));
+    req.set(
+        "operations",
+        json.readTree("[{\"tool\":\"set_mapping\",\"arguments\":{\"x\":\"nope\"}}]"));
+    mvc.perform(
+            post("/api/projects/" + p + "/figure-tools/preview")
+                .contentType("application/json")
+                .content(req.toString()))
+        .andExpect(status().isBadRequest());
+    req.set(
+        "operations",
+        json.readTree("[{\"tool\":\"set_chart\",\"arguments\":{\"type\":\"roc\"}}]"));
+    mvc.perform(
+            post("/api/projects/" + p + "/figure-tools/preview")
+                .contentType("application/json")
+                .content(req.toString()))
+        .andExpect(status().isBadRequest());
+    assertTrue(workspace.charts(p).isEmpty());
   }
 
   @Test
