@@ -3,6 +3,7 @@ import Plotly from "plotly.js-cartesian-dist-min";
 import type { Config } from "./model";
 import type { Dataset } from "../lib/api";
 import { buildPlot } from "./plot";
+import { PreviewWarnings } from "./PreviewWarnings";
 
 export function StylePreview({
   config,
@@ -74,41 +75,39 @@ export function StylePreview({
     1,
   );
   return (
-    <div
-      className="style-preview"
-      ref={host}
-      aria-label="当前数据样式预览"
-      aria-busy={!result.error && !!state}
-    >
+    <>
       <div
-        className="style-preview-stage"
-        style={{ height: config.style.height * scale }}
+        className="style-preview"
+        ref={host}
+        aria-label="当前数据样式预览"
+        aria-busy={!result.error && !!state}
       >
         <div
-          ref={graph}
-          style={{
-            width: config.style.width,
-            height: config.style.height,
-            transform: `scale(${scale})`,
-            transformOrigin: "top left",
-            marginLeft: Math.max(0, (width - config.style.width * scale) / 2),
-          }}
-        />
-      </div>
-      {(state || result.error) && (
-        <p
-          role={
-            result.error || state.startsWith("预览失败") ? "alert" : "status"
-          }
+          className="style-preview-stage"
+          style={{ height: config.style.height * scale }}
         >
-          {result.error || state}
-        </p>
-      )}
-      {!!result.plot?.warnings.length && (
-        <p className="style-preview-warning">
-          {result.plot.warnings.join("；")}
-        </p>
-      )}
-    </div>
+          <div
+            ref={graph}
+            style={{
+              width: config.style.width,
+              height: config.style.height,
+              transform: `scale(${scale})`,
+              transformOrigin: "top left",
+              marginLeft: Math.max(0, (width - config.style.width * scale) / 2),
+            }}
+          />
+        </div>
+        {(state || result.error) && (
+          <p
+            role={
+              result.error || state.startsWith("预览失败") ? "alert" : "status"
+            }
+          >
+            {result.error || state}
+          </p>
+        )}
+      </div>
+      <PreviewWarnings warnings={result.plot?.warnings || []} />
+    </>
   );
 }

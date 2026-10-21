@@ -80,6 +80,14 @@ test("builtin preview is isolated, applies through undo, persists and exports us
   await page
     .getByRole("button", { name: "预览内置样式 Modern Research", exact: true })
     .click();
+  const examples = page
+    .getByRole("dialog")
+    .locator(".style-card-grid .style-thumbnail");
+  await expect(examples).toHaveCount(4);
+  for (let i = 0; i < 4; i++)
+    await expect(examples.nth(i).locator("[data-sample-series]")).toHaveCount(
+      3,
+    );
   const preview = page.getByLabel("当前数据样式预览", { exact: true });
   await expect(preview).toHaveAttribute("aria-busy", "false");
   await expect(preview.locator(".scatterlayer .js-line")).toHaveCount(
@@ -228,7 +236,11 @@ test("personal templates support project search, preview, rename, delete protect
   ).toBeVisible();
   await page.getByLabel("模板项目范围", { exact: true }).selectOption("all");
   await page.getByLabel("搜索样式模板", { exact: true }).fill("Blue & amber");
-  expect(await page.getByLabel("搜索样式模板").evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft))).toBeGreaterThanOrEqual(32);
+  expect(
+    await page
+      .getByLabel("搜索样式模板")
+      .evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft)),
+  ).toBeGreaterThanOrEqual(32);
   await page
     .getByRole("button", { name: "预览模板 Blue & amber", exact: true })
     .click();
@@ -357,4 +369,109 @@ test("preview renders grouped bars, scatter points and vector heatmap cells with
     expect(unchanged.revision).toBe(1);
     expect(unchanged.config).toEqual(config);
   }
+});
+
+test("180 sparse violin diagnostics stay collapsed and never overlap the apply footer", async ({
+  page,
+  request,
+}) => {
+  const f = await fixture(request);
+  const csv =
+    "epoch,baseline,enhanced,ablation\n" +
+    Array.from(
+      { length: 60 },
+      (_, i) => `${i + 1},${60 + i * 0.4},${65 + i * 0.45},${56 + i * 0.38}`,
+    ).join("\n");
+  const data = await (
+    await request.post(`/api/projects/${f.project.id}/datasets`, {
+      multipart: {
+        file: {
+          name: "synthetic-sparse-violin.csv",
+          mimeType: "text/csv",
+          buffer: Buffer.from(csv),
+        },
+      },
+    })
+  ).json();
+  const config = defaults(data);
+  config.type = "violin";
+  config.x = "epoch";
+  config.series = ["baseline", "enhanced", "ablation"].map((field, i) =>
+    makeSeries(field, i),
+  );
+  config.style.title = "Model performance · synthetic demo";
+  const chart = await (
+    await request.post(`/api/projects/${f.project.id}/charts`, {
+      data: { name: "稀疏小提琴图 · 预览诊断", config },
+    })
+  ).json();
+  await page.goto(`/projects/${f.project.id}/figures/${chart.id}`);
+  await expect(page.getByTestId("plot")).toBeVisible();
+  await page.getByRole("button", { name: "复用", exact: true }).click();
+  await page.getByRole("tab", { name: "内置图表样式", exact: true }).click();
+  const diagnostics = page.locator(".preview-diagnostics");
+  await expect(diagnostics.locator("summary")).toContainText("180 条数据提示");
+  await expect(diagnostics.locator("li")).toHaveCount(0);
+  const apply = page.getByRole("button", {
+    name: "应用内置样式 Clean Academic",
+    exact: true,
+  });
+  for (const viewport of [
+    { width: 1280, height: 800 },
+    { width: 1560, height: 1000 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(apply).toBeInViewport();
+    const geometry = await page
+      .locator(".style-detail")
+      .evaluate((el) => ({
+        scrollBottom: el
+          .querySelector(".style-detail-scroll")!
+          .getBoundingClientRect().bottom,
+        footerTop: el
+          .querySelector(".style-detail-footer")!
+          .getBoundingClientRect().top,
+        previewHeight: el
+          .querySelector(".style-preview")!
+          .getBoundingClientRect().height,
+      }));
+    expect(geometry.scrollBottom).toBeLessThanOrEqual(geometry.footerTop + 1);
+    expect(geometry.previewHeight).toBeLessThanOrEqual(245);
+  }
+  await page.screenshot({
+    path: "../docs/screenshots/styles-warning-summary.png",
+    fullPage: true,
+  });
+  await diagnostics.locator("summary").click();
+  await expect(diagnostics.locator("li")).toHaveCount(30);
+  await diagnostics
+    .getByRole("button", { name: "再显示 30 条（剩余 150）", exact: true })
+    .click();
+  await expect(diagnostics.locator("li")).toHaveCount(60);
+  expect(
+    await diagnostics
+      .locator(".preview-diagnostics-body")
+      .evaluate((el) => el.getBoundingClientRect().height),
+  ).toBeLessThanOrEqual(180);
+  await expect(apply).toBeInViewport();
+  const geometry = await page
+    .locator(".style-detail")
+    .evaluate((el) => ({
+      scrollBottom: el
+        .querySelector(".style-detail-scroll")!
+        .getBoundingClientRect().bottom,
+      footerTop: el
+        .querySelector(".style-detail-footer")!
+        .getBoundingClientRect().top,
+    }));
+  expect(geometry.scrollBottom).toBeLessThanOrEqual(geometry.footerTop + 1);
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "关闭", exact: true })
+    .click();
+  const saved = await (
+    await request.get(`/api/projects/${f.project.id}/charts/${chart.id}`)
+  ).json();
+  expect(saved.revision).toBe(1);
+  expect(saved.config).toEqual(config);
 });

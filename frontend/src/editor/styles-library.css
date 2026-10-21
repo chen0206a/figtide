@@ -149,10 +149,22 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 24px;
+  padding: 0;
   background: #f7f7f8;
   border-left: 1px solid #ebebee;
+  overflow: hidden;
+}
+.style-detail-scroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  padding: 24px;
+}
+.style-detail-footer {
+  flex-shrink: 0;
+  padding: 16px 24px 24px;
+  border-top: 1px solid #e3e4e8;
+  background: #f7f7f8;
 }
 .style-detail-heading {
   display: flex;
@@ -195,7 +207,7 @@
   margin: 20px 0 7px;
   overflow-wrap: anywhere;
 }
-.style-detail > p {
+.style-detail-scroll > p {
   font-size: 12px;
   color: #737780;
   line-height: 1.8;
@@ -223,22 +235,92 @@
   overflow-wrap: anywhere;
 }
 .style-detail-note {
-  margin-top: auto;
-  padding-top: 15px;
-  border-top: 1px solid #e3e4e8;
   color: #787c85;
   font-size: 11.5px;
   line-height: 1.8;
 }
-.style-detail > .btn {
-  position: sticky;
-  bottom: 0;
+.style-detail-footer > .btn {
   flex-shrink: 0;
   width: 100%;
   margin-top: 16px;
   justify-content: space-between;
   border-radius: 9px;
   min-height: 40px;
+}
+.preset-traits {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin: 10px 2px 2px;
+}
+.preset-traits span {
+  color: #6d7480;
+  background: #f3f4f6;
+  padding: 3px 5px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.preview-diagnostics {
+  flex-shrink: 0;
+  margin-top: 12px;
+  border: 1px solid #e6e3d9;
+  border-radius: 8px;
+  background: #fcfbf8;
+}
+.preview-diagnostics summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  cursor: pointer;
+  list-style: none;
+  color: #776747;
+  font-size: 12px;
+}
+.preview-diagnostics summary::-webkit-details-marker {
+  display: none;
+}
+.preview-diagnostics summary span {
+  flex: 1;
+}
+.preview-diagnostics summary small {
+  display: block;
+  margin-top: 4px;
+  color: #858076;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.preview-diagnostics[open] summary > svg:last-child {
+  transform: rotate(180deg);
+}
+.preview-diagnostics-hint {
+  margin: 0;
+  padding: 0 12px 12px;
+  color: #7f7769;
+  font-size: 11.5px;
+  line-height: 1.8;
+}
+.preview-diagnostics-body {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 0 12px 12px;
+  border-top: 1px solid #ede9de;
+}
+.preview-diagnostics-body ol {
+  margin: 12px 0;
+  padding-left: 20px;
+  color: #777265;
+  font-size: 11.5px;
+  line-height: 1.8;
+}
+.preview-diagnostics-body li {
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+.preview-diagnostics-body .btn {
+  font-size: 11.5px;
+  white-space: normal;
 }
 .style-filter {
   display: flex;
@@ -408,7 +490,8 @@
     overflow-y: auto;
   }
   .style-browser,
-  .style-detail {
+  .style-detail,
+  .style-detail-scroll {
     overflow: visible;
   }
   .style-detail {

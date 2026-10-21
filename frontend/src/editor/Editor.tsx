@@ -75,7 +75,7 @@ import { BandPanel } from "./EvaluationPanel";
 import { EvaluationResults } from "./EvaluationResults";
 import { ClassificationResults } from "./ClassificationResults";
 import { ReuseDialog } from "./ReuseDialog";
-import { applyPreset, stylePresets, styleProfile } from "./stylePresets";
+import { stylePresets, presetThumbnail } from "./stylePresets";
 import { StyleThumbnail } from "./StyleThumbnail";
 import "./styles-library.css";
 import { downloadBlob } from "../lib/download";
@@ -1050,7 +1050,7 @@ function Workbench(
                     <span>{name}</span>
                     {c.style.preset === key && <Check size={12} />}
                   </div>
-                  <StyleThumbnail profile={styleProfile(applyPreset(c, key))} />
+                  <StyleThumbnail profile={presetThumbnail(key)} />
                 </button>
               ))}
             </div>

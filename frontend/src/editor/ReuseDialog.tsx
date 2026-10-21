@@ -16,7 +16,7 @@ import {
   Palette,
   Bookmark,
 } from "lucide-react";
-import { applyPreset, stylePresets, styleProfile } from "./stylePresets";
+import { applyPreset, stylePresets, presetThumbnail } from "./stylePresets";
 import { StyleThumbnail } from "./StyleThumbnail";
 import { StylePreview } from "./StylePreview";
 import "./styles-library.css";
@@ -206,7 +206,7 @@ export function ReuseDialog(p: {
                 </h3>
                 <p>
                   {tab === "builtin"
-                    ? "先预览，再应用。每一种样式都可以继续调整。"
+                    ? "外观方案，不改变图表类型。示意图用三组序列对比，右侧是你的数据。"
                     : "默认只看当前项目；跨项目复用时切换到全部项目。"}
                 </p>
               </div>
@@ -383,15 +383,16 @@ export function ReuseDialog(p: {
                     aria-pressed={selected === v.key}
                     onClick={() => setSelected(v.key)}
                   >
-                    <StyleThumbnail
-                      profile={styleProfile(applyPreset(p.config, v.key))}
-                    />
+                    <StyleThumbnail profile={presetThumbnail(v.key)} />
                     <span className="style-card-name">
                       {v.name}
                       {selected === v.key && <Check size={14} />}
                     </span>
-                    <small>{v.key}</small>
-                    <p>{v.description}</p>
+                    <div className="preset-traits">
+                      {v.traits.map((trait) => (
+                        <span key={trait}>{trait}</span>
+                      ))}
+                    </div>
                   </button>
                 ))}
               </div>
@@ -484,60 +485,65 @@ export function ReuseDialog(p: {
             )}
           </section>
           <aside className="style-detail">
-            <div className="style-detail-heading">
-              <span>当前数据预览</span>
-              <span>未应用</span>
+            <div className="style-detail-scroll">
+              <div className="style-detail-heading">
+                <span>当前数据预览</span>
+                <span>未应用</span>
+              </div>
+              {source && <StylePreview config={previewConfig} data={source} />}
+              <h3>
+                {tab === "builtin"
+                  ? selectedPreset.name
+                  : selectedTemplate?.name || "当前画布样式"}
+              </h3>
+              <p>
+                {tab === "builtin"
+                  ? selectedPreset.description
+                  : selectedTemplate
+                    ? `来自「${selectedTemplate.project_name}」`
+                    : "选择左侧模板，查看它在这份数据上的效果。"}
+              </p>
+              <dl>
+                <div>
+                  <dt>字体</dt>
+                  <dd>
+                    {previewConfig.style.font} · {previewConfig.style.fontSize}
+                    px
+                  </dd>
+                </div>
+                <div>
+                  <dt>数据</dt>
+                  <dd>{source?.filename || "未找到当前数据"}</dd>
+                </div>
+                <div>
+                  <dt>画布</dt>
+                  <dd>
+                    {previewConfig.style.width} × {previewConfig.style.height}px
+                  </dd>
+                </div>
+              </dl>
             </div>
-            {source && <StylePreview config={previewConfig} data={source} />}
-            <h3>
-              {tab === "builtin"
-                ? selectedPreset.name
-                : selectedTemplate?.name || "当前画布样式"}
-            </h3>
-            <p>
-              {tab === "builtin"
-                ? selectedPreset.description
-                : selectedTemplate
-                  ? `来自「${selectedTemplate.project_name}」`
-                  : "选择左侧模板，查看它在这份数据上的效果。"}
-            </p>
-            <dl>
-              <div>
-                <dt>字体</dt>
-                <dd>
-                  {previewConfig.style.font} · {previewConfig.style.fontSize}px
-                </dd>
+            <div className="style-detail-footer">
+              <div className="style-detail-note">
+                仅调整外观，保留字段映射、标题、坐标范围和统计设置。应用后可撤销。
+                {tab === "builtin" && " 内置样式为独立设计，无期刊官方认证。"}
               </div>
-              <div>
-                <dt>数据</dt>
-                <dd>{source?.filename || "未找到当前数据"}</dd>
-              </div>
-              <div>
-                <dt>画布</dt>
-                <dd>
-                  {previewConfig.style.width} × {previewConfig.style.height}px
-                </dd>
-              </div>
-            </dl>
-            <div className="style-detail-note">
-              仅调整外观，保留字段映射、标题、坐标范围和统计设置。应用后可撤销。
-              {tab === "builtin" && " 内置样式为独立设计，无期刊官方认证。"}
+              <Button
+                disabled={busy || (!selectedTemplate && tab === "style")}
+                aria-label={
+                  tab === "builtin"
+                    ? `应用内置样式 ${selectedPreset.key}`
+                    : `应用样式 ${selectedTemplate?.name || "未选择"}`
+                }
+                onClick={() => {
+                  p.onApply(previewConfig);
+                  p.onClose();
+                }}
+              >
+                应用到当前图表
+                <ArrowRight size={15} />
+              </Button>
             </div>
-            <Button
-              disabled={busy || (!selectedTemplate && tab === "style")}
-              aria-label={
-                tab === "builtin"
-                  ? `应用内置样式 ${selectedPreset.key}`
-                  : `应用样式 ${selectedTemplate?.name || "未选择"}`
-              }
-              onClick={() => {
-                p.onApply(previewConfig);
-                p.onClose();
-              }}
-            >
-              应用到当前图表
-              <ArrowRight size={15} />
-            </Button>
           </aside>
         </div>
       ) : (
