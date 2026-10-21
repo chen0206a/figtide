@@ -44,3 +44,10 @@ jobs:
           cache: maven
           cache-dependency-path: backend/pom.xml
       - run: mvn -B -f backend/pom.xml verify
+      - name: Upload deterministic agent evaluation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-evaluation-replay
+          path: backend/target/agent-eval/
+          if-no-files-found: warn

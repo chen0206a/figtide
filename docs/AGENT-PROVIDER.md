@@ -76,4 +76,4 @@ $env:LABFLOW_AGENT_API_KEY = '<你自己的密钥>'
 
 脚本在 `.runtime/agent-e2e-build` 独立编译打包，不覆盖正在运行的工作台JAR；创建/复用 `labflow_e2e` 数据库，显式开启仅测试库可用的清理接口；结束后按水位清理这一独占测试库，关闭自己启动的 Java/协议 fixture/Vite 进程。普通 `scripts/start.ps1` **不再开启破坏性清理接口**；即使误加开关，正式 `labflow` 库也返回403。测试库仍应独占，不应有人在测试期间写入其他需保留的项目。
 
-后续Step 2c已增加MySQL持久审计与接受/拒绝决策，见 [AGENT-AUDIT.md](AGENT-AUDIT.md)。活动快照仍在内存保留最多100条；淘汰或重启后可查询脱敏历史，但不能重新应用旧提案。2d的30条用例及回放/真实双模式评测尚未实现，本机HTTP fixture不等于那套评测已完成。
+后续Step 2c已增加MySQL持久审计与接受/拒绝决策，见 [AGENT-AUDIT.md](AGENT-AUDIT.md)。活动快照仍在内存保留最多100条；淘汰或重启后可查询脱敏历史，但不能重新应用旧提案。Step 2d已增加[30条回放/真实双模式评测](AGENT-EVALUATION.md)，本机HTTP验证只证明兼容协议与运行器路径，不代表真实模型语义效果已经通过验收。

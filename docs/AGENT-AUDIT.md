@@ -1,6 +1,6 @@
 # Step 2c：运行审计与用户决策
 
-本轮继续使用 Java Harness，不新增 Python 服务、模型 SDK 或收费调用。运行结束时把脱敏的 trace、用量和提案摘要存进 MySQL；用户接受／拒绝由独立接口记录。2d的30条回放/真实模型评测尚未实现。
+本轮继续使用 Java Harness，不新增 Python 服务、模型 SDK 或收费调用。运行结束时把脱敏的 trace、用量和提案摘要存进 MySQL；用户接受／拒绝由独立接口记录。后续已补齐[2d的30条双模式评测](AGENT-EVALUATION.md)，真实模型语义效果仍需手动评审。
 
 ## 界面
 
@@ -45,7 +45,7 @@ Flyway `V5__agent_audit.sql` 新增一张 `agent_runs` 表，一次运行一行�
 |---|---|---|
 | queued / running | running | 不允许 |
 | proposed | pending | accepted 或 rejected |
-| answered | answered | 不允许；包含回复/拒绝/追问，语义分类待2d评测 |
+| answered | answered | 不允许；包含回复/拒绝/追问，2d规则初筛不改变此运行状态，语义仍需评审 |
 | cancelled | cancelled | 不允许 |
 | failed | failed | 不允许 |
 | incomplete | incomplete 或 interrupted | 不允许 |
