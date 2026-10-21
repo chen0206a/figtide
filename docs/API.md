@@ -231,7 +231,13 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 
 转换步骤：`{"op":"filter","field":"epoch","operator":"gte","value":"10"}`。操作符 `eq|gte|lte`；eq 按文本比较，其余按数值比较。过滤不落回原始行。
 
-## 样式模板
+## 绘图工具协议
+
+`GET /figure-tools/catalog` 提供 protocol_version=1、config_schema_version=1 的五种参数白名单与 JSON Schema；`POST /projects/{p}/figure-tools/preview` 接收 `{protocol_version,chart_id,base_revision,config,operations}`，只校验并返回结果，不写图表、数据或版本。
+
+操作格式 `{tool,arguments}`；类型为 set_style / set_axis / set_legend / set_series / set_canvas，一次 1–30 项。返回 `{protocol_version,config,changes,operation_count,base_revision,source}`，source 包含不可变数据版本 ID 与 SHA-256，changes 为 JSON Pointer 路径的 before/after。旧保存版本返回 409，跨项目资源 404，未知属性、无效参数或不适用于当前图表的操作 400。完整范围与专业图表说明见 [绘图工具协议](FIGURE-TOOLS.md)。
+
+## 样式模板接口
 
 `GET /style-templates` 返回本机全部模板，包含 `id,project_id,name,project_name,profile`（及原有时间字段）。前端默认按当前项目筛选，允许切换全部项目；`profile` 是带 `schema_version=1` 的外观白名单，与图表的数据映射、统计语义分离。
 

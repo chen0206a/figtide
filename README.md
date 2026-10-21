@@ -6,6 +6,8 @@
 
 最新布局整理：[设计依据、操作分区与验收](docs/EDITOR-LAYOUT.md)。
 
+编辑器新增“快捷操作”（Ctrl/Cmd+K）：将文字、坐标轴、图例、序列和画布调整组成清单，真实 Java 校验后预览，一次应用、一步撤销。该工具协议为后续 Agent 接入准备，当前不调用模型。见 [工具协议与运行说明](docs/FIGURE-TOOLS.md)。
+
 首页现已加入本地图表示例图廊，并提供独立工作台地址、刷新恢复和导航动效。见 [首页与路由说明](docs/HOME-AND-ROUTING.md)。
 
 ![产品首页](docs/screenshots/home-centered.png)

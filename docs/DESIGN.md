@@ -24,6 +24,8 @@ erDiagram
 备份清单独立于数据库版本，格式为 labflow-project-v1，保留数据库 JSON 原文、原文件及所有版本。恢复在单事务中创建新项目，重建明确引用，不对实验参数或指标进行数字替换。模板仅提取外观白名单，完整图表复制必须显式映射字段；两者使用不同的 UI 路径。
 
 ## 系统架构
+
+2026-10-21 新增确定性绘图工具层：`FigureToolController → FigureToolService → FigureOperations / WorkspaceService → WorkspaceRepository`。目录使用独立 protocol_version=1 与 JSON Schema，继续产生 schema_version=1 图表配置；预览只读，应用由编辑器统一写入撤销栈，正式版本沿用已有保存 API。没有新增数据库关系，没有模型调用或自动执行 Agent。完整合同见 [绘图工具协议](FIGURE-TOOLS.md)。
 ```mermaid
 flowchart LR
   UI[React / TypeScript 工作台] -->|HTTP JSON / multipart| API[Spring Boot 3 / Java 21]
