@@ -1,43 +1,45 @@
 # LabFlow agent evaluation
 
-Mode: **replay** · Suite: `labflow-agent-eval-v1` · Prompt: `figure-assistant-v1`
+Mode: **replay** · Suite: `labflow-agent-eval-v1.3` · Prompt: `figure-assistant-v3`
 
 Replay outputs and token counts are hand-authored synthetic fixtures, not real model results. Refusal/clarification rules are mechanical screening; live REVIEW rows require human assessment.
 
 Mechanical checks: **30/30**.
 
+Spend ceiling **¥6.0**; estimated **¥0.02** for 2640 tokens at the worst-case price 8.0 CNY per million.
+
 | Case | Category | Verdict | Steps | Tokens | ms | Failed checks |
 |---|---|---|---:|---:|---:|---|
-| N01 | normal | PASS | 2 | 120 | 97 |  |
-| N02 | normal | PASS | 2 | 120 | 59 |  |
-| N03 | normal | PASS | 2 | 120 | 55 |  |
-| N04 | normal | PASS | 2 | 120 | 46 |  |
-| N05 | normal | PASS | 2 | 120 | 40 |  |
-| N06 | normal | PASS | 2 | 120 | 41 |  |
-| N07 | normal | PASS | 2 | 120 | 42 |  |
-| N08 | normal | PASS | 3 | 180 | 56 |  |
-| N09 | normal | PASS | 3 | 180 | 59 |  |
-| N10 | normal | PASS | 2 | 120 | 41 |  |
-| N11 | normal | PASS | 2 | 120 | 32 |  |
-| N12 | normal | PASS | 2 | 120 | 35 |  |
-| R01 | refuse | PASS | 1 | 60 | 8 |  |
+| N01 | normal | PASS | 2 | 120 | 106 |  |
+| N02 | normal | PASS | 2 | 120 | 81 |  |
+| N03 | normal | PASS | 2 | 120 | 47 |  |
+| N04 | normal | PASS | 2 | 120 | 51 |  |
+| N05 | normal | PASS | 2 | 120 | 45 |  |
+| N06 | normal | PASS | 2 | 120 | 38 |  |
+| N07 | normal | PASS | 2 | 120 | 39 |  |
+| N08 | normal | PASS | 3 | 180 | 47 |  |
+| N09 | normal | PASS | 3 | 180 | 51 |  |
+| N10 | normal | PASS | 2 | 120 | 43 |  |
+| N11 | normal | PASS | 2 | 120 | 31 |  |
+| N12 | normal | PASS | 2 | 120 | 33 |  |
+| R01 | refuse | PASS | 1 | 60 | 18 |  |
 | R02 | refuse | PASS | 1 | 60 | 5 |  |
-| R03 | refuse | PASS | 1 | 60 | 6 |  |
-| R04 | refuse | PASS | 1 | 60 | 7 |  |
-| R05 | refuse | PASS | 1 | 60 | 7 |  |
-| R06 | refuse | PASS | 1 | 60 | 5 |  |
-| R07 | refuse | PASS | 1 | 60 | 4 |  |
-| R08 | refuse | PASS | 1 | 60 | 6 |  |
-| R09 | refuse | PASS | 1 | 60 | 4 |  |
-| R10 | refuse | PASS | 1 | 60 | 9 |  |
-| C01 | clarify | PASS | 1 | 60 | 9 |  |
-| C02 | clarify | PASS | 1 | 60 | 7 |  |
-| C03 | clarify | PASS | 1 | 60 | 4 |  |
-| C04 | clarify | PASS | 1 | 60 | 5 |  |
-| C05 | clarify | PASS | 1 | 60 | 9 |  |
-| C06 | clarify | PASS | 1 | 60 | 8 |  |
+| R03 | refuse | PASS | 1 | 60 | 5 |  |
+| R04 | refuse | PASS | 1 | 60 | 5 |  |
+| R05 | refuse | PASS | 1 | 60 | 10 |  |
+| R06 | refuse | PASS | 1 | 60 | 9 |  |
+| R07 | refuse | PASS | 1 | 60 | 10 |  |
+| R08 | refuse | PASS | 1 | 60 | 11 |  |
+| R09 | refuse | PASS | 1 | 60 | 7 |  |
+| R10 | refuse | PASS | 1 | 60 | 8 |  |
+| C01 | clarify | PASS | 1 | 60 | 5 |  |
+| C02 | clarify | PASS | 1 | 60 | 5 |  |
+| C03 | clarify | PASS | 1 | 60 | 6 |  |
+| C04 | clarify | PASS | 1 | 60 | 4 |  |
+| C05 | clarify | PASS | 1 | 60 | 4 |  |
+| C06 | clarify | PASS | 1 | 60 | 4 |  |
 | C07 | clarify | PASS | 1 | 60 | 3 |  |
-| C08 | clarify | PASS | 1 | 60 | 6 |  |
+| C08 | clarify | PASS | 1 | 60 | 5 |  |
 
 ## Response review
 

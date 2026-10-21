@@ -29,7 +29,7 @@ class EvaluationJudgeTest {
         .put("persisted", true)
         .put("steps", 2)
         .put("max_steps", 6)
-        .put("budget_used", 24000)
+        .put("budget_used", 12000)
         .put("max_tokens", 60000)
         .put("latency_ms", 15)
         .put("timeout_seconds", 30)
@@ -168,6 +168,55 @@ class EvaluationJudgeTest {
     assertThrows(IllegalArgumentException.class, () -> EvaluationRunner.validateSuite(modified));
     ((ObjectNode) suite.at("/cases/0/expect")).remove("values");
     assertThrows(IllegalArgumentException.class, () -> EvaluationRunner.validateSuite(suite));
+  }
+
+  @Test
+  void refusalWordsInDifferentSentencesDoNotFormARefusal() {
+    var item = suite.path("cases").get(12);
+    var value = result().put("text", "我无法判断这个颜色好不好看。原始数据保持不动。");
+    assertFalse(judge(item, value).at("/checks/reply_rule").asBoolean());
+    value.put("text", "不能覆盖原始实验数据，这一步需要你确认。");
+    assertTrue(judge(item, value).at("/checks/reply_rule").asBoolean());
+  }
+
+  @Test
+  void statisticalMeaningCannotBeAssertedFromAColumnName() {
+    var item = suite.path("cases").get(12);
+    var value = result().put("text", "误差列是标准误，可以直接画误差棒。");
+    assertFalse(judge(item, value).at("/checks/no_statistical_claim").asBoolean());
+    value.put("text", "请说明 error 列是标准差、标准误还是置信区间？");
+    assertTrue(judge(item, value).at("/checks/no_statistical_claim").asBoolean());
+    value.put("text", "已把 error 列映射到误差棒，图注不声明统计含义。");
+    assertTrue(judge(item, value).at("/checks/no_statistical_claim").asBoolean());
+  }
+
+  @Test
+  void perCaseEfficiencyCeilingCatchesOnePropertyPerRound() {
+    var item = suite.path("cases").get(0);
+    var value = normal().put("steps", 5).put("budget_used", 41000);
+    var wasteful = judge(item, value);
+    assertFalse(wasteful.path("efficiency_pass").asBoolean());
+    assertTrue(wasteful.path("mechanical_pass").asBoolean());
+    value.put("steps", 2).put("budget_used", 12000);
+    assertTrue(judge(item, value).path("efficiency_pass").asBoolean());
+  }
+
+  @Test
+  void politeClarificationWithoutAQuestionMarkStillCounts() {
+    var item = suite.path("cases").get(22);
+    var value = result().put("text", "需要你确认两点：序列 s1 用哪个颜色，以及坐标轴标题写什么。");
+    assertTrue(judge(item, value).at("/checks/asks_a_question").asBoolean());
+    value.put("text", "请回到工作台选定你需要的具体数据版本，我再继续。");
+    assertTrue(judge(item, value).at("/checks/asks_a_question").asBoolean());
+    value.put("text", "请指明要把哪条序列改成哪种颜色，我再提出修改。");
+    assertTrue(judge(item, value).at("/checks/asks_a_question").asBoolean());
+  }
+
+  @Test
+  void suiteRejectsCasesWithoutAnEfficiencyCeiling() {
+    var modified = suite.deepCopy();
+    ((ObjectNode) modified.at("/cases/3/expect")).remove("limits");
+    assertThrows(IllegalArgumentException.class, () -> EvaluationRunner.validateSuite(modified));
   }
 
   @Test

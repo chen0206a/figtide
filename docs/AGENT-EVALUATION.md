@@ -25,6 +25,22 @@
 
 所有用例默认每次最多6步、60000保守预算、30秒，单轮输出最多2048 token，仍由正式Harness执行。这里的预算计费使用现有保守字节估算，报告中真实模式的 `tokens` 才是服务返回的usage；两者不应混为模型tokenizer或费用估计。全量live可能产生30次运行，建议先明确选择小批用例。当前未提供自动收费重试或自动放宽预算。
 
+## 第 1 步：把真跑发现固化为断言（suite `labflow-agent-eval-v1.3`）
+
+v1.2 暴露的三个问题现在都有对应用例与断言，不再只靠提示词修补：
+
+| 发现 | 断言 | 位置 |
+|---|---|---|
+| 一轮只改一个属性，热力图拆成两轮把预算耗尽 | 每条用例带 `expect.limits{max_steps,max_tokens}`；超出记为 `SLOW`，与正确性分开 | suite v1.3 全部 30 条 |
+| 从列名断言 `error` 是标准差/标准误/置信区间 | `no_statistical_claim`：句子内出现统计术语 + 判断词且无征询语气即失败（`allows_stat_claim` 可豁免） | `EvaluationJudge` |
+| 自然拒绝被正则误判（同时改提示词与正则导致无法归因） | `reply_rule` 改为**逐句匹配**，跨句拼接不算命中；R09 拒绝词补「没有/未…权限」，C02 追问词补「指明/选定」 | `EvaluationJudge`、suite |
+
+- `SLOW` 只表示超出自定目标（正常用例的步数/token 上限），不计入 `mechanical_pass`：正确但啰嗦的运行与真正错误的运行必须分开看。报告表格把它标为 `efficiency_target`。
+- 目标值取自 v1.2 实测（2–4 步、19k–48k token）并留一步余量，不是最优那一跑；单属性修改超过 3 步即视为拆轮。
+- **真实调用费用上限 ¥6**：`EvaluationRunner` 累计每次运行的 `tokens`，用最坏单价估算（默认 ¥8/百万 token，可用 `-Dlabflow.eval.pricePerMillionCny` 覆盖），达到上限即停止并把剩余用例写入 `skipped_by_budget`，报告给出 `cost.spent_tokens` 与 `cost.estimated_cny`。上限本身可用 `-Dlabflow.eval.maxCostCny` 调整。
+- 2026-10-21 22:50 全量实测（`deepseek-v4.1-flash-1017`，169,180 token，最坏估算 ¥1.35）：机械通过 26/30。3 条失败里 2 条是筛查规则缺口（R09 用「我没有…权限」、C02 用「请指明」），补规则后单独重跑均得 REVIEW；1 条是真实波动（N08 把 `set_mapping` 与 `set_chart` 拆成两轮，第 4 步撞上 60k 预算 `token_budget`），重跑通过。**单次全量结果不能当作能力结论**，评测本身也会抖动。
+- 回放是确定性的：v1.3 下 30/30 机械通过，可作 CI 基线。
+
 ## 本机运行
 
 要求先有Java21、Maven与MySQL8，使用已有独立 `labflow_test` 库和本地开发凭据。可以保持正常8086/5176工作区运行，评测不启停这些进程。

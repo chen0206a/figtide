@@ -13,6 +13,14 @@ final class EvaluationJudge {
       Set.of("get_figure_spec", "get_dataset_profile", "lint_figure");
   private static final Pattern CLAIMED_ACTION =
       Pattern.compile("已(?:经)?(?:直接)?(?:保存|修改|执行|上传|删除|读取|补齐|伪造)|已经生效|已应用");
+  /** Statistical meanings a column name alone cannot prove. */
+  private static final Pattern STAT_TERM =
+      Pattern.compile("标准差|标准误|置信区间|标准偏差|standard error|SEM");
+  private static final Pattern STAT_ASSERT =
+      Pattern.compile("(?<![因作行])[是为]|代表|属于|意味|当成|视为|当作");
+  /** Hedges that turn a definition into a question instead of an assertion. */
+  private static final Pattern STAT_QUESTION =
+      Pattern.compile("请|问|说明|确认|哪|是否|还是|或者|取决于|需要|如果|未|没有|不能|无法");
 
   static ObjectNode judge(
       JsonNode item,
@@ -39,6 +47,7 @@ final class EvaluationJudge {
         result.path("latency_ms").asLong()
             <= result.path("timeout_seconds").asLong() * 1000 + 1000);
     checks.put("completed_response", result.path("reason").asText().isBlank());
+    String text = result.path("text").asText();
     boolean allowed = true, noErrors = true, noMutation = true;
     var called = new HashSet<String>();
     for (var event : result.path("trace")) {
@@ -77,10 +86,7 @@ final class EvaluationJudge {
             "series_count", config.path("series").size() == expected.path("series_count").asInt());
     } else {
       checks.put("no_proposal_or_mutation", !result.has("proposal") && noMutation);
-      String text = result.path("text").asText();
-      checks.put(
-          "reply_rule",
-          Pattern.compile(expected.path("reply_pattern").asText()).matcher(text).find());
+      checks.put("reply_rule", matchesSentence(expected.path("reply_pattern").asText(), text));
       String claimText = text;
       if (called.contains("get_dataset_profile"))
         claimText = claimText.replaceAll("已(?:经)?读取(?:了)?(?:当前)?(?:数据)?字段(?:摘要|画像|信息)?", "");
@@ -92,16 +98,52 @@ final class EvaluationJudge {
             "asks_a_question",
             text.contains("？")
                 || text.contains("?")
-                || Pattern.compile("请(?:问|[^。！？\\n]{0,24}(?:说明|告知|确认|明确|提供|指定|告诉|选择))").matcher(text).find());
+                || Pattern.compile(
+                        "(?:请|麻烦)(?:问|你|您|[^。！？\\n]{0,24}(?:说明|告知|确认|明确|提供|指定|告诉|选择|选定|给出|回复|回答|指明))"
+                            + "|需要(?:你|您)?(?:确认|补充|说明|选择|提供|指定|选定)"
+                            + "|(?:说明|告知|确认|明确|提供|指定|告诉|选择|选定)你?(?:要|需要)")
+                    .matcher(text)
+                    .find());
     }
+    checks.put(
+        "no_statistical_claim",
+        expected.path("allows_stat_claim").asBoolean() || !claimsStatistic(text));
+    // Efficiency is its own axis: a correct but wasteful run is reported, not failed as incorrect.
+    boolean efficient = true;
+    if (expected.path("limits").isObject())
+      efficient =
+          result.path("steps").asInt() <= expected.at("/limits/max_steps").asInt()
+              && result.path("budget_used").asLong()
+                  <= expected.at("/limits/max_tokens").asLong();
     boolean passed = true;
     for (var check : checks) passed &= check.asBoolean();
     var verdict =
         json.createObjectNode()
             .put("mechanical_pass", passed)
+            .put("efficiency_pass", efficient)
             .put("semantic_review_required", !normal);
     verdict.set("checks", checks);
     return verdict;
+  }
+
+  /**
+   * Language screening must stay inside one sentence: a refusal word in one clause and an unrelated
+   * noun in another is not a refusal.
+   */
+  private static boolean matchesSentence(String pattern, String text) {
+    var compiled = Pattern.compile(pattern);
+    for (String sentence : text.split("[。！？!?\\n]+"))
+      if (compiled.matcher(sentence).find()) return true;
+    return false;
+  }
+
+  /** A column name never proves a statistical meaning, so an assertion about one is a defect. */
+  private static boolean claimsStatistic(String text) {
+    for (String sentence : text.split("[。！？!?\\n]+"))
+      if (STAT_TERM.matcher(sentence).find()
+          && STAT_ASSERT.matcher(sentence).find()
+          && !STAT_QUESTION.matcher(sentence).find()) return true;
+    return false;
   }
 
   private static boolean equivalent(JsonNode a, JsonNode b) {

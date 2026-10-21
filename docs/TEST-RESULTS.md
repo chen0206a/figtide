@@ -1,5 +1,13 @@
 # 第一阶段验收记录
 
+## 最新增量：评测断言加固与真实调用费用闸（2026-10-21，第 1 步）
+
+Java 全量 **127 项运行、0 失败、1 跳过**（`ServerEvaluationTest` 需显式开关），其中评测相关单测/集成 22 项；Vitest **23 文件 / 142 通过**。回放 30/30 机械通过（suite `labflow-agent-eval-v1.3`）。真实调用一次全量 30 条：`deepseek-v4.1-flash-1017`、169,180 token、最坏估算 **¥1.35**（上限 ¥6）；机械通过 26/30。
+
+变更：每条用例加 `expect.limits{max_steps,max_tokens}`，超出记 `SLOW`（与 `mechanical_pass` 分离，报告列 `efficiency_target`）；新增逐句 `no_statistical_claim`（禁止从列名断言标准差/标准误/置信区间）；`reply_rule` 改为逐句匹配，补「没有…权限」「请指明/选定」两类真实说法；`EvaluationRunner` 增加按最坏单价累计的费用闸（`-Dlabflow.eval.maxCostCny` / `-Dlabflow.eval.pricePerMillionCny`），超限停跑并写 `skipped_by_budget`。
+
+真实运行暴露的两类现象已记录在 [AGENT-EVALUATION.md](AGENT-EVALUATION.md)：3 条失败中 2 条是筛查规则缺口（补规则后单测重跑 REVIEW），1 条是模型波动（N08 拆轮撞到 60k 预算 `token_budget`，重跑通过）——单次结果不当作能力结论。回放报告已按 v1.3 重新生成：[replay-v1.md](evaluations/replay-v1.md) / [JSON](evaluations/replay-v1.json)。
+
 ## 最新增量：30条双模式评测与运行器（2026-10-21，Step 2d）
 
 Java全量 **121/121，0失败/0错误/0跳过，28.469秒**，包含新增16项评测入口、评分器反例与真实MySQL/本机HTTP集成测试；最终相关回归 **16/16，19.423秒**。入口中的30条固定用例另按逐例报告计数：**12条正常、10条应拒绝、8条应追问，离线机械检查30/30**；不能把30条用例重复加到121项JUnit总数上。回放输出和usage均为人工fixture，不是真实模型采样。本轮没有调用DeepSeek或其他收费模型。
