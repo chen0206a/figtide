@@ -230,6 +230,9 @@ class AgentRunIntegrationTest {
     request.put("max_tokens", 2000);
     result = await(start().path("run_id").asText());
     assertEquals("incomplete", result.path("status").asText());
+    // The harness must tell the model to land a minimal proposal before the budget runs out,
+    // instead of silently repeating clarifying questions until it dies.
+    assertTrue(result.toString().contains("budget_notice"), result.toString());
     verify(provider, never()).complete(any(), any(), anyInt(), any());
   }
 
