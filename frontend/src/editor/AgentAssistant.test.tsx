@@ -292,9 +292,10 @@ it("shows honest setup guidance when no provider is configured", async () => {
     endpoint: "https://api.deepseek.com",
     reason: "请设置模型",
   }));
-  await screen.findByText("尚未连接模型");
+  await screen.findByText("连接模型后即可通过对话调整图表。");
   expect(screen.getByRole("button", { name: "生成调整提案" })).toBeDisabled();
-  expect(screen.getByText(/LABFLOW_AGENT_MODEL/)).toBeVisible();
+  expect(screen.getByRole("button", { name: "配置模型" })).toBeVisible();
+  expect(screen.queryByText(/LABFLOW_AGENT_MODEL/)).not.toBeInTheDocument();
 });
 it("does not apply a draft if persisting the acceptance decision fails", async () => {
   const s = setup((url) => {

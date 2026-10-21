@@ -31,6 +31,7 @@ import {
   Layers,
   Check,
   AlertCircle,
+  PlugZap,
 } from "lucide-react";
 import { api, send, type Project, type Dataset } from "./lib/api";
 import { Button } from "./components/ui/button";
@@ -41,6 +42,7 @@ import { WorkbenchSkeleton } from "./components/WorkbenchSkeleton";
 import { LabFlowMark } from "./components/LabFlowMark";
 import { UploadDialog } from "./components/UploadDialog";
 import { ProjectManager } from "./components/ProjectManager";
+import { ModelConnectionDialog } from "./components/ModelConnectionDialog";
 import { useConfirm } from "./components/useConfirm";
 import "./components/refinements.css";
 import { Experiments } from "./experiments/Experiments";
@@ -66,6 +68,7 @@ export default function App() {
   const { confirm, dialog: confirmDialog } = useConfirm();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [manage, setManage] = useState(false);
+  const [connectionOpen, setConnectionOpen] = useState(false);
   const [workspaceProject, setProject] = useState(
     () => Number(localStorage.getItem("labflow-project")) || 0,
   );
@@ -305,6 +308,15 @@ export default function App() {
               </Button>
               <Button
                 variant="ghost"
+                className="model-connection-trigger"
+                aria-label="模型连接"
+                onClick={() => setConnectionOpen(true)}
+              >
+                <PlugZap size={15} />
+                <span>模型连接</span>
+              </Button>
+              <Button
+                variant="ghost"
                 size="icon"
                 title="新建项目"
                 onClick={() => setModal(true)}
@@ -466,6 +478,9 @@ export default function App() {
         </div>
       </div>
       {confirmDialog}
+      {connectionOpen && (
+        <ModelConnectionDialog onClose={() => setConnectionOpen(false)} />
+      )}
       {manage && (
         <ProjectManager
           currentProject={project}

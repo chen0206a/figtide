@@ -17,6 +17,15 @@ public interface ModelProvider {
 
   Info info();
 
+  /** Freeze a connection for a whole run, including time spent in the queue. */
+  default ModelProvider snapshot() {
+    return this;
+  }
+
+  default String redactSecret(String text) {
+    return text;
+  }
+
   Reply complete(ArrayNode messages, ArrayNode tools, int maxOutputTokens, Duration timeout)
       throws Exception;
 }

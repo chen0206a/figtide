@@ -9,6 +9,7 @@ export function Dialog({
   children,
   wide = false,
   className = "",
+  closeDisabled = false,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -17,6 +18,7 @@ export function Dialog({
   children: ReactNode;
   wide?: boolean;
   className?: string;
+  closeDisabled?: boolean;
 }) {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
@@ -30,7 +32,11 @@ export function Dialog({
             {description}
           </DialogPrimitive.Description>
           {children}
-          <DialogPrimitive.Close className="dialog-close" aria-label="关闭">
+          <DialogPrimitive.Close
+            className="dialog-close"
+            aria-label="关闭"
+            disabled={closeDisabled}
+          >
             <X size={17} />
           </DialogPrimitive.Close>
         </DialogPrimitive.Content>

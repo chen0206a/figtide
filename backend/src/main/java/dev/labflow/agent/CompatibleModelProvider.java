@@ -9,13 +9,22 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 /** Non-streaming Chat Completions adapter. Never logs upstream headers, bodies or errors. */
-@Component
 public class CompatibleModelProvider implements ModelProvider {
+  public static final class Failure extends Exception {
+    private final String code;
+
+    Failure(String code, String message) {
+      super(message);
+      this.code = code;
+    }
+
+    public String code() {
+      return code;
+    }
+  }
+
   private final ObjectMapper json;
   private final URI endpoint;
   private final String model, key;
@@ -25,22 +34,18 @@ public class CompatibleModelProvider implements ModelProvider {
           .followRedirects(HttpClient.Redirect.NEVER)
           .build();
 
-  @Autowired
-  public CompatibleModelProvider(
-      ObjectMapper json,
-      @Value("${LABFLOW_AGENT_BASE_URL:https://api.deepseek.com}") String base,
-      @Value("${LABFLOW_AGENT_MODEL:}") String model) {
-    this(json, base, model, System.getenv().getOrDefault("LABFLOW_AGENT_API_KEY", ""));
-  }
-
   // Explicit constructor for deterministic local HTTP tests; no key in configuration files.
   public CompatibleModelProvider(ObjectMapper json, String base, String model, String key) {
     this.json = json;
     this.model = model;
     this.key = key;
     URI uri = URI.create(base.replaceAll("/+$", "") + "/chat/completions");
-    boolean loopback = List.of("127.0.0.1", "localhost", "[::1]").contains(uri.getHost());
+    boolean loopback =
+        uri.getHost() != null && List.of("127.0.0.1", "localhost", "[::1]").contains(uri.getHost());
     if ((!"https".equals(uri.getScheme()) && !(loopback && "http".equals(uri.getScheme())))
+        || uri.getHost() == null
+        || uri.getPort() == 0
+        || uri.getPort() > 65535
         || uri.getUserInfo() != null
         || uri.getQuery() != null
         || uri.getFragment() != null)
@@ -56,7 +61,12 @@ public class CompatibleModelProvider implements ModelProvider {
         ready,
         model,
         endpoint.getScheme() + "://" + endpoint.getAuthority(),
-        ready ? "" : "请在后端环境变量中设置模型名称和 API Key；也可连接本机兼容服务。");
+        ready ? "" : "请在模型连接中配置接口地址、模型名称和 API Key；也可连接本机服务。");
+  }
+
+  @Override
+  public String redactSecret(String text) {
+    return key.isBlank() ? text : text.replace(key, "[已脱敏]");
   }
 
   @Override
@@ -87,8 +97,18 @@ public class CompatibleModelProvider implements ModelProvider {
       // Cancels both request and response-body consumption on timeout or thread interruption.
       if (!pending.isDone()) pending.cancel(true);
     }
-    if (response.statusCode() != 200)
-      throw new IllegalStateException("模型服务返回 HTTP " + response.statusCode() + "，请检查配置或额度");
+    if (response.statusCode() != 200) {
+      int status = response.statusCode();
+      throw new Failure(
+          status == 401 || status == 403
+              ? "authentication"
+              : status == 429 ? "rate_limit" : status == 404 ? "endpoint" : "provider_error",
+          status == 401 || status == 403
+              ? "鉴权失败（HTTP " + status + "），请检查 API Key 与权限"
+              : status == 429
+                  ? "服务限流或额度不足（HTTP 429），请检查服务账户"
+                  : status == 404 ? "接口不存在（HTTP 404），请检查兼容地址" : "模型服务返回 HTTP " + status + "，请稍后重试");
+    }
     try {
       JsonNode root = json.readTree(response.body());
       JsonNode choice = root.path("choices").path(0), message = choice.path("message");
@@ -108,7 +128,7 @@ public class CompatibleModelProvider implements ModelProvider {
           root.path("model").asText(model),
           choice.path("finish_reason").asText());
     } catch (Exception e) {
-      throw new IllegalStateException("模型响应格式不兼容或缺少 token 用量");
+      throw new Failure("protocol", "模型响应格式不兼容或缺少 token 用量");
     }
   }
 

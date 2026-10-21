@@ -1,0 +1,232 @@
+.dialog-content.model-connection-dialog {
+  width: min(560px, calc(100vw - 32px));
+  padding: 30px;
+  border-radius: 22px;
+  color: #202124;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 48px);
+  overflow: hidden;
+}
+.dialog-content.model-connection-dialog > p {
+  margin: 0 0 8px;
+}
+.model-connection-dialog form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.connection-form-body {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 3px;
+  margin: -3px;
+  scrollbar-width: thin;
+}
+.connection-summary {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  padding: 16px 0 20px;
+  margin: 0 0 18px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #ececee;
+}
+.connection-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  background: #f3f3f4;
+}
+.connection-summary > div {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+.connection-summary strong {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+.connection-summary > div > span {
+  color: #777b83;
+  font-size: 12px;
+}
+.connection-dot {
+  width: 7px;
+  height: 7px;
+  background: #c4c6cb;
+  border-radius: 50%;
+}
+.connection-dot.verified {
+  background: #44866c;
+}
+.model-connection-dialog fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 19px;
+  min-width: 0;
+}
+.model-connection-dialog fieldset > label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 550;
+  margin: 0;
+}
+.model-connection-dialog fieldset input {
+  width: 100%;
+  height: 43px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #dedee2;
+  border-radius: 9px;
+  font: inherit;
+  font-weight: 400;
+  color: #25262b;
+}
+.model-connection-dialog input:focus-visible {
+  outline: 2px solid #24262c;
+  outline-offset: 2px;
+}
+.connection-key {
+  position: relative;
+}
+.model-connection-dialog .connection-key input {
+  padding-right: 46px;
+}
+.connection-key button {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  border-radius: 7px;
+  cursor: pointer;
+  color: #757982;
+}
+.connection-key button:hover {
+  background: #f1f2f3;
+  color: #222;
+}
+.connection-hint {
+  font-size: 12px;
+  color: #777b83;
+  line-height: 1.7;
+  margin: 13px 0;
+}
+.model-connection-dialog .connection-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 12px;
+  color: #60656d;
+  line-height: 1.7;
+  margin: 20px 0 0;
+}
+.connection-consent input {
+  width: 15px;
+  height: 15px;
+  margin: 3px 0 0;
+  accent-color: #24262c;
+  flex-shrink: 0;
+}
+.connection-feedback {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.65;
+  padding: 13px;
+  border: 1px solid #e5e5e7;
+  border-radius: 10px;
+  margin-top: 17px;
+  overflow-wrap: anywhere;
+}
+.connection-feedback strong {
+  display: block;
+  font-weight: 550;
+}
+.connection-feedback span {
+  display: block;
+  color: #777b83;
+  font-size: 12px;
+  margin-top: 3px;
+}
+.connection-feedback.success {
+  background: #f7faf8;
+  color: #356c55;
+}
+.connection-feedback.error {
+  background: #fff9f8;
+  color: #a33e38;
+}
+.connection-feedback .btn {
+  flex-shrink: 0;
+}
+.connection-notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #356c55;
+  font-size: 13px;
+  margin: 16px 0 0;
+}
+.connection-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  margin-top: 25px;
+  padding-top: 19px;
+  border-top: 1px solid #ececee;
+  flex-shrink: 0;
+}
+.connection-footer > div {
+  display: flex;
+  gap: 9px;
+}
+.connection-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 55px 0;
+  color: #777b83;
+  font-size: 13px;
+}
+.connection-spin {
+  animation: connection-spin 1s linear infinite;
+}
+@keyframes connection-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 900px) {
+  .model-connection-trigger span {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .dialog-content.model-connection-dialog {
+    padding: 24px 20px;
+  }
+  .connection-footer {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .connection-spin {
+    animation: none;
+  }
+}

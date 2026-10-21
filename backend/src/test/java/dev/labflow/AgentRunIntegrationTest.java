@@ -244,6 +244,22 @@ class AgentRunIntegrationTest {
   }
 
   @Test
+  void runFreezesTheSelectedProviderInsteadOfSwitchingConnectionsBetweenRounds() throws Exception {
+    var selected = mock(ModelProvider.class);
+    when(selected.info())
+        .thenReturn(new ModelProvider.Info(true, "frozen-model", "http://127.0.0.1", ""));
+    when(selected.complete(any(), any(), anyInt(), any()))
+        .thenReturn(
+            reply("[" + call("frozen", "set_style", "{\"fontSize\":18}") + "]", ""),
+            reply(null, "请确认候选"));
+    when(provider.snapshot()).thenReturn(selected);
+    var result = await(start().path("run_id").asText());
+    assertEquals("proposed", result.path("status").asText());
+    verify(selected, times(2)).complete(any(), any(), anyInt(), any());
+    verify(provider, never()).complete(any(), any(), anyInt(), any());
+  }
+
+  @Test
   void budgetNoticeIsIncludedInPreflightAndCannotOverallocateTheRequest() throws Exception {
     var base = new AtomicInteger();
     doAnswer(

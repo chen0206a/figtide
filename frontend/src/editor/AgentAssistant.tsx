@@ -7,6 +7,7 @@ import {
   Square,
   X,
   Plus,
+  Settings2,
 } from "lucide-react";
 import { api, send, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
@@ -14,6 +15,7 @@ import { Dialog } from "../components/ui/dialog";
 import type { Config } from "./model";
 import { ProposalPreview } from "./ProposalPreview";
 import { AgentHistory } from "./AgentHistory";
+import { ModelConnectionDialog } from "../components/ModelConnectionDialog";
 import { AuditTrace, outcomeLabels } from "./AuditTrace";
 import {
   sameProtectedFigure,
@@ -60,7 +62,6 @@ function AssistantSurface(p: {
             <MessageSquare size={17} />
             绘图助手
           </h2>
-          <p>围绕当前画布，继续你的想法。</p>
         </div>
         <Button
           variant="ghost"
@@ -146,6 +147,7 @@ export function AgentAssistant(p: {
     staleTime: 0,
   });
   const [prompt, setPrompt] = useState("");
+  const [connectionOpen, setConnectionOpen] = useState(false);
   const [turns, setTurns] = useState<ConversationTurn[]>([]);
   const sentPrompt = useRef("");
   const thread = useRef<HTMLDivElement>(null);
@@ -465,16 +467,22 @@ export function AgentAssistant(p: {
                 <MessageSquare size={17} />
                 <div>
                   <strong>{provider.data?.model || "连接模型服务"}</strong>
-                  <span>
-                    {provider.data?.endpoint ||
-                      "通过后端连接，密钥不会进入浏览器"}
-                  </span>
+                  <span>{provider.data?.endpoint || "选择模型，开始调整"}</span>
                 </div>
                 <span
                   className={`agent-connection-indicator ${provider.data?.available ? "connected" : ""}`}
                 >
                   {provider.data?.available ? "已配置" : "未连接"}
                 </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="模型连接"
+                  disabled={busy}
+                  onClick={() => setConnectionOpen(true)}
+                >
+                  <Settings2 size={15} />
+                </Button>
               </div>
               {provider.isPending ? (
                 <p role="status">正在检查模型配置…</p>
@@ -488,18 +496,12 @@ export function AgentAssistant(p: {
               ) : (
                 !provider.data?.available && (
                   <div className="agent-setup" role="status">
-                    <strong>尚未连接模型</strong>
-                    <p>{provider.data?.reason}</p>
-                    <p>
-                      设置 LABFLOW_AGENT_MODEL、LABFLOW_AGENT_API_KEY
-                      后重启后端。自定义兼容地址使用 LABFLOW_AGENT_BASE_URL。
-                    </p>
-                    <p>手动编辑和快捷操作仍可正常使用。</p>
+                    <p>连接模型后即可通过对话调整图表。</p>
                     <Button
                       variant="outline"
-                      onClick={() => provider.refetch()}
+                      onClick={() => setConnectionOpen(true)}
                     >
-                      重新读取配置
+                      配置模型
                     </Button>
                   </div>
                 )
@@ -513,9 +515,7 @@ export function AgentAssistant(p: {
                 {!turns.length && !busy && (
                   <div className="agent-welcome">
                     <strong>从一个具体的调整开始。</strong>
-                    <p>
-                      修改配色、调整轴范围，或者先向我补充需求。所有提案都由你确认。
-                    </p>
+                    <p>说出想调整的地方，预览后再应用。</p>
                   </div>
                 )}
                 {turns.map((turn) => (
@@ -600,7 +600,7 @@ export function AgentAssistant(p: {
                     onChange={(e) => setConsent(e.target.checked)}
                   />
                   <span>
-                    允许发送当前图表配置与字段摘要至上述模型服务。不发送原始数据行；外部模型可能计费。
+                    允许发送图表配置和字段摘要。不发送原始数据行，模型服务可能计费。
                   </span>
                 </label>
                 <div className="agent-controls">
@@ -644,9 +644,6 @@ export function AgentAssistant(p: {
                         ? outcomeLabels[run.outcome]
                         : statusNames[run.status]}
                     </strong>
-                    <span>
-                      {run.steps}/{run.max_steps} 步 · {run.tokens} tokens
-                    </span>
                   </div>
                   {!turns.some((turn) => turn.id === run.run_id) &&
                     run.text && <p>{run.text}</p>}
@@ -678,13 +675,11 @@ export function AgentAssistant(p: {
                     )}
                   <details>
                     <summary>运行记录</summary>
+                    <small>
+                      {run.steps}/{run.max_steps} 步 · {run.tokens} tokens
+                    </small>
                     <code>{run.run_id}</code>
                     <AuditTrace trace={run.trace} />
-                    <small>
-                      {run.persisted
-                        ? "运行记录已保存在本机，文本参数已脱敏。"
-                        : "运行结束后保存审计记录。"}
-                    </small>
                   </details>
                 </div>
               )}
@@ -702,6 +697,9 @@ export function AgentAssistant(p: {
           </div>
           {p.docked && proposalActions}
         </>
+      )}
+      {connectionOpen && (
+        <ModelConnectionDialog onClose={() => setConnectionOpen(false)} />
       )}
     </AssistantSurface>
   );

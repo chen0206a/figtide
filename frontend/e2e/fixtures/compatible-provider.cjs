@@ -15,6 +15,12 @@ const server = http.createServer(async (req, res) => {
   }
   const payload = JSON.parse(raw);
   const prompt = payload.messages.find((m) => m.role === "user")?.content || "";
+  if (req.headers.authorization === "Bearer fixture-rejected") {
+    res
+      .writeHead(401)
+      .end("fixture-rejected secret response must not be forwarded");
+    return;
+  }
   const tool = (id, name, args) => ({
     id,
     type: "function",
@@ -25,27 +31,38 @@ const server = http.createServer(async (req, res) => {
     prompt.includes("轴方向测试") && !prompt.includes("本轮需求：");
   const followup =
     prompt.includes("轴方向测试") && prompt.includes("本轮需求：");
-  const message = question
-    ? { role: "assistant", content: "请问要调整 X 轴还是 Y 轴？" }
-    : afterTools
+  const nonce = prompt.match(/[0-9a-f-]{36}/)?.[0];
+  const connectionChat = prompt.startsWith("LabFlow connection check.");
+  const connectionTool = prompt.startsWith("LabFlow tool check.");
+  const message = connectionChat
+    ? { role: "assistant", content: nonce }
+    : connectionTool
       ? {
           role: "assistant",
-          content:
-            "已将标题、字号与图例调整为更清晰的布局。请查看右侧预览后确认。",
-        }
-      : {
-          role: "assistant",
           content: null,
-          tool_calls: followup
-            ? [tool("axis", "set_axis", { axis: "y", min: 0, max: 1 })]
-            : [
-                tool("title", "set_style", {
-                  title: "Agent proposal · synthetic",
-                  fontSize: 18,
-                }),
-                tool("legend", "set_legend", { position: "right" }),
-              ],
-        };
+          tool_calls: [tool("probe", "labflow_connection_check", { nonce })],
+        }
+      : question
+        ? { role: "assistant", content: "请问要调整 X 轴还是 Y 轴？" }
+        : afterTools
+          ? {
+              role: "assistant",
+              content:
+                "已将标题、字号与图例调整为更清晰的布局。请查看右侧预览后确认。",
+            }
+          : {
+              role: "assistant",
+              content: null,
+              tool_calls: followup
+                ? [tool("axis", "set_axis", { axis: "y", min: 0, max: 1 })]
+                : [
+                    tool("title", "set_style", {
+                      title: "Agent proposal · synthetic",
+                      fontSize: 18,
+                    }),
+                    tool("legend", "set_legend", { position: "right" }),
+                  ],
+            };
   const respond = () => {
     if (res.destroyed) return;
     res.writeHead(200, { "Content-Type": "application/json" }).end(
@@ -54,7 +71,8 @@ const server = http.createServer(async (req, res) => {
         choices: [
           {
             message,
-            finish_reason: afterTools || question ? "stop" : "tool_calls",
+            finish_reason:
+              afterTools || question || connectionChat ? "stop" : "tool_calls",
           },
         ],
         usage: { prompt_tokens: 200, completion_tokens: 50 },

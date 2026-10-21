@@ -173,6 +173,11 @@ class CompatibleModelProviderTest {
 
   @Test
   void keylessRemoteAndInsecureRemoteAreNotEnabled() {
+    for (String base :
+        new String[] {"https:/missing-host", "https://example.com:0", "https://example.com:70000"})
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> new CompatibleModelProvider(json, base, "fixture", "fixture-secret"));
     assertFalse(
         new CompatibleModelProvider(json, "https://api.deepseek.com", "chosen-model", "")
             .info()

@@ -269,7 +269,13 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 
 `DELETE /style-templates/{id}` 删除该模板，返回 `{deleted:id}`；不修改已经应用该样式的图表。前端删除前需明确确认。接口仅用于本地单用户模式，无用户权限隔离。
 
-## 错误响应
+## 模型连接（2026-10-22）
+
+`GET /agent/connection` 返回 `{revision,available,base_url,model,has_key,source,verified_at}`，无密钥值。`PUT /agent/connection` 应用配置；`POST /agent/connection/test` 测试候选，不改变当前连接；`POST /agent/connection/disconnect` 接收 `{revision}` 断开。
+
+写请求要求本机来源、JSON和 `X-LabFlow-Connection:1`。配置/测试共用 `{revision,base_url,model,api_key?,keep_key?}`；测试另需 `allow_test:true`，应用可携带成功测试返回的 `test_id`。旧revision或不匹配的凭证409。错误不透传服务商正文。完整协议见 [MODEL-CONNECTIONS.md](MODEL-CONNECTIONS.md)。
+
+## 错误响应格式
 
 ```json
 {"code":"REQUEST_409","message":"图表已被更新，请重新打开最新版本后再保存"}

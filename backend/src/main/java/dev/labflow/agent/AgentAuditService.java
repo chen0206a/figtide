@@ -17,10 +17,17 @@ public class AgentAuditService {
   private static final String INSTANCE = UUID.randomUUID().toString();
   private final AgentAuditRepository db;
   private final ObjectMapper json;
+  private final ModelProvider provider;
 
   public AgentAuditService(AgentAuditRepository db, ObjectMapper json) {
+    this(db, json, null);
+  }
+
+  @org.springframework.beans.factory.annotation.Autowired
+  public AgentAuditService(AgentAuditRepository db, ObjectMapper json, ModelProvider provider) {
     this.db = db;
     this.json = json;
+    this.provider = provider;
   }
 
   @PostConstruct
@@ -187,7 +194,12 @@ public class AgentAuditService {
     if (request.has("reason")
         && (!request.get("reason").isTextual() || request.get("reason").asText().length() > 500))
       throw ApiException.bad("拒绝原因最多500字");
-    String note = AuditSanitizer.note(request.path("reason").asText("").strip());
+    String note = request.path("reason").asText("").strip();
+    if (provider != null) {
+      String safe = provider.redactSecret(note);
+      if (safe != null) note = safe;
+    }
+    note = AuditSanitizer.note(note);
     if (decision.equals("accepted") && !note.isBlank()) throw ApiException.bad("接受时不填写拒绝原因");
     var row = db.lock(project, id);
     if (!"proposed".equals(row.get("status"))) throw new ApiException(409, "只有已完成的提案可以接受或拒绝");

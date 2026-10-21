@@ -4,19 +4,21 @@
 
 编辑器顶部「绘图助手」：输入调整要求 → 明确同意发送元数据 → Java 工具循环 → 当前数据实时预览与修改明细 → 用户确认 → 一步撤销/重做 → 手动保存。与快捷操作共用 `ProposalPreview`、Java `FigureToolService` 和编辑器历史栈。
 
-未配置模型时明确显示设置说明。普通科研绘图仍完全本地、零 API 成本。连接外部模型后，只有用户勾选并发起的请求才发送当前图表配置、需求及按需读取的字段摘要（包括字段名、类型、计数、极值）；**不发送原始数据行、字段样例、文件或密钥**。配置中的标题、注释、序列名也会发送，请据此选择合适服务。
+未配置模型时明确显示设置说明。普通科研绘图仍完全本地、零 API 成本。连接外部模型后，只有用户勾选并发起的请求才发送当前图表配置、需求及按需读取的字段摘要（包括字段名、类型、计数、极值）；**不发送原始数据行、字段样例或文件，不把密钥放进模型消息**（鉴权仅使用后端HTTP请求头）。配置中的标题、注释、序列名也会发送，请据此选择合适服务。
 
-本轮没有调用真实收费模型。兼容性通过本机真实 HTTP 协议服务验证；不能据此宣称已通过 DeepSeek 线上验收。协议依据 [DeepSeek Chat Completions](https://api-docs.deepseek.com/api/create-chat-completion/) 与 [Tool Calls](https://api-docs.deepseek.com/guides/tool_calls/)。部分服务不支持函数调用、用量字段或所用 JSON Schema 关键字，需自行确认。
+最初2b使用本机HTTP协议服务验证；后续真实模型评测与网页连接检查见 TEST-RESULTS.md，不把协议测试当成完整模型能力验收。协议依据 [DeepSeek Chat Completions](https://api-docs.deepseek.com/api/create-chat-completion/) 与 [Tool Calls](https://api-docs.deepseek.com/guides/tool_calls/)。部分服务不支持函数调用、用量字段或所用 JSON Schema 关键字，需自行确认。
 
 ## 本地配置
 
-Windows本机可运行 `scripts/connect-agent.ps1` 打开隐藏密钥输入窗口，填写平台控制台的准确模型ID和API Key。默认地址为 `https://maas.qianwenaiapi.com/compatible-mode/v1`；其他HTTPS兼容基地址可通过 `-BaseUrl` 显式指定，窗口始终显示实际目标地址。此入口是本机启动配置工具，尚不是网页里的连接管理页。
+推荐点击顶部工具栏或绘图助手里的「模型连接」，直接填写地址、模型ID与密钥；测试基础对话和工具调用后再应用。网页设置只保存在后端内存，浏览器刷新可继续使用，后端重启则恢复启动配置。接口、凭证绑定与安全边界见 [网页模型连接](MODEL-CONNECTIONS.md)。
+
+Windows本机可运行 `scripts/connect-agent.ps1` 打开隐藏密钥输入窗口，填写平台控制台的准确模型ID和API Key。默认地址为 `https://maas.qianwenaiapi.com/compatible-mode/v1`；其他HTTPS兼容基地址可通过 `-BaseUrl` 显式指定，窗口始终显示实际目标地址。此入口保留为本机启动方式；网页连接不需要重启后端。
 
 窗口确认后核对8086进程与本项目跟踪记录，再仅重启Java后端。密钥不作为命令行参数、不写文件或Git，只由该Java进程继承；前端和MySQL保持运行。普通重启后需重新输入。加载成功仅表示本地适配器配置可用，不代表已通过上游鉴权、工具调用或模型效果验收；脚本不会调用推理接口。`.runtime/agent-connection-status.json` 只记录无凭据的阶段/通用状态。
 
 该平台[函数调用文档](https://platform.qianwenai.com/docs/developer-guides/tool-calling/function-calling)使用上述基地址；仍需选择实际支持当前非流式Chat Completions工具调用的模型。[平台客户端配置说明](https://platform.qianwenai.com/docs/developer-guides/clients-and-developer-tools/deepseek-harness)指出该兼容端点不提供GET /models，因此窗口要求手填模型ID，不伪造模型下拉列表。特定模型可能需要额外参数，尚未逐个验证。
 
-在启动后端的 PowerShell 环境设置（密钥只读取环境变量，不进入浏览器、数据库或日志）：
+也可在启动后端的 PowerShell 环境配置初始连接（网页覆盖只存内存，不写系统环境、数据库或日志）：
 
 ```powershell
 $env:LABFLOW_AGENT_BASE_URL = 'https://api.deepseek.com'
@@ -27,7 +29,7 @@ $env:LABFLOW_AGENT_API_KEY = '<你自己的密钥>'
 
 如果后端已运行，先用 `scripts/stop.ps1` 正常停止，再启动，以便进程读取新环境。不要把真实密钥提交到脚本或 Git。可删除这些环境变量恢复禁用状态。
 
-`BASE_URL` 是不带 `/chat/completions` 的基地址；适配器自动追加该路径。支持 HTTPS 服务和本机 HTTP 兼容服务（如 `http://127.0.0.1:端口/v1`），本机 HTTP 允许不设密钥。拒绝远程明文 HTTP、地址内凭据、查询参数、重定向。模型名称由本机部署者设定，本轮未提供浏览器端密钥表单或模型市场。
+`BASE_URL` 是不带 `/chat/completions` 的基地址；适配器自动追加该路径。支持 HTTPS 服务和本机 HTTP 兼容服务（如 `http://127.0.0.1:端口/v1`），本机 HTTP 允许不设密钥。拒绝远程明文 HTTP、地址内凭据、查询参数、重定向。网页使用服务商提供的准确模型名称；当前支持一个活动连接，没有模型市场或多连接档案。
 
 ## API
 

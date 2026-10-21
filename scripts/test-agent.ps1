@@ -57,7 +57,7 @@ try {
     $env:NO_PROXY = '127.0.0.1,localhost,::1'
     Push-Location frontend
     try {
-        if ($All) { & node node_modules/@playwright/test/cli.js test } else { & node node_modules/@playwright/test/cli.js test agent.spec.ts figure-tools.spec.ts }
+        if ($All) { & node node_modules/@playwright/test/cli.js test } else { & node node_modules/@playwright/test/cli.js test agent.spec.ts figure-tools.spec.ts model-connection.spec.ts }
         if ($LASTEXITCODE) { throw 'Browser verification failed.' }
     } finally { Pop-Location }
     & node frontend/e2e/fixtures/audit-restart.cjs prepare
