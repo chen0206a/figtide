@@ -60,7 +60,6 @@ import { DataTable } from "../components/DataTable";
 import {
   defaults,
   makeSeries,
-  palettes,
   historyReducer,
   defaultEmpirical,
   defaultEvaluation,
@@ -76,6 +75,9 @@ import { BandPanel } from "./EvaluationPanel";
 import { EvaluationResults } from "./EvaluationResults";
 import { ClassificationResults } from "./ClassificationResults";
 import { ReuseDialog } from "./ReuseDialog";
+import { applyPreset, stylePresets, styleProfile } from "./stylePresets";
+import { StyleThumbnail } from "./StyleThumbnail";
+import "./styles-library.css";
 import { downloadBlob } from "../lib/download";
 import {
   exportChecks,
@@ -382,6 +384,8 @@ function Workbench(
   } | null>(null);
   const [plotError, setPlotError] = useState("");
   const [reuseOpen, setReuseOpen] = useState(false);
+  const [reuseTab, setReuseTab] = useState<"builtin" | "style">("style");
+  const [previewPreset, setPreviewPreset] = useState("");
   const plotReady = useRef<Promise<any>>(Promise.resolve());
   const [format, setFormat] = useState<"svg" | "png" | "pdf">("svg"),
     [scale, setScale] = useState(2);
@@ -695,24 +699,6 @@ function Workbench(
       setExporting(false);
     }
   }
-  const preset = (value: string) => {
-    patch({
-      style: {
-        ...c.style,
-        preset: value,
-        font:
-          value === "Nature-inspired"
-            ? "Arial"
-            : value === "Modern Research"
-              ? "Helvetica"
-              : "Arial",
-      },
-      series: c.series.map((s, i) => ({
-        ...s,
-        color: palettes[value][i % palettes[value].length],
-      })),
-    });
-  };
   return (
     <div
       aria-busy={saving}
@@ -771,7 +757,10 @@ function Workbench(
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setReuseOpen(true)}
+            onClick={() => {
+              setReuseTab("style");
+              setReuseOpen(true);
+            }}
             disabled={saving || c.datasetVersionId !== p.data.id}
           >
             复用
@@ -1041,28 +1030,39 @@ function Workbench(
           <details className="left-section presets preset-disclosure">
             <summary>
               <Palette size={13} />
-              视觉预设
+              图表样式
             </summary>
-            {Object.entries(palettes).map(([key, colors]) => (
-              <button
-                className={c.style.preset === key ? "preset active" : "preset"}
-                onClick={() => preset(key)}
-                key={key}
-              >
-                <div>
-                  <span>{key}</span>
-                  {c.style.preset === key && <Check size={12} />}
-                </div>
-                <div className="swatches">
-                  {colors.map((color) => (
-                    <i key={color} style={{ background: color }} />
-                  ))}
-                </div>
-              </button>
-            ))}
-            <p className="tiny-note">独立设计预设，非期刊官方认证。</p>
-            <Button variant="outline" onClick={() => setReuseOpen(true)}>
-              样式与图表复用
+            <div className="sidebar-style-grid">
+              {stylePresets.map(({ key, name }) => (
+                <button
+                  className={
+                    c.style.preset === key ? "preset active" : "preset"
+                  }
+                  aria-label={`预览内置样式 ${key}`}
+                  onClick={() => {
+                    setPreviewPreset(key);
+                    setReuseTab("builtin");
+                    setReuseOpen(true);
+                  }}
+                  key={key}
+                >
+                  <div>
+                    <span>{name}</span>
+                    {c.style.preset === key && <Check size={12} />}
+                  </div>
+                  <StyleThumbnail profile={styleProfile(applyPreset(c, key))} />
+                </button>
+              ))}
+            </div>
+            <p className="tiny-note">点击预览，确认后应用。可随时撤销。</p>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setReuseTab("style");
+                setReuseOpen(true);
+              }}
+            >
+              管理个人模板
             </Button>
           </details>
           <div className="left-foot">
@@ -2122,6 +2122,9 @@ function Workbench(
           config={c}
           name={name}
           datasets={p.datasets}
+          data={p.data}
+          initialTab={reuseTab}
+          initialPreset={previewPreset || c.style.preset}
           onClose={() => setReuseOpen(false)}
           onApply={change}
           onReused={(result) => {

@@ -1,12 +1,28 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api, send, type Dataset } from "../lib/api";
 import type { Config } from "./model";
 import { applyStyle, bindings, reuseConfig, type StyleProfile } from "./reuse";
 import { Button } from "../components/ui/button";
 import { Dialog } from "../components/ui/dialog";
+import {
+  Search,
+  Plus,
+  Pencil,
+  Trash2,
+  ArrowRight,
+  Check,
+  FolderOpen,
+  Palette,
+  Bookmark,
+} from "lucide-react";
+import { applyPreset, stylePresets, styleProfile } from "./stylePresets";
+import { StyleThumbnail } from "./StyleThumbnail";
+import { StylePreview } from "./StylePreview";
+import "./styles-library.css";
 type Template = {
   id: number;
+  project_id: number;
   name: string;
   project_name: string;
   profile: StyleProfile;
@@ -16,11 +32,27 @@ export function ReuseDialog(p: {
   config: Config;
   name: string;
   datasets: Dataset[];
+  data?: Dataset;
+  initialTab?: "builtin" | "style";
+  initialPreset?: string;
   onClose: () => void;
   onApply: (c: Config) => void;
   onReused: (chart: any) => void;
 }) {
-  const [tab, setTab] = useState<"style" | "reuse">("style");
+  const [tab, setTab] = useState<"builtin" | "style" | "reuse">(
+    p.initialTab || "style",
+  );
+  const [scope, setScope] = useState("current");
+  const [search, setSearch] = useState("");
+  const [limit, setLimit] = useState(9);
+  const [selected, setSelected] = useState<number | string>(
+    p.initialPreset || p.config.style.preset,
+  );
+  const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<Template | null>(null);
+  const [rename, setRename] = useState("");
+  const [removing, setRemoving] = useState<Template | null>(null);
+  const [message, setMessage] = useState("");
   const [name, setName] = useState(`${p.name.slice(0, 100)} · 样式`);
   const [copyName, setCopyName] = useState(`${p.name.slice(0, 100)} · 复用`);
   const [target, setTarget] = useState(0);
@@ -33,9 +65,45 @@ export function ReuseDialog(p: {
   });
   const data = p.datasets.find((d) => d.id === target);
   const refs = bindings(p.config);
+  // Dataset list entries contain metadata only; use the loaded active version's rows.
+  const source =
+    p.data?.id === p.config.datasetVersionId
+      ? p.data
+      : p.datasets.find(
+          (d) => d.id === p.config.datasetVersionId && Array.isArray(d.rows),
+        );
+  const selectedTemplate = templates.data?.find((t) => t.id === selected);
+  const selectedPreset =
+    stylePresets.find((v) => v.key === selected) || stylePresets[0];
+  const previewConfig = useMemo(
+    () =>
+      tab === "builtin"
+        ? applyPreset(p.config, selectedPreset.key)
+        : selectedTemplate
+          ? applyStyle(p.config, selectedTemplate.profile)
+          : p.config,
+    [tab, p.config, selectedPreset, selectedTemplate],
+  );
+  const matching = (templates.data || []).filter(
+    (t) =>
+      (scope === "all" || Number(t.project_id) === p.project) &&
+      `${t.name} ${t.project_name}`
+        .toLocaleLowerCase()
+        .includes(search.trim().toLocaleLowerCase()),
+  );
+  function switchTab(next: typeof tab) {
+    setTab(next);
+    setCreating(false);
+    setEditing(null);
+    setRemoving(null);
+    setError("");
+    setMessage("");
+    setSelected(next === "builtin" ? p.config.style.preset : "");
+  }
   async function run(fn: () => Promise<void>) {
     setBusy(true);
     setError("");
+    setMessage("");
     try {
       await fn();
     } catch (e) {
@@ -50,106 +118,430 @@ export function ReuseDialog(p: {
       onOpenChange={(v) => {
         if (!v && !busy) p.onClose();
       }}
-      title="复用科研图表"
-      description="样式可跨项目使用。整图复用将核对字段并保存新图，不覆盖源图；当前编辑内容也会包含在副本中。"
+      title="图表样式与复用"
+      description="为当前数据找到合适的外观，或将图表复用到另一份数据。"
       wide
+      className="style-library-dialog"
     >
-      <div className="dialog-actions">
-        <Button
-          variant={tab === "style" ? "default" : "outline"}
-          onClick={() => setTab("style")}
+      <div
+        className="style-tabs"
+        role="tablist"
+        aria-label="样式与复用"
+        onKeyDown={(e) => {
+          if (
+            !["ArrowRight", "ArrowLeft", "Home", "End"].includes(e.key) ||
+            busy
+          )
+            return;
+          const tabs = Array.from(
+            e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+          );
+          const index = tabs.indexOf(e.target as HTMLButtonElement);
+          if (index < 0) return;
+          e.preventDefault();
+          const next =
+            e.key === "Home"
+              ? 0
+              : e.key === "End"
+                ? tabs.length - 1
+                : (index + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) %
+                  tabs.length;
+          tabs[next].focus();
+          tabs[next].click();
+        }}
+      >
+        <button
+          role="tab"
+          aria-selected={tab === "builtin"}
+          tabIndex={tab === "builtin" ? 0 : -1}
+          disabled={busy}
+          onClick={() => switchTab("builtin")}
         >
+          <Palette size={15} />
+          内置图表样式
+        </button>
+        <button
+          role="tab"
+          aria-selected={tab === "style"}
+          tabIndex={tab === "style" ? 0 : -1}
+          disabled={busy}
+          onClick={() => switchTab("style")}
+        >
+          <Bookmark size={15} />
           个人样式模板
-        </Button>
-        <Button
-          variant={tab === "reuse" ? "default" : "outline"}
-          onClick={() => setTab("reuse")}
+        </button>
+        <button
+          role="tab"
+          aria-selected={tab === "reuse"}
+          tabIndex={tab === "reuse" ? 0 : -1}
+          disabled={busy}
+          onClick={() => switchTab("reuse")}
         >
+          <ArrowRight size={15} />
           复用到其他数据集
-        </Button>
+        </button>
       </div>
       {error && (
         <p role="alert" className="inline-error">
           {error}
         </p>
       )}
-      {tab === "style" ? (
-        <>
-          <p className="tiny-note">
-            只保存字体、画布、图例、网格、色板与序列外观。字段、标题、轴范围、过滤和统计设置保持原样；应用可撤销。
-          </p>
-          <label>
-            模板名称
-            <input
-              aria-label="模板名称"
-              maxLength={120}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          <Button
-            disabled={busy || !name.trim()}
-            onClick={() =>
-              run(async () => {
-                await api(
-                  `/projects/${p.project}/style-templates`,
-                  send("POST", { name, config: p.config }),
-                );
-                await templates.refetch();
-              })
-            }
+      {message && (
+        <p className="style-message" role="status">
+          {message}
+        </p>
+      )}
+      {tab !== "reuse" ? (
+        <div className="style-library-body">
+          <section
+            className="style-browser"
+            aria-label={tab === "builtin" ? "内置样式" : "个人模板"}
           >
-            保存当前样式
-          </Button>
-          {templates.isPending ? (
-            <p>读取样式中…</p>
-          ) : templates.isError ? (
-            <p role="alert">
-              {templates.error.message}
-              <Button onClick={() => templates.refetch()}>重试</Button>
-            </p>
-          ) : !templates.data?.length ? (
-            <p>还没有个人样式，保存当前图表外观即可复用。</p>
-          ) : (
-            <div className="manage-list">
-              {templates.data.map((t) => (
-                <div key={t.id}>
-                  <span>
-                    {t.name}
-                    <small>
-                      {t.project_name} · {t.profile.series.length} 组序列外观
-                    </small>
-                  </span>
-                  <Button
-                    disabled={busy}
-                    onClick={() => {
-                      p.onApply(applyStyle(p.config, t.profile));
-                      p.onClose();
+            <div className="style-browser-heading">
+              <div>
+                <h3>
+                  {tab === "builtin"
+                    ? "找到适合这张图的表达"
+                    : "把好用的样式留给下一次"}
+                </h3>
+                <p>
+                  {tab === "builtin"
+                    ? "先预览，再应用。每一种样式都可以继续调整。"
+                    : "默认只看当前项目；跨项目复用时切换到全部项目。"}
+                </p>
+              </div>
+              {tab === "style" && (
+                <Button
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => setCreating((v) => !v)}
+                >
+                  <Plus size={14} />
+                  保存为模板
+                </Button>
+              )}
+            </div>
+            {tab === "style" && (
+              <>
+                <div className="style-filter">
+                  <div>
+                    <Search size={15} />
+                    <input
+                      aria-label="搜索样式模板"
+                      placeholder="搜索模板或来源项目"
+                      value={search}
+                      onChange={(e) => {
+                        setSearch(e.target.value);
+                        setLimit(9);
+                      }}
+                    />
+                  </div>
+                  <select
+                    aria-label="模板项目范围"
+                    value={scope}
+                    onChange={(e) => {
+                      setScope(e.target.value);
+                      setLimit(9);
                     }}
                   >
-                    应用样式 {t.name}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    disabled={busy}
-                    onClick={() =>
-                      run(async () => {
-                        await api(`/style-templates/${t.id}`, {
-                          method: "DELETE",
-                        });
-                        await templates.refetch();
-                      })
-                    }
-                  >
-                    删除 {t.name}
-                  </Button>
+                    <option value="current">当前项目</option>
+                    <option value="all">全部项目</option>
+                  </select>
                 </div>
-              ))}
+                {creating && (
+                  <form
+                    className="style-edit-form"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (busy || !name.trim()) return;
+                      void run(async () => {
+                        const created = await api(
+                          `/projects/${p.project}/style-templates`,
+                          send("POST", { name: name.trim(), config: p.config }),
+                        );
+                        await templates.refetch();
+                        setSelected(created.id);
+                        setScope("current");
+                        setSearch("");
+                        setLimit(9);
+                        setCreating(false);
+                        setMessage("已保存当前画布样式，可跨项目复用");
+                      });
+                    }}
+                  >
+                    <label>
+                      模板名称
+                      <input
+                        aria-label="模板名称"
+                        maxLength={120}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </label>
+                    <div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        disabled={busy}
+                        onClick={() => setCreating(false)}
+                      >
+                        取消
+                      </Button>
+                      <Button disabled={busy || !name.trim()}>
+                        保存当前样式
+                      </Button>
+                    </div>
+                  </form>
+                )}
+                {editing && (
+                  <form
+                    className="style-edit-form"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (busy || !rename.trim()) return;
+                      void run(async () => {
+                        await api(
+                          `/style-templates/${editing.id}`,
+                          send("PATCH", { name: rename.trim() }),
+                        );
+                        await templates.refetch();
+                        setEditing(null);
+                        setMessage("模板已重命名");
+                      });
+                    }}
+                  >
+                    <label>
+                      新模板名称
+                      <input
+                        aria-label="新模板名称"
+                        maxLength={120}
+                        value={rename}
+                        onChange={(e) => setRename(e.target.value)}
+                      />
+                    </label>
+                    <div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        disabled={busy}
+                        onClick={() => setEditing(null)}
+                      >
+                        取消重命名
+                      </Button>
+                      <Button disabled={busy || !rename.trim()}>
+                        保存名称
+                      </Button>
+                    </div>
+                  </form>
+                )}
+                {removing && (
+                  <div
+                    className="style-remove"
+                    role="group"
+                    aria-label="确认删除模板"
+                  >
+                    <p>
+                      删除「{removing.name}
+                      」？已有图表不会改变，删除后无法恢复此模板。
+                    </p>
+                    <div>
+                      <Button
+                        variant="outline"
+                        disabled={busy}
+                        onClick={() => setRemoving(null)}
+                      >
+                        保留模板
+                      </Button>
+                      <Button
+                        disabled={busy}
+                        onClick={() =>
+                          run(async () => {
+                            await api(`/style-templates/${removing.id}`, {
+                              method: "DELETE",
+                            });
+                            await templates.refetch();
+                            if (selected === removing.id) setSelected("");
+                            setRemoving(null);
+                            setMessage("模板已删除，已有图表保持原样");
+                          })
+                        }
+                      >
+                        确认删除模板
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+            {tab === "builtin" ? (
+              <div className="style-card-grid">
+                {stylePresets.map((v) => (
+                  <button
+                    key={v.key}
+                    aria-label={`预览内置样式 ${v.key}`}
+                    className={`style-card ${selected === v.key ? "selected" : ""}`}
+                    aria-pressed={selected === v.key}
+                    onClick={() => setSelected(v.key)}
+                  >
+                    <StyleThumbnail
+                      profile={styleProfile(applyPreset(p.config, v.key))}
+                    />
+                    <span className="style-card-name">
+                      {v.name}
+                      {selected === v.key && <Check size={14} />}
+                    </span>
+                    <small>{v.key}</small>
+                    <p>{v.description}</p>
+                  </button>
+                ))}
+              </div>
+            ) : templates.isPending ? (
+              <div className="style-empty" role="status">
+                正在读取个人模板…
+              </div>
+            ) : templates.isError ? (
+              <div className="style-empty" role="alert">
+                {templates.error.message}
+                <Button onClick={() => templates.refetch()}>重试</Button>
+              </div>
+            ) : !matching.length ? (
+              <div className="style-empty">
+                <FolderOpen size={27} />
+                <h4>{search ? "没有匹配的模板" : "这里还没有个人模板"}</h4>
+                <p>
+                  {search
+                    ? "试试其他关键词，或切换到全部项目。"
+                    : "调整好一张图后，保存它的外观，下次直接使用。"}
+                </p>
+                {!search && (
+                  <Button variant="outline" onClick={() => setCreating(true)}>
+                    保存为模板
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <>
+                <p className="style-count">
+                  {matching.length} 个模板 · 缩略图为样式示意
+                </p>
+                <div className="style-card-grid">
+                  {matching.slice(0, limit).map((t) => (
+                    <article
+                      key={t.id}
+                      className={`style-card ${selected === t.id ? "selected" : ""}`}
+                    >
+                      <button
+                        className="template-select"
+                        aria-label={`预览模板 ${t.name}`}
+                        aria-pressed={selected === t.id}
+                        onClick={() => setSelected(t.id)}
+                      >
+                        <StyleThumbnail profile={t.profile} />
+                        <span className="style-card-name">
+                          {t.name}
+                          {selected === t.id && <Check size={14} />}
+                        </span>
+                        <small title={t.project_name}>{t.project_name}</small>
+                      </button>
+                      <div className="template-card-actions">
+                        <span>{t.profile.series.length} 组外观</span>
+                        <button
+                          aria-label={`重命名 ${t.name}`}
+                          disabled={busy}
+                          onClick={() => {
+                            setEditing(t);
+                            setRename(t.name);
+                            setCreating(false);
+                            setRemoving(null);
+                          }}
+                        >
+                          <Pencil size={13} />
+                        </button>
+                        <button
+                          aria-label={`删除 ${t.name}`}
+                          disabled={busy}
+                          onClick={() => {
+                            setRemoving(t);
+                            setEditing(null);
+                          }}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+                {matching.length > limit && (
+                  <Button
+                    className="style-more"
+                    variant="outline"
+                    onClick={() => setLimit((v) => v + 9)}
+                  >
+                    显示更多模板（剩余 {matching.length - limit}）
+                  </Button>
+                )}
+              </>
+            )}
+          </section>
+          <aside className="style-detail">
+            <div className="style-detail-heading">
+              <span>当前数据预览</span>
+              <span>未应用</span>
             </div>
-          )}
-        </>
+            {source && <StylePreview config={previewConfig} data={source} />}
+            <h3>
+              {tab === "builtin"
+                ? selectedPreset.name
+                : selectedTemplate?.name || "当前画布样式"}
+            </h3>
+            <p>
+              {tab === "builtin"
+                ? selectedPreset.description
+                : selectedTemplate
+                  ? `来自「${selectedTemplate.project_name}」`
+                  : "选择左侧模板，查看它在这份数据上的效果。"}
+            </p>
+            <dl>
+              <div>
+                <dt>字体</dt>
+                <dd>
+                  {previewConfig.style.font} · {previewConfig.style.fontSize}px
+                </dd>
+              </div>
+              <div>
+                <dt>数据</dt>
+                <dd>{source?.filename || "未找到当前数据"}</dd>
+              </div>
+              <div>
+                <dt>画布</dt>
+                <dd>
+                  {previewConfig.style.width} × {previewConfig.style.height}px
+                </dd>
+              </div>
+            </dl>
+            <div className="style-detail-note">
+              仅调整外观，保留字段映射、标题、坐标范围和统计设置。应用后可撤销。
+              {tab === "builtin" && " 内置样式为独立设计，无期刊官方认证。"}
+            </div>
+            <Button
+              disabled={busy || (!selectedTemplate && tab === "style")}
+              aria-label={
+                tab === "builtin"
+                  ? `应用内置样式 ${selectedPreset.key}`
+                  : `应用样式 ${selectedTemplate?.name || "未选择"}`
+              }
+              onClick={() => {
+                p.onApply(previewConfig);
+                p.onClose();
+              }}
+            >
+              应用到当前图表
+              <ArrowRight size={15} />
+            </Button>
+          </aside>
+        </div>
       ) : (
-        <>
+        <div className="style-reuse-body">
           <label>
             目标数据版本
             <select
@@ -256,7 +648,7 @@ export function ReuseDialog(p: {
               </div>
             </>
           )}
-        </>
+        </div>
       )}
     </Dialog>
   );

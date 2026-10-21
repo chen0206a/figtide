@@ -2,6 +2,18 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import { defaults } from "../src/editor/model";
 test.use({ reducedMotion: "reduce" });
+// Only remove templates created by this run, including the restored backup's copies.
+const ownedProjects = new Set<number>();
+test.afterEach(async ({ request }) => {
+  const templates = await (await request.get("/api/style-templates")).json();
+  for (const t of templates.filter((t: any) =>
+    ownedProjects.has(Number(t.project_id)),
+  )) {
+    const deleted = await request.delete(`/api/style-templates/${t.id}`);
+    expect(deleted.ok()).toBeTruthy();
+  }
+  ownedProjects.clear();
+});
 test("personal style → explicit remap → vector PDF/SVG/PNG → project archive → restore → reopen", async ({
   page,
   request,
@@ -17,6 +29,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
       },
     })
   ).json();
+  ownedProjects.add(p.id);
   const upload = async (name: string, csv: string) => {
     const r = await request.post(`/api/projects/${p.id}/datasets`, {
       multipart: {
@@ -66,6 +79,10 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   );
   await page.getByRole("button", { name: "复用", exact: true }).click();
   const templateName = `交付风格 ${p.id}`;
+  await page
+    .getByRole("button", { name: "保存为模板", exact: true })
+    .first()
+    .click();
   await page.getByLabel("模板名称").fill(templateName);
   await page.getByRole("button", { name: "保存当前样式" }).click();
   await expect(
@@ -80,6 +97,9 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   await page.getByLabel("字体", { exact: true }).selectOption("Arial");
   await page.getByRole("button", { name: "复用", exact: true }).click();
   await page
+    .getByRole("button", { name: `预览模板 ${templateName}`, exact: true })
+    .click();
+  await page
     .getByRole("button", { name: `应用样式 ${templateName}`, exact: true })
     .click();
   await page.getByRole("button", { name: "外观", exact: true }).click();
@@ -88,7 +108,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   );
   await page.getByRole("button", { name: "复用", exact: true }).click();
   await page
-    .getByRole("button", { name: "复用到其他数据集", exact: true })
+    .getByRole("tab", { name: "复用到其他数据集", exact: true })
     .click();
   await page.getByLabel("复用目标数据版本").selectOption(String(target.id));
   await expect(
@@ -168,6 +188,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   ).toBeVisible();
   const projects = await (await request.get("/api/projects")).json();
   const recovered = projects.find((r: any) => r.name === recoveredName);
+  ownedProjects.add(recovered.id);
   expect(recovered.id).not.toBe(p.id);
   await page
     .getByRole("dialog")

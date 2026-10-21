@@ -8,6 +8,7 @@ export function Dialog({
   description,
   children,
   wide = false,
+  className = "",
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -15,12 +16,15 @@ export function Dialog({
   description: string;
   children: ReactNode;
   wide?: boolean;
+  className?: string;
 }) {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="dialog-overlay" />
-        <DialogPrimitive.Content className={`dialog-content ${wide ? "dialog-wide" : ""}`}>
+        <DialogPrimitive.Content
+          className={`dialog-content ${wide ? "dialog-wide" : ""} ${className}`}
+        >
           <DialogPrimitive.Title>{title}</DialogPrimitive.Title>
           <DialogPrimitive.Description>
             {description}

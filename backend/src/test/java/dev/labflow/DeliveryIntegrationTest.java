@@ -16,11 +16,15 @@ import java.util.zip.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(
     properties =
         "spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC")
+@AutoConfigureMockMvc
 class DeliveryIntegrationTest {
+  @Autowired MockMvc mvc;
   @Autowired WorkspaceService workspace;
   @Autowired BackupService backups;
   @Autowired StyleTemplateService styles;
@@ -28,6 +32,32 @@ class DeliveryIntegrationTest {
   @Autowired ProcessingService processing;
   @Autowired WorkspaceRepository db;
   @Autowired ObjectMapper json;
+
+  @Test
+  void renameStyleViaApiPreservesProfileAndOwnershipAndValidatesInput() throws Exception {
+    long p = project();
+    var data = workspace.upload(p, null, "template.csv", csv);
+    var created = json.valueToTree(styles.save(p, "Original", config(number(data, "id"))));
+    long id = created.path("id").asLong();
+    var before = db.one("SELECT * FROM style_templates WHERE id=?", id);
+    mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/style-templates/" + id)
+        .contentType("application/json").content("{\"name\":\"  论文样式 α  \"}"))
+        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+    var after = db.one("SELECT * FROM style_templates WHERE id=?", id);
+    assertEquals("论文样式 α", after.get("name"));
+    assertEquals(before.get("project_id"), after.get("project_id"));
+    assertEquals(before.get("profile_json"), after.get("profile_json"));
+    for (String name : List.of("   ", "x".repeat(121))) {
+      mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/style-templates/" + id)
+          .contentType("application/json").content(json.createObjectNode().put("name", name).toString()))
+          .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isBadRequest());
+    }
+    styles.rename(id, "论文样式 α"); // Renaming to the same name remains idempotent.
+    styles.delete(id);
+    mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/style-templates/" + id)
+        .contentType("application/json").content("{\"name\":\"Missing\"}"))
+        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isNotFound());
+  }
 
   long number(Map<String, Object> r, String key) {
     return ((Number) r.get(key)).longValue();

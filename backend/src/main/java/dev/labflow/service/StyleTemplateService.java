@@ -141,4 +141,13 @@ public class StyleTemplateService {
       throw new ApiException(404, "样式模板不存在");
     return Map.of("deleted", id);
   }
+
+  public Object rename(long id, String name) {
+    if (name == null || name.isBlank() || name.length() > 120)
+      throw ApiException.bad("模板名称须为 1–120 个字符");
+    if (db.query("SELECT id FROM style_templates WHERE id=?", id).isEmpty())
+      throw new ApiException(404, "样式模板不存在");
+    db.update("UPDATE style_templates SET name=? WHERE id=?", name.trim(), id);
+    return Map.of("id", id, "name", name.trim());
+  }
 }

@@ -20,6 +20,7 @@ public class DeliveryController {
   }
 
   public record StyleInput(@NotBlank @Size(max = 120) String name, @NotNull JsonNode config) {}
+  public record StyleName(@NotBlank @Size(max = 120) String name) {}
 
   @GetMapping("/style-templates")
   Object styles() {
@@ -34,6 +35,11 @@ public class DeliveryController {
   @DeleteMapping("/style-templates/{id}")
   Object delete(@PathVariable long id) {
     return styles.delete(id);
+  }
+
+  @PatchMapping("/style-templates/{id}")
+  Object rename(@PathVariable long id, @Valid @RequestBody StyleName in) {
+    return styles.rename(id, in.name());
   }
 
   @GetMapping("/projects/{p}/backup")

@@ -18,6 +18,13 @@ import { applyStyle, bindings, reuseConfig, type StyleProfile } from "./reuse";
 import { ReuseDialog } from "./ReuseDialog";
 import { ProjectBackup } from "../components/ProjectBackup";
 import type { Dataset } from "../lib/api";
+vi.mock("./StylePreview", () => ({
+  StylePreview: ({ config }: { config: any }) => (
+    <div aria-label="当前数据样式预览">
+      {config.style.font} · {config.style.fontSize}
+    </div>
+  ),
+}));
 const d: Dataset = {
   id: 1,
   dataset_id: 1,
@@ -175,6 +182,7 @@ describe("reusable scientific figures", () => {
               : [
                   {
                     id: 1,
+                    project_id: 1,
                     name: "论文样式",
                     project_name: "研究",
                     profile: profile(),
@@ -203,6 +211,7 @@ describe("reusable scientific figures", () => {
         />
       </QueryClientProvider>,
     );
+    fireEvent.click(screen.getAllByRole("button", { name: "保存为模板" })[0]);
     fireEvent.change(screen.getByLabelText("模板名称"), {
       target: { value: "新样式" },
     });
@@ -215,6 +224,9 @@ describe("reusable scientific figures", () => {
             JSON.parse(o.body).name === "新样式",
         ),
       ).toBe(true),
+    );
+    fireEvent.click(
+      await screen.findByRole("button", { name: "预览模板 论文样式" }),
     );
     await waitFor(() =>
       expect(

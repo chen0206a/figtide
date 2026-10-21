@@ -231,7 +231,15 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 
 转换步骤：`{"op":"filter","field":"epoch","operator":"gte","value":"10"}`。操作符 `eq|gte|lte`；eq 按文本比较，其余按数值比较。过滤不落回原始行。
 
-## 错误
+## 样式模板
+
+`GET /style-templates` 返回本机全部模板，包含 `id,project_id,name,project_name,profile`（及原有时间字段）。前端默认按当前项目筛选，允许切换全部项目；`profile` 是带 `schema_version=1` 的外观白名单，与图表的数据映射、统计语义分离。
+
+`POST /projects/{p}/style-templates` 请求 `{name,config}`，从合法图表配置提取外观；返回 `{id,name,profile}`。`PATCH /style-templates/{id}` 请求 `{name}`，仅修改模板名称，返回 `{id,name}`。名称非空、最多 120 字符，写入时去除首尾空白；不存在的模板返回 404。重命名不修改样式、所属项目或既有图表。
+
+`DELETE /style-templates/{id}` 删除该模板，返回 `{deleted:id}`；不修改已经应用该样式的图表。前端删除前需明确确认。接口仅用于本地单用户模式，无用户权限隔离。
+
+## 错误响应
 
 ```json
 {"code":"REQUEST_409","message":"图表已被更新，请重新打开最新版本后再保存"}
