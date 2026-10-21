@@ -65,7 +65,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await expect(page.getByText("本机草稿已保存", { exact: true })).toBeVisible();
   page.on("dialog", (d) => d.accept());
   await page.reload();
-  await page.getByRole("button", { name: "恢复草稿", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Recovered research",

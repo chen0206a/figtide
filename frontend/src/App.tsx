@@ -1,5 +1,18 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useLayoutEffect,
+  lazy,
+  Suspense,
+} from "react";
 import { Link, useLocation, useNavigate, useBlocker } from "react-router-dom";
+import {
+  readWorkspaceMemory,
+  rememberWorkspace,
+  workspaceTargets,
+} from "./lib/workspaceMemory";
 import { WorkspaceNav } from "./components/WorkspaceNav";
 import {
   readWorkspaceRoute,
@@ -33,11 +46,19 @@ import "./components/refinements.css";
 import { Experiments } from "./experiments/Experiments";
 import { SourceProvenance } from "./experiments/SourceProvenance";
 import { ProcessingDialog } from "./processing/ProcessingDialog";
-const Editor = lazy(() => import("./editor/Editor"));
+const loadEditor = () => import("./editor/Editor");
+const Editor = lazy(loadEditor);
 export default function App() {
   const qc = useQueryClient();
   const location = useLocation();
-  const go = useNavigate();
+  const routerGo = useNavigate();
+  const go = useCallback(
+    (to: string, options: { replace?: boolean } = {}) => routerGo(to, options),
+    [routerGo],
+  );
+  const [memory, setMemory] = useState(() =>
+    readWorkspaceMemory(sessionStorage),
+  );
   const route = readWorkspaceRoute(location.pathname, location.search);
   const page = route.page;
   const chart = route.chart;
@@ -57,36 +78,86 @@ export default function App() {
     [message, setMessage] = useState(""),
     [uploadVersion, setUploadVersion] = useState<number | null>(null);
   const upload = useRef<HTMLInputElement>(null);
-  const dirty = useRef(false);
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      dirty.current && currentLocation.pathname !== nextLocation.pathname,
-  );
+  const editorGuard = useRef<(() => boolean) | null>(null);
+  const registerEditorGuard = useCallback((guard: (() => boolean) | null) => {
+    editorGuard.current = guard;
+  }, []);
+  const scrollPositions = useRef(new Map<string, number>());
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    if (
+      currentLocation.pathname === nextLocation.pathname &&
+      currentLocation.search === nextLocation.search
+    )
+      return false;
+    scrollPositions.current.set(
+      currentLocation.pathname + currentLocation.search,
+      window.scrollY,
+    );
+    return page === "editor" && editorGuard.current?.() === false;
+  });
   const confirmingRoute = useRef(false);
   useEffect(() => {
     if (blocker.state !== "blocked" || confirmingRoute.current) return;
     confirmingRoute.current = true;
-    void confirm("当前图表尚未正式保存，离开后可从本机草稿恢复。继续？").then(
-      (leave) => {
-        confirmingRoute.current = false;
-        if (leave) {
-          dirty.current = false;
-          blocker.proceed?.();
-        } else blocker.reset?.();
-      },
-    );
+    void confirm(
+      "本机草稿暂时无法保存。可以取消并保存图表；继续离开可能丢失本次修改。",
+    ).then((leave) => {
+      confirmingRoute.current = false;
+      if (leave) blocker.proceed?.();
+      else blocker.reset?.();
+    });
   }, [blocker, confirm]);
+  useEffect(() => {
+    setMemory((m) => rememberWorkspace(m, location.pathname, location.search));
+  }, [location.pathname, location.search]);
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        "labflow-workspace-tabs-v1",
+        JSON.stringify(memory),
+      );
+    } catch {}
+  }, [memory]);
+  const targets = workspaceTargets(memory, project);
+  if (route.valid) targets[page] = location.pathname + location.search;
+  const warmModule = (target: Page) => {
+    if (target === "editor") void loadEditor().catch(() => {});
+    if (!project) return;
+    if (target === "data" || target === "editor") {
+      void qc.prefetchQuery({
+        queryKey: ["datasets", project],
+        queryFn: () => api<Dataset[]>(`/projects/${project}/datasets`),
+      });
+      const remembered = readWorkspaceRoute(
+        ...(targets.data.split("?") as [string, string]),
+      );
+      if (remembered.dataset)
+        void qc.prefetchQuery({
+          queryKey: ["data", project, remembered.dataset],
+          queryFn: () =>
+            api<Dataset>(`/projects/${project}/data/${remembered.dataset}`),
+        });
+    }
+    if (target === "experiments")
+      void qc.prefetchQuery({
+        queryKey: ["experiments", project],
+        queryFn: () => api(`/projects/${project}/experiments`),
+      });
+  };
   const setDataset = (id: number) => {
     lastDataset.current = id;
     if (page === "data")
       void go(workspaceUrl("data", project, null, id), { replace: true });
   };
+  const previousProject = useRef(project);
   useEffect(() => {
+    if (previousProject.current !== project) lastDataset.current = 0;
+    previousProject.current = project;
     if (route.project) setProject(route.project);
-    lastDataset.current = route.dataset;
-  }, [route.project, route.dataset]);
+    if (route.dataset) lastDataset.current = route.dataset;
+  }, [project, route.project, route.dataset]);
   const routeFocus = useRef<HTMLDivElement>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const names = {
       home: "首页",
       experiments: "实验记录",
@@ -95,8 +166,12 @@ export default function App() {
     };
     document.title = `${names[page]} · LabFlow`;
     routeFocus.current?.focus({ preventScroll: true });
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, [page, project]);
+    window.scrollTo({
+      top:
+        scrollPositions.current.get(location.pathname + location.search) || 0,
+      behavior: "instant",
+    });
+  }, [page, project, location.pathname]);
   const projects = useQuery({
     queryKey: ["projects"],
     queryFn: () => api<Project[]>("/projects"),
@@ -131,7 +206,10 @@ export default function App() {
         p,
         project,
         p === "editor" ? (id ?? chart) : null,
-        dataId ?? lastDataset.current,
+        dataId ??
+          (lastDataset.current ||
+            readWorkspaceRoute(...(targets.data.split("?") as [string, string]))
+              .dataset),
       ),
     );
   const refresh = () => {
@@ -148,8 +226,8 @@ export default function App() {
         "/projects",
         send("POST", { name, description }),
       );
-      setProject(p.id);
-      if (page !== "home") void go(workspaceUrl("data", p.id));
+      if (page === "home") setProject(p.id);
+      else void go(workspaceUrl("data", p.id));
       setModal(false);
       setName("");
       setDescription("");
@@ -189,19 +267,12 @@ export default function App() {
               <LabFlowMark size={29} />
               <span>LabFlow</span>
             </Link>
-            <WorkspaceNav page={page} project={project} />
-            {page !== "home" && (
-              <div className="workbench-context">
-                <span>/</span>
-                <span>
-                  {page === "editor"
-                    ? "绘图工作台"
-                    : page === "data"
-                      ? "数据工作台"
-                      : "实验工作台"}
-                </span>
-              </div>
-            )}
+            <WorkspaceNav
+              page={page}
+              project={project}
+              urls={targets}
+              onIntent={warmModule}
+            />
             <div className="global-right">
               <span className="local-badge">
                 <span /> 本地工作区
@@ -209,19 +280,13 @@ export default function App() {
               <select
                 aria-label="当前项目"
                 value={project}
-                onChange={async (e) => {
+                onChange={(e) => {
                   const nextProject = Number(e.target.value);
-                  if (
-                    dirty.current &&
-                    !(await confirm(
-                      "切换项目后，未正式保存的图表可从本机草稿恢复。继续？",
-                    ))
-                  )
-                    return;
-                  dirty.current = false;
-                  setProject(nextProject);
-                  lastDataset.current = 0;
-                  if (page !== "home") void go("/");
+                  if (nextProject === project) return;
+                  if (page === "home") {
+                    setProject(nextProject);
+                    lastDataset.current = 0;
+                  } else void go(workspaceTargets(memory, nextProject)[page]);
                 }}
               >
                 <option value={0} disabled>
@@ -305,26 +370,28 @@ export default function App() {
             </div>
           ) : page === "editor" && project ? (
             <Suspense fallback={<WorkbenchSkeleton />}>
-              <Editor
-                key={`${project}-${chart}`}
-                project={project}
-                projectName={current?.name || ""}
-                datasets={datasets.data || []}
-                chartId={chart}
-                initialDataset={dataset}
-                onSaved={(id) => {
-                  dirty.current = false;
-                  void go(workspaceUrl("editor", project, id), {
-                    replace: true,
-                  });
-                  refresh();
-                }}
-                onUpload={() => chooseUpload()}
-                onDirty={(v) => {
-                  dirty.current = v;
-                }}
-                notify={setMessage}
-              />
+              {datasets.isPending ? (
+                <WorkbenchSkeleton />
+              ) : (
+                <Editor
+                  key={`${project}-${chart}`}
+                  project={project}
+                  projectName={current?.name || ""}
+                  datasets={datasets.data || []}
+                  chartId={chart}
+                  initialDataset={dataset}
+                  onSaved={(id) => {
+                    if (chart !== id) editorGuard.current = null;
+                    void go(workspaceUrl("editor", project, id), {
+                      replace: true,
+                    });
+                    refresh();
+                  }}
+                  onUpload={() => chooseUpload()}
+                  onLeaveGuard={registerEditorGuard}
+                  notify={setMessage}
+                />
+              )}
             </Suspense>
           ) : (
             <main
@@ -501,7 +568,7 @@ function DataPage({
   }, [id, selected, onSelect]);
   return (
     <>
-      <div className="page-eyebrow">DATA LIBRARY</div>
+      <div className="page-eyebrow">数据工作区</div>
       <div className="page-heading">
         <div>
           <h1>每一份数据，都有来源。</h1>

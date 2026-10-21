@@ -56,3 +56,20 @@ it("reports quota errors and retains the pending draft for a flush retry", () =>
   expect(storage.setItem).toHaveBeenLastCalledWith("chart", "latest");
   expect(saved).toHaveBeenCalledTimes(1);
 });
+
+it("synchronously preserves the latest edit before navigation and reports a failed write", () => {
+  const { writer, storage } = fixture();
+  writer.schedule("chart", "old pending");
+  expect(writer.writeNow("chart", "latest input")).toBe(true);
+  vi.runAllTimers();
+  expect(storage.setItem).toHaveBeenCalledExactlyOnceWith(
+    "chart",
+    "latest input",
+  );
+  storage.setItem.mockImplementationOnce(() => {
+    throw new Error("quota");
+  });
+  expect(writer.writeNow("chart", "newer input")).toBe(false);
+  expect(writer.flush()).toBe(true);
+  expect(storage.setItem).toHaveBeenLastCalledWith("chart", "newer input");
+});

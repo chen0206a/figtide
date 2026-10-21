@@ -17,14 +17,20 @@ export class DraftWriter {
   flush() {
     clearTimeout(this.timer);
     const pending = this.pending;
-    if (!pending) return;
+    if (!pending) return true;
     try {
       this.storage.setItem(pending.key, pending.value);
       this.pending = null;
       this.onSaved();
+      return true;
     } catch {
       this.onError();
+      return false;
     }
+  }
+  writeNow(key: string, value: string) {
+    this.schedule(key, value);
+    return this.flush();
   }
   clear(key: string) {
     if (this.pending?.key === key) {

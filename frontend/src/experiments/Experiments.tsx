@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, FlaskConical, Copy, ArrowUpRight } from "lucide-react";
 import { api, type Experiment, type Dataset } from "../lib/api";
@@ -30,9 +30,31 @@ export function Experiments({
     queryFn: () => api<Experiment[]>(`/projects/${project}/experiments`),
   });
   const [edit, setEdit] = useState<ExperimentDraft | null>(null);
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
-  const [tag, setTag] = useState("");
+  const [filters] = useState(() => {
+    try {
+      const value = JSON.parse(
+        sessionStorage.getItem(`labflow-experiment-filters:${project}`) || "{}",
+      );
+      return {
+        search: typeof value.search === "string" ? value.search : "",
+        status: typeof value.status === "string" ? value.status : "",
+        tag: typeof value.tag === "string" ? value.tag : "",
+      };
+    } catch {
+      return { search: "", status: "", tag: "" };
+    }
+  });
+  const [search, setSearch] = useState(filters.search);
+  const [status, setStatus] = useState(filters.status);
+  const [tag, setTag] = useState(filters.tag);
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        `labflow-experiment-filters:${project}`,
+        JSON.stringify({ search, status, tag }),
+      );
+    } catch {}
+  }, [project, search, status, tag]);
   const [selected, setSelected] = useState<number[]>([]);
   const [comparing, setComparing] = useState(false);
   const rows = query.data || [];
@@ -81,7 +103,7 @@ export function Experiments({
         />
       ) : (
         <>
-          <div className="page-eyebrow">EXPERIMENT NOTEBOOK</div>
+          <div className="page-eyebrow">实验工作区</div>
           <div className="page-heading">
             <div>
               <h1>把探索，沉淀为记录。</h1>

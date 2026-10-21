@@ -1,6 +1,18 @@
 import { useLayoutEffect, useRef, useState } from "react";
+import {
+  House,
+  FlaskConical,
+  Database,
+  ChartNoAxesCombined,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { workspaceUrl, type WorkspacePage } from "../lib/routes";
+const icons = {
+  home: House,
+  experiments: FlaskConical,
+  data: Database,
+  editor: ChartNoAxesCombined,
+};
 const items = [
   ["home", "项目概览"],
   ["experiments", "实验记录"],
@@ -10,9 +22,13 @@ const items = [
 export function WorkspaceNav({
   page,
   project,
+  urls,
+  onIntent,
 }: {
   page: WorkspacePage;
   project: number;
+  urls?: Partial<Record<WorkspacePage, string>>;
+  onIntent?: (page: WorkspacePage) => void;
 }) {
   const nav = useRef<HTMLElement>(null);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -50,19 +66,29 @@ export function WorkspaceNav({
           transform: `translateX(${indicator.left}px)`,
         }}
       />
-      {items.map(([id, label]) => (
-        <Link
-          key={id}
-          to={workspaceUrl(id, project)}
-          data-page={id}
-          className={`workspace-nav-link ${id === page ? "active" : ""}`}
-          aria-current={id === page ? "page" : undefined}
-          onMouseEnter={() => setHovered(id)}
-          onFocus={() => setHovered(id)}
-        >
-          {label}
-        </Link>
-      ))}
+      {items.map(([id, label]) => {
+        const Icon = icons[id];
+        return (
+          <Link
+            key={id}
+            to={urls?.[id] || workspaceUrl(id, project)}
+            data-page={id}
+            className={`workspace-nav-link ${id === page ? "active" : ""}`}
+            aria-current={id === page ? "page" : undefined}
+            onMouseEnter={() => {
+              setHovered(id);
+              onIntent?.(id);
+            }}
+            onFocus={() => {
+              setHovered(id);
+              onIntent?.(id);
+            }}
+          >
+            <Icon size={15} aria-hidden="true" />
+            {label}
+          </Link>
+        );
+      })}
     </nav>
   );
 }

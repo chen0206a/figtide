@@ -209,10 +209,7 @@ test("refresh during the debounce window flushes the latest draft without changi
     .fill("Refresh should preserve this exact draft");
   page.once("dialog", (dialog) => dialog.accept());
   await page.reload();
-  await expect(
-    page.getByRole("dialog", { name: "发现未完成的草稿" }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "恢复草稿", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Refresh should preserve this exact draft",

@@ -176,6 +176,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   await page
     .getByLabel("当前项目", { exact: true })
     .selectOption(String(recovered.id));
+  await page.getByRole("link", { name: "项目概览", exact: true }).click();
   const restoredCharts = await (
     await request.get(`/api/projects/${recovered.id}/charts`)
   ).json();

@@ -1,6 +1,7 @@
 import {
   useState,
   useEffect,
+  useLayoutEffect,
   useReducer,
   useRef,
   useMemo,
@@ -8,6 +9,12 @@ import {
 } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Plotly from "plotly.js-cartesian-dist-min";
+import {
+  chartDraftKey,
+  readChartDraft,
+  sameDraftContent,
+} from "../lib/chartDraft";
+import { WorkbenchSkeleton } from "../components/WorkbenchSkeleton";
 import { DraftWriter } from "../lib/draftWriter";
 import { layoutPatch } from "./layoutPatch";
 import {
@@ -98,7 +105,7 @@ type Props = {
   initialDataset: number;
   onSaved: (id: number) => void;
   onUpload: () => void;
-  onDirty: (v: boolean) => void;
+  onLeaveGuard: (guard: (() => boolean) | null) => void;
   notify: (s: string) => void;
 };
 export default function Editor(p: Props) {
@@ -106,7 +113,9 @@ export default function Editor(p: Props) {
     queryKey: ["chart", p.project, p.chartId],
     queryFn: () => api(`/projects/${p.project}/charts/${p.chartId}`),
     enabled: !!p.chartId,
+    staleTime: 0,
   });
+  const chartLoaded = useRef(false);
   const [selected, setSelected] = useState(0);
   const dataId =
     selected ||
@@ -119,8 +128,12 @@ export default function Editor(p: Props) {
     enabled: !!dataId,
     placeholderData: (previous) => previous,
   });
-  if (p.chartId && existing.isPending)
-    return <div className="empty-state">正在恢复图表配置…</div>;
+  if (
+    p.chartId &&
+    (existing.isPending || (!chartLoaded.current && existing.isFetching))
+  )
+    return <WorkbenchSkeleton />;
+  if (existing.data && !existing.isFetching) chartLoaded.current = true;
   if (existing.isError)
     return (
       <div className="empty-state">
@@ -144,8 +157,7 @@ export default function Editor(p: Props) {
         <small>折线 · 分组柱状 · 散点 · 热力图 · 箱线 · 小提琴</small>
       </div>
     );
-  if (data.isPending)
-    return <div className="empty-state">正在读取不可变数据版本…</div>;
+  if (data.isPending) return <WorkbenchSkeleton />;
   if (data.isError)
     return (
       <div className="empty-state">
@@ -236,23 +248,62 @@ function Workbench(
       />
     );
   }
-  const draftKey = `labflow-draft-v1:${p.project}:${p.chartId ?? (p.data.source_meta ? `comparison-${p.data.id}` : "new")}`;
-  const [recovery, setRecovery] = useState<{
-    config: Config;
-    name: string;
-    revision: number;
-    at: string;
-  } | null>(() => {
+  const originDataset = p.initialDataset || p.datasets[0]?.id || p.data.id;
+  const draftKey = chartDraftKey(p.project, p.chartId, originDataset);
+  const [initialDraft] = useState(() => {
+    const d = readChartDraft(
+      localStorage,
+      draftKey,
+      p.datasets.map((v) => v.id),
+      p.chartId
+        ? []
+        : [
+            `labflow-draft-v1:${p.project}:new`,
+            `labflow-draft-v1:${p.project}:comparison-${originDataset}`,
+          ],
+      originDataset,
+    );
+    return d && p.original && sameDraftContent(d, p.original) ? null : d;
+  });
+  const [recovery, setRecovery] = useState(() =>
+    initialDraft && initialDraft.revision !== (p.original?.revision || 0)
+      ? initialDraft
+      : null,
+  );
+  const [seed] = useState(() => ({
+    config: p.original?.config || defaults(p.data),
+    name:
+      p.original?.name ||
+      (p.data.source_meta?.kind === "experiment_comparison"
+        ? `${p.data.source_meta.metric} · 实验对比`.slice(0, 120)
+        : p.data.source_meta?.kind === "data_processing"
+          ? `${p.data.filename.replace(/\.csv$/i, "")} · 图表`.slice(0, 120)
+          : "Untitled figure"),
+  }));
+  const viewKey = `labflow-editor-view:${draftKey}`;
+  const [initialView] = useState(() => {
     try {
-      const d = JSON.parse(localStorage.getItem(draftKey) || "null");
-      return d?.config?.schema_version === 1 &&
-        typeof d.name === "string" &&
-        Number.isInteger(d.revision) &&
-        p.datasets.some((v) => v.id === d.config.datasetVersionId)
-        ? d
-        : null;
+      const view = JSON.parse(sessionStorage.getItem(viewKey) || "{}");
+      return {
+        panel: [
+          "chart",
+          "appearance",
+          "series",
+          "axes",
+          "annotations",
+          "professional",
+        ].includes(view.panel)
+          ? view.panel
+          : "chart",
+        bottom: ["data", "warnings", "log", "samples", "evaluation"].includes(
+          view.bottom,
+        )
+          ? view.bottom
+          : "",
+        seriesId: typeof view.seriesId === "string" ? view.seriesId : undefined,
+      };
     } catch {
-      return null;
+      return { panel: "chart", seriesId: undefined };
     }
   });
   const [draftStatus, setDraftStatus] = useState("");
@@ -277,8 +328,8 @@ function Workbench(
     } catch {}
   }
   const [history, dispatch] = useReducer(historyReducer, {
-    past: [],
-    present: p.original?.config || defaults(p.data),
+    past: initialDraft && !recovery ? [seed.config] : [],
+    present: initialDraft && !recovery ? initialDraft.config : seed.config,
     future: [],
   });
   const c = history.present;
@@ -299,30 +350,26 @@ function Workbench(
     return () => observer.disconnect();
   }, [autoFit, c.style.width, c.style.height]);
   const [name, setName] = useState(
-      p.original?.name ||
-        (p.data.source_meta?.kind === "experiment_comparison"
-          ? `${p.data.source_meta.metric} · 实验对比`.slice(0, 120)
-          : p.data.source_meta?.kind === "data_processing"
-            ? `${p.data.filename.replace(/\.csv$/i, "")} · 图表`.slice(0, 120)
-            : "Untitled figure"),
+      initialDraft && !recovery ? initialDraft.name : seed.name,
     ),
     [revision, setRevision] = useState(p.original?.revision || 0),
     [id, setId] = useState<number | null>(p.chartId),
-    [baseline, setBaseline] = useState(
-      p.original
-        ? JSON.stringify({ config: p.original.config, name: p.original.name })
-        : "",
-    ),
+    [baseline, setBaseline] = useState(JSON.stringify(seed)),
     [saving, setSaving] = useState(false),
     [exporting, setExporting] = useState(false),
-    [panel, setPanel] = useState("chart"),
-    [seriesId, setSeriesId] = useState(c.series[0]?.id),
+    [panel, setPanel] = useState(initialView.panel),
+    [seriesId, setSeriesId] = useState(initialView.seriesId || c.series[0]?.id),
     [zoom, setZoom] = useState(85),
     [bottom, setBottom] = useState(""),
     [preview, setPreview] = useState(false),
     [exportOpen, setExportOpen] = useState(false),
     [historyOpen, setHistoryOpen] = useState(false),
     [logs, setLogs] = useState<string[]>(["工作台已就绪"]);
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(viewKey, JSON.stringify({ panel, seriesId }));
+    } catch {}
+  }, [viewKey, panel, seriesId]);
   const graph = useRef<any>(null);
   const drawn = useRef<{
     signature: string;
@@ -366,14 +413,48 @@ function Workbench(
       draftWriter.current = null;
     };
   }, []);
-  useEffect(() => {
-    p.onDirty(dirty);
-    const handler = (e: BeforeUnloadEvent) => {
-      if (dirty) e.preventDefault();
+  const liveDraft = useRef({
+    dirty,
+    draftKey,
+    config: c,
+    name,
+    revision,
+    recovery,
+  });
+  liveDraft.current = { dirty, draftKey, config: c, name, revision, recovery };
+  const mounted = useRef(true);
+  useLayoutEffect(() => {
+    mounted.current = true;
+    const preserve = () => {
+      const latest = liveDraft.current;
+      if (!latest.dirty || latest.recovery) return true;
+      const value = JSON.stringify({
+        config: latest.config,
+        name: latest.name,
+        revision: latest.revision,
+        at: new Date().toISOString(),
+      });
+      if (draftWriter.current)
+        return draftWriter.current.writeNow(latest.draftKey, value);
+      try {
+        localStorage.setItem(latest.draftKey, value);
+        return true;
+      } catch {
+        return false;
+      }
     };
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
-  }, [dirty]);
+    p.onLeaveGuard(preserve);
+    const unloading = (e: BeforeUnloadEvent) => {
+      if (!preserve()) e.preventDefault();
+    };
+    window.addEventListener("beforeunload", unloading);
+    return () => {
+      preserve();
+      mounted.current = false;
+      p.onLeaveGuard(null);
+      window.removeEventListener("beforeunload", unloading);
+    };
+  }, []);
   useEffect(() => {
     if (recovery) return;
     if (dirty) {
@@ -508,10 +589,23 @@ function Workbench(
         }),
       );
       queryClient.setQueryData(["chart", p.project, result.id], result);
+      if (!mounted.current) {
+        void queryClient.invalidateQueries({ queryKey: ["charts", p.project] });
+        void queryClient.invalidateQueries({ queryKey: ["projects"] });
+        return;
+      }
       if (!asCopy)
         try {
           draftWriter.current?.clear(draftKey);
+          if (initialDraft?.storageKey && initialDraft.storageKey !== draftKey)
+            localStorage.removeItem(initialDraft.storageKey);
         } catch {}
+      try {
+        sessionStorage.setItem(
+          `labflow-editor-view:${chartDraftKey(p.project, result.id, originDataset)}`,
+          JSON.stringify({ panel, seriesId }),
+        );
+      } catch {}
       setConflict(false);
       setId(result.id);
       setRevision(result.revision);
@@ -621,6 +715,7 @@ function Workbench(
   };
   return (
     <div
+      aria-busy={saving}
       className={`editor ${preview ? "preview-mode" : ""} ${!panels.left ? "hide-left" : ""} ${!panels.right ? "hide-right" : ""}`}
     >
       <div className="editor-toolbar">
@@ -646,11 +741,13 @@ function Workbench(
             {saving ? (
               "保存中…"
             ) : dirty ? (
-              draftStatus || "● 未保存"
-            ) : (
+              draftStatus || "正在保留草稿…"
+            ) : id ? (
               <>
                 <Check size={12} /> 已保存 v{revision}
               </>
+            ) : (
+              "新图表 · 可以直接编辑"
             )}
           </span>
         </div>
@@ -724,7 +821,7 @@ function Workbench(
             disabled={
               saving ||
               !name.trim() ||
-              !dirty ||
+              (!!id && !dirty) ||
               c.datasetVersionId !== p.data.id
             }
             onClick={() => save()}
@@ -1973,8 +2070,8 @@ function Workbench(
       <Dialog
         open={!!recovery}
         onOpenChange={() => {}}
-        title="发现未完成的草稿"
-        description={`本机保存时间：${recovery?.at ? new Date(recovery.at).toLocaleString() : ""}。恢复后仍需正式保存到图表版本。`}
+        title="本机草稿与已保存版本不同"
+        description={`图表已有其他保存版本。本机草稿时间：${recovery?.at ? new Date(recovery.at).toLocaleString() : ""}。恢复后可另存副本，保留两份内容。`}
       >
         <div className="dialog-actions">
           <Button
@@ -1982,11 +2079,13 @@ function Workbench(
             onClick={() => {
               try {
                 localStorage.removeItem(draftKey);
+                if (initialDraft?.storageKey)
+                  localStorage.removeItem(initialDraft.storageKey);
               } catch {}
               setRecovery(null);
             }}
           >
-            丢弃草稿
+            使用已保存版本
           </Button>
           <Button
             onClick={() => {

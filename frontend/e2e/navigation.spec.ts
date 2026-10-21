@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import fs from "node:fs";
-test("independent workspace URLs, hover feedback, browser history and unsaved guard", async ({
+test("module navigation resumes the exact chart without save prompts or silent database writes", async ({
   page,
   request,
 }) => {
@@ -79,11 +79,14 @@ test("independent workspace URLs, hover feedback, browser history and unsaved gu
   await expect(
     page.getByTestId("plot").locator(".main-svg").first(),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "保存", exact: true }),
+  ).toBeEnabled();
+  await expect(
+    page.getByText("新图表 · 可以直接编辑", { exact: true }),
+  ).toBeVisible();
   await page.getByRole("link", { name: "项目概览", exact: true }).click();
-  await page
-    .getByRole("dialog", { name: "确认操作" })
-    .getByRole("button", { name: "继续", exact: true })
-    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: /导航体验 · 合成/ }).click();
   const chartUrl = `/projects/${project.id}/figures/${chart.id}`;
   await expect(page).toHaveURL(new RegExp(chartUrl + "$"));
@@ -96,21 +99,25 @@ test("independent workspace URLs, hover feedback, browser history and unsaved gu
     .getByLabel("图表标题", { exact: true })
     .fill("Unsaved navigation title");
   await page.goBack();
-  await expect(page.getByRole("dialog", { name: "确认操作" })).toBeVisible();
-  await page.getByRole("button", { name: "取消", exact: true }).click();
+  await expect(page.locator(".launch-home")).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(chartUrl + "$"));
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Unsaved navigation title",
   );
+  const beforeSave = await (
+    await request.get(`/api/projects/${project.id}/charts/${chart.id}`)
+  ).json();
+  expect(beforeSave.revision).toBe(1);
+  expect(beforeSave.config.style.title).not.toBe("Unsaved navigation title");
   await page.getByRole("link", { name: "数据管理", exact: true }).click();
-  await page
-    .getByRole("dialog", { name: "确认操作" })
-    .getByRole("button", { name: "继续", exact: true })
-    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page).toHaveURL(new RegExp(`/projects/${project.id}/data`));
   // Explicit route identity wins over the locally remembered project.
   await page.goto(`/projects/${project.id}/figures/${chart.id}`);
-  await page.getByRole("button", { name: "恢复草稿", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Unsaved navigation title",
@@ -136,6 +143,14 @@ test("independent workspace URLs, hover feedback, browser history and unsaved gu
   await expect(
     page.getByRole("heading", { name: "把探索，沉淀为记录。" }),
   ).toBeVisible();
+  const other = (await (await request.get("/api/projects")).json()).find(
+    (p: any) => p.id !== project.id && !p.archived,
+  );
+  await page
+    .getByLabel("当前项目", { exact: true })
+    .selectOption(String(other.id));
+  await expect(page).toHaveURL(`/projects/${other.id}/experiments`);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.goto("/invalid-workspace");
   await expect(page.getByRole("heading", { name: "页面不存在" })).toBeVisible();
   await page.goto("/projects/999999999/data");
