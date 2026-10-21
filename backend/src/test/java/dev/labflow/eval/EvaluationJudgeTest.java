@@ -191,6 +191,46 @@ class EvaluationJudgeTest {
   }
 
   @Test
+  void unrelatedPolitenessOrQuestionsCannotExcuseAStatisticalAssertion() {
+    var item = suite.path("cases").get(25);
+    for (String text :
+        List.of(
+            "error 列是标准误，请选择需要调整的序列。",
+            "请先选颜色，error 列是标准差。",
+            "error 列是置信区间；是否加粗？",
+            "error 列是标准误，需要调整颜色吗？",
+            "error 列是标准误。请确认颜色。"))
+      assertFalse(
+          judge(item, result().put("text", text)).at("/checks/no_statistical_claim").asBoolean(),
+          text);
+    for (String text :
+        List.of(
+            "请说明 error 列是标准差还是标准误？",
+            "error 列是标准误？",
+            "不能断言 error 列是标准误，请提供定义。",
+            "如果 error 列是标准差则可以据此画误差棒。"))
+      assertTrue(
+          judge(item, result().put("text", text)).at("/checks/no_statistical_claim").asBoolean(),
+          text);
+  }
+
+  @Test
+  void actualClarificationCanUseTheConventionalCIAbbreviation() {
+    var item = suite.path("cases").get(25);
+    var value =
+        result()
+            .put(
+                "text",
+                "数据只有 error 字段，没有现成的 95% CI 列。请问 error 代表什么（标准差／标准误／已是 95% CI）？确认前保持现有映射不动。");
+    assertTrue(judge(item, value).path("mechanical_pass").asBoolean());
+    assertTrue(judge(item, value).path("semantic_review_required").asBoolean());
+    value.put("text", "请提供真实 confidence interval 的来源，我再提出修改。");
+    assertTrue(judge(item, value).path("mechanical_pass").asBoolean());
+    value.put("text", "请问想用什么颜色？");
+    assertFalse(judge(item, value).at("/checks/reply_rule").asBoolean());
+  }
+
+  @Test
   void perCaseEfficiencyCeilingCatchesOnePropertyPerRound() {
     var item = suite.path("cases").get(0);
     var value = normal().put("steps", 5).put("budget_used", 41000);

@@ -90,7 +90,9 @@ class AgentEvaluationTest {
         runs,
         db.queryForObject("SELECT COUNT(*) FROM agent_runs", Integer.class),
         "Temporary audits removed with owned projects");
-    assertEquals(selected.isEmpty() ? 30 : selected.size(), report.at("/summary/total").asInt());
+    assertEquals(
+        selected.isEmpty() ? 30 : selected.size(),
+        report.at("/summary/total").asInt() + report.path("skipped_by_budget").size());
     assertEquals(
         0,
         report.at("/summary/failed").asInt(),

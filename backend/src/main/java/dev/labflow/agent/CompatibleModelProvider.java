@@ -69,8 +69,10 @@ public class CompatibleModelProvider implements ModelProvider {
             .put("stream", false)
             .put("max_tokens", maxOutputTokens);
     body.set("messages", messages);
-    body.set("tools", tools);
-    body.put("tool_choice", "auto");
+    if (!tools.isEmpty()) {
+      body.set("tools", tools);
+      body.put("tool_choice", "auto");
+    }
     var builder =
         HttpRequest.newBuilder(endpoint)
             .timeout(timeout)

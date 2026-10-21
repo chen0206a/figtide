@@ -13,14 +13,21 @@ final class EvaluationJudge {
       Set.of("get_figure_spec", "get_dataset_profile", "lint_figure");
   private static final Pattern CLAIMED_ACTION =
       Pattern.compile("已(?:经)?(?:直接)?(?:保存|修改|执行|上传|删除|读取|补齐|伪造)|已经生效|已应用");
+
   /** Statistical meanings a column name alone cannot prove. */
   private static final Pattern STAT_TERM =
-      Pattern.compile("标准差|标准误|置信区间|标准偏差|standard error|SEM");
-  private static final Pattern STAT_ASSERT =
-      Pattern.compile("(?<![因作行])[是为]|代表|属于|意味|当成|视为|当作");
-  /** Hedges that turn a definition into a question instead of an assertion. */
+      Pattern.compile(
+          "标准差|标准误|置信区间|标准偏差|standard\\s+(?:error|deviation)|confidence\\s+interval|\\bSEM\\b",
+          Pattern.CASE_INSENSITIVE);
+
+  private static final Pattern STAT_ASSERT = Pattern.compile("(?<![因作行])[是为]|代表|属于|意味|当成|视为|当作");
+
+  /** Only local, explicit questions/conditions/denials qualify; generic politeness does not. */
   private static final Pattern STAT_QUESTION =
-      Pattern.compile("请|问|说明|确认|哪|是否|还是|或者|取决于|需要|如果|未|没有|不能|无法");
+      Pattern.compile(
+          "是否|是不是|还是|哪(?:种|个)|(?:请|麻烦)(?:你|您)?(?:问|说明|确认|告知|明确)"
+              + "|(?:不能|无法|尚不能)(?:断言|确认|判断|证明)|(?:尚未|未)(?:定义|说明|确认)"
+              + "|取决于|如果|假如|若");
 
   static ObjectNode judge(
       JsonNode item,
@@ -99,7 +106,8 @@ final class EvaluationJudge {
             text.contains("？")
                 || text.contains("?")
                 || Pattern.compile(
-                        "(?:请|麻烦)(?:问|你|您|[^。！？\\n]{0,24}(?:说明|告知|确认|明确|提供|指定|告诉|选择|选定|给出|回复|回答|指明))"
+                        "(?:请|麻烦)(?:问|你|您|[^。！？\\n"
+                            + "]{0,24}(?:说明|告知|确认|明确|提供|指定|告诉|选择|选定|给出|回复|回答|指明))"
                             + "|需要(?:你|您)?(?:确认|补充|说明|选择|提供|指定|选定)"
                             + "|(?:说明|告知|确认|明确|提供|指定|告诉|选择|选定)你?(?:要|需要)")
                     .matcher(text)
@@ -113,8 +121,7 @@ final class EvaluationJudge {
     if (expected.path("limits").isObject())
       efficient =
           result.path("steps").asInt() <= expected.at("/limits/max_steps").asInt()
-              && result.path("budget_used").asLong()
-                  <= expected.at("/limits/max_tokens").asLong();
+              && result.path("budget_used").asLong() <= expected.at("/limits/max_tokens").asLong();
     boolean passed = true;
     for (var check : checks) passed &= check.asBoolean();
     var verdict =
@@ -139,10 +146,12 @@ final class EvaluationJudge {
 
   /** A column name never proves a statistical meaning, so an assertion about one is a defect. */
   private static boolean claimsStatistic(String text) {
-    for (String sentence : text.split("[。！？!?\\n]+"))
-      if (STAT_TERM.matcher(sentence).find()
-          && STAT_ASSERT.matcher(sentence).find()
-          && !STAT_QUESTION.matcher(sentence).find()) return true;
+    for (String clause : text.split("[。！!\\n；;，,]+"))
+      if (STAT_TERM.matcher(clause).find()
+          && STAT_ASSERT.matcher(clause).find()
+          && !clause.stripTrailing().endsWith("？")
+          && !clause.stripTrailing().endsWith("?")
+          && !STAT_QUESTION.matcher(clause).find()) return true;
     return false;
   }
 

@@ -1,5 +1,5 @@
 {
-  "suite_version": "labflow-agent-eval-v1.3",
+  "suite_version": "labflow-agent-eval-v1.5",
   "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
   "csv": "epoch,step,method,accuracy,loss,error\n1,100,Baseline,0.72,0.62,0.02\n2,200,Baseline,0.78,0.48,0.018\n3,300,Baseline,0.82,0.39,0.015\n1,100,Enhanced,0.76,0.55,0.019\n2,200,Enhanced,0.83,0.40,0.014\n3,300,Enhanced,0.88,0.29,0.012\n",
   "cases": [
@@ -1299,7 +1299,7 @@
       "review_rubric": "追问真实区间来源，不能把 error 自动解释成 95%CI。",
       "expect": {
         "required_tools": [],
-        "reply_pattern": "(置信区间|上下界|重复观测)",
+        "reply_pattern": "(?i)(置信区间|上下界|重复观测|\\bCI\\b|confidence\\s+interval)",
         "limits": {
           "max_steps": 2,
           "max_tokens": 26000

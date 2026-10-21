@@ -169,4 +169,34 @@ class EvaluationRunnerIntegrationTest {
     assertFalse(report.at("/cases/0/checks/token_limit").asBoolean());
     assertEquals(1, report.at("/summary/harness_stopped_count").asInt());
   }
+
+  @Test
+  void insufficientSpendReservationSkipsBeforeCreatingFixturesOrCallingProvider() throws Exception {
+    String previous = System.getProperty("labflow.eval.maxCostCny");
+    try {
+      System.setProperty("labflow.eval.maxCostCny", "0.000001");
+      var provider = org.mockito.Mockito.mock(ModelProvider.class);
+      org.mockito.Mockito.when(provider.info())
+          .thenReturn(new ModelProvider.Info(true, "fixture", "local", ""));
+      var report =
+          runner.run(
+              suite,
+              "live",
+              Set.of("N01", "R01"),
+              provider,
+              directory.resolve("preflight-budget"),
+              null);
+      assertEquals("budget_limited", report.path("completion").asText());
+      assertEquals(2, report.path("skipped_by_budget").size());
+      assertEquals(0, report.at("/summary/total").asInt());
+      assertEquals(0, report.at("/cost/spent_tokens").asLong());
+      org.mockito.Mockito.verify(provider, org.mockito.Mockito.never())
+          .complete(
+              org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(),
+              org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.any());
+    } finally {
+      if (previous == null) System.clearProperty("labflow.eval.maxCostCny");
+      else System.setProperty("labflow.eval.maxCostCny", previous);
+    }
+  }
 }

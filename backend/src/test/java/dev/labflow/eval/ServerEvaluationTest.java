@@ -58,6 +58,7 @@ class ServerEvaluationTest {
       initial = json.readTree(stream);
     }
     EvaluationRunner.validateSuite(suite);
+    var budget = EvaluationSpendBudget.configured();
     var selected =
         new HashSet<>(List.of(System.getProperty("labflow.eval.cases", "N01,R01,C03").split(",")));
     var known = new HashSet<String>();
@@ -86,13 +87,19 @@ class ServerEvaluationTest {
                 "Actual model through loopback API; owned synthetic projects only. Refuse/clarify"
                     + " rules require semantic review.");
     var rows = report.putArray("cases");
+    var skipped = report.putArray("skipped_by_budget");
     var allowed = new HashSet<String>();
     var catalog = request("GET", "/figure-tools/catalog", null);
     for (String key : List.of("tools", "read_tools"))
       catalog.path(key).forEach(t -> allowed.add(t.path("name").asText()));
     for (var item : suite.path("cases")) {
       if (!selected.contains(item.path("id").asText())) continue;
+      if (!budget.canStartCase()) {
+        skipped.add(item.path("id").asText());
+        continue;
+      }
       var row = runCase(item, suite, (ObjectNode) initial.deepCopy(), allowed);
+      budget.record(row);
       rows.add(row);
       if (row.has("prompt_version")) report.set("prompt_version", row.path("prompt_version"));
       if (row.has("catalog_hash")) report.set("catalog_hash", row.path("catalog_hash"));
@@ -105,6 +112,8 @@ class ServerEvaluationTest {
           row.path("reason_code").asText());
     }
     report.set("summary", EvaluationRunner.summarize(json, rows));
+    report.put("completion", skipped.isEmpty() ? "complete" : "budget_limited");
+    report.set("cost", budget.report(json, skipped.size()));
     report.put("finished_at", Instant.now().toString());
     var output =
         Path.of(System.getProperty("labflow.eval.output", "target/agent-eval/live-server"))
@@ -173,6 +182,8 @@ class ServerEvaluationTest {
       if (Set.of("queued", "running").contains(result.path("status").asText()))
         result = request("POST", path + "/" + run + "/cancel", json.createObjectNode());
       var audit = request("GET", path + "/" + run + "/audit", null);
+      row.put("usage_complete", audit.path("usage_complete").asBoolean());
+      row.set("tokens", result.path("tokens"));
       var lintInput =
           json.createObjectNode()
               .put("protocol_version", 1)
@@ -206,7 +217,9 @@ class ServerEvaluationTest {
           "verdict",
           !row.path("mechanical_pass").asBoolean()
               ? "FAIL"
-              : row.path("semantic_review_required").asBoolean() ? "REVIEW" : "PASS");
+              : !row.path("efficiency_pass").asBoolean()
+                  ? "SLOW"
+                  : row.path("semantic_review_required").asBoolean() ? "REVIEW" : "PASS");
       for (String key :
           List.of(
               "run_id",

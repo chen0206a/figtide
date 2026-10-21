@@ -16,20 +16,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  * CLI via Maven/JUnit; absent from the production JAR. Exercises the actual Java harness and DB.
  */
 final class EvaluationRunner {
-  /**
-   * Hard ceiling for one live run. Prices are a worst-case placeholder, so the ceiling errs on the
-   * safe side; override with -Dlabflow.eval.maxCostCny / -Dlabflow.eval.pricePerMillionCny.
-   */
-  private static final double MAX_COST_CNY =
-      Double.parseDouble(System.getProperty("labflow.eval.maxCostCny", "6"));
-
-  private static final double PRICE_PER_MILLION_CNY =
-      Double.parseDouble(System.getProperty("labflow.eval.pricePerMillionCny", "8"));
-
-  private static double estimateCny(long tokens) {
-    return tokens / 1_000_000.0 * PRICE_PER_MILLION_CNY;
-  }
-
   private final ObjectMapper json;
   private final WorkspaceService workspace;
   private final FigureToolService figures;
@@ -66,6 +52,7 @@ final class EvaluationRunner {
     if (mode.equals("live") && (live == null || !live.info().available()))
       throw new IllegalArgumentException(
           "Live evaluation requires an explicitly configured provider");
+    var budget = mode.equals("live") ? EvaluationSpendBudget.configured() : null;
     Set<String> known = new HashSet<>();
     suite.path("cases").forEach(c -> known.add(c.path("id").asText()));
     if (!known.containsAll(selected))
@@ -112,15 +99,14 @@ final class EvaluationRunner {
                     + " Refuse/clarify live results require human review.");
     var rows = report.putArray("cases");
     var skipped = report.putArray("skipped_by_budget");
-    long spentTokens = 0;
     for (var item : suite.path("cases")) {
       if (!selected.isEmpty() && !selected.contains(item.path("id").asText())) continue;
-      if (mode.equals("live") && estimateCny(spentTokens) >= MAX_COST_CNY) {
+      if (budget != null && !budget.canStartCase()) {
         skipped.add(item.path("id").asText());
         continue;
       }
       var row = evaluate(item, suite, mode, live);
-      spentTokens += row.path("tokens").asLong();
+      if (budget != null) budget.record(row);
       rows.add(row);
       if (!report.has("catalog_hash"))
         report.put("catalog_hash", row.path("catalog_hash").asText());
@@ -132,14 +118,8 @@ final class EvaluationRunner {
           row.path("steps").asInt());
     }
     report.put("finished_at", Instant.now().toString());
-    report
-        .putObject("cost")
-        .put("ceiling_cny", MAX_COST_CNY)
-        .put("worst_case_price_per_million_cny", PRICE_PER_MILLION_CNY)
-        .put("spent_tokens", spentTokens)
-        .put("estimated_cny", estimateCny(spentTokens))
-        .put("skipped_cases", skipped.size())
-        .put("note", "Worst-case token pricing; the provider does not split prompt/completion here.");
+    report.put("completion", skipped.isEmpty() ? "complete" : "budget_limited");
+    if (budget != null) report.set("cost", budget.report(json, skipped.size()));
     report.set("summary", summarize(json, rows));
     if (baseline != null) {
       report.set("comparison", compare(report, baseline));
@@ -220,6 +200,8 @@ final class EvaluationRunner {
             json.valueToTree(harness.agent.start(project, request)).path("run_id").asText();
         JsonNode result = await(harness.agent, project, run);
         var record = audit.detail(project, run);
+        row.put("usage_complete", record.path("usage_complete").asBoolean());
+        row.set("tokens", result.path("tokens"));
         var envelope = request.deepCopy();
         envelope.remove(
             List.of("prompt", "share_metadata", "max_steps", "max_tokens", "timeout_seconds"));
@@ -536,17 +518,23 @@ final class EvaluationRunner {
                   java.util.Locale.ROOT, "%.2f", report.at("/cost/estimated_cny").asDouble()))
           .append("** for ")
           .append(report.at("/cost/spent_tokens").asLong())
-          .append(" tokens at the worst-case price ")
+          .append(" reported tokens; configured estimate price ")
           .append(report.at("/cost/worst_case_price_per_million_cny").asDouble())
           .append(" CNY per million")
           .append(
               report.at("/cost/skipped_cases").asInt() > 0
                   ? "; **" + report.at("/cost/skipped_cases").asInt() + " cases skipped by budget**"
                   : "")
-          .append(".\n\n");
+          .append(". ")
+          .append(report.at("/cost/note").asText())
+          .append("\n\n");
+    if (report.has("skipped_by_budget") && !report.path("skipped_by_budget").isEmpty())
+      text.append("Budget-limited run; not all selected cases were evaluated. Skipped: ")
+          .append(report.path("skipped_by_budget"))
+          .append("\n\n");
     text.append(
-            "| Case | Category | Verdict | Steps | Tokens | ms | Failed checks |\n"
-                + "|---|---|---|---:|---:|---:|---|\n");
+        "| Case | Category | Verdict | Steps | Tokens | ms | Failed checks |\n"
+            + "|---|---|---|---:|---:|---:|---|\n");
     for (var row : report.path("cases")) {
       var failed = new ArrayList<String>();
       row.path("checks")

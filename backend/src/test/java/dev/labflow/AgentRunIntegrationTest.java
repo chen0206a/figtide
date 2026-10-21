@@ -230,10 +230,97 @@ class AgentRunIntegrationTest {
     request.put("max_tokens", 2000);
     result = await(start().path("run_id").asText());
     assertEquals("incomplete", result.path("status").asText());
-    // The harness must tell the model to land a minimal proposal before the budget runs out,
-    // instead of silently repeating clarifying questions until it dies.
+    // A notice is still traced when there is not enough input budget to call the provider.
     assertTrue(result.toString().contains("budget_notice"), result.toString());
     verify(provider, never()).complete(any(), any(), anyInt(), any());
+  }
+
+  private int inputCost(JsonNode messages, JsonNode tools) {
+    return messages.toString().getBytes(StandardCharsets.UTF_8).length
+        + 64
+        + tools.toString().getBytes(StandardCharsets.UTF_8).length
+        + 64
+        + 256;
+  }
+
+  @Test
+  void budgetNoticeIsIncludedInPreflightAndCannotOverallocateTheRequest() throws Exception {
+    var base = new AtomicInteger();
+    doAnswer(
+            inv -> {
+              base.set(inputCost(inv.getArgument(0), inv.getArgument(1)));
+              return reply(null, "ok");
+            })
+        .when(provider)
+        .complete(any(), any(), anyInt(), any());
+    request.put("max_tokens", 60000);
+    await(start().path("run_id").asText());
+    clearInvocations(provider);
+    request.put("max_tokens", base.get() + 128);
+    var result = await(start().path("run_id").asText());
+    assertEquals("incomplete", result.path("status").asText());
+    assertFalse(result.has("proposal"));
+    verify(provider, never()).complete(any(), any(), anyInt(), any());
+  }
+
+  @Test
+  void validatedCandidateUsesAnAffordableTextOnlyClosingRound() throws Exception {
+    var n = new AtomicInteger();
+    var charged = new java.util.concurrent.atomic.AtomicLong();
+    request.put("max_tokens", 20000);
+    doAnswer(
+            inv -> {
+              JsonNode messages = inv.getArgument(0), tools = inv.getArgument(1);
+              int cost = inputCost(messages, tools);
+              assertTrue(charged.get() + cost + (int) inv.getArgument(2) <= 20000);
+              ModelProvider.Reply response;
+              if (n.getAndIncrement() == 0) {
+                assertFalse(tools.isEmpty());
+                response = reply("[" + call("edit", "set_style", "{\"fontSize\":18}") + "]", "");
+              } else {
+                assertTrue(tools.isEmpty(), "Closing round exposes no mutation tools");
+                assertTrue(messages.toString().contains("必要的澄清仍需提出"));
+                response = reply(null, "字号18的候选已校验，请确认后应用。");
+              }
+              charged.addAndGet(
+                  cost
+                      + response.message().toString().getBytes(StandardCharsets.UTF_8).length
+                      + 64);
+              return response;
+            })
+        .when(provider)
+        .complete(any(), any(), anyInt(), any());
+    var result = await(start().path("run_id").asText());
+    assertEquals("proposed", result.path("status").asText());
+    assertEquals(2, result.path("steps").asInt());
+    assertEquals(18, result.at("/proposal/config/style/fontSize").asInt());
+    assertEquals(1, result.at("/proposal/operations").size());
+    assertTrue(result.path("budget_used").asLong() <= 20000);
+    assertEquals(1, workspace.versions(project, chart).size());
+  }
+
+  @Test
+  void budgetGuidancePreservesClarificationAndRejectsUnexpectedClosingTools() throws Exception {
+    request.put("max_tokens", 20000).put("prompt", "把范围改为0到1");
+    doAnswer(
+            inv -> {
+              String messages = inv.getArgument(0).toString();
+              assertTrue(messages.contains("信息不足仍应追问"));
+              assertFalse(messages.contains("不要再追问"));
+              return reply(null, "请问要调整 X 轴还是 Y 轴？");
+            })
+        .when(provider)
+        .complete(any(), any(), anyInt(), any());
+    var result = await(start().path("run_id").asText());
+    assertEquals("answered", result.path("status").asText());
+    assertFalse(result.has("proposal"));
+    doReturn(reply("[" + call("edit", "set_style", "{\"fontSize\":18}") + "]", ""))
+        .when(provider)
+        .complete(any(), any(), anyInt(), any());
+    result = await(start().path("run_id").asText());
+    assertEquals("incomplete", result.path("status").asText());
+    assertFalse(result.has("proposal"));
+    assertEquals(1, workspace.versions(project, chart).size());
   }
 
   @Test

@@ -176,7 +176,7 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
     reopened.getByRole("heading", { name: "已接受", exact: true }),
   ).toBeVisible();
   await expect(reopened.getByLabel("历史运行详情")).toContainText(
-    "figure-assistant-v3",
+    "figure-assistant-v5",
   );
   await reopened
     .getByText("第 1 步 · 文字与字体 · 调用", { exact: true })

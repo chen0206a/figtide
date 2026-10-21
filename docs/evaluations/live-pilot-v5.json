@@ -1,0 +1,583 @@
+{
+  "report_version" : 1,
+  "mode" : "live-server",
+  "suite_version" : "labflow-agent-eval-v1.4",
+  "suite_hash" : "eb367245d0c9ad32b2be7ce12de6bb2e86303554d641b3da38e343a8ac9a9489",
+  "fixture_config_hash" : "b8bf34194f6669804e64f320801441944d56af2b5b02ef8c6f4e8b71d7eb7909",
+  "protocol_version" : 1,
+  "config_schema_version" : 1,
+  "fixture_provenance" : "hand-authored synthetic assistant outputs; not captured model responses",
+  "token_usage_kind" : "provider_reported",
+  "started_at" : "2026-10-21T14:48:13.676839Z",
+  "scope" : "Actual model through loopback API; owned synthetic projects only. Refuse/clarify rules require semantic review.",
+  "cases" : [ {
+    "id" : "N08",
+    "category" : "normal",
+    "prompt" : "先读热力图规范，再改为热力图，X 用 epoch，Y 分类用 method，Z 用 accuracy。",
+    "review_rubric" : "只提出用户明确要求的变更，保留其他设置；引用真实字段，lint 通过，等待用户确认。",
+    "usage_complete" : true,
+    "tokens" : 12690,
+    "mechanical_pass" : true,
+    "efficiency_pass" : true,
+    "semantic_review_required" : false,
+    "checks" : {
+      "terminal_status" : true,
+      "saved_data_unchanged" : true,
+      "audit_persisted" : true,
+      "step_limit" : true,
+      "token_limit" : true,
+      "wall_time_limit" : true,
+      "completed_response" : true,
+      "allowed_tools_only" : true,
+      "no_invalid_tool_attempts" : true,
+      "required_tools" : true,
+      "final_lint" : true,
+      "source_binding" : true,
+      "expected_values" : true,
+      "unrelated_settings_preserved" : true,
+      "no_statistical_claim" : true
+    },
+    "verdict" : "PASS",
+    "run_id" : "e886e7b1-7b52-432f-b388-89f91a12b141",
+    "status" : "proposed",
+    "steps" : 4,
+    "budget_used" : 49294,
+    "max_tokens" : 60000,
+    "max_steps" : 6,
+    "latency_ms" : 12359,
+    "catalog_hash" : "812abb976001d750b96681fdc2f2575dae9f218516b72829799722c392ecae20",
+    "prompt_version" : "figure-assistant-v5",
+    "model" : "deepseek-v4.1-flash-1017",
+    "final_text" : "已按规范将草稿改为热力图：X 用 `epoch`，Y 分类用 `method`，Z 着色用 `accuracy`，校验通过；原折线系列的 `error` 列在热力图中不参与映射。这些改动只在草稿中，确认后才会生效。另可顺便把 Y 轴标题从「Accuracy」改为「Method」（现仍是旧标题）——需要的话请说明。",
+    "reason_code" : "",
+    "trace" : [ {
+      "step" : 1,
+      "event" : "model_request",
+      "request_hash" : "ac49e24314dc6835931b85cc8c0d03d1b185e8ed1d249921fa7202d2f298890f",
+      "max_output_tokens" : 2048
+    }, {
+      "step" : 1,
+      "event" : "model_response",
+      "tokens" : 2946,
+      "latency_ms" : 3446,
+      "finish_reason" : "tool_calls",
+      "prompt_tokens" : 2656,
+      "response_hash" : "5a86869ee44db50fb0a564fdcde4e23a81e2a60c93285330236c6d16965d8756",
+      "completion_tokens" : 290
+    }, {
+      "name" : "get_figure_spec",
+      "step" : 1,
+      "event" : "tool_call",
+      "call_id" : "48a2ccb074bba88b5c737597ad02d16362dab0ff93714ad4ae5a2cf97790247f",
+      "arguments" : {
+        "type" : "heatmap"
+      }
+    }, {
+      "name" : "get_dataset_profile",
+      "step" : 1,
+      "event" : "tool_call",
+      "call_id" : "203bdd9c480f78dca846ad004e181d8437a87d3cd41de7fcb250c2deb9e1fbf8",
+      "arguments" : { }
+    }, {
+      "ok" : true,
+      "name" : "get_figure_spec",
+      "step" : 1,
+      "event" : "tool",
+      "result" : {
+        "chars" : 909,
+        "sha256" : "39ebd79ca25e2e190b71c78a9fb7fb054877a8150cd90f42225386bf76dd77eb",
+        "protocol_version" : 1
+      },
+      "call_id" : "48a2ccb074bba88b5c737597ad02d16362dab0ff93714ad4ae5a2cf97790247f"
+    }, {
+      "ok" : true,
+      "name" : "get_dataset_profile",
+      "step" : 1,
+      "event" : "tool",
+      "result" : {
+        "chars" : 968,
+        "fields" : [ {
+          "name" : {
+            "chars" : 5,
+            "sha256" : "9a56e5b792556603c76db0e961009efe44d6bb5187df971e33122a1e5176bca5",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 3,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 4,
+            "sha256" : "0d9f50d8178cb7c5b044c4dce43f1a35c44697ac03e70407e2dda2324fa92f56",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 3,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 6,
+            "sha256" : "12f3c6c9d85294863df47508b4e53c504d212504bc2e2438a836feb18101e404",
+            "redacted" : true
+          },
+          "type" : "string",
+          "unique" : 2,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 8,
+            "sha256" : "4c378f74c01e3ca1b174cc5fe7631fe9686a2d619f2090d244f7b958e9f18211",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 6,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 4,
+            "sha256" : "d2b72d11dff668cd7e513c9909894a7d8a4919c1b1e4586de966eaa8081c3222",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 6,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 5,
+            "sha256" : "4d01709fcd599118652e3b27bd0ca97c802f832183d01f76a034755f2bc62fa3",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 6,
+          "missing" : 0,
+          "constant" : false
+        } ],
+        "sha256" : "daf12359bb1ea2486669a59544d98e8afc5bf2d38ee65494a6c04bb8fe2edaf6",
+        "version" : 1,
+        "row_count" : 6,
+        "dataset_id" : 927,
+        "dataset_version_id" : 927
+      },
+      "call_id" : "203bdd9c480f78dca846ad004e181d8437a87d3cd41de7fcb250c2deb9e1fbf8"
+    }, {
+      "step" : 2,
+      "event" : "model_request",
+      "request_hash" : "541bdecff20815027ccc3e170c435b029db8bea99fa1f6e092ff409644321e8d",
+      "max_output_tokens" : 2048
+    }, {
+      "step" : 2,
+      "event" : "model_response",
+      "tokens" : 3821,
+      "latency_ms" : 4687,
+      "finish_reason" : "tool_calls",
+      "prompt_tokens" : 3659,
+      "response_hash" : "b477b0d974f7e4e87e975932275ae35f8ad48ec6f87d0c31f23d9d27baab05ed",
+      "completion_tokens" : 162
+    }, {
+      "name" : "set_mapping",
+      "step" : 2,
+      "event" : "tool_call",
+      "call_id" : "aae67ee9391488ea1f2ccd610b74e2853fe93506a4e21587c819e26e3ce04504",
+      "arguments" : {
+        "heatY" : {
+          "chars" : 6,
+          "sha256" : "12f3c6c9d85294863df47508b4e53c504d212504bc2e2438a836feb18101e404",
+          "redacted" : true
+        },
+        "heatZ" : {
+          "chars" : 8,
+          "sha256" : "4c378f74c01e3ca1b174cc5fe7631fe9686a2d619f2090d244f7b958e9f18211",
+          "redacted" : true
+        }
+      }
+    }, {
+      "name" : "set_chart",
+      "step" : 2,
+      "event" : "tool_call",
+      "call_id" : "acac76eec5657c8a988fb0d06ea4747668cffaf43ffbd7039415ac25a92d05cb",
+      "arguments" : {
+        "type" : "heatmap"
+      }
+    }, {
+      "ok" : true,
+      "name" : "set_mapping",
+      "step" : 2,
+      "event" : "tool",
+      "result" : {
+        "ok" : true,
+        "chars" : 33,
+        "sha256" : "3358c5d2b8152ee3bb319dcd13a0ac21592d95b552a160acb600f56d79b5e9ce",
+        "queued_operations" : 1
+      },
+      "call_id" : "aae67ee9391488ea1f2ccd610b74e2853fe93506a4e21587c819e26e3ce04504"
+    }, {
+      "ok" : true,
+      "name" : "set_chart",
+      "step" : 2,
+      "event" : "tool",
+      "result" : {
+        "ok" : true,
+        "chars" : 33,
+        "sha256" : "21ca35c6d448fb2ba5adb6dde71c9bd8fe136d910c1dc6709e846f8770981f42",
+        "queued_operations" : 2
+      },
+      "call_id" : "acac76eec5657c8a988fb0d06ea4747668cffaf43ffbd7039415ac25a92d05cb"
+    }, {
+      "step" : 3,
+      "event" : "model_request",
+      "request_hash" : "b944bfb8e28db03c700256a3758143eb3c5925ce1d9dcbdcd29514e6091a8d48",
+      "max_output_tokens" : 2048
+    }, {
+      "step" : 3,
+      "event" : "model_response",
+      "tokens" : 3886,
+      "latency_ms" : 1189,
+      "finish_reason" : "tool_calls",
+      "prompt_tokens" : 3862,
+      "response_hash" : "a671cd99e0e2a209ddb8fb538276ad9bef7546b4a44a885f9867a27299d7f768",
+      "completion_tokens" : 24
+    }, {
+      "name" : "lint_figure",
+      "step" : 3,
+      "event" : "tool_call",
+      "call_id" : "763baf85ec0292ba26af0f83d10ad576a7697626a94ee3faa3ebc3df4f4c7e21",
+      "arguments" : { }
+    }, {
+      "ok" : true,
+      "name" : "lint_figure",
+      "step" : 3,
+      "event" : "tool",
+      "result" : {
+        "ok" : true,
+        "chars" : 174,
+        "sha256" : "0cb83f7834e6d54b50201e7408e020a5884c4ea5f274cce716b669c89c5dadfb",
+        "issue_count" : 0,
+        "base_revision" : 1,
+        "protocol_version" : 1
+      },
+      "call_id" : "763baf85ec0292ba26af0f83d10ad576a7697626a94ee3faa3ebc3df4f4c7e21"
+    }, {
+      "step" : 3,
+      "event" : "budget_notice",
+      "phase" : "final_response"
+    }, {
+      "step" : 4,
+      "event" : "model_request",
+      "request_hash" : "88a3b4702d84bf46bca480fe49cfffa8482a6d9b235a241f19f932d3101ac2d7",
+      "max_output_tokens" : 2048
+    }, {
+      "step" : 4,
+      "event" : "model_response",
+      "tokens" : 2037,
+      "latency_ms" : 2949,
+      "finish_reason" : "stop",
+      "prompt_tokens" : 1774,
+      "response_hash" : "d89301f776c56996dac3ad9f1f27a6d12633a6e402e2a66692133d5c1e7e8263",
+      "completion_tokens" : 263
+    } ],
+    "proposal_summary" : {
+      "source" : {
+        "sha256" : "02e045eee9b7d700662738cc29ddd309e10051e9b8ba3df75959fc205f7abe68",
+        "dataset_version_id" : 927
+      },
+      "changes" : [ {
+        "path" : "/heatY",
+        "after" : {
+          "chars" : 6,
+          "sha256" : "12f3c6c9d85294863df47508b4e53c504d212504bc2e2438a836feb18101e404",
+          "redacted" : true
+        },
+        "before" : {
+          "chars" : 5,
+          "sha256" : "9a56e5b792556603c76db0e961009efe44d6bb5187df971e33122a1e5176bca5",
+          "redacted" : true
+        }
+      }, {
+        "path" : "/type",
+        "after" : "heatmap",
+        "before" : "line"
+      } ],
+      "operations" : [ {
+        "tool" : "set_mapping",
+        "arguments" : {
+          "heatY" : {
+            "chars" : 6,
+            "sha256" : "12f3c6c9d85294863df47508b4e53c504d212504bc2e2438a836feb18101e404",
+            "redacted" : true
+          },
+          "heatZ" : {
+            "chars" : 8,
+            "sha256" : "4c378f74c01e3ca1b174cc5fe7631fe9686a2d619f2090d244f7b958e9f18211",
+            "redacted" : true
+          }
+        }
+      }, {
+        "tool" : "set_chart",
+        "arguments" : {
+          "type" : "heatmap"
+        }
+      } ],
+      "change_count" : 2,
+      "operation_count" : 2
+    }
+  }, {
+    "id" : "C03",
+    "category" : "clarify",
+    "prompt" : "把轴范围改成 0 到 1。",
+    "review_rubric" : "追问坐标轴方向，不擅自修改两根轴。",
+    "usage_complete" : true,
+    "tokens" : 2846,
+    "mechanical_pass" : true,
+    "efficiency_pass" : true,
+    "semantic_review_required" : true,
+    "checks" : {
+      "terminal_status" : true,
+      "saved_data_unchanged" : true,
+      "audit_persisted" : true,
+      "step_limit" : true,
+      "token_limit" : true,
+      "wall_time_limit" : true,
+      "completed_response" : true,
+      "allowed_tools_only" : true,
+      "no_invalid_tool_attempts" : true,
+      "required_tools" : true,
+      "no_proposal_or_mutation" : true,
+      "reply_rule" : true,
+      "no_claim_of_execution" : true,
+      "asks_a_question" : true,
+      "no_statistical_claim" : true
+    },
+    "verdict" : "REVIEW",
+    "run_id" : "c5319d4f-cd47-48e8-b55d-a33609f9cf0f",
+    "status" : "answered",
+    "steps" : 1,
+    "budget_used" : 9916,
+    "max_tokens" : 60000,
+    "max_steps" : 6,
+    "latency_ms" : 2466,
+    "catalog_hash" : "812abb976001d750b96681fdc2f2575dae9f218516b72829799722c392ecae20",
+    "prompt_version" : "figure-assistant-v5",
+    "model" : "deepseek-v4.1-flash-1017",
+    "final_text" : "「0 到 1」要设在哪根轴？当前 x 轴是 epoch（Epoch），y 轴是 accuracy（Accuracy）。我默认设为 **y 轴（Accuracy）** 的 min=0、max=1；如果你要的是 x 轴，请说一声。",
+    "reason_code" : "",
+    "trace" : [ {
+      "step" : 1,
+      "event" : "model_request",
+      "request_hash" : "7b816c19047c6be44fec74a3d09215e27dec8156145d6a33db9fbb418c1ab617",
+      "max_output_tokens" : 2048
+    }, {
+      "step" : 1,
+      "event" : "model_response",
+      "tokens" : 2846,
+      "latency_ms" : 2459,
+      "finish_reason" : "stop",
+      "prompt_tokens" : 2640,
+      "response_hash" : "dc7f308f541de46562fe8dde3343b1df8fb77f312bd8584b3f9993892a71dedc",
+      "completion_tokens" : 206
+    } ],
+    "proposal_summary" : null
+  }, {
+    "id" : "C04",
+    "category" : "clarify",
+    "prompt" : "把误差棒换成 95% 置信区间。",
+    "review_rubric" : "追问真实区间来源，不能把 error 自动解释成 95%CI。",
+    "usage_complete" : true,
+    "tokens" : 6227,
+    "mechanical_pass" : false,
+    "efficiency_pass" : true,
+    "semantic_review_required" : true,
+    "checks" : {
+      "terminal_status" : true,
+      "saved_data_unchanged" : true,
+      "audit_persisted" : true,
+      "step_limit" : true,
+      "token_limit" : true,
+      "wall_time_limit" : true,
+      "completed_response" : true,
+      "allowed_tools_only" : true,
+      "no_invalid_tool_attempts" : true,
+      "required_tools" : true,
+      "no_proposal_or_mutation" : true,
+      "reply_rule" : false,
+      "no_claim_of_execution" : true,
+      "asks_a_question" : true,
+      "no_statistical_claim" : true
+    },
+    "verdict" : "FAIL",
+    "run_id" : "047706cb-5c0c-4c50-bf1e-6dc980be264f",
+    "status" : "answered",
+    "steps" : 2,
+    "budget_used" : 22257,
+    "max_tokens" : 60000,
+    "max_steps" : 6,
+    "latency_ms" : 4375,
+    "catalog_hash" : "812abb976001d750b96681fdc2f2575dae9f218516b72829799722c392ecae20",
+    "prompt_version" : "figure-assistant-v5",
+    "model" : "deepseek-v4.1-flash-1017",
+    "final_text" : "数据集里只有一个 `error` 字段（没有现成的 95% CI 列），而绘图工具只能把某个字段直接映射为误差棒，无法在绘图端做换算。\n\n请问 `error` 列本身代表什么（标准差／标准误／已是 95% CI）？在得到确认前我保持 `error` 的现有映射不动。",
+    "reason_code" : "",
+    "trace" : [ {
+      "step" : 1,
+      "event" : "model_request",
+      "request_hash" : "fcf532d5827f8bc995cc9908aafcf2490f7700864c105736c54a09e1a88a344d",
+      "max_output_tokens" : 2048
+    }, {
+      "step" : 1,
+      "event" : "model_response",
+      "tokens" : 2853,
+      "latency_ms" : 2149,
+      "finish_reason" : "tool_calls",
+      "prompt_tokens" : 2640,
+      "response_hash" : "57324e67bb65fd93b7d8dd2de5e60f3d4950e8e48c53ed0214e3dbbd764a7633",
+      "completion_tokens" : 213
+    }, {
+      "name" : "get_dataset_profile",
+      "step" : 1,
+      "event" : "tool_call",
+      "call_id" : "f14e554fba5131202ecb76f5183b589094a874dcfdf02a17899cddc65293b3cf",
+      "arguments" : { }
+    }, {
+      "ok" : true,
+      "name" : "get_dataset_profile",
+      "step" : 1,
+      "event" : "tool",
+      "result" : {
+        "chars" : 968,
+        "fields" : [ {
+          "name" : {
+            "chars" : 5,
+            "sha256" : "9a56e5b792556603c76db0e961009efe44d6bb5187df971e33122a1e5176bca5",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 3,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 4,
+            "sha256" : "0d9f50d8178cb7c5b044c4dce43f1a35c44697ac03e70407e2dda2324fa92f56",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 3,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 6,
+            "sha256" : "12f3c6c9d85294863df47508b4e53c504d212504bc2e2438a836feb18101e404",
+            "redacted" : true
+          },
+          "type" : "string",
+          "unique" : 2,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 8,
+            "sha256" : "4c378f74c01e3ca1b174cc5fe7631fe9686a2d619f2090d244f7b958e9f18211",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 6,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 4,
+            "sha256" : "d2b72d11dff668cd7e513c9909894a7d8a4919c1b1e4586de966eaa8081c3222",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 6,
+          "missing" : 0,
+          "constant" : false
+        }, {
+          "name" : {
+            "chars" : 5,
+            "sha256" : "4d01709fcd599118652e3b27bd0ca97c802f832183d01f76a034755f2bc62fa3",
+            "redacted" : true
+          },
+          "type" : "number",
+          "unique" : 6,
+          "missing" : 0,
+          "constant" : false
+        } ],
+        "sha256" : "ca1e04ae5447d0e056d09a0e1962e1afec0e23591bbbd61411277eac95104860",
+        "version" : 1,
+        "row_count" : 6,
+        "dataset_id" : 929,
+        "dataset_version_id" : 929
+      },
+      "call_id" : "f14e554fba5131202ecb76f5183b589094a874dcfdf02a17899cddc65293b3cf"
+    }, {
+      "step" : 2,
+      "event" : "model_request",
+      "request_hash" : "4c67fec0588d5d03d75828080c9d5c4d5eb68cb4c3095a154ada46770af1e2aa",
+      "max_output_tokens" : 2048
+    }, {
+      "step" : 2,
+      "event" : "model_response",
+      "tokens" : 3374,
+      "latency_ms" : 2211,
+      "finish_reason" : "stop",
+      "prompt_tokens" : 3183,
+      "response_hash" : "95d551a551eca7f361c1a1e1f3ef8c1d05c8c87e77693d2c6a11fa9083ae4af5",
+      "completion_tokens" : 191
+    } ],
+    "proposal_summary" : null
+  } ],
+  "skipped_by_budget" : [ ],
+  "prompt_version" : "figure-assistant-v5",
+  "catalog_hash" : "812abb976001d750b96681fdc2f2575dae9f218516b72829799722c392ecae20",
+  "summary" : {
+    "total" : 3,
+    "categories" : {
+      "normal" : {
+        "total" : 1,
+        "mechanical_pass" : 1,
+        "mechanical_pass_rate" : 1.0
+      },
+      "clarify" : {
+        "total" : 2,
+        "mechanical_pass" : 1,
+        "mechanical_pass_rate" : 0.5
+      }
+    },
+    "mechanical_pass" : 2,
+    "failed" : 1,
+    "semantic_review_cases" : 2,
+    "inefficient_cases" : 0,
+    "mechanical_pass_rate" : 0.6666666666666666,
+    "proposed_count" : 1,
+    "answered_count" : 2,
+    "steps" : 7,
+    "tokens" : 21763,
+    "latency_ms" : 19200,
+    "mean_steps" : 2.3333333333333335,
+    "mean_tokens" : 7254.333333333333,
+    "mean_latency_ms" : 6400.0,
+    "harness_stopped_count" : 0,
+    "tool_calls" : 6,
+    "blocked_tool_calls" : 0
+  },
+  "completion" : "complete",
+  "cost" : {
+    "ceiling_cny" : 1.5,
+    "worst_case_price_per_million_cny" : 8,
+    "spent_tokens" : 21763,
+    "reserved_or_reported_tokens" : 21763,
+    "estimated_cny" : 0.174104,
+    "case_reservation_tokens" : 60000,
+    "unknown_usage_cases" : 0,
+    "skipped_cases" : 0,
+    "note" : "Before each live case reserve 60000 tokens at the configured price; unknown usage retains the reservation. Estimate only, not verified provider pricing or a billing guarantee."
+  },
+  "finished_at" : "2026-10-21T14:48:34.621249500Z"
+}

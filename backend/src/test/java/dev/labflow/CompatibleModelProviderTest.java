@@ -79,6 +79,31 @@ class CompatibleModelProviderTest {
   }
 
   @Test
+  void textOnlyClosingRequestOmitsEmptyToolsAndToolChoice() throws Exception {
+    var received = new CompletableFuture<JsonNode>();
+    server.createContext(
+        "/chat/completions",
+        exchange -> {
+          received.complete(json.readTree(exchange.getRequestBody()));
+          byte[] bytes =
+              "{\"choices\":[{\"finish_reason\":\"stop\",\"message\":{\"role\":\"assistant\",\"content\":\"请确认候选\"}}],\"usage\":{\"prompt_tokens\":12,\"completion_tokens\":3}}"
+                  .getBytes(StandardCharsets.UTF_8);
+          exchange.sendResponseHeaders(200, bytes.length);
+          exchange.getResponseBody().write(bytes);
+          exchange.close();
+        });
+    server.start();
+    var provider = new CompatibleModelProvider(json, base, "fixture", "");
+    var reply =
+        provider.complete(
+            json.createArrayNode(), json.createArrayNode(), 128, Duration.ofSeconds(2));
+    var request = received.get(2, TimeUnit.SECONDS);
+    assertFalse(request.has("tools"));
+    assertFalse(request.has("tool_choice"));
+    assertEquals("stop", reply.finishReason());
+  }
+
+  @Test
   void timeoutAlsoBoundsResponseBodyConsumption() throws Exception {
     server.createContext(
         "/chat/completions",

@@ -1,8 +1,24 @@
 # 第一阶段验收记录
 
+## 最新增量：DS 核查问题修复（2026-10-21，prompt v5 / suite v1.5）
+
+Java最终全量 **138 项运行、137 通过、1 项跳过，0 失败/错误，20.740秒**；跳过项为必须显式启用的真实服务评测入口。新增10项回归覆盖通知成本、低预算收尾、保留追问、违规工具调用、无工具HTTP信封、统计断言漏检、CI别名、费用预留与非法参数。前端 **23文件/142项通过**，TypeScript/Vite构建通过（21.57秒），保留现有大分包提示。完整 Chrome **46/46通过，3.5分钟**，另通过独立JVM强制终止后的审计恢复验收。CI别名最后修改只涉及评分用例与测试，未重复运行已通过的浏览器全量。
+
+修复预算通知未计入成本、最后可用工具轮后缺少收尾、预算提示强制跳过澄清、费用阈值先消费后判断、统计断言被无关礼貌用语豁免，以及浏览器提示词版本断言过期。所有修改仍是候选提案，用户确认前不改画布；应用不等于保存，源文件与既有版本保持不变。
+
+新增两个 live 入口共用的调用前预留；失败且 usage 不明时保留预留，配置金额不是服务商账单保证。显式运行服务入口的零消费反例：预算 0.000001、三条用例全部在创建项目前跳过，报告 `completion:budget_limited / spent_tokens:0`，不是三个通过。新版离线回放 **30/30**，见 [报告](evaluations/replay-v1.5.md) / [JSON](evaluations/replay-v1.5.json)，人工录制及usage不冒充模型采样。
+
+已更新本机8086后端，部署JAR与通过Chrome验收的构建SHA-256一致。复用用户已授权的密钥，仅注入Java子进程环境，未落文件。v5真实小批次 N08/C03/C04 原始机械结果 **2/3**、21763个上报token；热力图通过、轴方向先追问、误差定义也先追问但被旧规则漏识别「95% CI」。已补CI别名离线回归且保留 [原始报告](evaluations/live-pilot-v5.md) / [JSON](evaluations/live-pilot-v5.json)，未改写原始分数或额外收费重跑。
+
+真实小批次前后普通库计数一致：projects107 / charts181 / dataset_versions172 / experiments13 / agent_runs9，临时合成项目与审计按精确归属ID清理，既有数据未删除。部署时发现本地PID记录落后于实际LabFlow进程；核对本项目便携Java路径与JAR命令后修正本地记录，未放宽连接脚本的进程归属守卫。
+
+完整浏览器测试使用专用 `labflow_e2e`，结束清理41个本轮项目；进程重启fixture另按精确ID清理。原始历史公网评测按 JSON 核对为 **prompt v3、27/30、169180个token**，文件名 live-v4 不表示提示词v4；保留 [原始报告](evaluations/live-prompt-v3-2026-10-21.md)及 [JSON](evaluations/live-prompt-v3-2026-10-21.json)，不将补测通过改写成原全量通过。
+
+复现命令：`mvn -B -f backend/pom.xml test`；前端目录 `npm test -- --maxWorkers=2` 与 `npm run build`；根目录 `./scripts/test-agent.ps1 -All`。本次测试日志位于 `.runtime/agent-fixes-*.log`。
+
 ## 最新增量：评测断言加固与真实调用费用闸（2026-10-21，第 1 步）
 
-Java 全量 **127 项运行、0 失败、1 跳过**（`ServerEvaluationTest` 需显式开关），其中评测相关单测/集成 22 项；Vitest **23 文件 / 142 通过**。回放 30/30 机械通过（suite `labflow-agent-eval-v1.3`）。真实调用一次全量 30 条：`deepseek-v4.1-flash-1017`、169,180 token、最坏估算 **¥1.35**（上限 ¥6）；机械通过 26/30。
+Java 全量 **127 项运行、0 失败、1 跳过**（DS 当时记录；随后核查实跑为128项运行/127通过/1跳过），其中评测相关单测/集成 22 项；Vitest **23 文件 / 142 通过**。回放 30/30 机械通过（suite `labflow-agent-eval-v1.3`）。真实调用一次全量 30 条：`deepseek-v4.1-flash-1017`、169,180 token、按当时假设单价估算 **¥1.35**；机械通过 **27/30**（原26/30为笔误）。文件名 live-v4 的提示词实际是 v3；当时费用限制为调用后软阈值。
 
 变更：每条用例加 `expect.limits{max_steps,max_tokens}`，超出记 `SLOW`（与 `mechanical_pass` 分离，报告列 `efficiency_target`）；新增逐句 `no_statistical_claim`（禁止从列名断言标准差/标准误/置信区间）；`reply_rule` 改为逐句匹配，补「没有…权限」「请指明/选定」两类真实说法；`EvaluationRunner` 增加按最坏单价累计的费用闸（`-Dlabflow.eval.maxCostCny` / `-Dlabflow.eval.pricePerMillionCny`），超限停跑并写 `skipped_by_budget`。
 
