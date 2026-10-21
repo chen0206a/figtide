@@ -8,111 +8,6 @@
 .home-shell .launch-aura {
   inset: 0;
 }
-.home-shell .launch-tools {
-  gap: 16px;
-  margin-bottom: 44px;
-}
-.home-shell .launch-tool {
-  --tool-accent: #171717;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-height: 250px;
-  padding: 24px;
-  border: 1px solid #e7e7e7;
-  border-radius: 20px;
-  background: #fff;
-  color: #171717;
-  box-shadow: none;
-  transition:
-    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 200ms,
-    box-shadow 260ms;
-}
-.home-shell .launch-tool:hover {
-  transform: translateY(-4px);
-  border-color: #b8b8b8;
-  box-shadow: 0 10px 26px #2931490b;
-}
-.home-shell .launch-tool:active {
-  transform: translateY(-1px) scale(0.99);
-}
-.home-shell .launch-tool:focus-visible {
-  outline: 3px solid #777;
-  outline-offset: 4px;
-}
-.home-shell .tool-top {
-  width: 100%;
-  margin-bottom: 22px;
-}
-.home-shell .tool-icon {
-  width: 46px;
-  height: 46px;
-  background: #f3f3f3;
-  color: var(--tool-accent);
-  border-radius: 13px;
-}
-.home-shell .tool-index {
-  font: 500 12px var(--font-mono);
-  color: var(--tool-accent);
-  opacity: 0.7;
-}
-.home-shell .launch-tool h2 {
-  font-size: 20px;
-  font-weight: 650;
-  color: inherit;
-  letter-spacing: -0.5px;
-  margin: 0 0 9px;
-}
-.home-shell .launch-tool p {
-  color: #555;
-  font-size: 14px;
-  margin: 0 0 9px;
-  line-height: 1.6;
-}
-.home-shell .launch-tool small {
-  color: #666;
-  font-size: 12px;
-  white-space: normal;
-  line-height: 1.6;
-}
-.home-shell .tool-action {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  margin-top: auto;
-  padding-top: 22px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--tool-accent);
-}
-.home-shell .tool-action .tool-arrow {
-  color: inherit;
-  opacity: 1;
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.home-shell .launch-tool:hover .tool-arrow {
-  transform: translateX(4px);
-}
-.home-shell .tool-blue {
-  --tool-accent: #fff;
-  background: #181818;
-  border-color: #181818;
-  color: #fff;
-}
-.home-shell .tool-blue:hover {
-  border-color: #555;
-}
-.home-shell .tool-blue .tool-icon {
-  background: #ffffff12;
-  color: #fff;
-}
-.home-shell .tool-blue p,
-.home-shell .tool-blue small {
-  color: #c7c7c7;
-}
 /* Homepage gallery: local, attributed reference plates, no external runtime requests. */
 .figure-showcase {
   margin: 14px 0 44px;
@@ -296,12 +191,6 @@
   .home-shell .launch-home {
     padding-inline: 24px;
   }
-  .home-shell .launch-tools {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .home-shell .workspace-columns {
-    grid-template-columns: 1fr;
-  }
   .refined-shell.home-shell .masthead-bar {
     gap: 14px;
     padding-inline: 20px;
@@ -334,12 +223,6 @@
   .home-shell .launch-home {
     padding-inline: 16px;
   }
-  .home-shell .launch-tool {
-    min-height: 230px;
-  }
-  .home-shell .launch-tools {
-    grid-template-columns: 1fr;
-  }
   .home-shell .launch-footer {
     flex-wrap: wrap;
     gap: 12px;
@@ -370,15 +253,6 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .home-shell .launch-tool,
-  .home-shell .tool-action .tool-arrow {
-    transition: none;
-  }
-  .home-shell .launch-tool:hover,
-  .home-shell .launch-tool:active,
-  .home-shell .launch-tool:hover .tool-arrow {
-    transform: none;
-  }
   .showcase-track {
     animation: none;
     transform: none;

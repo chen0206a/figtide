@@ -19,6 +19,7 @@ import {
   ChevronRight,
   HardDrive,
   Layers,
+  Search,
 } from "lucide-react";
 import type { Project } from "../lib/api";
 import { LabFlowMark } from "./LabFlowMark";
@@ -55,8 +56,8 @@ export function HomePage(p: Props) {
   const current = p.projects.find((project) => project.id === p.currentId);
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
-  const [projectLimit, setProjectLimit] = useState(8);
-  const [chartLimit, setChartLimit] = useState(8);
+  const [projectLimit, setProjectLimit] = useState(4);
+  const [chartLimit, setChartLimit] = useState(4);
   const projects = useMemo(
     () =>
       p.projects
@@ -71,22 +72,13 @@ export function HomePage(p: Props) {
     [p.projects, p.currentId, deferredSearch],
   );
   useEffect(() => {
-    setProjectLimit(8);
+    setProjectLimit(4);
   }, [deferredSearch]);
   useEffect(() => {
-    setChartLimit(8);
+    setChartLimit(4);
   }, [p.currentId]);
   const act = (callback: () => void) => (current ? callback() : p.onCreate());
   const actions = [
-    {
-      title: "绘图工作台",
-      desc: "让数据，成为清晰的表达。",
-      detail: "11 种图表 · 模板复用 · 矢量导出",
-      Icon: ChartNoAxesCombined,
-      color: "blue",
-      action: "进入工作台",
-      run: () => act(p.onPlot),
-    },
     {
       title: p.busy ? "正在导入…" : "导入数据",
       desc: "从一份实验结果开始。",
@@ -151,36 +143,70 @@ export function HomePage(p: Props) {
       </section>
       <FigureShowcase />
       <section className="launch-tools" aria-label="功能入口">
-        {actions.map(({ title, desc, detail, Icon, color, action, run }, i) => (
-          <button
-            key={color}
-            className={`launch-tool tool-${color}`}
-            style={{ "--order": i } as CSSProperties}
-            onClick={run}
-            disabled={color === "violet" && p.busy}
-          >
-            <div className="tool-top">
-              <span className="tool-icon">
-                <Icon size={24} strokeWidth={1.6} />
-              </span>
-              <span className="tool-index" aria-hidden="true">
-                0{i + 1}
-              </span>
-            </div>
-            <h2>{title}</h2>
-            <p>{desc}</p>
-            <small>{detail}</small>
-            <span className="tool-action">
-              {color === "violet" && p.busy ? "正在导入…" : action}
-              <ArrowRight className="tool-arrow" size={16} />
+        <button
+          className="launch-tool tool-blue tool-featured"
+          style={{ "--order": 0 } as CSSProperties}
+          onClick={() => act(p.onPlot)}
+          aria-label="绘图工作台：进入工作台"
+        >
+          <div className="featured-top">
+            <span className="featured-label">
+              <ChartNoAxesCombined size={20} />
+              绘图工作台
             </span>
-          </button>
-        ))}
+            <ArrowUpRight size={21} className="featured-corner" />
+          </div>
+          <div className="featured-copy">
+            <h2>
+              让下一次发现，
+              <br />
+              清晰呈现。
+            </h2>
+            <p>11 种图表 · 自由编辑 · 论文级导出</p>
+          </div>
+          <div className="featured-bottom">
+            <span className="featured-context" title={current?.name}>
+              <span className="featured-dot" />
+              <span>{current?.name || "从第一个研究项目开始"}</span>
+            </span>
+            <span className="tool-action">
+              进入工作台
+              <ArrowRight size={16} className="tool-arrow" />
+            </span>
+          </div>
+        </button>
+        <div className="tool-shortcuts">
+          {actions.map(
+            ({ title, desc, detail, Icon, color, action, run }, i) => (
+              <button
+                key={color}
+                className={`launch-tool tool-shortcut tool-${color}`}
+                style={{ "--order": i + 1 } as CSSProperties}
+                onClick={run}
+                disabled={color === "violet" && p.busy}
+                aria-label={`${title}：${action}`}
+                title={detail}
+              >
+                <span className="tool-icon">
+                  <Icon size={22} strokeWidth={1.7} />
+                </span>
+                <span className="shortcut-copy">
+                  <h2>{title}</h2>
+                  <p>{desc}</p>
+                </span>
+                <span className="tool-action">
+                  <span>{action}</span>
+                  <ArrowUpRight className="tool-arrow" size={18} />
+                </span>
+              </button>
+            ),
+          )}
+        </div>
       </section>
       <section className="launch-workspace" aria-label="我的工作区">
         <div className="workspace-heading">
           <div>
-            <span className="workspace-eyebrow">YOUR WORKSPACE</span>
+            <span className="workspace-eyebrow">你的研究空间</span>
             <h2>接着上次的灵感。</h2>
           </div>
           <span className="workspace-summary">
@@ -189,20 +215,21 @@ export function HomePage(p: Props) {
           </span>
         </div>
         <div className="workspace-columns">
-          <section className="workspace-panel">
+          <section className="workspace-panel projects-panel">
             <div className="workspace-panel-head">
               <h3>
                 研究项目 <span>{p.projects.length}</span>
               </h3>
               <button onClick={p.onCreate} aria-label="添加研究项目">
-                <Plus size={17} />
+                <Plus size={15} /> 新建
               </button>
             </div>
-            {p.projects.length > 8 && (
+            {p.projects.length > 4 && (
               <div className="workspace-search">
+                <Search size={16} aria-hidden="true" />
                 <input
                   aria-label="搜索工作区项目"
-                  placeholder="搜索项目名称或简介…"
+                  placeholder="查找你的研究项目…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -222,7 +249,7 @@ export function HomePage(p: Props) {
                         <FolderOpen size={20} />
                       </span>
                       <span className="workspace-project-text">
-                        <strong>{project.name}</strong>
+                        <strong title={project.name}>{project.name}</strong>
                         <small>
                           {project.experiment_count} 个实验<span>·</span>
                           {project.dataset_count} 份数据<span>·</span>
@@ -259,7 +286,7 @@ export function HomePage(p: Props) {
             {projects.length > projectLimit && (
               <button
                 className="workspace-more"
-                onClick={() => setProjectLimit((n) => n + 12)}
+                onClick={() => setProjectLimit((n) => n + 8)}
               >
                 显示更多项目（剩余 {projects.length - projectLimit}）
                 <ChevronRight size={14} />
@@ -275,7 +302,7 @@ export function HomePage(p: Props) {
               </div>
             )}
           </section>
-          <section className="workspace-panel">
+          <section className="workspace-panel recent-panel">
             <div className="workspace-panel-head">
               <h3>最近图表</h3>
               <span>{current ? "当前项目" : "创建项目后开始"}</span>
@@ -308,15 +335,18 @@ export function HomePage(p: Props) {
                     <span className="recent-figure-icon">
                       <ChartNoAxesCombined size={21} />
                     </span>
-                    <span>
-                      <strong>{chart.name}</strong>
+                    <span className="recent-chart-copy">
+                      <strong title={chart.name}>{chart.name}</strong>
                       <small>
                         <Clock3 size={11} />
                         {new Date(chart.updated_at).toLocaleDateString("zh-CN")}
                         <span>·</span>版本 {chart.revision}
                       </small>
                     </span>
-                    <ArrowUpRight size={16} />
+                    <span className="recent-chart-action">
+                      继续编辑
+                      <ArrowUpRight size={15} />
+                    </span>
                   </button>
                 ))
               ) : (
@@ -333,7 +363,7 @@ export function HomePage(p: Props) {
             {p.charts.length > chartLimit && (
               <button
                 className="workspace-more"
-                onClick={() => setChartLimit((n) => n + 12)}
+                onClick={() => setChartLimit((n) => n + 8)}
               >
                 显示更多图表（剩余 {p.charts.length - chartLimit}）
                 <ChevronRight size={14} />

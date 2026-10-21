@@ -10,6 +10,7 @@ import "./styles.css";
 import "./components/experience.css";
 import "./components/navigation.css";
 import "./components/showcase.css";
+import "./components/home-workspace.css";
 const client = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
 });
