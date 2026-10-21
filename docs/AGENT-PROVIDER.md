@@ -10,6 +10,12 @@
 
 ## 本地配置
 
+Windows本机可运行 `scripts/connect-agent.ps1` 打开隐藏密钥输入窗口，填写平台控制台的准确模型ID和API Key。默认地址为 `https://maas.qianwenaiapi.com/compatible-mode/v1`；其他HTTPS兼容基地址可通过 `-BaseUrl` 显式指定，窗口始终显示实际目标地址。此入口是本机启动配置工具，尚不是网页里的连接管理页。
+
+窗口确认后核对8086进程与本项目跟踪记录，再仅重启Java后端。密钥不作为命令行参数、不写文件或Git，只由该Java进程继承；前端和MySQL保持运行。普通重启后需重新输入。加载成功仅表示本地适配器配置可用，不代表已通过上游鉴权、工具调用或模型效果验收；脚本不会调用推理接口。`.runtime/agent-connection-status.json` 只记录无凭据的阶段/通用状态。
+
+该平台[函数调用文档](https://platform.qianwenai.com/docs/developer-guides/tool-calling/function-calling)使用上述基地址；仍需选择实际支持当前非流式Chat Completions工具调用的模型。[平台客户端配置说明](https://platform.qianwenai.com/docs/developer-guides/clients-and-developer-tools/deepseek-harness)指出该兼容端点不提供GET /models，因此窗口要求手填模型ID，不伪造模型下拉列表。特定模型可能需要额外参数，尚未逐个验证。
+
 在启动后端的 PowerShell 环境设置（密钥只读取环境变量，不进入浏览器、数据库或日志）：
 
 ```powershell
