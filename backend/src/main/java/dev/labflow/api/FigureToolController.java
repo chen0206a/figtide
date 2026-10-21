@@ -19,6 +19,16 @@ public class FigureToolController {
     return FigureOperations.catalog();
   }
 
+  @GetMapping("/figure-tools/spec")
+  Object spec(@RequestParam(required = false) String type) {
+    return service.spec(type);
+  }
+
+  @PostMapping("/projects/{p}/figure-tools/lint")
+  Object lint(@PathVariable long p, @RequestBody JsonNode request) {
+    return service.lint(p, request);
+  }
+
   @PostMapping("/projects/{p}/figure-tools/preview")
   Object preview(@PathVariable long p, @RequestBody JsonNode request) {
     return service.preview(p, request);

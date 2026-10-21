@@ -239,6 +239,18 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 
 操作格式 `{tool,arguments}`；外观类为 set_style / set_axis / set_legend / set_series / set_canvas，结构类为 set_chart / set_mapping / map_series / add_series / remove_series，一次 1–30 项。返回 `{protocol_version,config,changes,operation_count,base_revision,source}`，source 包含不可变数据版本 ID 与 SHA-256，changes 为 JSON Pointer 路径的 before/after（结构类的 /series 为粗粒度路径）。旧保存版本返回 409，跨项目资源 404，未知属性、无效参数、不适用于当前图表的操作、缺少专业配置的类型切换、悬空列/序列引用一律 400。完整范围与专业图表说明见 [绘图工具协议](FIGURE-TOOLS.md)。
 
+## 只读辅助接口
+
+`GET /figure-tools/spec[?type=line]` 返回 `{protocol_version, config_schema_version, execution:"read-only", summary, roles, series:{min,max}, types[], rules[]}`。`types[]` 每项是 `{type,label,required_roles,optional_roles,requires_block,note}`；十一类图固定、`type` 不存在返回 400、带 `type` 时只返回该一类并附 `filtered_by`。纯静态，不读项目数据。
+
+`POST /projects/{p}/figure-tools/lint` 接收 `{protocol_version, chart_id?, base_revision?, config}`（没有 `operations`），返回 `{protocol_version, ok, issues[], base_revision, source?, report?}`。`issues` 每项 `{code:"invalid_figure", message}`，消息与保存时报错一致；合法时 `ok:true`、`issues:[]`、附 `source{dataset_version_id,sha256}`，ROC/PR/混淆矩阵附与保存相同的统计 `report`。协议/信封错误仍为 400/404/409。只读，不写图表、版本或数据。
+
+## 测试支持接口（仅本机开发）
+
+后端以 `--labflow.test-support=true` 启动时（`scripts/start.ps1` 已默认传入）额外注册：
+
+`DELETE /api/test/projects?after={id}` 删除 `id > after` 的项目及其图表/版本/实验/关联/数据/样式模板（按外键顺序，单事务），返回 `{deleted,projects[]}`。必须带请求头 `X-LabFlow-Test-Run: 1` 且 `after >= 1`，否则 400；未启用该属性时整个控制器不注册，路由 404。E2E 用它做运行后自动清理（见 [验收记录](TEST-RESULTS.md)）。
+
 ## 样式模板接口
 
 `GET /style-templates` 返回本机全部模板，包含 `id,project_id,name,project_name,profile`（及原有时间字段）。前端默认按当前项目筛选，允许切换全部项目；`profile` 是带 `schema_version=1` 的外观白名单，与图表的数据映射、统计语义分离。

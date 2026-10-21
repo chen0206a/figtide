@@ -173,4 +173,109 @@ class FigureToolsIntegrationTest {
                 .content(req.toString()))
         .andExpect(status().isBadRequest());
   }
+
+  @Test
+  void figureSpecDescribesRolesPerTypeWithoutTouchingData() throws Exception {
+    mvc.perform(get("/api/figure-tools/spec"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.execution").value("read-only"))
+        .andExpect(jsonPath("$.types.length()").value(11))
+        .andExpect(jsonPath("$.series.max").value(20))
+        .andExpect(jsonPath("$.roles.heatZ").exists());
+    mvc.perform(get("/api/figure-tools/spec").param("type", "heatmap"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.types.length()").value(1))
+        .andExpect(jsonPath("$.types[0].required_roles[0]").value("heatY"))
+        .andExpect(jsonPath("$.types[0].required_roles[1]").value("heatZ"));
+    mvc.perform(get("/api/figure-tools/spec").param("type", "histogram"))
+        .andExpect(jsonPath("$.types[0].required_roles.length()").value(1))
+        .andExpect(jsonPath("$.types[0].required_roles[0]").value("y"));
+    mvc.perform(get("/api/figure-tools/spec").param("type", "pie"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void lintReturnsIssuesAsDataAndNeverWrites() throws Exception {
+    long p = project(), data = dataset(p);
+    var c = config(data);
+    var body = json.createObjectNode().put("protocol_version", 1);
+    body.set("config", c);
+    mvc.perform(
+            post("/api/projects/" + p + "/figure-tools/lint")
+                .contentType("application/json")
+                .content(body.toString()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.ok").value(true))
+        .andExpect(jsonPath("$.issues.length()").value(0))
+        .andExpect(jsonPath("$.source.dataset_version_id").value(data));
+    var broken = c.deepCopy();
+    ((ObjectNode) broken.path("series").get(0)).put("y", "nope");
+    body.set("config", broken);
+    mvc.perform(
+            post("/api/projects/" + p + "/figure-tools/lint")
+                .contentType("application/json")
+                .content(body.toString()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.ok").value(false))
+        .andExpect(jsonPath("$.issues[0].code").value("invalid_figure"))
+        .andExpect(
+            jsonPath("$.issues[0].message").value(org.hamcrest.Matchers.containsString("Y 字段")));
+    assertTrue(workspace.charts(p).isEmpty());
+    body.put("protocol_version", 2);
+    mvc.perform(
+            post("/api/projects/" + p + "/figure-tools/lint")
+                .contentType("application/json")
+                .content(body.toString()))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void aMixedBatchIsAllOrNothingAndLeavesNoPartialPreview() throws Exception {
+    long p = project(), data = dataset(p);
+    var c = config(data);
+    var req = json.createObjectNode().put("protocol_version", 1);
+    req.set("config", c);
+    req.set(
+        "operations",
+        json.readTree(
+            """
+            [{"tool":"set_style","arguments":{"fontSize":18}},
+             {"tool":"set_mapping","arguments":{"x":"nope"}}]
+            """));
+    mvc.perform(
+            post("/api/projects/" + p + "/figure-tools/preview")
+                .contentType("application/json")
+                .content(req.toString()))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            jsonPath("$.message").value(org.hamcrest.Matchers.containsString("X 字段")));
+    // The first operation is valid on its own and still applies when submitted alone, which proves
+    // the failed batch returned nothing instead of a half-applied config.
+    req.set("operations", json.readTree("[{\"tool\":\"set_style\",\"arguments\":{\"fontSize\":18}}]"));
+    mvc.perform(
+            post("/api/projects/" + p + "/figure-tools/preview")
+                .contentType("application/json")
+                .content(req.toString()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.config.style.fontSize").value(18));
+    assertTrue(workspace.charts(p).isEmpty());
+    // A saved chart must keep its revision and history when a later batch is rejected.
+    long chart = id(workspace.saveChart(p, null, "Atomic", null, c));
+    var before = workspace.chart(p, chart);
+    req.put("chart_id", chart).put("base_revision", 1);
+    req.set(
+        "operations",
+        json.readTree(
+            """
+            [{"tool":"set_style","arguments":{"fontSize":20}},
+             {"tool":"set_series","arguments":{"seriesId":"s1","y":"missing_column"}}]
+            """));
+    mvc.perform(
+            post("/api/projects/" + p + "/figure-tools/preview")
+                .contentType("application/json")
+                .content(req.toString()))
+        .andExpect(status().isBadRequest());
+    assertEquals(before, workspace.chart(p, chart));
+    assertEquals(1, workspace.versions(p, chart).size());
+  }
 }

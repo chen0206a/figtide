@@ -63,4 +63,74 @@ public class FigureToolService {
         "source",
         Map.of("dataset_version_id", source.get("id"), "sha256", source.get("sha256")));
   }
+
+  /** Read-only view of the figure types; a tap for an agent, never a write. */
+  @Transactional(readOnly = true)
+  public Object spec(String type) {
+    return FigureSpecs.describe(type);
+  }
+
+  /**
+   * Read-only lint: the same checks a save would run, but returned as data instead of a 400.
+   * The editor still decides whether to persist; nothing here writes a row.
+   */
+  @Transactional(readOnly = true)
+  public Map<String, Object> lint(long project, JsonNode request) {
+    if (request == null || !request.isObject()) throw ApiException.bad("需要校验请求");
+    var allowed = Set.of("protocol_version", "chart_id", "base_revision", "config");
+    request
+        .fieldNames()
+        .forEachRemaining(
+            k -> {
+              if (!allowed.contains(k)) throw ApiException.bad("不支持请求字段 " + k);
+            });
+    if (!request.path("protocol_version").isIntegralNumber()
+        || !request.path("protocol_version").canConvertToInt()
+        || request.path("protocol_version").asInt() != 1) throw ApiException.bad("不支持的操作协议");
+    workspace.project(project);
+    var chartId = request.path("chart_id");
+    var revision = request.path("base_revision");
+    int base = 0;
+    if (!chartId.isMissingNode() && !chartId.isNull()) {
+      if (!chartId.isIntegralNumber()
+          || !chartId.canConvertToLong()
+          || chartId.asLong() <= 0
+          || !revision.isIntegralNumber()
+          || !revision.canConvertToInt()
+          || revision.asInt() < 1) throw ApiException.bad("图表与版本标识无效");
+      var saved = workspace.chart(project, chartId.asLong());
+      if (((Number) saved.get("revision")).intValue() != revision.asInt())
+        throw new ApiException(409, "已保存图表有新版本，请重新打开后再校验");
+      base = revision.asInt();
+    } else if (!revision.isMissingNode()
+        && !revision.isNull()
+        && (!revision.isIntegralNumber() || !revision.canConvertToInt() || revision.asInt() != 0))
+      throw ApiException.bad("新图表不能指定保存版本");
+    var config = request.path("config");
+    if (!config.isObject()) throw ApiException.bad("需要图表配置");
+    var issues = new ArrayList<Map<String, Object>>();
+    Map<String, Object> report = null;
+    try {
+      report = workspace.validateAndReport(project, config);
+    } catch (ApiException e) {
+      issues.add(
+          Map.of(
+              "code",
+              "invalid_figure",
+              "message",
+              e.getMessage() == null ? "配置无效" : e.getMessage()));
+    }
+    var result = new LinkedHashMap<String, Object>();
+    result.put("protocol_version", 1);
+    result.put("ok", issues.isEmpty());
+    result.put("issues", issues);
+    result.put("base_revision", base);
+    if (issues.isEmpty()) {
+      var source = workspace.data(project, config.path("datasetVersionId").asLong());
+      result.put(
+          "source", Map.of("dataset_version_id", source.get("id"), "sha256", source.get("sha256")));
+      if (report != null) result.put("report", report);
+    }
+    return result;
+  }
 }

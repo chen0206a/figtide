@@ -218,6 +218,29 @@ public final class FigureOperations {
       var required = input.putArray("required");
       spec.required().forEach(required::add);
     }
+    // Read tools are not operations: they answer questions and never enter a preview batch.
+    var readTools = result.putArray("read_tools");
+    readTools
+        .addObject()
+        .put("name", "get_figure_spec")
+        .put("label", "图型规范")
+        .put("category", "read")
+        .put("method", "GET")
+        .put("endpoint", "/api/figure-tools/spec");
+    readTools
+        .addObject()
+        .put("name", "lint_figure")
+        .put("label", "配置校验")
+        .put("category", "read")
+        .put("method", "POST")
+        .put("endpoint", "/api/projects/{project}/figure-tools/lint");
+    readTools
+        .addObject()
+        .put("name", "get_dataset_profile")
+        .put("label", "数据画像")
+        .put("category", "read")
+        .put("method", "GET")
+        .put("endpoint", "/api/projects/{project}/data/{datasetVersion}/profile");
     return result;
   }
 

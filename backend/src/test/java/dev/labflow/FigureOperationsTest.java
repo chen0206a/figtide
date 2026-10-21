@@ -112,6 +112,13 @@ class FigureOperationsTest {
       if (tool.path("category").asText().equals("structure")) structure++;
     }
     assertEquals(5, structure);
+    var readTools = catalog.path("read_tools");
+    assertEquals(3, readTools.size());
+    assertEquals("get_figure_spec", readTools.get(0).path("name").asText());
+    assertEquals("lint_figure", readTools.get(1).path("name").asText());
+    assertEquals("GET", readTools.get(0).path("method").asText());
+    assertEquals("/api/projects/{project}/figure-tools/lint", readTools.get(1).path("endpoint").asText());
+    for (var tool : readTools) assertEquals("read", tool.path("category").asText());
   }
 
   @Test

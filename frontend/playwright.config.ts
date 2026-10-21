@@ -15,6 +15,9 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   reporter: [["list"], ["html", { open: "never" }]],
+  // 记录运行前的项目数量，结束后删掉本次新建的项目，避免测试数据堆进真实库。
+  globalSetup: "./e2e/global-setup.ts",
+  globalTeardown: "./e2e/global-teardown.ts",
   // 开发服务器缺失时自动拉起，已有实例则直接复用（后端与 MySQL 仍需外部就绪）。
   webServer: {
     command:

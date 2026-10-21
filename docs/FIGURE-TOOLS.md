@@ -14,7 +14,7 @@
 
 ## 协议
 
-`GET /api/figure-tools/catalog`：返回协议版本、配置版本、`execution: "preview-only"`、`categories` 与十个工具的名称、中文标签、`category` 及 `input_schema`。所有参数对象拒绝额外属性。
+`GET /api/figure-tools/catalog`：返回协议版本、配置版本、`execution: "preview-only"`、`categories` 与十个工具的名称、中文标签、`category` 及 `input_schema`，另附只读的 `read_tools` 列表。所有参数对象拒绝额外属性。
 
 | 工具 | 分类 | 接收的属性 |
 | --- | --- | --- |
@@ -80,6 +80,35 @@
 
 `changes` 对结构操作返回粗粒度路径（`/type`、`/x`、`/series`），前端 `sameProtectedFigure(before, after, allowed)` 据此只放行这些路径：`/series` 命中时按 `id` 比对存活序列的七个外观键（color/opacity/width/dash/symbol/size/visible），新增或删除放行，偷改外观仍然被判为篡改。
 
+## 读类工具：先看规范，再校验配置
+
+目录里另有 `read_tools`（`category: "read"`），它们不进入 `operations` 批次，也不改任何状态：
+
+| 工具 | 接口 | 用途 |
+| --- | --- | --- |
+| `get_figure_spec` | `GET /api/figure-tools/spec[?type=line]` | 十一类图的必填角色（`x/y/heatY/heatZ`）、可选角色（`group/error/band`）、所需专业配置块、固定 X 的类型与硬规则；附 `roles`、`series.min/max` |
+| `lint_figure` | `POST /api/projects/{p}/figure-tools/lint` | 用保存时同一套 `validateAndReport` 做只读体检，把失败当成数据返回 |
+| `get_dataset_profile` | `GET /api/projects/{p}/data/{id}/profile` | 列画像与前 10 行（见上文接口表） |
+
+`lint_figure` 接收与预览相同的信封 `{protocol_version, chart_id?, base_revision?, config}`（没有 `operations`），返回 `{protocol_version, ok, issues[], base_revision, source?, report?}`：
+
+- 合法配置返回 `ok: true`、`issues: []`，带 `source{dataset_version_id,sha256}`；ROC/PR/混淆矩阵额外带回与保存时相同的统计 `report`。
+- 配置不合法**不抛 400**，而是返回 `ok: false` 与 `issues[0] = {code: "invalid_figure", message}`——消息与保存时用户看到的完全一致。这样模型可以「提案 → 自检 → 修正」，不用靠解析错误码。
+- 信封错误仍按原语义拒绝：协议版本不是 1、未知请求字段、`chart_id` 与 `base_revision` 不匹配、跨项目图表都返回 400/404/409；`config` 不是对象返回 400。
+- 只读：不写图表、不写版本、不写数据。事务标记 `readOnly = true`。
+
+`get_figure_spec` 只描述「这类图需要什么」，不携带任何默认值——默认值只存在于前端 `model.ts`，避免两套默认值漂移。规范与校验的一致性由集成测试守住：`heatmap` 的 `required_roles` 是 `heatY/heatZ`，用缺 `heatZ` 的配置调 lint 必须失败。
+
+## 批量是原子的
+
+一次 `operations` 数组在深拷贝上依次应用，最后统一走一次 `validateAndReport`：
+
+- 任一项失败 → 400，不返回半成品、不修改输入配置、不写库；客户端拿不到「前面几项已经生效」的中间结果。
+- 全部通过 → 返回一个完整配置与一份 `changes`，前端只进一次撤销栈，撤销一步回到批次前。
+- 已保存图表：失败批次不会 bump `revision`、不会新增 `chart_versions`；成功也不会自动保存，仍由用户点「保存」。
+
+集成测试 `aMixedBatchIsAllOrNothingAndLeavesNoPartialPreview` 覆盖这两面：混合批次 400 后单独提交其中合法项仍能成功（证明没有半应用），带 `chart_id/base_revision` 的失败批次之后图表 `revision` 与版本数不变。
+
 ## 草稿与冲突保护
 
 前端预览不直接调用 reducer。用户确认时核对图表 ID、revision、名称与草稿的本地快照标识；期间发生编辑或保存就要求重新预览。收到结果还要核对数据版本、内容指纹，以及除展示白名单之外的所有配置字段均未改变。
@@ -94,7 +123,7 @@
 
 Java 测试覆盖严格参数、整批失败不变、自动范围、目标序列、物理字号、专业图标题、固定轴拒绝、未来字段保留、真实 MySQL/MockMvc 只读预览、跨项目与旧版本拒绝；结构部分覆盖改映射/改取数/增删序列、模板外观继承、悬空绑定的六种拒绝（删最后一条、重复 ID、切 ROC 缺评估、清空 heatY/heatZ 后切热力图、ROC 下改 X、删除被分类配置引用的序列），以及字段画像与结构预览都不写库。
 
-浏览器覆盖五种外观操作合并、预览未应用时原图/数据库不变、一步撤销/重做、保存重开、原文件逐字节一致、SVG、错误范围、并发版本冲突、成品 pt、ROC 真实轴标题及窗口布局；结构部分覆盖新增序列一步应用一步撤销、切换图表类型后保存重载仍生效、删除最后一条序列被拒且不产生预览。最终计数见 [验收记录](TEST-RESULTS.md)。
+浏览器覆盖五种外观操作合并、预览未应用时原图/数据库不变、一步撤销/重做、保存重开、原文件逐字节一致、SVG、错误范围、并发版本冲突、成品 pt、ROC 真实轴标题及窗口布局；结构部分覆盖新增序列一步应用一步撤销、切换图表类型后保存重载仍生效、删除最后一条序列被拒且不产生预览。第二轮补读类工具后另有：`get_figure_spec` 的十一类型/角色/过滤与未知类型 400、`lint_figure` 合法与不合法两条路径（不合法返回 `ok:false` 且不写库、协议错误仍 400）、混合批次原子性与失败后 revision/版本数不变。最终计数见 [验收记录](TEST-RESULTS.md)。
 
 ```powershell
 # 仓库根目录，使用便携 Java 21

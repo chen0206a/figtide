@@ -1,5 +1,17 @@
 # 第一阶段验收记录
 
+## 最新增量：只读规范/校验与测试隔离（2026-10-21 晚，Step 2a）
+
+Java **73/73**、Vitest **124/124（20 个文件）**、完整 Chrome E2E **42/42（3.2 分钟）**、`tsc -b --force` 通过；本次新增 3 项 Java，前端未新增单测（改动集中在测试基建）。仍未接模型、未使用付费 API。
+
+新增两个只读能力：`GET /figure-tools/spec`（`get_figure_spec`，十一类图的必填/可选角色、所需专业配置块、固定 X 类型与硬规则，纯静态）与 `POST /projects/{p}/figure-tools/lint`（`lint_figure`，直接包现有 `validateAndReport`）。lint 把校验失败变成数据：配置不合法返回 `200 {ok:false, issues:[{code:"invalid_figure", message}]}`，消息与保存时报错一致；协议、信封、跨项目、旧 revision 仍按 400/404/409 拒绝；两种情况下都不写图表、版本或数据。目录里新增 `read_tools`，把 `get_figure_spec`、`lint_figure`、`get_dataset_profile` 标成 `category: "read"`，与十个可预览工具分开。
+
+原子性这次被显式守住：一次 `operations` 在深拷贝上全部应用后只校验一次，任一失败返回 400、不返回半成品；已保存图表的失败批次不 bump `revision`、不新增 `chart_versions`。集成测试 `aMixedBatchIsAllOrNothingAndLeavesNoPartialPreview` 用「混合批次 400 → 单独提交其中合法项仍成功 → 图表 revision 与版本数不变」三段断言固化这条语义。
+
+测试污染已根治：E2E 增加 `globalSetup`（读 `/api/projects` 记录当前最大项目 id 作为水位）与 `globalTeardown`（调 `DELETE /api/test/projects?after=<水位>` 删除本次新建项目）。该接口只在后端以 `--labflow.test-support=true` 启动时注册（`scripts/start.ps1` 已默认传入），并要求 `X-LabFlow-Test-Run: 1` 且 `after >= 1`；未启用时整个控制器不注册、路由 404，teardown 只打印提示不报错。本轮实跑清理了 **37 个**测试项目，运行前后 `projects 52 / charts 120 / dataset_versions 100 / experiments 5` 完全一致，6 个演示项目（id 5/95/108/134/167/194）保留。需要保留现场时用 `LABFLOW_E2E_KEEP=1`。
+
+边界：`lint_figure` 一次只报第一条问题（`validateAndReport` 遇错即抛，未改造成收集式校验）；`get_figure_spec` 不返回默认值，默认值只在前端 `model.ts`，避免两套默认值漂移；新建向导仍未做。下一步（模型适配、审计、评测）见 [Agent 路线图](AGENT-ROADMAP.md)。
+
 ## 最新增量：结构工具与数据画像（2026-10-21 晚，Asia/Tokyo）
 
 Java **70/70**、Vitest **124/124（20 个文件）**、完整 Chrome E2E **42/42（3.2 分钟）**、TypeScript（`tsc -b --force`）与 Vite 生产构建通过；保留既有大分包提示（编辑器分包 1.58 MB）。本次新增 3 项 Java、9 项前端与 3 条真实浏览器用例；仍未接模型、未使用付费 API。
