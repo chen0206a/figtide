@@ -24,23 +24,28 @@ $oldKey = $env:LABFLOW_AGENT_API_KEY
 $oldNoProxy = $env:NO_PROXY
 $fixture = $null
 $backend = $null
-try {
-    # Neither fixture process receives a real key. Build output also stays separate from the running app.
-    $env:LABFLOW_AGENT_API_KEY = ''
-    $fixture = Start-Process (Get-Command node.exe).Source -ArgumentList 'frontend/e2e/fixtures/compatible-provider.cjs' -WorkingDirectory $root -WindowStyle Hidden -PassThru
-    $backend = Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList '-jar','.runtime/agent-e2e-build/labflow-0.1.0.jar',
+function Start-AgentTestBackend {
+    Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList '-jar','.runtime/agent-e2e-build/labflow-0.1.0.jar',
         '--server.port=8087','--spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_e2e',
         '--labflow.test-support=true','--labflow.frontend-origin=http://127.0.0.1:5178',
         '--LABFLOW_AGENT_BASE_URL=http://127.0.0.1:18769','--LABFLOW_AGENT_MODEL=labflow-fixture' -WorkingDirectory $root -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput '.runtime/agent-e2e.stdout.log' -RedirectStandardError '.runtime/agent-e2e.stderr.log'
-    $env:LABFLOW_AGENT_API_KEY = $oldKey
-    $ready = $false
+}
+function Wait-AgentTestBackend {
     for ($n=0; $n -lt 60; $n++) {
         $health = & curl.exe --noproxy '*' --max-time 2 -fs 'http://127.0.0.1:8087/api/health' 2>$null
-        if ($LASTEXITCODE -eq 0 -and $health) { $ready = $true; break }
+        if ($LASTEXITCODE -eq 0 -and $health) { return }
         Start-Sleep -Milliseconds 500
     }
-    if (!$ready) { throw 'Isolated backend did not start; see .runtime/agent-e2e.stderr.log.' }
+    throw 'Isolated backend did not start; see .runtime/agent-e2e.stderr.log.'
+}
+try {
+    # Neither fixture process receives a real key. Build output also stays separate from the running app.
+    $env:LABFLOW_AGENT_API_KEY = ''
+    $fixture = Start-Process (Get-Command node.exe).Source -ArgumentList 'frontend/e2e/fixtures/compatible-provider.cjs' -WorkingDirectory $root -WindowStyle Hidden -PassThru
+    $backend = Start-AgentTestBackend
+    $env:LABFLOW_AGENT_API_KEY = $oldKey
+    Wait-AgentTestBackend
     # Ensure an empty test schema has a nonzero cleanup watermark.
     $projects = (& curl.exe --noproxy '*' --max-time 3 -fs 'http://127.0.0.1:8087/api/projects') | ConvertFrom-Json
     if (!$projects.Count) {
@@ -55,6 +60,17 @@ try {
         if ($All) { & node node_modules/@playwright/test/cli.js test } else { & node node_modules/@playwright/test/cli.js test agent.spec.ts figure-tools.spec.ts }
         if ($LASTEXITCODE) { throw 'Browser verification failed.' }
     } finally { Pop-Location }
+    & node frontend/e2e/fixtures/audit-restart.cjs prepare
+    if ($LASTEXITCODE) { throw 'Cannot prepare process restart verification.' }
+    # This process was created above exclusively for this test schema and port.
+    Stop-Process -Id $backend.Id
+    Wait-Process -Id $backend.Id -ErrorAction SilentlyContinue
+    $env:LABFLOW_AGENT_API_KEY = ''
+    $backend = Start-AgentTestBackend
+    $env:LABFLOW_AGENT_API_KEY = $oldKey
+    Wait-AgentTestBackend
+    & node frontend/e2e/fixtures/audit-restart.cjs verify
+    if ($LASTEXITCODE) { throw 'Process restart verification failed.' }
 } finally {
     $env:LABFLOW_API = $oldApi
     $env:LABFLOW_WEB_URL = $oldWeb

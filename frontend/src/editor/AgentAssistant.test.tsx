@@ -53,6 +53,9 @@ const run: AgentRun = {
   trace: [],
   catalog_hash: "hash",
   prompt_version: "v1",
+  persisted: true,
+  outcome: "pending",
+  proposal_hash: "proposal-hash",
   proposal: {
     protocol_version: 1,
     config: changed,
@@ -104,9 +107,11 @@ function setup(mock?: (url: string, init?: RequestInit) => unknown) {
       mock?.(url, init) ??
       (url.endsWith("/provider")
         ? { available: true, model: "fixture", endpoint: "http://127.0.0.1" }
-        : url.endsWith("/lint")
-          ? { ok: true }
-          : run);
+        : url.endsWith("/decision")
+          ? { ...run, outcome: JSON.parse(init!.body as string).outcome }
+          : url.endsWith("/lint")
+            ? { ok: true }
+            : run);
     return { ok: true, json: async () => body };
   });
   vi.stubGlobal("fetch", fetcher);
@@ -194,7 +199,7 @@ it("rechecks the latest editor callback if the canvas changes during the final n
   s.rerender(s.ui({ ...s.props, token: "new-draft", onApply: latestApply }));
   release({ ok: true });
   await screen.findByText("画布已变化，请重新生成提案");
-  expect(latestApply).toHaveBeenCalledOnce();
+  expect(latestApply).not.toHaveBeenCalled();
   expect(s.onApply).not.toHaveBeenCalled();
 });
 it("cancels the owned run and keeps the original canvas", async () => {
@@ -223,4 +228,72 @@ it("shows honest setup guidance when no provider is configured", async () => {
   await screen.findByText("尚未连接模型");
   expect(screen.getByRole("button", { name: "生成调整提案" })).toBeDisabled();
   expect(screen.getByText(/LABFLOW_AGENT_MODEL/)).toBeVisible();
+});
+it("does not apply a draft if persisting the acceptance decision fails", async () => {
+  const s = setup((url) => {
+    if (url.endsWith("/decision")) throw new Error("审计库不可用");
+  });
+  await start();
+  await screen.findByText("提案已就绪");
+  fireEvent.click(screen.getByRole("button", { name: "应用这组调整" }));
+  await screen.findByText("审计库不可用");
+  expect(s.onApply).not.toHaveBeenCalled();
+  expect(s.onClose).not.toHaveBeenCalled();
+});
+it("refreshes a decision made elsewhere before attempting to apply a stale preview", async () => {
+  const s = setup((url) =>
+    url.endsWith("/run-1")
+      ? { ...run, outcome: "rejected", proposal: undefined }
+      : undefined,
+  );
+  await start();
+  await screen.findByText("提案已就绪");
+  fireEvent.click(screen.getByRole("button", { name: "应用这组调整" }));
+  await screen.findByText("提案已失效，请重新生成");
+  await screen.findByText("已拒绝");
+  expect(s.onApply).not.toHaveBeenCalled();
+  expect(s.fetcher.mock.calls.some(([url]) => url.endsWith("/decision"))).toBe(
+    false,
+  );
+});
+it("persists explicit rejection without changing the canvas", async () => {
+  const s = setup();
+  await start();
+  await screen.findByText("提案已就绪");
+  fireEvent.click(screen.getByText("不采用这份提案"));
+  fireEvent.change(screen.getByRole("textbox", { name: "拒绝原因（可选）" }), {
+    target: { value: "字号过大" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "拒绝提案" }));
+  await screen.findByText("已拒绝");
+  expect(s.onApply).not.toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled();
+  const sent = s.fetcher.mock.calls.find(([url]) => url.endsWith("/decision"));
+  expect(JSON.parse(sent![1]!.body as string)).toEqual({
+    outcome: "rejected",
+    reason: "字号过大",
+    proposal_hash: "proposal-hash",
+  });
+});
+it("records confirmation without overwriting a draft changed while the decision request was pending", async () => {
+  let release!: (value: unknown) => void;
+  const decision = new Promise((resolve) => {
+    release = resolve;
+  });
+  const s = setup((url) => (url.endsWith("/decision") ? decision : undefined));
+  await start();
+  await screen.findByText("提案已就绪");
+  fireEvent.click(screen.getByRole("button", { name: "应用这组调整" }));
+  await waitFor(() =>
+    expect(
+      s.fetcher.mock.calls.some(([url]) => url.endsWith("/decision")),
+    ).toBe(true),
+  );
+  s.rerender(s.ui({ ...s.props, token: "changed-during-confirmation" }));
+  release({ ...run, outcome: "accepted" });
+  await screen.findByText(
+    "确认已记录，但画布已变化，本次未应用。请重新生成提案。",
+  );
+  expect(s.onApply).not.toHaveBeenCalled();
+  expect(s.onClose).not.toHaveBeenCalled();
 });

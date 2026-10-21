@@ -20,6 +20,7 @@ public class AgentRunService {
   private final FigureToolService figures;
   private final WorkspaceService workspace;
   private final ObjectMapper json;
+  private final AgentAuditService audit;
   private final Map<String, Run> runs = new LinkedHashMap<>();
   private final ThreadPoolExecutor workers =
       new ThreadPoolExecutor(2, 2, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(6));
@@ -30,11 +31,13 @@ public class AgentRunService {
       ModelProvider provider,
       FigureToolService figures,
       WorkspaceService workspace,
-      ObjectMapper json) {
+      ObjectMapper json,
+      AgentAuditService audit) {
     this.provider = provider;
     this.figures = figures;
     this.workspace = workspace;
     this.json = json;
+    this.audit = audit;
   }
 
   public ModelProvider.Info info() {
@@ -51,6 +54,9 @@ public class AgentRunService {
     String status = "queued", text = "", reason = "", model;
     int steps;
     long tokens, charged;
+    long promptTokens, completionTokens;
+    int responses;
+    boolean persisted, auditWarned;
     long finished;
     ObjectNode proposal;
     Future<?> task;
@@ -165,6 +171,20 @@ public class AgentRunService {
       if (runs.size() >= 100 || !slots.tryAcquire()) throw new ApiException(429, "运行队列已满，请稍后重试");
       runs.put(run.id, run);
     }
+    try {
+      audit.begin(
+          project,
+          snapshot,
+          (JsonNode) view(run),
+          provider.info(),
+          json.valueToTree(lint.get("source")));
+    } catch (RuntimeException e) {
+      synchronized (runs) {
+        runs.remove(run.id);
+      }
+      slots.release();
+      throw new ApiException(503, "运行记录暂时无法写入，未调用模型，请稍后重试");
+    }
     synchronized (run) {
       var task =
           new FutureTask<Void>(
@@ -192,62 +212,134 @@ public class AgentRunService {
   }
 
   public Object get(long project, String id) {
-    return view(find(project, id));
+    Run r = live(project, id);
+    return r == null ? audit.detail(project, id) : view(r);
   }
 
   public Object cancel(long project, String id) {
-    var run = find(project, id);
+    var run = live(project, id);
+    if (run == null) return audit.detail(project, id);
     stop(run, "cancelled", "已取消，未应用任何修改");
     return view(run);
   }
 
-  private Run find(long project, String id) {
+  private Run live(long project, String id) {
     synchronized (runs) {
       var run = runs.get(id);
-      if (run == null || run.project != project) throw new ApiException(404, "运行不存在或已过期");
-      return run;
+      return run != null && run.project == project ? run : null;
     }
+  }
+
+  public Object history(long project, Long chart, String outcome, int page, int size) {
+    workspace.project(project);
+    return audit.list(project, chart, outcome, page, size);
+  }
+
+  public Object detail(long project, String id) {
+    return audit.detail(project, id);
+  }
+
+  public Object decide(long project, String id, JsonNode request) {
+    var record = audit.detail(project, id);
+    boolean eligible = false;
+    String proposalHash = "";
+    if (request.path("outcome").asText().equals("accepted")
+        && record.path("outcome").asText().equals("pending")) {
+      var r = live(project, id);
+      if (r != null)
+        synchronized (r) {
+          eligible = r.status.equals("proposed") && r.persisted && r.proposal != null;
+          if (eligible) {
+            proposalHash = AuditSanitizer.hash(r.proposal.path("config"));
+            if (!Boolean.TRUE.equals(
+                figures.lint(project, lintEnvelope(r, r.proposal.path("config"))).get("ok")))
+              throw new ApiException(409, "提案不再有效，请重新生成");
+          }
+        }
+    }
+    return audit.decide(project, id, request, eligible, proposalHash);
   }
 
   private void stop(Run run, String status, String reason) {
     synchronized (run) {
       if (!run.active()) return;
-      run.status = status;
-      run.reason = reason;
-      run.finished = System.currentTimeMillis();
-      run.proposal = null;
       if (run.task != null) {
         run.task.cancel(true);
         if (run.task instanceof Runnable pending) workers.remove(pending);
       }
-      if (run.deadline != null) run.deadline.cancel(false);
+      finish(run, status, reason, null);
     }
   }
 
   private Object view(Run r) {
     synchronized (r) {
-      var result =
-          json.createObjectNode()
-              .put("run_id", r.id)
-              .put("status", r.status)
-              .put("model", r.model)
-              .put("prompt_version", PROMPT_VERSION)
-              .put("catalog_hash", r.hash)
-              .put("steps", r.steps)
-              .put("tokens", r.tokens)
-              .put("budget_used", r.charged)
-              .put("max_tokens", r.maxTokens)
-              .put("max_steps", r.maxSteps)
-              .put("timeout_seconds", r.timeout)
-              .put(
-                  "latency_ms",
-                  (r.finished == 0 ? System.currentTimeMillis() : r.finished) - r.created)
-              .put("text", r.text)
-              .put("reason", r.reason);
-      result.set("trace", r.trace.deepCopy());
-      if (r.proposal != null) result.set("proposal", r.proposal.deepCopy());
+      if (!r.active() && !r.persisted) persist(r);
+      ObjectNode result = snapshot(r);
+      result.put("persisted", r.persisted);
+      if (!r.active() && r.persisted) {
+        var saved = audit.detail(r.project, r.id);
+        for (String field : List.of("outcome", "proposal_hash", "decision_at", "decision_reason"))
+          result.set(field, saved.path(field));
+        if (!saved.path("outcome").asText().equals("pending")) result.remove("proposal");
+      } else if (!r.active()) {
+        result.remove("proposal");
+        result.put("audit_error", true);
+      }
       return result;
     }
+  }
+
+  private ObjectNode snapshot(Run r) {
+    var result =
+        json.createObjectNode()
+            .put("run_id", r.id)
+            .put("status", r.status)
+            .put("model", r.model)
+            .put("prompt_version", PROMPT_VERSION)
+            .put("catalog_hash", r.hash)
+            .put("steps", r.steps)
+            .put("tokens", r.tokens)
+            .put("budget_used", r.charged)
+            .put("max_tokens", r.maxTokens)
+            .put("max_steps", r.maxSteps)
+            .put("timeout_seconds", r.timeout)
+            .put(
+                "latency_ms",
+                (r.finished == 0 ? System.currentTimeMillis() : r.finished) - r.created)
+            .put("text", r.text)
+            .put("reason", r.reason);
+    result.set("trace", r.trace.deepCopy());
+    if (r.proposal != null) result.set("proposal", r.proposal.deepCopy());
+    return result;
+  }
+
+  private void persist(Run r) {
+    try {
+      audit.finish(
+          r.project,
+          snapshot(r),
+          r.promptTokens,
+          r.completionTokens,
+          reasonCode(r),
+          r.steps == r.responses);
+      r.persisted = true;
+    } catch (RuntimeException error) {
+      if (!r.auditWarned)
+        org.slf4j.LoggerFactory.getLogger(getClass())
+            .warn("Agent audit storage unavailable, run {}", r.id);
+      r.auditWarned = true;
+    }
+  }
+
+  private String reasonCode(Run r) {
+    if (r.reason.contains("服务关闭")) return "shutdown";
+    if (r.reason.contains("超时")) return "timeout";
+    if (r.reason.contains("token")) return "token_budget";
+    if (r.reason.contains("步数")) return "step_budget";
+    if (r.reason.contains("保存版本")) return "revision_conflict";
+    if (r.status.equals("cancelled")) return "user_cancelled";
+    if (r.status.equals("failed")) return "provider_or_tool_failure";
+    return r.reason.isBlank() ? "" : "incomplete_output";
   }
 
   /** Provider function definitions are derived from the same catalog as the manual tool builder. */
@@ -349,6 +441,12 @@ public class AgentRunService {
           }
           output = (int) Math.min(2048, available);
           r.steps++;
+          r.trace
+              .addObject()
+              .put("step", r.steps)
+              .put("event", "model_request")
+              .put("request_hash", AuditSanitizer.hash(messages))
+              .put("max_output_tokens", output);
         }
         long started = System.currentTimeMillis();
         long remaining = r.created + r.timeout * 1000L - started;
@@ -367,6 +465,9 @@ public class AgentRunService {
               || reply.completionTokens() < 0
               || actual > Integer.MAX_VALUE) throw new IllegalStateException("无效 token 用量");
           r.tokens += (int) actual;
+          r.promptTokens += reply.promptTokens();
+          r.completionTokens += reply.completionTokens();
+          r.responses++;
           r.charged +=
               (int) Math.min(Integer.MAX_VALUE, Math.max(actual, (long) inputCost + cost(message)));
           r.model = reply.model();
@@ -375,6 +476,15 @@ public class AgentRunService {
               .put("step", r.steps)
               .put("event", "model_response")
               .put("tokens", actual)
+              .put("prompt_tokens", reply.promptTokens())
+              .put("completion_tokens", reply.completionTokens())
+              .put(
+                  "finish_reason",
+                  Set.of("stop", "tool_calls", "length", "content_filter")
+                          .contains(reply.finishReason())
+                      ? reply.finishReason()
+                      : "other")
+              .put("response_hash", AuditSanitizer.hash(message))
               .put("latency_ms", System.currentTimeMillis() - started);
           if (r.charged > r.maxTokens) {
             finish(r, "incomplete", "已达到 token 预算，未应用任何修改", null);
@@ -420,6 +530,20 @@ public class AgentRunService {
         var results = new ArrayList<JsonNode>();
         String batchError = null;
         for (JsonNode call : calls) {
+          synchronized (r) {
+            if (!r.active()) return;
+            var event =
+                r.trace
+                    .addObject()
+                    .put("step", r.steps)
+                    .put("event", "tool_call")
+                    .put("call_id", AuditSanitizer.hash(call.path("id")))
+                    .put("name", AuditSanitizer.toolName(call.at("/function/name").asText()));
+            event.set(
+                "arguments",
+                AuditSanitizer.arguments(
+                    call.at("/function/name").asText(), call.at("/function/arguments").asText()));
+          }
           try {
             String name = call.path("function").path("name").asText();
             var rawArgs = call.path("function").path("arguments");
@@ -495,12 +619,17 @@ public class AgentRunService {
               .put("content", encoded);
           synchronized (r) {
             if (!r.active()) return;
-            r.trace
-                .addObject()
-                .put("step", r.steps)
-                .put("event", "tool")
-                .put("name", call.path("function").path("name").asText())
-                .put("ok", batchError == null);
+            var event =
+                r.trace
+                    .addObject()
+                    .put("step", r.steps)
+                    .put("event", "tool")
+                    .put(
+                        "name",
+                        AuditSanitizer.toolName(call.path("function").path("name").asText()))
+                    .put("call_id", AuditSanitizer.hash(call.path("id")))
+                    .put("ok", batchError == null);
+            event.set("result", AuditSanitizer.result(call.at("/function/name").asText(), result));
           }
         }
       }
@@ -529,11 +658,17 @@ public class AgentRunService {
       r.proposal = proposal;
       r.finished = System.currentTimeMillis();
       if (r.deadline != null) r.deadline.cancel(false);
+      persist(r);
     }
   }
 
   @PreDestroy
   public void close() {
+    List<Run> pending;
+    synchronized (runs) {
+      pending = new ArrayList<>(runs.values());
+    }
+    for (var r : pending) stop(r, "cancelled", "服务关闭，运行已取消");
     workers.shutdownNow();
     timer.shutdownNow();
   }

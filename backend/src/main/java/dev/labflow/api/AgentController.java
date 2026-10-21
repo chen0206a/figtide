@@ -33,4 +33,24 @@ public class AgentController {
   Object cancel(@PathVariable long p, @PathVariable String id) {
     return service.cancel(p, id);
   }
+
+  @GetMapping("/projects/{p}/agent/history")
+  Object history(
+      @PathVariable long p,
+      @RequestParam(required = false) Long chart_id,
+      @RequestParam(required = false) String outcome,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return service.history(p, chart_id, outcome, page, size);
+  }
+
+  @GetMapping("/projects/{p}/agent/runs/{id}/audit")
+  Object audit(@PathVariable long p, @PathVariable String id) {
+    return service.detail(p, id);
+  }
+
+  @PostMapping("/projects/{p}/agent/runs/{id}/decision")
+  Object decision(@PathVariable long p, @PathVariable String id, @RequestBody JsonNode request) {
+    return service.decide(p, id, request);
+  }
 }

@@ -115,7 +115,7 @@
 
 跨窗口在预览前保存新版本时，Java 拒绝旧 revision。预览之后另一窗口才保存的情况继续由正式保存 API 的 revision 检查处理，不能覆盖新的服务端版本。工具应用后的修改沿用本机草稿机制，退出模块不自动写 MySQL。
 
-后续 Agent 适配器只接受模型给出的 `operations`。`config/chart_id/base_revision/source` 必须由可信编辑器或 Harness 绑定，不能把模型自带的完整配置透传成当前草稿。未来可在这个协议之上增加模型适配、任务状态、取消/超时、预算和持久化审计；当前操作日志仍是编辑器会话内日志。
+Agent适配器只接受模型给出的 `operations`。`config/chart_id/base_revision/source` 必须由可信编辑器或 Harness 绑定，不能把模型自带的完整配置透传成当前草稿。Step 2b已接模型适配、任务状态、取消/超时和预算；Step 2c加入 [持久化运行审计](AGENT-AUDIT.md)。编辑器自己的操作历史与Agent审计相互独立。
 
 接口仍属于原本地单用户模式，未增加认证、用户授权或公开部署隔离。所有工具均不执行 shell、代码、任意文件路径或模型输出的 SQL。
 

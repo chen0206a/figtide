@@ -16,7 +16,7 @@
 
 ## 2b 模型适配层（已实现，验证与边界见 AGENT-PROVIDER.md）
 
-实现为 `ModelProvider` + Chat Completions HTTP 适配器 + 有界 Java 运行循环与编辑器提案确认。详见 [运行协议、配置与边界](AGENT-PROVIDER.md)。未进行收费服务实测，完整持久审计和30条评测仍属于2c/2d。
+实现为 `ModelProvider` + Chat Completions HTTP 适配器 + 有界 Java 运行循环与编辑器提案确认。详见 [运行协议、配置与边界](AGENT-PROVIDER.md)。未进行收费服务实测；2c持久审计已在下节实现，30条评测仍属于待开发的2d。
 
 - **最小 provider 接口**：输入「消息列表 + 工具定义」，输出「文本或工具调用」。先接一家 OpenAI 兼容的 DeepSeek 端点；密钥只从环境变量读，不落库、不写日志、不进仓库。
 - **循环用 Java 写**，不引入 LangGraph / FastAPI / 额外 Python 服务：工具、校验、数据都在 Java，多起一个进程只会增加部署与调试面。Harness 的价值在预算、取消、校验、审计、评测，不在框架名字。
@@ -24,7 +24,9 @@
 - **agent 只产出提案**：`operations` 回到现有预览链路 → diff 卡片 → 用户确认 → 一步撤销。没有用户确认就没有写入。
 - 失败语义：模型给出不存在列/越界参数时，先用 `lint_figure` 自检，把 `issues[0].message` 回灌再试；超预算或超时以「未完成」结束并保留 trace，不自动放宽限制。
 
-## 2c 审计与 trace
+## 2c 审计与 trace（已实现，细节见 AGENT-AUDIT.md）
+
+Flyway V5新增 `agent_runs`，终态写入脱敏trace、用量、目录/提示词版本与提案摘要；初始排队标记用于异常重启恢复。用户决策独立记录、幂等且不可覆盖。编辑器提供历史查询和明确拒绝；接受只代表用户确认，不等于保存图表。详见 [审计API、隐私策略与边界](AGENT-AUDIT.md)。2d尚未实施。
 
 一张表（Flyway 新版本）记录：
 

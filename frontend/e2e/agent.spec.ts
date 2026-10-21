@@ -82,6 +82,12 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   ).toBeInViewport();
   await dialog.getByRole("button", { name: "应用这组调整" }).click();
   await expect(dialog).not.toBeVisible();
+  const audits = await (
+    await request.get(
+      `/api/projects/${f.project.id}/agent/history?chart_id=${f.chart.id}`,
+    )
+  ).json();
+  expect(audits.items[0].outcome).toBe("accepted");
   await expect(page.getByTestId("plot").locator(".gtitle")).toHaveText(
     "Agent proposal · synthetic",
   );
@@ -109,6 +115,31 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   const svg = fs.readFileSync((await (await download).path())!, "utf8");
   expect(svg).toContain("Agent proposal · synthetic");
   expect(svg).not.toContain("<image");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  const reopened = page.getByRole("dialog", { name: "绘图助手", exact: true });
+  await reopened.getByRole("tab", { name: "运行历史" }).click();
+  await reopened
+    .getByLabel("运行历史列表")
+    .getByRole("button", { name: /labflow-fixture/ })
+    .click();
+  await expect(
+    reopened.getByRole("heading", { name: "已接受", exact: true }),
+  ).toBeVisible();
+  await expect(reopened.getByLabel("历史运行详情")).toContainText(
+    "figure-assistant-v1",
+  );
+  await reopened
+    .getByText("第 1 步 · 文字与字体 · 调用", { exact: true })
+    .click();
+  await expect(
+    reopened.locator(".agent-audit-trace pre").first(),
+  ).toContainText('"fontSize": 18');
+  await page.setViewportSize({ width: 1560, height: 1000 });
+  await page.screenshot({
+    path: "../docs/screenshots/agent-audit.png",
+    fullPage: true,
+  });
 });
 test("cancel during a pending HTTP response leaves no proposal or chart mutation", async ({
   page,
@@ -129,4 +160,70 @@ test("cancel during a pending HTTP response leaves no proposal or chart mutation
     dialog.getByRole("button", { name: "应用这组调整" }),
   ).toBeDisabled();
   expect((await (await request.get(f.api)).json()).config).toEqual(f.config);
+  const audits = await (
+    await request.get(
+      `/api/projects/${f.project.id}/agent/history?chart_id=${f.chart.id}`,
+    )
+  ).json();
+  expect(audits.items[0].outcome).toBe("cancelled");
+});
+
+test("explicit rejection is persisted, redacted, immutable and readable after refresh", async ({
+  page,
+  request,
+}) => {
+  const f = await fixture(request);
+  await page.goto(f.url);
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "绘图助手", exact: true });
+  await dialog
+    .getByRole("textbox", { name: "希望怎样调整？" })
+    .fill("调整字号与图例");
+  await dialog.getByRole("checkbox").check();
+  await dialog.getByRole("button", { name: "生成调整提案" }).click();
+  await expect(dialog.getByText("提案已就绪", { exact: true })).toBeVisible();
+  await dialog.getByText("不采用这份提案", { exact: true }).click();
+  await dialog
+    .getByRole("textbox", { name: "拒绝原因（可选）" })
+    .fill("图例位置不合适 api_key=do-not-store");
+  await dialog.getByRole("button", { name: "拒绝提案", exact: true }).click();
+  await expect(dialog.getByText("已拒绝", { exact: true })).toBeVisible();
+  await expect(
+    dialog.getByRole("button", { name: "应用这组调整" }),
+  ).toBeDisabled();
+  expect((await (await request.get(f.api)).json()).config).toEqual(f.config);
+  await page.reload();
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  const history = page.getByRole("dialog", { name: "绘图助手", exact: true });
+  await history.getByRole("tab", { name: "运行历史" }).click();
+  await history.getByLabel("历史结果").selectOption("rejected");
+  await history
+    .getByLabel("运行历史列表")
+    .getByRole("button", { name: /labflow-fixture/ })
+    .click();
+  await expect(
+    history.getByRole("heading", { name: "已拒绝", exact: true }),
+  ).toBeVisible();
+  await expect(history.getByLabel("历史运行详情")).toContainText(
+    "图例位置不合适",
+  );
+  await expect(history.getByLabel("历史运行详情")).not.toContainText(
+    "do-not-store",
+  );
+  const list = await (
+    await request.get(
+      `/api/projects/${f.project.id}/agent/history?outcome=rejected`,
+    )
+  ).json();
+  const row = await (
+    await request.get(
+      `/api/projects/${f.project.id}/agent/runs/${list.items[0].run_id}/audit`,
+    )
+  ).json();
+  const conflict = await request.post(
+    `/api/projects/${f.project.id}/agent/runs/${row.run_id}/decision`,
+    { data: { outcome: "accepted", proposal_hash: row.proposal_hash } },
+  );
+  expect(conflict.status()).toBe(409);
+  expect(JSON.stringify(row)).not.toContain("Agent proposal · synthetic");
 });

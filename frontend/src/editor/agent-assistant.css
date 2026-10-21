@@ -139,3 +139,216 @@
     transition: none;
   }
 }
+.agent-tabs {
+  display: flex;
+  gap: 24px;
+  padding: 0 30px;
+  border-bottom: 1px solid #e7e9ed;
+  flex-shrink: 0;
+}
+.agent-tabs button {
+  padding: 12px 0;
+  color: #7d828b;
+  font-size: 13px;
+  border-bottom: 2px solid transparent;
+}
+.agent-tabs button[aria-selected="true"] {
+  color: #22262c;
+  border-color: #22262c;
+  font-weight: 600;
+}
+.agent-tabs button:disabled {
+  opacity: 0.45;
+}
+.agent-assistant-dialog .quick-actions-body {
+  border-top: 0;
+}
+.agent-reject {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #737984;
+}
+.agent-reject summary {
+  cursor: pointer;
+}
+.agent-reject label,
+.agent-history-decision label {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+  font-size: 12px;
+}
+.agent-reject .btn {
+  margin-top: 8px;
+}
+.agent-history-body {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.3fr);
+  height: min(610px, calc(90vh - 170px));
+  min-height: 350px;
+}
+.agent-history-list {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 20px;
+  border-right: 1px solid #e7e9ed;
+}
+.agent-history-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.agent-history-filters select {
+  min-width: 0;
+  font-size: 12px;
+}
+.agent-history-list > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  overflow: auto;
+}
+.agent-history-list li button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  padding: 14px 10px;
+  border-radius: 8px;
+  border-bottom: 1px solid #eceef1;
+  transition: background 0.15s;
+}
+.agent-history-list li button:hover,
+.agent-history-list li button[aria-pressed="true"] {
+  background: #f3f4f6;
+}
+.agent-history-list li button > span:first-child {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.agent-history-list strong {
+  font-weight: 500;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.agent-history-list small {
+  color: #8a9098;
+  font-size: 11.5px;
+}
+.agent-outcome {
+  white-space: nowrap;
+  color: #656c76;
+  font-size: 11.5px;
+}
+.agent-history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  margin-top: 15px;
+  color: #7d828b;
+}
+.agent-history-detail {
+  padding: 26px;
+  overflow-y: auto;
+  min-width: 0;
+  background: #fafbfc;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.agent-history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.agent-history-heading h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+.agent-history-heading span {
+  color: #7d828b;
+  font-size: 12px;
+}
+.agent-audit-meta {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 8px 12px;
+  margin: 20px 0;
+}
+.agent-audit-meta dt {
+  color: #8a9098;
+  font-size: 12px;
+}
+.agent-audit-meta dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.agent-history-note {
+  color: #8a9098;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.agent-history-empty {
+  padding: 45px 18px;
+  line-height: 1.8;
+  color: #8a9098;
+  font-size: 13px;
+}
+.agent-history-empty strong,
+.agent-history-empty h3 {
+  color: #4b535e;
+  font-size: 15px;
+}
+.agent-history-decision {
+  border-top: 1px solid #e7e9ed;
+  padding-top: 16px;
+  margin-top: 20px;
+}
+.agent-audit-trace {
+  font-size: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+.agent-audit-trace li {
+  padding: 10px 0;
+  border-bottom: 1px solid #e7e9ed;
+  overflow-wrap: anywhere;
+}
+.agent-audit-trace pre {
+  font-size: 11.5px;
+  line-height: 1.7;
+  max-height: 180px;
+  overflow: auto;
+  white-space: pre-wrap;
+  background: #f0f2f5;
+  padding: 12px;
+  border-radius: 7px;
+  margin-top: 10px;
+}
+@media (max-width: 760px) {
+  .agent-history-body {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+  .agent-history-list,
+  .agent-history-detail {
+    overflow: visible;
+  }
+  .agent-history-list > ul {
+    max-height: 250px;
+    flex: none;
+  }
+  .agent-history-list {
+    border-right: 0;
+    border-bottom: 1px solid #e7e9ed;
+  }
+}

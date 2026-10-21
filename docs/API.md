@@ -1,8 +1,14 @@
 # API v1
 
+## Agent 2c：持久审计与决策
+
+`GET /projects/{p}/agent/history?chart_id=&outcome=&page=0&size=10` 返回 `{items,page,size,has_more}`（可省略chart/outcome）；`GET /projects/{p}/agent/runs/{id}/audit` 从MySQL返回脱敏trace、用量、版本与提案摘要。原 `GET runs/{id}` 在内存无此运行时回退审计详情（`historical:true`），不恢复完整config或自动应用。
+
+`POST /projects/{p}/agent/runs/{id}/decision {outcome:"accepted"|"rejected",proposal_hash,reason?}`：必须是pending提案、指纹一致；相同请求幂等，相反决策409。接受还要求本进程有有效提案并重新验证保存revision；历史只能明确拒绝。决策仅记录用户选择，不调用charts保存、不生成图表版本。审计表、脱敏字段、异常重启和失败边界见 [AGENT-AUDIT.md](AGENT-AUDIT.md)。
+
 ## Agent 2b：模型辅助提案（可选）
 
-`GET /agent/provider` 查询配置是否齐备，不主动调用模型。`POST /projects/{p}/agent/runs` 创建202异步运行，输入严格信封 `{protocol_version,chart_id,base_revision,config,prompt,share_metadata:true,max_steps?,max_tokens?,timeout_seconds?}`。`GET /projects/{p}/agent/runs/{run_id}` 返回运行状态与可选提案；`POST /projects/{p}/agent/runs/{run_id}/cancel` 取消在途任务。模型密钥只读后端环境变量；创建前复用 lint 与 revision 校验。助手只产出工具操作，不能保存或写数据；提案需用户确认后才能进入编辑器草稿，保存继续使用既有 charts API。完整字段、预算、隐私边界、配置和独立测试命令见 [AGENT-PROVIDER.md](AGENT-PROVIDER.md)。运行摘要暂存内存，持久审计/接受拒绝记录/30条评测尚属后续2c/2d。
+`GET /agent/provider` 查询配置是否齐备，不主动调用模型。`POST /projects/{p}/agent/runs` 创建202异步运行，输入严格信封 `{protocol_version,chart_id,base_revision,config,prompt,share_metadata:true,max_steps?,max_tokens?,timeout_seconds?}`。`GET /projects/{p}/agent/runs/{run_id}` 返回运行状态与可选提案；`POST /projects/{p}/agent/runs/{run_id}/cancel` 取消在途任务。模型密钥只读后端环境变量；创建前复用 lint 与 revision 校验。助手只产出工具操作，不能保存或写数据；提案需用户确认后才能进入编辑器草稿，保存继续使用既有 charts API。完整字段、预算、隐私边界、配置和独立测试命令见 [AGENT-PROVIDER.md](AGENT-PROVIDER.md)。活动快照留在内存，2c已加入持久审计及接受/拒绝记录；30条双模式评测仍属于待开发的2d。
 
 ## 第八批增量协议：成果复用与交付（2026-10-19）
 
