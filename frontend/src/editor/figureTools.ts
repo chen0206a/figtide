@@ -123,7 +123,8 @@ export function describeFigure(c: Config): string {
     `X=${c.x || "自动"}`,
     c.group ? `分组=${c.group}` : "未分组",
   ];
-  if (c.type === "heatmap") parts.push(`分类=${c.heatY || "未选"}`, `Z=${c.heatZ || "未选"}`);
+  if (c.type === "heatmap")
+    parts.push(`分类=${c.heatY || "未选"}`, `Z=${c.heatZ || "未选"}`);
   parts.push(
     `序列 ${c.series
       .map(
@@ -169,7 +170,14 @@ export function createConfigFromSpec(d: Dataset, spec: FigureSpec): Config {
   if (spec.title) c.style.title = spec.title;
   return c;
 }
-export const columnFields = new Set(["x", "y", "group", "heatY", "heatZ", "error"]);
+export const columnFields = new Set([
+  "x",
+  "y",
+  "group",
+  "heatY",
+  "heatZ",
+  "error",
+]);
 export function operationValues(
   tool: string,
   c: Config,
@@ -220,7 +228,8 @@ export function operationValues(
     }
     case "remove_series":
       return {
-        seriesId: (c.series.find((s) => s.id === target) || c.series.at(-1)!).id,
+        seriesId: (c.series.find((s) => s.id === target) || c.series.at(-1)!)
+          .id,
       };
     default:
       return { ...c.style, fontPt: c.publication?.fontPt || 8 };
@@ -348,9 +357,15 @@ export function structuralAllowance(operations: ToolOperation[]): string[] {
   for (const op of operations) {
     if (op.tool === "set_chart") allowed.add("/type");
     else if (op.tool === "set_mapping")
-      for (const key of ["x", "group", "heatY", "heatZ"]) allowed.add(`/${key}`);
+      for (const key of ["x", "group", "heatY", "heatZ"])
+        allowed.add(`/${key}`);
     else if (["map_series", "add_series", "remove_series"].includes(op.tool))
       allowed.add("/series");
+    else if (
+      op.tool === "set_series" &&
+      typeof op.arguments.seriesId === "string"
+    )
+      allowed.add(`/series-appearance/${op.arguments.seriesId}`);
   }
   return [...allowed];
 }
@@ -363,7 +378,15 @@ export function sameProtectedFigure(
 ): boolean {
   const allow = new Set(allowed);
   const appearance = (s: any) =>
-    JSON.stringify([s.color, s.opacity, s.width, s.dash, s.symbol, s.size, s.visible]);
+    JSON.stringify([
+      s.color,
+      s.opacity,
+      s.width,
+      s.dash,
+      s.symbol,
+      s.size,
+      s.visible,
+    ]);
   const canonical = (value: any): any =>
     Array.isArray(value)
       ? value.map(canonical)
@@ -428,9 +451,14 @@ export function sameProtectedFigure(
       b = protectedState(after);
     if (JSON.stringify(a.state) !== JSON.stringify(b.state)) return false;
     if (!allow.has("/series")) return true;
-    // Structural edits may add or drop series, but a surviving series keeps its look.
+    // Surviving series keep their look unless explicitly targeted by set_series in this batch.
     for (const [id, look] of a.looks)
-      if (b.looks.has(id) && b.looks.get(id) !== look) return false;
+      if (
+        b.looks.has(id) &&
+        b.looks.get(id) !== look &&
+        !allow.has(`/series-appearance/${id}`)
+      )
+        return false;
     return true;
   } catch {
     return false;

@@ -40,4 +40,19 @@ public class Errors {
     return ResponseEntity.internalServerError()
         .body(Map.of("message", "服务暂时无法完成请求，请检查服务日志后重试", "code", "INTERNAL_ERROR"));
   }
+
+  @ExceptionHandler({
+    org.springframework.web.servlet.resource.NoResourceFoundException.class,
+    org.springframework.web.servlet.NoHandlerFoundException.class
+  })
+  ResponseEntity<?> missing(Exception e) {
+    return ResponseEntity.status(404)
+        .body(Map.of("message", "接口或资源不存在", "code", "RESOURCE_NOT_FOUND"));
+  }
+
+  @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+  ResponseEntity<?> method(Exception e) {
+    return ResponseEntity.status(405)
+        .body(Map.of("message", "此接口不支持该请求方法", "code", "METHOD_NOT_ALLOWED"));
+  }
 }

@@ -1,12 +1,12 @@
 # LabFlow
 
-面向 AI / ML 研究生的本地实验数据管理与科研绘图工作台。**第一阶段**：React 工作台 + Java 21 / Spring Boot 3 + 真实 MySQL 8，无 AI API、无订阅服务。
+面向 AI / ML 研究生的本地实验数据管理与科研绘图工作台。React 工作台 + Java 21 / Spring Boot 3 + 真实 MySQL 8；核心绘图完全本地运行，无需 AI API 或订阅。绘图助手为可选功能，默认禁用，需自行配置模型服务。
 
 已完成八批功能增量：[导入与工作台体验](docs/BATCH-1.md)、[实验关联与对比](docs/BATCH-2.md)、[分布图与多子图](docs/BATCH-3.md)、[论文尺寸与经验分布](docs/BATCH-4.md)、[模型评估与实际区间](docs/BATCH-5.md)、[数据处理与重复实验汇总](docs/BATCH-6.md)、[混淆矩阵与共同样本](docs/BATCH-7.md)、[科研成果复用与交付](docs/BATCH-8.md)。当前支持 11 种图表，完整流程连接真实 Java API 和 MySQL。
 
 最新布局整理：[设计依据、操作分区与验收](docs/EDITOR-LAYOUT.md)。
 
-编辑器新增“快捷操作”（Ctrl/Cmd+K）：将文字、坐标轴、图例、序列和画布调整组成清单，真实 Java 校验后预览，一次应用、一步撤销。该工具协议为后续 Agent 接入准备，当前不调用模型。见 [工具协议与运行说明](docs/FIGURE-TOOLS.md)。
+编辑器提供“快捷操作”（Ctrl/Cmd+K）与可选“绘图助手”：将调整组成清单，真实 Java 校验后预览，由用户确认后一次应用、一步撤销。助手使用带预算、超时与取消的 Java 循环，不自动保存。见 [工具协议](docs/FIGURE-TOOLS.md) 与 [模型配置、隐私边界和运行说明](docs/AGENT-PROVIDER.md)。
 
 首页现已加入本地图表示例图廊，并提供独立工作台地址、刷新恢复和导航动效。见 [首页与路由说明](docs/HOME-AND-ROUTING.md)。
 

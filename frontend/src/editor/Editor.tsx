@@ -76,6 +76,7 @@ import { EvaluationResults } from "./EvaluationResults";
 import { ClassificationResults } from "./ClassificationResults";
 import { ReuseDialog } from "./ReuseDialog";
 import { QuickActions } from "./QuickActions";
+import { AgentAssistant } from "./AgentAssistant";
 import { stylePresets, presetThumbnail } from "./stylePresets";
 import { StyleThumbnail } from "./StyleThumbnail";
 import "./styles-library.css";
@@ -386,6 +387,7 @@ function Workbench(
   const [plotError, setPlotError] = useState("");
   const [reuseOpen, setReuseOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
+  const [agentOpen, setAgentOpen] = useState(false);
   const [reuseTab, setReuseTab] = useState<"builtin" | "style">("style");
   const [previewPreset, setPreviewPreset] = useState("");
   const plotReady = useRef<Promise<any>>(Promise.resolve());
@@ -638,7 +640,7 @@ function Workbench(
           setQuickOpen(true);
         return;
       }
-      if (quickOpen) {
+      if (quickOpen || agentOpen) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s")
           e.preventDefault();
         return;
@@ -779,6 +781,14 @@ function Workbench(
             onClick={() => setQuickOpen(true)}
           >
             快捷操作
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={saving || c.datasetVersionId !== p.data.id}
+            onClick={() => setAgentOpen(true)}
+          >
+            绘图助手
           </Button>
           <Button
             variant="ghost"
@@ -2142,6 +2152,28 @@ function Workbench(
           </Button>
         </div>
       </Dialog>
+      {agentOpen && (
+        <AgentAssistant
+          project={p.project}
+          chartId={id}
+          revision={revision}
+          config={c}
+          data={p.data}
+          token={JSON.stringify({ serialized, id, revision })}
+          onClose={() => setAgentOpen(false)}
+          onApply={(token, config, count) => {
+            if (
+              token !== JSON.stringify({ serialized, id, revision }) ||
+              saving
+            )
+              return false;
+            change(config);
+            setLogs((l) => [`已确认助手提案 · ${count} 项`, ...l].slice(0, 30));
+            p.notify(`已应用 ${count} 项调整，可撤销`);
+            return true;
+          }}
+        />
+      )}
       {quickOpen && (
         <QuickActions
           project={p.project}

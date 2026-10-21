@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 test("reference gallery keeps scrolling on hover and focus, credits sources and fits a centered home", async ({
   page,
+  baseURL,
 }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.addInitScript(() =>
@@ -9,7 +10,7 @@ test("reference gallery keeps scrolling on hover and focus, credits sources and 
   const external: string[] = [];
   page.on("request", (r) => {
     if (
-      !r.url().startsWith("http://127.0.0.1:5176") &&
+      !r.url().startsWith(baseURL || "http://127.0.0.1:5176") &&
       !r.url().startsWith("data:")
     )
       external.push(r.url());

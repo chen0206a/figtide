@@ -5,7 +5,7 @@ import { api, send, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
 import { Dialog } from "../components/ui/dialog";
 import type { Config } from "./model";
-import { StylePreview } from "./StylePreview";
+import { ProposalPreview } from "./ProposalPreview";
 import {
   operationValues,
   sameProtectedFigure,
@@ -14,7 +14,6 @@ import {
   columnFields,
   toolFieldAvailable,
   makeToolOperation,
-  changeLabel,
   displayToolValue,
   toolFieldNames,
   toolValueNames,
@@ -71,8 +70,13 @@ export function QuickActions(p: {
     setValues(operationValues(name, p.config));
     setError("");
     setEnabled(
-      ["set_chart", "set_mapping", "map_series", "add_series", "remove_series"]
-        .includes(name)
+      [
+        "set_chart",
+        "set_mapping",
+        "map_series",
+        "add_series",
+        "remove_series",
+      ].includes(name)
         ? []
         : [
             name === "set_style"
@@ -465,42 +469,11 @@ export function QuickActions(p: {
           </Button>
         </section>
         <aside className="quick-result">
-          <div className="quick-result-scroll">
-            <div className="quick-result-heading">
-              <h3>{preview ? "调整后预览" : "当前画布"}</h3>
-              <span>
-                {preview
-                  ? `${preview.result.changes.length} 处变化`
-                  : "尚未应用"}
-              </span>
-            </div>
-            <StylePreview
-              config={preview?.result.config || p.config}
-              data={p.data}
-            />
-            {!preview ? (
-              <p className="quick-actions-note">预览不会保存或修改当前图表。</p>
-            ) : !preview.result.changes.length ? (
-              <p className="quick-actions-note">
-                这些设置与当前画布相同，无需应用。
-              </p>
-            ) : (
-              <ul className="quick-changes" aria-label="修改明细">
-                {preview.result.changes.map((v) => (
-                  <li key={v.path}>
-                    <strong>{changeLabel(v.path, p.config)}</strong>
-                    <span>
-                      <del>
-                        {displayToolValue(v.before, v.path.split("/").at(-1))}
-                      </del>
-                      <ArrowRight size={12} />
-                      {displayToolValue(v.after, v.path.split("/").at(-1))}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <ProposalPreview
+            config={p.config}
+            data={p.data}
+            preview={preview?.result}
+          />
           <div className="quick-result-footer">
             <p>应用作为一步操作，可撤销。正式版本仍需点击保存。</p>
             <Button

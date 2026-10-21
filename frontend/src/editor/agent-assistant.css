@@ -1,0 +1,141 @@
+.agent-provider {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e8ebef;
+  margin-bottom: 20px;
+  color: #34383f;
+}
+.agent-provider div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.agent-provider strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.agent-provider span {
+  font-size: 12px;
+  color: #7d828b;
+  overflow-wrap: anywhere;
+}
+.agent-setup {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.agent-setup p {
+  margin: 8px 0;
+  color: #6b7280;
+  overflow-wrap: anywhere;
+}
+.agent-prompt {
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.agent-prompt textarea {
+  resize: vertical;
+  min-height: 110px;
+  font-size: 14px;
+  line-height: 1.8;
+  border-radius: 10px;
+}
+.agent-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 12px 0 18px;
+}
+.agent-suggestions button {
+  font-size: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 30px;
+  padding: 6px 11px;
+  color: #656b75;
+  background: #fff;
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+.agent-suggestions button:hover {
+  background: #f2f3f5;
+  color: #202329;
+}
+.agent-consent {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #737984;
+}
+.agent-consent input {
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.agent-controls {
+  display: flex;
+  gap: 9px;
+  margin-top: 18px;
+}
+.agent-reply {
+  padding-top: 20px;
+  margin-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.agent-reply p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.agent-run-status {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+}
+.agent-run-status span {
+  font-size: 12px;
+  color: #7d828b;
+}
+.agent-reply details {
+  margin-top: 16px;
+  color: #7d828b;
+  font-size: 12px;
+}
+.agent-reply summary {
+  cursor: pointer;
+  color: #505966;
+}
+.agent-reply code {
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+}
+.agent-reply ol {
+  padding-left: 18px;
+}
+.agent-spin {
+  animation: agent-spin 1s linear infinite;
+}
+@keyframes agent-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agent-spin {
+    animation: none;
+  }
+  .agent-suggestions button {
+    transition: none;
+  }
+}

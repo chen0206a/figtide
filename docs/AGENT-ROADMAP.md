@@ -10,11 +10,13 @@
 - `POST /projects/{p}/figure-tools/lint`（`lint_figure`）：包现有 `validateAndReport`，合法返回 `{ok:true, source}`，不合法返回 `{ok:false, issues:[{code,message}]}` 而不是 400；协议/信封/跨项目/旧 revision 仍 400/404/409；只读。
 - 目录新增 `read_tools`（`get_figure_spec`、`lint_figure`、`get_dataset_profile`），与十个可预览工具分开。
 - 批次原子性固化：全过或全不生效、预览一次、撤销一步；失败批次不动 `revision` 与 `chart_versions`。
-- 测试污染：E2E `globalSetup` 记水位、`globalTeardown` 调 `DELETE /api/test/projects?after=` 清理；接口只在 `--labflow.test-support=true` 时注册，要求 `X-LabFlow-Test-Run: 1` 且 `after>=1`。
+- 测试隔离：E2E `globalSetup` 记水位、`globalTeardown` 调 `DELETE /api/test/projects?after=` 清理；接口只在 `--labflow.test-support=true` 时注册，要求 `X-LabFlow-Test-Run: 1` 且 `after>=1`。2b核查后增加仅允许 `labflow_test/labflow_e2e` 库、普通启动默认关闭；水位清理只能用于独占测试库。
 
 已交付判据：Java 73/73、Vitest 124/124、E2E 42/42（清理 37 个项目，库计数不变）。
 
-## 2b 模型适配层
+## 2b 模型适配层（已实现，验证与边界见 AGENT-PROVIDER.md）
+
+实现为 `ModelProvider` + Chat Completions HTTP 适配器 + 有界 Java 运行循环与编辑器提案确认。详见 [运行协议、配置与边界](AGENT-PROVIDER.md)。未进行收费服务实测，完整持久审计和30条评测仍属于2c/2d。
 
 - **最小 provider 接口**：输入「消息列表 + 工具定义」，输出「文本或工具调用」。先接一家 OpenAI 兼容的 DeepSeek 端点；密钥只从环境变量读，不落库、不写日志、不进仓库。
 - **循环用 Java 写**，不引入 LangGraph / FastAPI / 额外 Python 服务：工具、校验、数据都在 Java，多起一个进程只会增加部署与调试面。Harness 的价值在预算、取消、校验、审计、评测，不在框架名字。

@@ -1,5 +1,9 @@
 # API v1
 
+## Agent 2b：模型辅助提案（可选）
+
+`GET /agent/provider` 查询配置是否齐备，不主动调用模型。`POST /projects/{p}/agent/runs` 创建202异步运行，输入严格信封 `{protocol_version,chart_id,base_revision,config,prompt,share_metadata:true,max_steps?,max_tokens?,timeout_seconds?}`。`GET /projects/{p}/agent/runs/{run_id}` 返回运行状态与可选提案；`POST /projects/{p}/agent/runs/{run_id}/cancel` 取消在途任务。模型密钥只读后端环境变量；创建前复用 lint 与 revision 校验。助手只产出工具操作，不能保存或写数据；提案需用户确认后才能进入编辑器草稿，保存继续使用既有 charts API。完整字段、预算、隐私边界、配置和独立测试命令见 [AGENT-PROVIDER.md](AGENT-PROVIDER.md)。运行摘要暂存内存，持久审计/接受拒绝记录/30条评测尚属后续2c/2d。
+
 ## 第八批增量协议：成果复用与交付（2026-10-19）
 
 `GET /api/style-templates` 返回本机全部模板 `{id,project_id,project_name,name,schema_version,profile,created_at}`；`POST /api/projects/{p}/style-templates {name,config}` 从合法 schema v1 图表中提取外观白名单，返回 `{id,name,profile}`；`DELETE /api/style-templates/{id}` 返回 `{deleted:id}`。本地单用户模式，模板创建项目用于归属和备份，可跨项目应用。profile v1 不含数据版本、字段、标题、轴范围/对数、过滤或统计值；序列只包含 color/opacity/width/dash/symbol/size 及可选 band.opacity。
@@ -247,7 +251,7 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 
 ## 测试支持接口（仅本机开发）
 
-后端以 `--labflow.test-support=true` 启动时（`scripts/start.ps1` 已默认传入）额外注册：
+后端显式以 `--labflow.test-support=true` 启动时额外注册。`scripts/start.ps1` 默认不启用；清理仅允许连接独立 `labflow_test` / `labflow_e2e` 库，正式 `labflow` 库即使误启用也返回403。推荐 `scripts/test-agent.ps1 -All` 在独占测试库执行浏览器验收。
 
 `DELETE /api/test/projects?after={id}` 删除 `id > after` 的项目及其图表/版本/实验/关联/数据/样式模板（按外键顺序，单事务），返回 `{deleted,projects[]}`。必须带请求头 `X-LabFlow-Test-Run: 1` 且 `after >= 1`，否则 400；未启用该属性时整个控制器不注册，路由 404。E2E 用它做运行后自动清理（见 [验收记录](TEST-RESULTS.md)）。
 

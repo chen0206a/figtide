@@ -82,4 +82,4 @@ foreach ($entry in @(@{name='backend';port=8086},@{name='frontend';port=5176})) 
     $processes | ConvertTo-Json | Set-Content '.runtime/processes.json'
 }
 Write-Host 'LabFlow: http://127.0.0.1:5176 | API: http://127.0.0.1:8086/api/health'
-Write-Host 'Local single-user mode only. No external AI service is used.'
+Write-Host 'Local single-user mode. Optional model assistance is disabled until configured.'

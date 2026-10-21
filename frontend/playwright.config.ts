@@ -1,10 +1,11 @@
 import { defineConfig } from "@playwright/test";
+const webUrl = process.env.LABFLOW_WEB_URL || "http://127.0.0.1:5176";
 export default defineConfig({
   testDir: "./e2e",
   workers: 1,
   timeout: 90000,
   use: {
-    baseURL: "http://127.0.0.1:5176",
+    baseURL: webUrl,
     viewport: { width: 1560, height: 1000 },
     headless: true,
     acceptDownloads: true,
@@ -20,9 +21,8 @@ export default defineConfig({
   globalTeardown: "./e2e/global-teardown.ts",
   // 开发服务器缺失时自动拉起，已有实例则直接复用（后端与 MySQL 仍需外部就绪）。
   webServer: {
-    command:
-      "node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5176 --strictPort",
-    url: "http://127.0.0.1:5176",
+    command: `node node_modules/vite/bin/vite.js --host 127.0.0.1 --port ${new URL(webUrl).port || "5176"} --strictPort`,
+    url: webUrl,
     reuseExistingServer: true,
     timeout: 120000,
   },
