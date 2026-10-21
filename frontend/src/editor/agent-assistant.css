@@ -1,3 +1,218 @@
+.agent-dock[hidden] {
+  display: none;
+}
+.agent-dock {
+  display: flex;
+  flex-direction: column;
+  width: clamp(370px, 30vw, 460px);
+  flex-shrink: 0;
+  min-width: 0;
+  min-height: 0;
+  background: #fff;
+  border-left: 1px solid #e5e7eb;
+  color: #24262c;
+}
+.editor.assistant-open .editor-right,
+.editor.assistant-open .resize-right {
+  display: none;
+}
+.agent-dock-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 16px;
+}
+.agent-dock-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.agent-dock-heading p {
+  margin: 7px 0 0;
+  font-size: 12px;
+  color: #7d828b;
+}
+.agent-dock .agent-tabs {
+  padding: 0 20px;
+  gap: 22px;
+}
+.agent-dock .quick-actions-body {
+  display: block;
+  height: auto;
+  min-height: 0;
+  overflow-y: auto;
+  border: 0;
+  flex: 1;
+}
+.agent-dock .quick-actions-builder {
+  padding: 20px;
+  overflow: visible;
+}
+.agent-dock .agent-provider {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  gap: 8px;
+}
+.agent-dock .agent-provider strong {
+  font-size: 12px;
+}
+.agent-dock .agent-provider span {
+  font-size: 11.5px;
+}
+.agent-connection-indicator {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: #858a93;
+  white-space: nowrap;
+}
+.agent-connection-indicator.connected {
+  color: #477b65;
+}
+.agent-thread {
+  display: grid;
+  gap: 18px;
+}
+.agent-welcome {
+  padding: 18px 0 22px;
+}
+.agent-welcome strong {
+  font-size: 16px;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+}
+.agent-welcome p {
+  margin: 9px 0 0;
+  color: #7d828b;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.agent-user-message {
+  padding: 11px 14px;
+  margin: 0 0 13px 24px;
+  background: #f2f3f5;
+  border-radius: 14px 14px 3px 14px;
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.agent-assistant-message {
+  font-size: 13px;
+  line-height: 1.9;
+}
+.agent-assistant-message small {
+  display: block;
+  font-size: 11.5px;
+  color: #878c96;
+  margin-bottom: 6px;
+}
+.agent-assistant-message p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.agent-turn {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #eceef0;
+}
+.agent-thread + .btn {
+  margin: 10px 0;
+}
+.agent-thinking {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #777e88;
+  font-size: 12px;
+}
+.agent-context-note {
+  font-size: 11.5px;
+  color: #858a93;
+  line-height: 1.7;
+  margin: 8px 0 0;
+}
+.agent-dock .agent-prompt {
+  margin-top: 14px;
+  font-size: 12px;
+}
+.agent-dock .agent-prompt textarea {
+  min-height: 86px;
+  font-size: 13px;
+}
+.agent-dock .agent-suggestions {
+  margin-bottom: 12px;
+}
+.agent-dock .agent-controls > .btn:first-child {
+  flex: 1;
+  justify-content: center;
+}
+.agent-dock .agent-reply {
+  margin-top: 16px;
+  padding-top: 12px;
+}
+.agent-dock .quick-result {
+  display: block;
+  overflow: visible;
+  border-left: 0;
+  border-top: 1px solid #e8ebef;
+  background: #fafafa;
+}
+.agent-dock .quick-result-scroll {
+  overflow: visible;
+  padding: 20px;
+}
+.agent-dock .quick-result-footer {
+  padding: 16px 20px;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  border-top: 1px solid #e8ebef;
+}
+.agent-dock > .quick-result-footer {
+  position: static;
+  flex: 0 0 auto;
+  max-height: 44%;
+  overflow-y: auto;
+}
+.agent-dock .quick-result-footer > .btn {
+  width: 100%;
+  justify-content: center;
+}
+.agent-dock .agent-history-body {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: auto;
+  min-height: 0;
+  flex: 1;
+}
+.agent-dock .agent-history-list {
+  flex: 0 0 auto;
+  border-right: 0;
+  border-bottom: 1px solid #e7e9ed;
+}
+.agent-dock .agent-history-list > ul {
+  max-height: 220px;
+  flex: none;
+}
+.agent-dock .agent-history-detail {
+  padding: 20px;
+  overflow: visible;
+}
+@media (max-width: 1180px) {
+  .editor.assistant-open .editor-left,
+  .editor.assistant-open .resize-left {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .agent-dock {
+    width: min(400px, 90vw);
+  }
+}
 .agent-provider {
   display: flex;
   gap: 12px;

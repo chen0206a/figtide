@@ -185,8 +185,9 @@ class FigureToolsIntegrationTest {
     mvc.perform(get("/api/figure-tools/spec").param("type", "heatmap"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.types.length()").value(1))
-        .andExpect(jsonPath("$.types[0].required_roles[0]").value("heatY"))
-        .andExpect(jsonPath("$.types[0].required_roles[1]").value("heatZ"));
+        .andExpect(jsonPath("$.types[0].required_roles[0]").value("x"))
+        .andExpect(jsonPath("$.types[0].required_roles[1]").value("heatY"))
+        .andExpect(jsonPath("$.types[0].required_roles[2]").value("heatZ"));
     mvc.perform(get("/api/figure-tools/spec").param("type", "histogram"))
         .andExpect(jsonPath("$.types[0].required_roles.length()").value(1))
         .andExpect(jsonPath("$.types[0].required_roles[0]").value("y"));

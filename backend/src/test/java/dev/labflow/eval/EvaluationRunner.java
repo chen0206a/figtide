@@ -111,7 +111,7 @@ final class EvaluationRunner {
           row.path("steps").asInt());
     }
     report.put("finished_at", Instant.now().toString());
-    report.set("summary", summarize(rows));
+    report.set("summary", summarize(json, rows));
     if (baseline != null) {
       report.set("comparison", compare(report, baseline));
       report
@@ -171,7 +171,7 @@ final class EvaluationRunner {
           ((Number)
                   workspace.saveChart(project, null, "Evaluation fixture", null, config).get("id"))
               .longValue();
-      String before = fingerprint(project);
+      String before = fingerprint(json, db, project);
       ModelProvider provider =
           mode.equals("replay") ? new ReplayProvider((ArrayNode) item.path("recording")) : live;
       try (var harness =
@@ -213,7 +213,7 @@ final class EvaluationRunner {
                 result,
                 config,
                 allowed,
-                before.equals(fingerprint(project)),
+                before.equals(fingerprint(json, db, project)),
                 lint,
                 source,
                 record.path("status").equals(result.path("status"))
@@ -251,7 +251,7 @@ final class EvaluationRunner {
           .put("verdict", "FAIL")
           .put("infrastructure_error", error.getClass().getSimpleName());
     } finally {
-      if (project != 0) cleanup(project);
+      if (project != 0) cleanup(db, transaction, project);
     }
     return row;
   }
@@ -267,7 +267,7 @@ final class EvaluationRunner {
     throw new IllegalStateException("Evaluation wait exceeded harness timeout");
   }
 
-  private String fingerprint(long project) {
+  static String fingerprint(ObjectMapper json, JdbcTemplate db, long project) {
     var value = json.createArrayNode();
     value.add(json.valueToTree(db.queryForList("SELECT * FROM projects WHERE id=?", project)));
     value.add(
@@ -298,7 +298,7 @@ final class EvaluationRunner {
     return AuditSanitizer.hash(value);
   }
 
-  private void cleanup(long project) {
+  static void cleanup(JdbcTemplate db, TransactionTemplate transaction, long project) {
     // Exact id created by this invocation, never a watermark, name match, or other user's project.
     transaction.executeWithoutResult(
         status -> {
@@ -322,7 +322,7 @@ final class EvaluationRunner {
         });
   }
 
-  private static void set(ObjectNode root, String pointer, JsonNode value) {
+  static void set(ObjectNode root, String pointer, JsonNode value) {
     int split = pointer.lastIndexOf('/');
     var parent = root.at(pointer.substring(0, split));
     if (!(parent instanceof ObjectNode object))
@@ -381,7 +381,7 @@ final class EvaluationRunner {
     if (categories.size() != 3) throw new IllegalArgumentException("All three categories required");
   }
 
-  private ObjectNode summarize(ArrayNode rows) {
+  static ObjectNode summarize(ObjectMapper json, ArrayNode rows) {
     var out = json.createObjectNode().put("total", rows.size());
     int passed = 0,
         review = 0,

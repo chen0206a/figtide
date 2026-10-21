@@ -640,7 +640,7 @@ function Workbench(
           setQuickOpen(true);
         return;
       }
-      if (quickOpen || agentOpen) {
+      if (quickOpen || (e.target as HTMLElement).closest(".agent-dock")) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s")
           e.preventDefault();
         return;
@@ -721,7 +721,7 @@ function Workbench(
   return (
     <div
       aria-busy={saving}
-      className={`editor ${preview ? "preview-mode" : ""} ${!panels.left ? "hide-left" : ""} ${!panels.right ? "hide-right" : ""}`}
+      className={`editor ${preview ? "preview-mode" : ""} ${!panels.left ? "hide-left" : ""} ${!panels.right ? "hide-right" : ""} ${agentOpen ? "assistant-open" : ""}`}
     >
       <div className="editor-toolbar">
         <div className="figure-info">
@@ -768,8 +768,13 @@ function Workbench(
           <Button
             variant="ghost"
             size="sm"
-            aria-pressed={panels.right}
-            onClick={() => togglePanel("right")}
+            aria-pressed={panels.right && !agentOpen}
+            onClick={() => {
+              if (agentOpen) {
+                setAgentOpen(false);
+                if (!panels.right) togglePanel("right");
+              } else togglePanel("right");
+            }}
           >
             属性栏
           </Button>
@@ -786,7 +791,9 @@ function Workbench(
             variant="ghost"
             size="sm"
             disabled={saving || c.datasetVersionId !== p.data.id}
-            onClick={() => setAgentOpen(true)}
+            aria-expanded={agentOpen}
+            aria-controls="figure-assistant"
+            onClick={() => setAgentOpen((value) => !value)}
           >
             绘图助手
           </Button>
@@ -2090,6 +2097,29 @@ function Workbench(
             </div>
           </div>
         </aside>
+        <AgentAssistant
+          key={`${p.project}:${p.chartId || "draft"}:${p.data.id}`}
+          docked
+          open={agentOpen}
+          project={p.project}
+          chartId={id}
+          revision={revision}
+          config={c}
+          data={p.data}
+          token={JSON.stringify({ serialized, id, revision })}
+          onClose={() => setAgentOpen(false)}
+          onApply={(token, config, count) => {
+            if (
+              token !== JSON.stringify({ serialized, id, revision }) ||
+              saving
+            )
+              return false;
+            change(config);
+            setLogs((l) => [`已确认助手提案 · ${count} 项`, ...l].slice(0, 30));
+            p.notify(`已应用 ${count} 项调整，可撤销`);
+            return true;
+          }}
+        />
       </div>
       <div className="editor-statusbar">
         <span>
@@ -2152,28 +2182,6 @@ function Workbench(
           </Button>
         </div>
       </Dialog>
-      {agentOpen && (
-        <AgentAssistant
-          project={p.project}
-          chartId={id}
-          revision={revision}
-          config={c}
-          data={p.data}
-          token={JSON.stringify({ serialized, id, revision })}
-          onClose={() => setAgentOpen(false)}
-          onApply={(token, config, count) => {
-            if (
-              token !== JSON.stringify({ serialized, id, revision }) ||
-              saving
-            )
-              return false;
-            change(config);
-            setLogs((l) => [`已确认助手提案 · ${count} 项`, ...l].slice(0, 30));
-            p.notify(`已应用 ${count} 项调整，可撤销`);
-            return true;
-          }}
-        />
-      )}
       {quickOpen && (
         <QuickActions
           project={p.project}

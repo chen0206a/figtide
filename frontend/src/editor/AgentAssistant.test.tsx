@@ -101,7 +101,10 @@ it("permits explicit appearance edits in a structural batch without allowing oth
     sameProtectedFigure(config, after, structuralAllowance(operations)),
   ).toBe(false);
 });
-function setup(mock?: (url: string, init?: RequestInit) => unknown) {
+function setup(
+  mock?: (url: string, init?: RequestInit) => unknown,
+  docked = false,
+) {
   const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
     const body =
       mock?.(url, init) ??
@@ -129,6 +132,8 @@ function setup(mock?: (url: string, init?: RequestInit) => unknown) {
     token: "snapshot-1",
     onApply,
     onClose,
+    docked,
+    open: true,
   };
   const ui = (values = props) => (
     <QueryClientProvider client={client}>
@@ -138,6 +143,68 @@ function setup(mock?: (url: string, init?: RequestInit) => unknown) {
   const view = render(ui());
   return { fetcher, onApply, onClose, ...view, ui, props };
 }
+it("keeps a docked proposal and conversation visible after applying, and hides without losing context", async () => {
+  const s = setup(undefined, true);
+  await start();
+  await screen.findByText("提案已就绪");
+  expect(screen.getByRole("complementary", { name: "绘图助手" })).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "应用这组调整" }));
+  await waitFor(() => expect(s.onApply).toHaveBeenCalled());
+  expect(s.onClose).not.toHaveBeenCalled();
+  expect(
+    screen.queryByText("提案来源或配置不一致，请重新生成。"),
+  ).not.toBeInTheDocument();
+  s.rerender(s.ui({ ...s.props, open: false }));
+  expect(
+    screen.queryByRole("complementary", { name: "绘图助手" }),
+  ).not.toBeInTheDocument();
+  s.rerender(s.ui({ ...s.props, open: true }));
+  expect(screen.getByRole("log", { name: "本次绘图对话" })).toHaveTextContent(
+    "字号改为18",
+  );
+});
+it("sends the assistant question with the next answer and can start a fresh conversation", async () => {
+  const answered = {
+    ...run,
+    status: "answered",
+    outcome: "answered",
+    text: "请问 X 轴还是 Y 轴？",
+    proposal: undefined,
+  };
+  const s = setup(
+    (url) => (url.endsWith("/runs") ? answered : undefined),
+    true,
+  );
+  await start();
+  await screen.findByText("请问 X 轴还是 Y 轴？");
+  fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
+    target: { value: "Y 轴" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "生成调整提案" }));
+  await waitFor(() =>
+    expect(
+      s.fetcher.mock.calls.filter(
+        ([url, init]) => url.endsWith("/runs") && init?.method === "POST",
+      ),
+    ).toHaveLength(2),
+  );
+  const sent = s.fetcher.mock.calls
+    .filter(([url, init]) => url.endsWith("/runs") && init?.method === "POST")
+    .at(-1)!;
+  expect(JSON.parse(sent[1]!.body as string).prompt).toContain(
+    "请问 X 轴还是 Y 轴？",
+  );
+  expect(JSON.parse(sent[1]!.body as string).prompt).toContain(
+    "本轮需求：\nY 轴",
+  );
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "开始新对话" })).toBeEnabled(),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "开始新对话" }));
+  expect(
+    screen.getByRole("log", { name: "本次绘图对话" }),
+  ).not.toHaveTextContent("请问 X 轴还是 Y 轴？");
+});
 async function start() {
   await screen.findByText("fixture");
   fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {

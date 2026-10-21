@@ -2,6 +2,48 @@ import { test, expect, type APIRequestContext } from "@playwright/test";
 import { defaults } from "../src/editor/model";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
+test("clarification carries into a follow-up and collapsing the panel preserves the conversation", async ({
+  page,
+  request,
+}) => {
+  const f = await fixture(request);
+  await page.goto(f.url);
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  const panel = page.getByRole("complementary", {
+    name: "绘图助手",
+    exact: true,
+  });
+  await panel
+    .getByRole("textbox", { name: "希望怎样调整？" })
+    .fill("轴方向测试：把范围改为0到1");
+  await panel.getByRole("checkbox").check();
+  await panel.getByRole("button", { name: "生成调整提案" }).click();
+  await expect(panel.getByRole("log")).toContainText(
+    "请问要调整 X 轴还是 Y 轴？",
+  );
+  await panel.getByRole("button", { name: "收起绘图助手" }).click();
+  await expect(panel).not.toBeVisible();
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  await expect(panel.getByRole("log")).toContainText("轴方向测试");
+  await panel.getByRole("textbox", { name: "希望怎样调整？" }).fill("Y 轴");
+  const sent = page.waitForRequest(
+    (r) => r.url().endsWith("/agent/runs") && r.method() === "POST",
+  );
+  await panel.getByRole("button", { name: "生成调整提案" }).click();
+  expect((await sent).postDataJSON().prompt).toContain(
+    "请问要调整 X 轴还是 Y 轴？",
+  );
+  await expect(panel.getByText("提案已就绪", { exact: true })).toBeVisible();
+  expect((await (await request.get(f.api)).json()).revision).toBe(1);
+  await panel.getByRole("button", { name: "应用这组调整" }).click();
+  await expect(panel.getByText("已接受", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect(page.getByText("已保存 v2", { exact: true })).toBeVisible();
+  const saved = await (await request.get(f.api)).json();
+  expect(saved.config.axes.y.min).toBe("0");
+  expect(saved.config.axes.y.max).toBe("1");
+  expect(saved.config.axes.x).toEqual(f.config.axes.x);
+});
 async function fixture(request: APIRequestContext) {
   const provider = await (await request.get("/api/agent/provider")).json();
   test.skip(
@@ -49,7 +91,10 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
     "Before agent",
   );
   await page.getByRole("button", { name: "绘图助手", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "绘图助手", exact: true });
+  const dialog = page.getByRole("complementary", {
+    name: "绘图助手",
+    exact: true,
+  });
   await expect(
     dialog.getByRole("button", { name: "生成调整提案" }),
   ).toBeDisabled();
@@ -73,7 +118,7 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   );
   await dialog.getByText("运行记录", { exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/agent-proposal.png",
+    path: "../docs/screenshots/agent-conversation.png",
     fullPage: true,
   });
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -81,7 +126,8 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
     dialog.getByRole("button", { name: "应用这组调整" }),
   ).toBeInViewport();
   await dialog.getByRole("button", { name: "应用这组调整" }).click();
-  await expect(dialog).not.toBeVisible();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText("已接受", { exact: true })).toBeVisible();
   const audits = await (
     await request.get(
       `/api/projects/${f.project.id}/agent/history?chart_id=${f.chart.id}`,
@@ -117,7 +163,10 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   expect(svg).not.toContain("<image");
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "绘图助手", exact: true }).click();
-  const reopened = page.getByRole("dialog", { name: "绘图助手", exact: true });
+  const reopened = page.getByRole("complementary", {
+    name: "绘图助手",
+    exact: true,
+  });
   await reopened.getByRole("tab", { name: "运行历史" }).click();
   await reopened
     .getByLabel("运行历史列表")
@@ -127,7 +176,7 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
     reopened.getByRole("heading", { name: "已接受", exact: true }),
   ).toBeVisible();
   await expect(reopened.getByLabel("历史运行详情")).toContainText(
-    "figure-assistant-v1",
+    "figure-assistant-v3",
   );
   await reopened
     .getByText("第 1 步 · 文字与字体 · 调用", { exact: true })
@@ -137,7 +186,7 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   ).toContainText('"fontSize": 18');
   await page.setViewportSize({ width: 1560, height: 1000 });
   await page.screenshot({
-    path: "../docs/screenshots/agent-audit.png",
+    path: "../docs/screenshots/agent-conversation-history.png",
     fullPage: true,
   });
 });
@@ -148,7 +197,10 @@ test("cancel during a pending HTTP response leaves no proposal or chart mutation
   const f = await fixture(request);
   await page.goto(f.url);
   await page.getByRole("button", { name: "绘图助手", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "绘图助手", exact: true });
+  const dialog = page.getByRole("complementary", {
+    name: "绘图助手",
+    exact: true,
+  });
   await dialog
     .getByRole("textbox", { name: "希望怎样调整？" })
     .fill("慢速绘图测试");
@@ -175,7 +227,10 @@ test("explicit rejection is persisted, redacted, immutable and readable after re
   const f = await fixture(request);
   await page.goto(f.url);
   await page.getByRole("button", { name: "绘图助手", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "绘图助手", exact: true });
+  const dialog = page.getByRole("complementary", {
+    name: "绘图助手",
+    exact: true,
+  });
   await dialog
     .getByRole("textbox", { name: "希望怎样调整？" })
     .fill("调整字号与图例");
@@ -194,7 +249,10 @@ test("explicit rejection is persisted, redacted, immutable and readable after re
   expect((await (await request.get(f.api)).json()).config).toEqual(f.config);
   await page.reload();
   await page.getByRole("button", { name: "绘图助手", exact: true }).click();
-  const history = page.getByRole("dialog", { name: "绘图助手", exact: true });
+  const history = page.getByRole("complementary", {
+    name: "绘图助手",
+    exact: true,
+  });
   await history.getByRole("tab", { name: "运行历史" }).click();
   await history.getByLabel("历史结果").selectOption("rejected");
   await history

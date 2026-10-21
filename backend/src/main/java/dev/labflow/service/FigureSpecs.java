@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Read-only description of what the figure editor can build. It answers the questions a caller
- * must settle before proposing {@code operations}: which types exist, which data roles each type
- * needs, and which editorial blocks are mandatory. It deliberately contains no defaults — the
- * editor owns those (see {@code frontend/src/editor/model.ts}).
+ * Read-only description of what the figure editor can build. It answers the questions a caller must
+ * settle before proposing {@code operations}: which types exist, which data roles each type needs,
+ * and which editorial blocks are mandatory. It deliberately contains no defaults — the editor owns
+ * those (see {@code frontend/src/editor/model.ts}).
  */
 public final class FigureSpecs {
   private FigureSpecs() {}
@@ -35,20 +35,28 @@ public final class FigureSpecs {
               "",
               "可按分组列叠加多条线，误差列与区间带可选"),
           new Type("bar", "柱状图", List.of("x", "y"), List.of("group", "error"), "", "分组列生成并列柱"),
-          new Type("scatter", "散点图", List.of("x", "y"), List.of("group", "error"), "", "适合两个数值列的关系"),
+          new Type(
+              "scatter", "散点图", List.of("x", "y"), List.of("group", "error"), "", "适合两个数值列的关系"),
           new Type(
               "heatmap",
               "热力图",
-              List.of("heatY", "heatZ"),
+              List.of("x", "heatY", "heatZ"),
               List.of(),
               "",
-              "Y 轴是分类列（行），Z 轴是数值列（着色）；不使用 x/y"),
+              "X 读取 x 列，Y 分类读取 heatY，Z 着色读取 heatZ；不使用 series[].y"),
           new Type("box", "箱线图", List.of("x", "y"), List.of("group"), "", "按分类列分组展示数值分布"),
           new Type("violin", "小提琴图", List.of("x", "y"), List.of("group"), "", "同箱线图，另示意密度"),
           new Type("histogram", "直方图", List.of("y"), List.of("group"), "", "X 轴自动换成分箱计数"),
           new Type("ecdf", "经验分布", List.of("y"), List.of("group"), "", "X 轴自动换成分位"),
-          new Type("roc", "ROC 曲线", List.of("y"), List.of(), "evaluation", "需要 evaluation 块（真实标签列 + 正类）"),
-          new Type("pr", "PR 曲线", List.of("y"), List.of(), "evaluation", "需要 evaluation 块（真实标签列 + 正类）"),
+          new Type(
+              "roc",
+              "ROC 曲线",
+              List.of("y"),
+              List.of(),
+              "evaluation",
+              "需要 evaluation 块（真实标签列 + 正类）"),
+          new Type(
+              "pr", "PR 曲线", List.of("y"), List.of(), "evaluation", "需要 evaluation 块（真实标签列 + 正类）"),
           new Type(
               "confusion",
               "混淆矩阵",
@@ -88,7 +96,7 @@ public final class FigureSpecs {
     }
     var rules = root.putArray("rules");
     rules.add("固定 X 的类型：histogram、ecdf、roc、pr、confusion —— 不接受 set_mapping 改 x");
-    rules.add("热力图不接受 x/y；切到 heatmap 前必须先给 heatY 与 heatZ");
+    rules.add("热力图 X 读取 x；切到 heatmap 前先设置 heatY 与 heatZ，可在同批先映射再切图型");
     rules.add("y / heatZ / error / band 只能引用数值列，x / group / heatY 只能是当前数据版本里的列名");
     rules.add("文本列不能当 Y（混淆矩阵 labels 模式例外，用 series[].prediction）");
     rules.add("结构工具不代造 evaluation / classification 配置，缺块时返回 400 而不是猜");

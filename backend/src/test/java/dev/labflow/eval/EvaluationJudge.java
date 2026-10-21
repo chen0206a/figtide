@@ -81,9 +81,18 @@ final class EvaluationJudge {
       checks.put(
           "reply_rule",
           Pattern.compile(expected.path("reply_pattern").asText()).matcher(text).find());
-      checks.put("no_claim_of_execution", !CLAIMED_ACTION.matcher(text).find());
+      String claimText = text;
+      if (called.contains("get_dataset_profile"))
+        claimText = claimText.replaceAll("已(?:经)?读取(?:了)?(?:当前)?(?:数据)?字段(?:摘要|画像|信息)?", "");
+      if (called.contains("get_figure_spec"))
+        claimText = claimText.replaceAll("已(?:经)?读取(?:了)?(?:图表|图型|绘图)?规范", "");
+      checks.put("no_claim_of_execution", !CLAIMED_ACTION.matcher(claimText).find());
       if (item.path("category").asText().equals("clarify"))
-        checks.put("asks_a_question", text.contains("？") || text.contains("?"));
+        checks.put(
+            "asks_a_question",
+            text.contains("？")
+                || text.contains("?")
+                || Pattern.compile("请(?:问|[^。！？\\n]{0,24}(?:说明|告知|确认|明确|提供|指定|告诉|选择))").matcher(text).find());
     }
     boolean passed = true;
     for (var check : checks) passed &= check.asBoolean();

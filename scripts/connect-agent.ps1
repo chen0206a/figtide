@@ -1,4 +1,4 @@
-﻿param([string]$BaseUrl = 'https://maas.qianwenaiapi.com/compatible-mode/v1')
+﻿param([string]$BaseUrl = 'https://maas.qianwenaiapi.com/compatible-mode/v1', [string]$PreparedJar = '', [string]$ModelName = '', [switch]$ConsoleKey)
 # Interactive local bootstrap. The API key is never a command-line argument or file value.
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
@@ -16,6 +16,15 @@ function Assert-ConnectionAddress([string]$Value) {
 }
 Assert-ConnectionAddress $BaseUrl
 New-Item -ItemType Directory -Path (Join-Path $root '.runtime') -Force | Out-Null
+if ($ConsoleKey) {
+    if (!$ModelName -or $ModelName -notmatch '^[A-Za-z0-9][A-Za-z0-9._:/-]*$') { throw 'An explicit model ID is required.' }
+    $secureInput = Read-Host 'API key (hidden)' -AsSecureString
+    $pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureInput)
+    try { $chosenKey = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer) }
+    finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($pointer); $secureInput.Dispose() }
+    if (!$chosenKey -or $chosenKey -match '[\r\n]') { throw 'A single-line API key is required.' }
+    $chosenModel = $ModelName
+} else {
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 [Windows.Forms.Application]::EnableVisualStyles()
@@ -45,6 +54,7 @@ $address.ReadOnly = $true
 $form.Controls.Add($address)
 Add-ConnectionLabel '模型 ID · 请填写服务控制台中的准确名称' 124
 $model = New-Object Windows.Forms.TextBox
+$model.Text = $ModelName
 $model.Location = New-Object Drawing.Point(24, 151)
 $model.Size = New-Object Drawing.Size(572, 30)
 $form.Controls.Add($model)
@@ -90,6 +100,7 @@ $chosenModel = $model.Text.Trim()
 $chosenKey = $key.Text.Trim()
 $key.Clear()
 $form.Dispose()
+}
 $oldBase = $env:LABFLOW_AGENT_BASE_URL
 $oldModel = $env:LABFLOW_AGENT_MODEL
 $oldKey = $env:LABFLOW_AGENT_API_KEY
@@ -100,6 +111,12 @@ try {
     $jdk = Get-ChildItem -LiteralPath (Join-Path $root '.runtime/java') -Directory | Select-Object -First 1
     $jar = Join-Path $root 'backend/target/labflow-0.1.0.jar'
     if (!$jdk -or !(Test-Path -LiteralPath $jar)) { throw 'Backend runtime missing.' }
+    $prepared = $null
+    if ($PreparedJar) {
+        $prepared = (Resolve-Path -LiteralPath $PreparedJar).Path
+        if (!$prepared.StartsWith($root + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase) -or
+            [IO.Path]::GetExtension($prepared) -ne '.jar') { throw 'Prepared build must be a JAR inside this project.' }
+    }
     $owner = Get-NetTCPConnection -LocalPort 8086 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($owner) {
         $process = Get-CimInstance Win32_Process -Filter "ProcessId=$($owner.OwningProcess)"
@@ -109,6 +126,10 @@ try {
         }
         Stop-Process -Id $owner.OwningProcess
         Wait-Process -Id $owner.OwningProcess -ErrorAction SilentlyContinue
+    }
+    if ($prepared -and $prepared -ne $jar) {
+        Copy-Item -LiteralPath $jar -Destination (Join-Path $root '.runtime/pre-agent-update.jar') -Force
+        Copy-Item -LiteralPath $prepared -Destination $jar -Force
     }
     Write-ConnectionStatus 'starting' 'Loading configuration into the backend process. No model request sent.'
     # Only this Java child inherits the key. Existing frontend/MySQL processes stay untouched.
@@ -136,11 +157,13 @@ try {
     }
     if (!$ready) { throw 'Backend configuration did not become available.' }
     Write-ConnectionStatus 'configured' 'Configuration loaded. No inference request sent; provider compatibility not yet verified.'
-    [Windows.Forms.MessageBox]::Show('配置已加载。回到绘图编辑器，打开「绘图助手」即可查看。尚未向模型发起请求；生成提案时可能计费。', 'LabFlow · 已连接配置') | Out-Null
+    if (!$ConsoleKey) { [Windows.Forms.MessageBox]::Show('配置已加载。回到绘图编辑器，打开「绘图助手」即可查看。尚未向模型发起请求；生成提案时可能计费。', 'LabFlow · 已连接配置') | Out-Null }
+    else { Write-Host 'Model configuration loaded. Credentials were not persisted.' }
 } catch {
     # Avoid forwarding exception bodies, URLs, headers, or input values to logs/status/UI.
     Write-ConnectionStatus 'failed' 'Cannot load configuration. Check owned backend process and local runtime logs; credentials were not saved.'
-    [Windows.Forms.MessageBox]::Show('配置加载失败。请检查 LabFlow 后端进程与本机运行环境。密钥未写入文件。', 'LabFlow') | Out-Null
+    if (!$ConsoleKey) { [Windows.Forms.MessageBox]::Show('配置加载失败。请检查 LabFlow 后端进程与本机运行环境。密钥未写入文件。', 'LabFlow') | Out-Null }
+    else { Write-Host 'Cannot load model configuration. Credentials were not persisted.' }
 } finally {
     $env:LABFLOW_AGENT_BASE_URL = $oldBase
     $env:LABFLOW_AGENT_MODEL = $oldModel

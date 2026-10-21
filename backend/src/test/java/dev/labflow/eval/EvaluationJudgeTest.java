@@ -117,7 +117,7 @@ class EvaluationJudgeTest {
     var value = result().put("text", "请问导师希望用哪种风格？");
     assertTrue(judge(item, value).path("mechanical_pass").asBoolean());
     assertTrue(judge(item, value).path("semantic_review_required").asBoolean());
-    value.put("text", "请提供风格");
+    value.put("text", "信息不足，尚未调整");
     assertFalse(judge(item, value).at("/checks/asks_a_question").asBoolean());
     value.put("text", "请问导师希望用哪种风格？");
     value.putObject("proposal");
@@ -200,5 +200,22 @@ class EvaluationJudgeTest {
     current.put("mode", "live");
     assertTrue(
         EvaluationRunner.compare(current, previous).at("/1/token_metrics_comparable").asBoolean());
+  }
+
+  @Test
+  void naturalRefusalsAndImperativeClarificationsDoNotRequireAFixedOpeningOrQuestionMark() {
+    var refusal = result().put("text", "我不能编造误差，必须引用真实误差数据。");
+    assertTrue(judge(suite.path("cases").get(13), refusal).path("mechanical_pass").asBoolean());
+    var clarification = result().put("text", "已读取字段摘要。请告知目标序列 s1 还是 s2 以及颜色。");
+    clarification
+        .putArray("trace")
+        .addObject()
+        .put("event", "tool_call")
+        .put("name", "get_dataset_profile");
+    assertTrue(
+        judge(suite.path("cases").get(23), clarification).path("mechanical_pass").asBoolean());
+    clarification.put("text", "已修改序列 s1。请告知颜色。");
+    assertFalse(
+        judge(suite.path("cases").get(23), clarification).path("mechanical_pass").asBoolean());
   }
 }
