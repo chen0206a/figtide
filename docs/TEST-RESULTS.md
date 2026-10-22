@@ -7,8 +7,11 @@
 | 步骤 | 实际命令 | 单测 | 构建 | 浏览器 |
 | --- | --- | --- | --- | --- |
 | 1 · 公共控件 | `.\.runtime\check-refactor05.ps1 -Step controls`（执行 npm test / npm run build） | 190/190，20.22 秒 | 通过，20.81 秒 | 按任务要求在第 7 步及最终统一回归 |
+| 2 · 四个对话框 | 同脚本 `-Step dialogs` | 190/190，20.52 秒 | 通过，19.73 秒 | 同上 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
+
+步骤 2 把 Recovery/Conflict/Export/VersionHistory 四个 Dialog 原样移出，props 明确列举所需值和回调；原始图表/历史快照及布局状态补充静态类型，不改变解析和运行行为。首轮构建发现抽取时把可空草稿推窄、历史查询推成成功态，已恢复 ChartDraft|null 和完整 UseQueryResult 类型后重跑通过。
 
 ## 任务 04：真实研究工作区首页（2026-10-22）
 

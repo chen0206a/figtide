@@ -1,59 +1,58 @@
-import { useQuery,useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-AlertTriangle,
-AudioLines,
-ChartCandlestick,
-ChartColumn,
-ChartNoAxesCombined,
-Check,
-ChevronDown,
-ChevronRight,
-Database,
-Download,
-Eye,
-Filter,
-Grid2X2,
-History,
-Layers,
-Maximize2,
-MousePointer2,
-Palette,
-Plus,
-Redo2,
-RotateCcw,
-Save,
-ScatterChart,
-SlidersHorizontal,
-Table2,
-Trash2,
-Type,
-Undo2,
-Upload,
-ZoomIn,
-ZoomOut
+  AlertTriangle,
+  AudioLines,
+  ChartCandlestick,
+  ChartColumn,
+  ChartNoAxesCombined,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Database,
+  Download,
+  Eye,
+  Filter,
+  Grid2X2,
+  History,
+  Layers,
+  Maximize2,
+  MousePointer2,
+  Palette,
+  Plus,
+  Redo2,
+  RotateCcw,
+  Save,
+  ScatterChart,
+  SlidersHorizontal,
+  Table2,
+  Trash2,
+  Type,
+  Undo2,
+  Upload,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import Plotly from "plotly.js-cartesian-dist-min";
 import {
-useDeferredValue,
-useEffect,
-useLayoutEffect,
-useMemo,
-useReducer,
-useRef,
-useState,
+  useDeferredValue,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
 } from "react";
-import { useLocation,useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { DataTable } from "../components/DataTable";
 import { Button } from "../components/ui/button";
-import { Dialog } from "../components/ui/dialog";
 import { useConfirm } from "../components/useConfirm";
 import { WorkbenchSkeleton } from "../components/WorkbenchSkeleton";
 import { SourceProvenance } from "../experiments/SourceProvenance";
-import { ApiError,api,send,type Dataset } from "../lib/api";
+import { ApiError, api, send, type Dataset } from "../lib/api";
 import {
-chartDraftKey,
-readChartDraft,
-sameDraftContent,
+  chartDraftKey,
+  readChartDraft,
+  sameDraftContent,
 } from "../lib/chartDraft";
 import { downloadBlob } from "../lib/download";
 import { DraftWriter } from "../lib/draftWriter";
@@ -63,29 +62,34 @@ import { BandPanel } from "./EvaluationPanel";
 import { EvaluationResults } from "./EvaluationResults";
 import { layoutPatch } from "./layoutPatch";
 import {
-defaultClassification,
-defaultEmpirical,
-defaultEvaluation,
-defaults,
-historyReducer,
-makeSeries,
-type Config,
-type Series,
+  defaultClassification,
+  defaultEmpirical,
+  defaultEvaluation,
+  defaults,
+  historyReducer,
+  makeSeries,
+  type Config,
+  type Series,
 } from "./model";
 import { buildPlot } from "./plot";
 import { ProfessionalPanel } from "./ProfessionalPanel";
-import {
-exportChecks,
-physicalSvg,
-pngDensity,
-publicationMetrics,
-} from "./publication";
+import { physicalSvg, pngDensity, publicationMetrics } from "./publication";
 import { QuickActions } from "./QuickActions";
 import { ReuseDialog } from "./ReuseDialog";
-import { presetThumbnail,stylePresets } from "./stylePresets";
+import { presetThumbnail, stylePresets } from "./stylePresets";
 import "./styles-library.css";
 import { StyleThumbnail } from "./StyleThumbnail";
-import { NumberInput,Section,Select,Text,Toggle } from "./workbench/controls";
+import {
+  NumberInput,
+  Section,
+  Select,
+  Text,
+  Toggle,
+} from "./workbench/controls";
+import { ConflictDialog } from "./workbench/dialogs/ConflictDialog";
+import { ExportDialog } from "./workbench/dialogs/ExportDialog";
+import { RecoveryDialog } from "./workbench/dialogs/RecoveryDialog";
+import { VersionHistoryDialog } from "./workbench/dialogs/VersionHistoryDialog";
 
 const fittedZoom = (stage: HTMLElement, width: number, height: number) =>
   Math.max(
@@ -100,6 +104,17 @@ const fittedZoom = (stage: HTMLElement, width: number, height: number) =>
       ),
     ),
   );
+export type StoredChart = {
+  id: number;
+  revision: number;
+  name: string;
+  config: Config;
+};
+export type ChartVersion = {
+  version: number;
+  created_at: string;
+  config: Config;
+};
 type Props = {
   project: number;
   projectName: string;
@@ -112,9 +127,10 @@ type Props = {
   notify: (s: string) => void;
 };
 export default function Editor(p: Props) {
-  const existing = useQuery({
+  const existing = useQuery<StoredChart>({
     queryKey: ["chart", p.project, p.chartId],
-    queryFn: () => api(`/projects/${p.project}/charts/${p.chartId}`),
+    queryFn: () =>
+      api<StoredChart>(`/projects/${p.project}/charts/${p.chartId}`),
     enabled: !!p.chartId,
     staleTime: 0,
   });
@@ -177,9 +193,24 @@ export default function Editor(p: Props) {
     />
   );
 }
-function Workbench(
-  p: Props & { data: Dataset; original: any; onDataset: (id: number) => void },
-) {
+function Workbench({
+  project,
+  projectName,
+  datasets,
+  chartId,
+  initialDataset,
+  onSaved,
+  onUpload,
+  onLeaveGuard,
+  notify,
+  data,
+  original,
+  onDataset,
+}: Props & {
+  data: Dataset;
+  original?: StoredChart;
+  onDataset: (id: number) => void;
+}) {
   const location = useLocation();
   const navigate = useNavigate();
   const [assistantPrompt] = useState(
@@ -265,40 +296,44 @@ function Workbench(
       />
     );
   }
-  const originDataset = p.initialDataset || p.datasets[0]?.id || p.data.id;
-  const draftKey = chartDraftKey(p.project, p.chartId, originDataset);
+  const originDataset = initialDataset || datasets[0]?.id || data.id;
+  const draftKey = chartDraftKey(project, chartId, originDataset);
   const [initialDraft] = useState(() => {
     const d = readChartDraft(
       localStorage,
       draftKey,
-      p.datasets.map((v) => v.id),
-      p.chartId
+      datasets.map((v) => v.id),
+      chartId
         ? []
         : [
-            `labflow-draft-v1:${p.project}:new`,
-            `labflow-draft-v1:${p.project}:comparison-${originDataset}`,
+            `labflow-draft-v1:${project}:new`,
+            `labflow-draft-v1:${project}:comparison-${originDataset}`,
           ],
       originDataset,
     );
-    return d && p.original && sameDraftContent(d, p.original) ? null : d;
+    return d && original && sameDraftContent(d, original) ? null : d;
   });
   const [recovery, setRecovery] = useState(() =>
-    initialDraft && initialDraft.revision !== (p.original?.revision || 0)
+    initialDraft && initialDraft.revision !== (original?.revision || 0)
       ? initialDraft
       : null,
   );
   const [seed] = useState(() => ({
-    config: p.original?.config || defaults(p.data),
+    config: original?.config || defaults(data),
     name:
-      p.original?.name ||
-      (p.data.source_meta?.kind === "experiment_comparison"
-        ? `${p.data.source_meta.metric} · 实验对比`.slice(0, 120)
-        : p.data.source_meta?.kind === "data_processing"
-          ? `${p.data.filename.replace(/\.csv$/i, "")} · 图表`.slice(0, 120)
+      original?.name ||
+      (data.source_meta?.kind === "experiment_comparison"
+        ? `${data.source_meta.metric} · 实验对比`.slice(0, 120)
+        : data.source_meta?.kind === "data_processing"
+          ? `${data.filename.replace(/\.csv$/i, "")} · 图表`.slice(0, 120)
           : "Untitled figure"),
   }));
   const viewKey = `labflow-editor-view:${draftKey}`;
-  const [initialView] = useState(() => {
+  const [initialView] = useState<{
+    panel: string;
+    bottom?: string;
+    seriesId?: string;
+  }>(() => {
     try {
       const view = JSON.parse(sessionStorage.getItem(viewKey) || "{}");
       return {
@@ -325,18 +360,20 @@ function Workbench(
   });
   const [draftStatus, setDraftStatus] = useState("");
   const [conflict, setConflict] = useState(false);
-  const [panels, setPanels] = useState(() => {
-    try {
-      return (
-        JSON.parse(localStorage.getItem("labflow-panels") || "null") || {
-          left: true,
-          right: true,
-        }
-      );
-    } catch {
-      return { left: true, right: true };
-    }
-  });
+  const [panels, setPanels] = useState<{ left: boolean; right: boolean }>(
+    () => {
+      try {
+        return (
+          JSON.parse(localStorage.getItem("labflow-panels") || "null") || {
+            left: true,
+            right: true,
+          }
+        );
+      } catch {
+        return { left: true, right: true };
+      }
+    },
+  );
   function togglePanel(side: "left" | "right") {
     const next = { ...panels, [side]: !panels[side] };
     setPanels(next);
@@ -369,8 +406,8 @@ function Workbench(
   const [name, setName] = useState(
       initialDraft && !recovery ? initialDraft.name : seed.name,
     ),
-    [revision, setRevision] = useState(p.original?.revision || 0),
-    [id, setId] = useState<number | null>(p.chartId),
+    [revision, setRevision] = useState(original?.revision || 0),
+    [id, setId] = useState<number | null>(chartId),
     [baseline, setBaseline] = useState(JSON.stringify(seed)),
     [saving, setSaving] = useState(false),
     [exporting, setExporting] = useState(false),
@@ -407,8 +444,9 @@ function Workbench(
   const [format, setFormat] = useState<"svg" | "png" | "pdf">("svg"),
     [scale, setScale] = useState(2);
   const versions = useQuery({
-    queryKey: ["versions", p.project, id, revision],
-    queryFn: () => api<any[]>(`/projects/${p.project}/charts/${id}/versions`),
+    queryKey: ["versions", project, id, revision],
+    queryFn: () =>
+      api<ChartVersion[]>(`/projects/${project}/charts/${id}/versions`),
     enabled: !!id && historyOpen,
   });
   const serialized = useMemo(
@@ -464,7 +502,7 @@ function Workbench(
         return false;
       }
     };
-    p.onLeaveGuard(preserve);
+    onLeaveGuard(preserve);
     const unloading = (e: BeforeUnloadEvent) => {
       if (!preserve()) e.preventDefault();
     };
@@ -472,7 +510,7 @@ function Workbench(
     return () => {
       preserve();
       mounted.current = false;
-      p.onLeaveGuard(null);
+      onLeaveGuard(null);
       window.removeEventListener("beforeunload", unloading);
     };
   }, []);
@@ -505,23 +543,23 @@ function Workbench(
         s.id === series.id ? { ...s, ...value } : s,
       ),
     });
-  const nums = p.data.fields
+  const nums = data.fields
     .filter((f) => f.type === "number")
     .map((f) => f.name);
-  const fields = p.data.fields.map((f) => f.name);
+  const fields = data.fields.map((f) => f.name);
   const deferred = useDeferredValue(c);
-  const renderConfig = deferred.datasetVersionId === p.data.id ? deferred : c;
+  const renderConfig = deferred.datasetVersionId === data.id ? deferred : c;
   const plot = useMemo(
-    () => buildPlot(renderConfig, p.data),
-    [renderConfig, p.data],
+    () => buildPlot(renderConfig, data),
+    [renderConfig, data],
   );
   const plotPending =
     renderConfig !== c ||
     rendered?.config !== renderConfig ||
-    rendered?.data !== p.data;
+    rendered?.data !== data;
   useEffect(() => {
-    if (c.datasetVersionId !== p.data.id) p.onDataset(c.datasetVersionId);
-  }, [c.datasetVersionId, p.data.id]);
+    if (c.datasetVersionId !== data.id) onDataset(c.datasetVersionId);
+  }, [c.datasetVersionId, data.id]);
   useEffect(() => {
     const el = graph.current;
     if (!el) return;
@@ -543,7 +581,7 @@ function Workbench(
           snapshot = structuredClone(plot.layout);
         const previous = drawn.current;
         const update =
-          previous?.data === p.data && previous.signature === signature
+          previous?.data === data && previous.signature === signature
             ? (() => {
                 const changes = layoutPatch(previous.layout, snapshot);
                 return Object.keys(changes).length
@@ -558,9 +596,9 @@ function Workbench(
                 doubleClick: false,
               });
         return update.then(() => {
-          drawn.current = { signature, layout: snapshot, data: p.data };
+          drawn.current = { signature, layout: snapshot, data: data };
           if (!active) return;
-          setRendered({ config: renderConfig, data: p.data });
+          setRendered({ config: renderConfig, data: data });
           setPlotError("");
           el.removeAllListeners?.("plotly_click");
           el.removeAllListeners?.("plotly_legendclick");
@@ -587,7 +625,7 @@ function Workbench(
     return () => {
       active = false;
     };
-  }, [plot, renderConfig, p.data]);
+  }, [plot, renderConfig, data]);
   useEffect(
     () => () => {
       if (graph.current) Plotly.purge(graph.current);
@@ -595,23 +633,23 @@ function Workbench(
     [],
   );
   async function save(asCopy = false) {
-    if (saving || c.datasetVersionId !== p.data.id) return;
+    if (saving || c.datasetVersionId !== data.id) return;
     setSaving(true);
     const snapshot = c,
       saveName = asCopy ? `${name.slice(0, 115)} · 副本` : name;
     const saveId = asCopy ? null : id;
     try {
       const result = await api(
-        `/projects/${p.project}/charts${saveId ? "/" + saveId : ""}`,
+        `/projects/${project}/charts${saveId ? "/" + saveId : ""}`,
         send(saveId ? "PUT" : "POST", {
           name: saveName,
           revision,
           config: snapshot,
         }),
       );
-      queryClient.setQueryData(["chart", p.project, result.id], result);
+      queryClient.setQueryData(["chart", project, result.id], result);
       if (!mounted.current) {
-        void queryClient.invalidateQueries({ queryKey: ["charts", p.project] });
+        void queryClient.invalidateQueries({ queryKey: ["charts", project] });
         void queryClient.invalidateQueries({ queryKey: ["projects"] });
         return;
       }
@@ -623,7 +661,7 @@ function Workbench(
         } catch {}
       try {
         sessionStorage.setItem(
-          `labflow-editor-view:${chartDraftKey(p.project, result.id, originDataset)}`,
+          `labflow-editor-view:${chartDraftKey(project, result.id, originDataset)}`,
           JSON.stringify({ panel, seriesId }),
         );
       } catch {}
@@ -632,11 +670,11 @@ function Workbench(
       setRevision(result.revision);
       setBaseline(JSON.stringify({ config: snapshot, name: saveName }));
       setLogs((l) => [`已保存版本 v${result.revision}`, ...l].slice(0, 30));
-      p.notify(`图表已保存 · v${result.revision}`);
-      p.onSaved(result.id);
+      notify(`图表已保存 · v${result.revision}`);
+      onSaved(result.id);
     } catch (e) {
       if (e instanceof ApiError && e.status === 409) setConflict(true);
-      p.notify((e as Error).message);
+      notify((e as Error).message);
     } finally {
       setSaving(false);
     }
@@ -648,7 +686,7 @@ function Workbench(
         if (
           !saving &&
           !document.querySelector('[role="dialog"]') &&
-          c.datasetVersionId === p.data.id
+          c.datasetVersionId === data.id
         )
           setQuickOpen(true);
         return;
@@ -723,10 +761,10 @@ function Workbench(
         ].slice(0, 30),
       );
       setExportOpen(false);
-      p.notify(`${format.toUpperCase()} 已导出`);
+      notify(`${format.toUpperCase()} 已导出`);
     } catch (e) {
       setExportOpen(true);
-      p.notify("导出失败：" + (e as Error).message);
+      notify("导出失败：" + (e as Error).message);
     } finally {
       setExporting(false);
     }
@@ -750,7 +788,7 @@ function Workbench(
               onChange={(e) => setName(e.target.value)}
             />
             <small>
-              {p.projectName}
+              {projectName}
               <ChevronRight size={10} /> 图版{" "}
               {id ? String(id).padStart(2, "0") : "草稿"}
             </small>
@@ -795,7 +833,7 @@ function Workbench(
             variant="ghost"
             size="sm"
             title="快捷操作 Ctrl+K"
-            disabled={saving || c.datasetVersionId !== p.data.id}
+            disabled={saving || c.datasetVersionId !== data.id}
             onClick={() => setQuickOpen(true)}
           >
             快捷操作
@@ -803,7 +841,7 @@ function Workbench(
           <Button
             variant="ghost"
             size="sm"
-            disabled={saving || c.datasetVersionId !== p.data.id}
+            disabled={saving || c.datasetVersionId !== data.id}
             aria-expanded={agentOpen}
             aria-controls="figure-assistant"
             onClick={() => setAgentOpen((value) => !value)}
@@ -817,16 +855,14 @@ function Workbench(
               setReuseTab("style");
               setReuseOpen(true);
             }}
-            disabled={saving || c.datasetVersionId !== p.data.id}
+            disabled={saving || c.datasetVersionId !== data.id}
           >
             复用
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            disabled={
-              saving || !name.trim() || c.datasetVersionId !== p.data.id
-            }
+            disabled={saving || !name.trim() || c.datasetVersionId !== data.id}
             onClick={() => save(true)}
           >
             另存副本
@@ -867,7 +903,7 @@ function Workbench(
               saving ||
               !name.trim() ||
               (!!id && !dirty) ||
-              c.datasetVersionId !== p.data.id
+              c.datasetVersionId !== data.id
             }
             onClick={() => save()}
           >
@@ -881,7 +917,7 @@ function Workbench(
               plotPending ||
               !!plotError ||
               !plot.traces.length ||
-              c.datasetVersionId !== p.data.id
+              c.datasetVersionId !== data.id
             }
             onClick={() => setExportOpen(true)}
           >
@@ -891,11 +927,11 @@ function Workbench(
           </Button>
         </div>
       </div>
-      {p.data.source_meta && (
+      {data.source_meta && (
         <div className="provenance-strip">
-          <SourceProvenance source={p.data.source_meta} project={p.project} />
+          <SourceProvenance source={data.source_meta} project={project} />
           <span>
-            {p.data.source_meta.kind === "data_processing"
+            {data.source_meta.kind === "data_processing"
               ? "基于固定数据版本和显式处理规则 · 原始数据保持不变"
               : "指标来自固定实验快照 · 后续修改实验不会影响此图"}
           </span>
@@ -910,11 +946,7 @@ function Workbench(
           <section className="left-section">
             <div className="section-label">
               数据集{" "}
-              <button
-                aria-label="上传数据"
-                title="上传数据"
-                onClick={p.onUpload}
-              >
+              <button aria-label="上传数据" title="上传数据" onClick={onUpload}>
                 <Plus size={14} />
               </button>
             </div>
@@ -923,11 +955,11 @@ function Workbench(
               value={c.datasetVersionId}
               onChange={(e) => {
                 const n = Number(e.target.value);
-                p.onDataset(n);
+                onDataset(n);
                 patch({ datasetVersionId: n });
               }}
             >
-              {p.datasets.map((d) => (
+              {datasets.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.filename} · v{d.version}
                 </option>
@@ -935,15 +967,15 @@ function Workbench(
             </select>
             <div className="dataset-meta">
               <span className="green-dot" />
-              {p.data.row_count} 行 <span>·</span> {p.data.fields.length} 字段{" "}
-              <span className="version-tag">v{p.data.version}</span>
+              {data.row_count} 行 <span>·</span> {data.fields.length} 字段{" "}
+              <span className="version-tag">v{data.version}</span>
             </div>
             <details className="field-disclosure">
               <summary>
-                查看字段 <span>{p.data.fields.length}</span>
+                查看字段 <span>{data.fields.length}</span>
               </summary>
               <div className="field-list">
-                {p.data.fields.map((f) => (
+                {data.fields.map((f) => (
                   <div key={f.name}>
                     <span
                       className={
@@ -959,7 +991,7 @@ function Workbench(
               </div>
             </details>
           </section>
-          <details className="left-section chart-picker" open={!p.original}>
+          <details className="left-section chart-picker" open={!original}>
             <summary>
               图表类型{" "}
               <span>
@@ -1190,8 +1222,8 @@ function Workbench(
               className="paper-group"
               style={{
                 visibility:
-                  c.datasetVersionId === p.data.id &&
-                  rendered?.data.id === p.data.id
+                  c.datasetVersionId === data.id &&
+                  rendered?.data.id === data.id
                     ? "visible"
                     : "hidden",
               }}
@@ -1237,7 +1269,7 @@ function Workbench(
                 <span>点击曲线选择序列 · 样式即时更新</span>
               </div>
             </div>
-            {(c.datasetVersionId !== p.data.id || !rendered) && !plotError && (
+            {(c.datasetVersionId !== data.id || !rendered) && !plotError && (
               <div className="canvas-loading">正在读取所选数据版本…</div>
             )}
             {plotError && (
@@ -1247,7 +1279,7 @@ function Workbench(
             )}
             {!plotError &&
               !plot.traces.length &&
-              c.datasetVersionId === p.data.id && (
+              c.datasetVersionId === data.id && (
                 <div className="canvas-empty-plot" role="status">
                   <strong>当前条件下没有可绘制的图形</strong>
                   <p>
@@ -1323,7 +1355,7 @@ function Workbench(
                   <ClassificationResults
                     reports={plot.classificationReports}
                     config={renderConfig}
-                    project={p.project}
+                    project={project}
                   />
                 ) : (
                   <EvaluationResults
@@ -1370,7 +1402,7 @@ function Workbench(
                   </table>
                 </>
               ) : bottom === "data" ? (
-                <DataTable data={p.data} />
+                <DataTable data={data} />
               ) : bottom === "warnings" ? (
                 plot.warnings.length ? (
                   plot.warnings.map((w) => (
@@ -1421,7 +1453,7 @@ function Workbench(
           </div>
           <div className="inspector-scroll">
             {panel === "professional" && (
-              <ProfessionalPanel config={c} data={p.data} onChange={patch} />
+              <ProfessionalPanel config={c} data={data} onChange={patch} />
             )}
             {panel === "chart" && (
               <>
@@ -1813,7 +1845,7 @@ function Workbench(
                 {c.type === "line" && (
                   <BandPanel
                     series={series}
-                    data={p.data}
+                    data={data}
                     onChange={updateSeries}
                   />
                 )}
@@ -2101,7 +2133,7 @@ function Workbench(
                 size="sm"
                 onClick={async () => {
                   if (await confirm("恢复默认配置？可通过撤销恢复。"))
-                    change(defaults(p.data));
+                    change(defaults(data));
                 }}
               >
                 <RotateCcw size={13} />
@@ -2111,15 +2143,15 @@ function Workbench(
           </div>
         </aside>
         <AgentAssistant
-          key={`${p.project}:${p.chartId || "draft"}:${p.data.id}`}
+          key={`${project}:${chartId || "draft"}:${data.id}`}
           docked
           open={agentOpen}
           initialPrompt={assistantPrompt}
-          project={p.project}
+          project={project}
           chartId={id}
           revision={revision}
           config={c}
-          data={p.data}
+          data={data}
           token={JSON.stringify({ serialized, id, revision })}
           onClose={() => setAgentOpen(false)}
           onApply={(token, config, count) => {
@@ -2130,7 +2162,7 @@ function Workbench(
               return false;
             change(config);
             setLogs((l) => [`已确认助手提案 · ${count} 项`, ...l].slice(0, 30));
-            p.notify(`已应用 ${count} 项调整，可撤销`);
+            notify(`已应用 ${count} 项调整，可撤销`);
             return true;
           }}
         />
@@ -2140,69 +2172,32 @@ function Workbench(
           LabFlow <span className="muted">/</span> 科研绘图工作台
         </span>
         <span>
-          {p.data.filename} · 数据版本 v{p.data.version}{" "}
+          {data.filename} · 数据版本 v{data.version}{" "}
           <span className="status-separator">|</span>{" "}
           <span className="green-dot" />
           本地工作区
         </span>
       </div>
       {confirmDialog}
-      <Dialog
-        open={!!recovery}
-        onOpenChange={() => {}}
-        title="本机草稿与已保存版本不同"
-        description={`图表已有其他保存版本。本机草稿时间：${recovery?.at ? new Date(recovery.at).toLocaleString() : ""}。恢复后可另存副本，保留两份内容。`}
-      >
-        <div className="dialog-actions">
-          <Button
-            variant="outline"
-            onClick={() => {
-              try {
-                localStorage.removeItem(draftKey);
-                if (initialDraft?.storageKey)
-                  localStorage.removeItem(initialDraft.storageKey);
-              } catch {}
-              setRecovery(null);
-            }}
-          >
-            使用已保存版本
-          </Button>
-          <Button
-            onClick={() => {
-              if (recovery) {
-                change(recovery.config);
-                setName(recovery.name);
-                setRevision(recovery.revision);
-                setRecovery(null);
-              }
-            }}
-          >
-            恢复草稿
-          </Button>
-        </div>
-      </Dialog>
-      <Dialog
-        open={conflict}
-        onOpenChange={setConflict}
-        title="图表已有更新版本"
-        description="当前修改仍保留在本机草稿中。可以另存为新图表，避免覆盖另一个窗口保存的版本。"
-      >
-        <div className="dialog-actions">
-          <Button variant="outline" onClick={() => setConflict(false)}>
-            继续编辑
-          </Button>
-          <Button disabled={saving} onClick={() => save(true)}>
-            另存副本
-          </Button>
-        </div>
-      </Dialog>
+      <RecoveryDialog
+        {...{
+          recovery,
+          draftKey,
+          initialDraft,
+          setRecovery,
+          change,
+          setName,
+          setRevision,
+        }}
+      />
+      <ConflictDialog {...{ conflict, setConflict, saving, save }} />
       {quickOpen && (
         <QuickActions
-          project={p.project}
+          project={project}
           chartId={id}
           revision={revision}
           config={c}
-          data={p.data}
+          data={data}
           token={JSON.stringify({ serialized, id, revision })}
           onClose={() => setQuickOpen(false)}
           onApply={(token, config, count) => {
@@ -2213,140 +2208,56 @@ function Workbench(
               return false;
             change(config);
             setLogs((l) => [`已应用快捷调整 · ${count} 项`, ...l].slice(0, 30));
-            p.notify(`已应用 ${count} 项调整，可撤销`);
+            notify(`已应用 ${count} 项调整，可撤销`);
             return true;
           }}
         />
       )}
       {reuseOpen && (
         <ReuseDialog
-          project={p.project}
+          project={project}
           config={c}
           name={name}
-          datasets={p.datasets}
-          data={p.data}
+          datasets={datasets}
+          data={data}
           initialTab={reuseTab}
           initialPreset={previewPreset || c.style.preset}
           onClose={() => setReuseOpen(false)}
           onApply={change}
           onReused={(result) => {
-            queryClient.setQueryData(["chart", p.project, result.id], result);
+            queryClient.setQueryData(["chart", project, result.id], result);
             setReuseOpen(false);
-            p.onSaved(result.id);
-            p.notify("已创建复用图表，源图保持不变");
+            onSaved(result.id);
+            notify("已创建复用图表，源图保持不变");
           }}
         />
       )}
-      <Dialog
-        open={exportOpen}
-        onOpenChange={setExportOpen}
-        title="导出科研图表"
-        description="导出与当前画布使用相同配置，缩放比例不会影响导出尺寸。"
-      >
-        <Select
-          label="文件格式"
-          value={format}
-          options={["svg", "png", "pdf"]}
-          onChange={(v) => setFormat(v as "svg" | "png" | "pdf")}
-        />
-        {format === "png" && !c.publication?.enabled && (
-          <NumberInput
-            label="像素倍率"
-            value={scale}
-            min={1}
-            max={4}
-            onChange={setScale}
-          />
-        )}
-        <div className="export-summary">
-          {format === "pdf"
-            ? "PDF 矢量 · 字体嵌入 · 单页图版"
-            : format === "svg"
-              ? "SVG 矢量 · 可编辑文本"
-              : `PNG · ${publicationMetrics(c, scale).pixelWidth} × ${publicationMetrics(c, scale).pixelHeight} px`}
-          <small>
-            {format === "pdf"
-              ? "使用内置 Noto Sans SC 字体，保证中英文与符号可移植。未启用物理尺寸时按 96 px/in 定义页面。"
-              : format === "svg"
-                ? "文字保留为文本，接收设备需安装相同字体。"
-                : c.publication?.enabled
-                  ? `成品 ${output.widthMm} × ${output.heightMm.toFixed(1)} mm · 约 ${output.effectiveDpi.toFixed(0)} DPI`
-                  : "有效 DPI 取决于成品物理宽度，可在专业面板中设置。"}
-          </small>
-        </div>
-        {format === "pdf" && c.style.font !== "Noto Sans SC" && (
-          <div className="export-summary">
-            <p>
-              PDF 首版支持内置 Noto Sans
-              SC。请先切换画布字体并核对效果，再下载；此修改可撤销。SVG / PNG
-              继续支持所有现有字体。
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => style({ font: "Noto Sans SC" })}
-            >
-              切换为可嵌入字体并预览
-            </Button>
-          </div>
-        )}
-        <div className="export-checks">
-          {exportChecks(c, scale).map((message) => (
-            <p key={message}>{message}</p>
-          ))}
-          {c.publication?.enabled && (
-            <p>
-              SVG 物理尺寸：{output.widthMm} × {output.heightMm.toFixed(1)} mm ·
-              基础字号 {output.fontPt} pt
-            </p>
-          )}
-        </div>
-        <div className="dialog-actions">
-          <Button
-            disabled={
-              exporting ||
-              plotPending ||
-              (format === "pdf" && c.style.font !== "Noto Sans SC")
-            }
-            onClick={download}
-          >
-            <Download size={15} />
-            {exporting ? "正在导出…" : "下载图表"}
-          </Button>
-        </div>
-      </Dialog>
-      <Dialog
-        open={historyOpen}
-        onOpenChange={setHistoryOpen}
-        title="图表版本历史"
-        description="载入历史快照后保存，会创建新版本，不覆盖已有历史。"
-      >
-        {versions.isPending ? (
-          <p>读取中…</p>
-        ) : versions.isError ? (
-          <p>{versions.error.message}</p>
-        ) : (
-          versions.data?.map((v) => (
-            <div className="version-row" key={v.version}>
-              <span>
-                <b>版本 {v.version}</b>
-                <small>{new Date(v.created_at).toLocaleString()}</small>
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  change(v.config);
-                  p.onDataset(v.config.datasetVersionId);
-                  setHistoryOpen(false);
-                  p.notify(`已载入 v${v.version}，保存可创建新版本`);
-                }}
-              >
-                载入快照
-              </Button>
-            </div>
-          ))
-        )}
-      </Dialog>
+      <ExportDialog
+        {...{
+          exportOpen,
+          setExportOpen,
+          format,
+          setFormat,
+          c,
+          scale,
+          setScale,
+          output,
+          style,
+          exporting,
+          plotPending,
+          download,
+        }}
+      />
+      <VersionHistoryDialog
+        {...{
+          historyOpen,
+          setHistoryOpen,
+          versions,
+          change,
+          onDataset,
+          notify,
+        }}
+      />
     </div>
   );
 }
