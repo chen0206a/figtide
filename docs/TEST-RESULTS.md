@@ -20,6 +20,7 @@
 | 9b · 图表标签 | 同脚本 `-Step chart-tab` | 192/192，14.36 秒 | 通过，20.34 秒 | 最终统一回归 |
 | 9c · 外观标签 | 同脚本 `-Step appearance-tab` | 192/192，14.45 秒 | 通过，20.21 秒 | 最终统一回归 |
 | 9d · 序列标签 | 同脚本 -Step series-tab | 192/192，14.70s | 通过，20.58s | 最终统一回归 |
+| 9e · 坐标轴标签 | 同脚本 -Step axes-tab | 192/192，14.77s | 通过，19.35s | 最终统一回归 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 
