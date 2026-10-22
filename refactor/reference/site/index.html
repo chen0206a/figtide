@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LabFlow · 从实验数据到论文插图</title>
+<meta name="description" content="面向 AI / ML 研究生的开源实验记录与科研绘图工作台。本地优先，无需账号，数据不出本机。">
+<meta property="og:title" content="LabFlow · 从实验数据到论文插图">
+<meta property="og:description" content="导入 CSV，生成 11 类论文图，导出嵌入字体的矢量 PDF。原始数据始终只读。">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;family=Noto+Sans+SC:wght@400;500;600;700;900&amp;display=swap">
+<style>
+:root { --accent: #D55E00; }
+body{margin:0;background:#FFFFFF}
+a{color:#1F4FB8;text-decoration:none}a:hover{color:#163B8C}
+button{font-family:inherit}
+*{box-sizing:border-box}
+img,svg{max-width:100%}
+/* Inline styles come from the design canvas; phone overrides need !important. */
+@media (max-width: 640px) {
+  h1 { font-size: 36px !important; }
+  h2 { font-size: 28px !important; }
+  section[id="start"] > div { padding: 36px 22px !important; }
+  section { padding-left: 16px !important; padding-right: 16px !important; }
+  header > div { padding-left: 16px !important; padding-right: 16px !important; }
+}
+</style>
+</head>
+<body>
+<!-- Static marketing page. Placeholders to replace before publishing: [你的用户名], [许可证]. -->
+<div style="background: #FFFFFF; color: #0E1116; font-family: Inter, 'Noto Sans SC', system-ui, sans-serif; font-size: 15px; line-height: 1.6">
+
+<header style="border-bottom: 1px solid #EEF0F3">
+<div style="max-width: 1200px; margin: 0 auto; padding: 14px 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px">
+<a href="./" aria-label="LabFlow 首页" style="display: flex; align-items: center; gap: 10px; color: #0E1116">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #0E1116; display: flex; align-items: center; justify-content: center">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18 L9 11 L13 14 L20 5"></path></svg>
+</span>
+<span style="font-weight: 700; font-size: 17px; letter-spacing: -0.01em">LabFlow</span>
+</a>
+<nav aria-label="页面导航" style="display: flex; flex-wrap: wrap; gap: 4px 24px; font-size: 14px">
+<a href="#features" style="color: #4A5361">功能</a>
+<a href="#charts" style="color: #4A5361">图表</a>
+<a href="#assistant" style="color: #4A5361">绘图助手</a>
+<a href="https://github.com/[你的用户名]/labflow#readme" style="color: #4A5361">文档</a>
+</nav>
+<div style="flex: 1 1 20px"></div>
+<a href="https://github.com/[你的用户名]/labflow" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; color: #0E1116; font-size: 14px; font-weight: 500">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="#0E1116" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"></path></svg>
+GitHub
+</a>
+<a href="#start" style="display: flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 10px; background: #0E1116; color: #FFFFFF; font-size: 14px; font-weight: 600">快速开始</a>
+</div>
+</header>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 88px 28px 0; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 8px; border: 1px solid #E4E7EC; border-radius: 999px; font-size: 13px; color: #4A5361">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #0E1116; color: #FFFFFF">开源</span>
+本地优先 · 无需账号 · 数据不出本机
+</div>
+<h1 style="margin: 0; font-size: 60px; line-height: 1.15; font-weight: 800; letter-spacing: -0.03em; max-width: 900px">从实验数据到论文插图，<br>每一步都<span style="color: var(--accent)">可追溯</span>。</h1>
+<p style="margin: 0; max-width: 640px; font-size: 18px; color: #4A5361">面向 AI / ML 研究生的实验记录与科研绘图工作台。导入 CSV，生成 11 类论文图，导出嵌入字体的矢量 PDF。原始数据始终只读。</p>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px">
+<a href="https://github.com/[你的用户名]/labflow" style="display: flex; align-items: center; gap: 8px; height: 50px; padding: 0 24px; border-radius: 12px; background: #0E1116; color: #FFFFFF; font-size: 15px; font-weight: 600">
+在 GitHub 查看
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12 H19"></path><path d="M13 6 L19 12 L13 18"></path></svg>
+</a>
+<a href="https://github.com/[你的用户名]/labflow#readme" style="display: flex; align-items: center; gap: 8px; height: 50px; padding: 0 22px; border-radius: 12px; border: 1px solid #D5DAE1; color: #0E1116; font-size: 15px; font-weight: 500">阅读文档</a>
+</div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">React 19 · TypeScript · Plotly · Java 21 · Spring Boot 3</div>
+</section>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 56px 28px 0">
+<div style="position: relative; padding: 18px; border-radius: 24px; background: #F1F3F6">
+<div style="background: #FFFFFF; border: 1px solid #E1E5EA; border-radius: 14px; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(14,17,22,0.25)">
+<div style="display: flex; align-items: center; gap: 16px; padding: 10px 16px; border-bottom: 1px solid #EEF0F3; font-size: 12px">
+<span style="display: flex; align-items: center; gap: 8px; font-weight: 600"><span style="width: 18px; height: 18px; border-radius: 5px; background: #0E1116"></span>Learning dynamics</span>
+<span style="color: #5F6773">视觉模型泛化研究 · Figure 04</span>
+<span style="flex: 1"></span>
+<span style="padding: 3px 9px; border-radius: 999px; background: #E8F5EE; color: #146C45">已保存 v3</span>
+<span style="padding: 5px 12px; border-radius: 7px; background: #0E1116; color: #FFFFFF; font-weight: 600">导出</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; min-height: 420px">
+<div style="flex: 1 1 200px; max-width: 240px; border-right: 1px solid #EEF0F3; padding: 16px; display: flex; flex-direction: column; gap: 16px; font-size: 12px; background: #FCFCFD">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="color: #5F6773">数据集</span>
+<span style="padding: 7px 10px; border: 1px solid #E4E7EC; border-radius: 7px; background: #FFFFFF; font-family: 'JetBrains Mono', monospace; font-size: 11px">learning-curves.csv · v1</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="color: #5F6773">图表类型</span>
+<span style="padding: 7px 10px; border: 1px solid #E4E7EC; border-radius: 7px; background: #FFFFFF">折线图 + 区间带</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="color: #5F6773">图层</span>
+<span style="display: flex; align-items: center; gap: 8px"><span style="width: 14px; height: 2px; background: #0072B2"></span>Baseline</span>
+<span style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; margin: 0 -8px; border-radius: 6px; background: #F1F3F6; font-weight: 600"><span style="width: 14px; height: 3px; background: var(--accent)"></span>Proposed method</span>
+<span style="display: flex; align-items: center; gap: 8px"><span style="width: 14px; border-top: 2px dashed #009E73"></span>Without module A</span>
+</div>
+</div>
+<div style="flex: 999 1 480px; min-width: 0; padding: 22px 28px; background: #F7F8FA; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #5F6773"><span>FIGURE 04</span><span>88 × 58 mm · 单栏</span></div>
+<div style="background: #FFFFFF; border: 1px solid #E8EBEF; padding: 14px 10px 6px">
+<svg viewBox="0 0 580 300" style="display: block; width: 100%; height: auto" role="img" aria-label="编辑器画布中的学习曲线">
+<g transform="translate(46,12)" font-family="Inter, sans-serif" font-size="10" fill="#5F6773">
+<g stroke="#EDEFF2"><line x1="0" y1="0" x2="520" y2="0"></line><line x1="0" y1="50" x2="520" y2="50"></line><line x1="0" y1="100" x2="520" y2="100"></line><line x1="0" y1="150" x2="520" y2="150"></line><line x1="0" y1="200" x2="520" y2="200"></line></g>
+<line x1="0" y1="250" x2="520" y2="250" stroke="#2B323C"></line>
+<line x1="0" y1="0" x2="0" y2="250" stroke="#2B323C"></line>
+<g text-anchor="end"><text x="-8" y="4">100</text><text x="-8" y="54">90</text><text x="-8" y="104">80</text><text x="-8" y="154">70</text><text x="-8" y="204">60</text><text x="-8" y="254">50</text></g>
+<g text-anchor="middle"><text x="0" y="268">0</text><text x="86.7" y="268">10</text><text x="173.3" y="268">20</text><text x="260" y="268">30</text><text x="346.7" y="268">40</text><text x="433.3" y="268">50</text><text x="520" y="268">60</text><text x="260" y="286" font-size="11" fill="#2B323C">Training epoch</text></g>
+<path d="M0.0,216.2 L43.3,157.1 L86.7,123.2 L130.0,103.7 L173.3,92.5 L216.7,86.1 L260.0,82.4 L303.3,80.3 L346.7,79.1 L390.0,78.4 L433.3,78.0 L476.7,77.8 L520.0,77.7" fill="none" stroke="#009E73" stroke-width="2" stroke-dasharray="6 4"></path>
+<path d="M0.0,212.6 L43.3,149.7 L86.7,113.6 L130.0,92.9 L173.3,81.0 L216.7,74.2 L260.0,70.3 L303.3,68.0 L346.7,66.7 L390.0,66.0 L433.3,65.6 L476.7,65.3 L520.0,65.2" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path d="M0.0,207.0 L43.3,137.0 L86.7,95.7 L130.0,71.3 L173.3,56.8 L216.7,48.3 L260.0,43.3 L303.3,40.3 L346.7,38.5 L390.0,37.5 L433.3,36.9 L476.7,36.5 L520.0,36.3" fill="none" stroke="var(--accent)" stroke-width="3"></path>
+<g font-size="11" fill="#2B323C">
+<line x1="380" y1="150" x2="400" y2="150" stroke="#0072B2" stroke-width="2"></line><text x="406" y="154">Baseline</text>
+<line x1="380" y1="170" x2="400" y2="170" stroke="var(--accent)" stroke-width="3"></line><text x="406" y="174">Proposed</text>
+<line x1="380" y1="190" x2="400" y2="190" stroke="#009E73" stroke-width="2" stroke-dasharray="5 3"></line><text x="406" y="194">w/o module A</text>
+</g>
+</g>
+</svg>
+</div>
+</div>
+<div style="flex: 1 1 200px; max-width: 250px; border-left: 1px solid #EEF0F3; padding: 16px; display: flex; flex-direction: column; gap: 14px; font-size: 12px">
+<div style="display: flex; gap: 4px; padding: 3px; background: #F1F3F6; border-radius: 8px">
+<span style="flex: 1; text-align: center; padding: 4px; border-radius: 6px; background: #FFFFFF; font-weight: 600">映射</span>
+<span style="flex: 1; text-align: center; padding: 4px; color: #5F6773">外观</span>
+<span style="flex: 1; text-align: center; padding: 4px; color: #5F6773">导出</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="color: #5F6773">X 轴</span><span style="padding: 7px 10px; border: 1px solid #E4E7EC; border-radius: 7px; font-family: 'JetBrains Mono', monospace; font-size: 11px">epoch</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="color: #5F6773">Y 轴</span><span style="padding: 7px 10px; border: 1px solid #E4E7EC; border-radius: 7px; font-family: 'JetBrains Mono', monospace; font-size: 11px">accuracy</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="color: #5F6773">区间带</span><span style="padding: 7px 10px; border: 1px solid #E4E7EC; border-radius: 7px; font-family: 'JetBrains Mono', monospace; font-size: 11px">mean ± SEM · n = 3</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="color: #5F6773">论文尺寸</span>
+<span style="display: flex; gap: 6px"><span style="flex: 1; text-align: center; padding: 6px; border-radius: 7px; background: #0E1116; color: #FFFFFF">单栏</span><span style="flex: 1; text-align: center; padding: 6px; border-radius: 7px; border: 1px solid #E4E7EC">双栏</span></span>
+</div>
+</div>
+</div>
+</div>
+
+<div style="position: absolute; right: -8px; bottom: -36px; width: 320px; max-width: 80%; background: #0E1116; color: #FFFFFF; border-radius: 16px; padding: 16px; box-shadow: 0 24px 48px -16px rgba(14,17,22,0.45); display: flex; flex-direction: column; gap: 10px; font-size: 13px; text-align: left">
+<div style="display: flex; justify-content: space-between; color: #B8C0CC; font-size: 12px"><span>绘图助手 · 提案</span><span style="font-family: 'JetBrains Mono', monospace">3 处修改</span></div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.8; color: #D7DCE3">
+<div>legend.position <span style="color: #8A93A0">top →</span> <span style="color: #7FD1AE">right</span></div>
+<div>Proposed.width <span style="color: #8A93A0">2 →</span> <span style="color: #7FD1AE">3</span></div>
+<div>font.size <span style="color: #8A93A0">12 →</span> <span style="color: #7FD1AE">16</span></div>
+</div>
+<div style="display: flex; gap: 8px">
+<span style="flex: 1; text-align: center; padding: 7px; border-radius: 8px; background: #FFFFFF; color: #0E1116; font-weight: 600">应用</span>
+<span style="flex: 1; text-align: center; padding: 7px; border-radius: 8px; border: 1px solid #2B323C">继续修改</span>
+</div>
+</div>
+</div>
+</section>
+
+<section id="features" style="max-width: 1200px; margin: 0 auto; padding: 136px 28px 0; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 620px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #5F6773">01 · REPRODUCIBLE</div>
+<h2 style="margin: 0; font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">可复现，是默认值。</h2>
+</div>
+<p style="margin: 0; max-width: 420px; color: #4A5361">每一张图都能回到它的数据版本和处理规则。审稿人问「这个数怎么来的」，你能直接打开给他看。</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px">
+<div style="padding: 22px; border: 1px solid #E4E7EC; border-radius: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773"><span>01</span><span>→</span></div>
+<div style="font-size: 17px; font-weight: 700">原始数据</div>
+<div style="font-size: 14px; color: #4A5361">CSV / XLSX 导入后只读保存，追加新版本而不是覆盖。</div>
+<div style="margin-top: auto; padding: 8px 10px; border-radius: 8px; background: #F5F6F8; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #2B323C">sha256 aacd2a68…</div>
+</div>
+<div style="padding: 22px; border: 1px solid #E4E7EC; border-radius: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773"><span>02</span><span>→</span></div>
+<div style="font-size: 17px; font-weight: 700">处理规则</div>
+<div style="font-size: 14px; color: #4A5361">过滤、排序、分组汇总都记为显式规则，派生数据保留来源。</div>
+<div style="margin-top: auto; padding: 8px 10px; border-radius: 8px; background: #F5F6F8; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #2B323C">group_by model → mean ± SEM</div>
+</div>
+<div style="padding: 22px; border: 1px solid #E4E7EC; border-radius: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773"><span>03</span><span>→</span></div>
+<div style="font-size: 17px; font-weight: 700">图表版本</div>
+<div style="font-size: 14px; color: #4A5361">每次保存一个版本，可回看、可恢复，撤销重做不丢。</div>
+<div style="margin-top: auto; padding: 8px 10px; border-radius: 8px; background: #F5F6F8; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #2B323C">Figure 04 · v3</div>
+</div>
+<div style="padding: 22px; border: 1px solid #0E1116; border-radius: 16px; background: #0E1116; color: #FFFFFF; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #B8C0CC"><span>04</span><span>✓</span></div>
+<div style="font-size: 17px; font-weight: 700">论文级导出</div>
+<div style="font-size: 14px; color: #C9CFD8">嵌入字体的矢量 PDF、SVG，按 mm 设定尺寸，PNG 可选 DPI。</div>
+<div style="margin-top: auto; padding: 8px 10px; border-radius: 8px; background: #1B2028; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #D7DCE3">PDF · 88 mm · 600 DPI</div>
+</div>
+</div>
+</section>
+
+<section id="charts" style="max-width: 1200px; margin: 0 auto; padding: 120px 28px 0; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 620px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #5F6773">02 · CHARTS</div>
+<h2 style="margin: 0; font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">11 类科研图，<br>覆盖实验论文的常见需求。</h2>
+</div>
+<p style="margin: 0; max-width: 420px; color: #4A5361">支持多序列、真实误差列和区间带。模型评估图直接从标签和分数计算，不用先在 Python 里算好。</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+
+<figure style="margin: 0; border: 1px solid #E4E7EC; border-radius: 16px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="学习曲线与区间带示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="120" stroke="#2B323C"></line>
+<path d="M0.0,87.8 L20.0,56.4 L40.0,38.1 L60.0,27.5 L80.0,21.4 L100.0,17.9 L120.0,15.9 L140.0,14.8 L160.0,14.1 L180.0,13.8 L200.0,13.6 L220.0,13.5 L240.0,13.4 L240.0,21.4 L220.0,21.6 L200.0,21.8 L180.0,22.2 L160.0,22.9 L140.0,23.9 L120.0,25.6 L100.0,28.5 L80.0,33.1 L60.0,40.9 L40.0,53.7 L20.0,75.1 L0.0,110.9 Z" fill="var(--accent)" fill-opacity="0.14"></path>
+<path d="M0.0,102.1 L20.0,71.9 L40.0,54.5 L60.0,44.6 L80.0,38.9 L100.0,35.6 L120.0,33.7 L140.0,32.7 L160.0,32.0 L180.0,31.7 L200.0,31.5 L220.0,31.4 L240.0,31.3" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path d="M0.0,99.4 L20.0,65.8 L40.0,45.9 L60.0,34.2 L80.0,27.3 L100.0,23.2 L120.0,20.8 L140.0,19.3 L160.0,18.5 L180.0,18.0 L200.0,17.7 L220.0,17.5 L240.0,17.4" fill="none" stroke="var(--accent)" stroke-width="2.5"></path>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">折线 + 区间带</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">mean ± SEM</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: 1px solid #E4E7EC; border-radius: 16px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="分组柱状图示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line>
+<rect x="18" y="15.5" width="18" height="104.5" fill="#0072B2"></rect><rect x="38" y="8.6" width="18" height="111.4" fill="var(--accent)"></rect><rect x="58" y="18.5" width="18" height="101.5" fill="#009E73"></rect>
+<rect x="98" y="45" width="18" height="75" fill="#0072B2"></rect><rect x="118" y="35.5" width="18" height="84.5" fill="var(--accent)"></rect><rect x="138" y="49" width="18" height="71" fill="#009E73"></rect>
+<rect x="178" y="57.5" width="18" height="62.5" fill="#0072B2"></rect><rect x="198" y="48.8" width="18" height="71.2" fill="var(--accent)"></rect><rect x="218" y="61.6" width="18" height="58.4" fill="#009E73"></rect>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">分组柱状图</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">3 datasets × 3 models</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: 1px solid #E4E7EC; border-radius: 16px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="ROC 曲线示例，图例标注 AUC">
+<g transform="translate(20,0)">
+<line x1="0" y1="120" x2="120" y2="120" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="120" stroke="#2B323C"></line>
+<path d="M0 120 L120 0" stroke="#C3C9D2" stroke-dasharray="3 3" fill="none"></path>
+<path d="M0.0,120.0 L0.0,54.0 L12.0,54.0 L12.0,43.2 L24.0,43.2 L24.0,32.4 L48.0,32.4 L48.0,21.6 L72.0,21.6 L72.0,0.0 L120.0,0.0" stroke="#0072B2" stroke-width="2" fill="none"></path>
+<path d="M0.0,120.0 L0.0,36.0 L12.0,36.0 L12.0,24.0 L24.0,24.0 L24.0,12.0 L48.0,12.0 L48.0,0.0 L120.0,0.0" stroke="var(--accent)" stroke-width="2.5" fill="none"></path>
+</g>
+<g font-family="Inter, sans-serif" font-size="11" fill="#2B323C">
+<line x1="158" y1="50" x2="172" y2="50" stroke="var(--accent)" stroke-width="2.5"></line><text x="177" y="54">A · AUC 0.93</text>
+<line x1="158" y1="70" x2="172" y2="70" stroke="#0072B2" stroke-width="2"></line><text x="177" y="74">B · AUC 0.83</text>
+</g>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">ROC / PR</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">AUC · AP 自动标注</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: 1px solid #E4E7EC; border-radius: 16px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<div role="img" aria-label="混淆矩阵示例" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; width: 140px; height: 140px; font-family: 'JetBrains Mono', monospace; font-size: 13px">
+<span style="background: #0D4A8C; color: #FFFFFF; display: flex; align-items: center; justify-content: center; border-radius: 3px">8</span>
+<span style="background: #D6E4F2; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">1</span>
+<span style="background: #F1F5FA; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">0</span>
+<span style="background: #D6E4F2; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">1</span>
+<span style="background: #1E64A8; color: #FFFFFF; display: flex; align-items: center; justify-content: center; border-radius: 3px">7</span>
+<span style="background: #D6E4F2; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">1</span>
+<span style="background: #F1F5FA; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">0</span>
+<span style="background: #D6E4F2; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">1</span>
+<span style="background: #08306B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; border-radius: 3px">9</span>
+</div>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">混淆矩阵</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">P / R / F1 · macro</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: 1px solid #E4E7EC; border-radius: 16px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="箱线图示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line>
+<g stroke="#2B323C" stroke-width="1.5" fill="none">
+<line x1="50" y1="95" x2="50" y2="70"></line><line x1="50" y1="45" x2="50" y2="25"></line><line x1="42" y1="95" x2="58" y2="95"></line><line x1="42" y1="25" x2="58" y2="25"></line>
+<line x1="120" y1="80" x2="120" y2="55"></line><line x1="120" y1="28" x2="120" y2="12"></line><line x1="112" y1="80" x2="128" y2="80"></line><line x1="112" y1="12" x2="128" y2="12"></line>
+<line x1="190" y1="100" x2="190" y2="80"></line><line x1="190" y1="58" x2="190" y2="40"></line><line x1="182" y1="100" x2="198" y2="100"></line><line x1="182" y1="40" x2="198" y2="40"></line>
+</g>
+<rect x="32" y="45" width="36" height="25" fill="#0072B2" fill-opacity="0.2" stroke="#0072B2" stroke-width="1.5"></rect><line x1="32" y1="58" x2="68" y2="58" stroke="#0072B2" stroke-width="2.5"></line>
+<rect x="102" y="28" width="36" height="27" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.5"></rect><line x1="102" y1="40" x2="138" y2="40" stroke="var(--accent)" stroke-width="2.5"></line>
+<rect x="172" y="58" width="36" height="22" fill="#009E73" fill-opacity="0.2" stroke="#009E73" stroke-width="1.5"></rect><line x1="172" y1="68" x2="208" y2="68" stroke="#009E73" stroke-width="2.5"></line>
+<circle cx="50" cy="108" r="2.5" fill="#0072B2"></circle><circle cx="190" cy="110" r="2.5" fill="#009E73"></circle>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">箱线图</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">分布 · 离群点</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: 1px solid #E4E7EC; border-radius: 16px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="ECDF 经验累积分布示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="120" stroke="#2B323C"></line>
+<path d="M0,120 L32.6,120 L32.6,114 L49.1,114 L49.1,105 L57.5,105 L57.5,96 L69.2,96 L69.2,87 L83.4,87 L83.4,75 L87,75 L87,66 L91,66 L91,57 L95.1,57 L95.1,48 L100.5,48 L100.5,39 L105.4,39 L105.4,30 L112.9,30 L112.9,21 L119,21 L119,12 L128.5,12 L128.5,3 L150.7,3 L150.7,0 L240,0" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path d="M0,120 L74.6,120 L74.6,114 L86.8,114 L86.8,105 L112.5,105 L112.5,96 L118.7,96 L118.7,87 L124.7,87 L124.7,78 L128.9,78 L128.9,69 L135.8,69 L135.8,60 L138.2,60 L138.2,51 L141.7,51 L141.7,42 L152.8,42 L152.8,30 L171.3,30 L171.3,21 L174.9,21 L174.9,12 L191.7,12 L191.7,3 L198.8,3 L198.8,0 L240,0" fill="none" stroke="var(--accent)" stroke-width="2.5"></path>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">ECDF</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">经验累积分布</span></figcaption>
+</figure>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; color: #4A5361">
+<span style="margin-right: 4px">以及</span>
+<span style="padding: 6px 12px; border: 1px solid #E4E7EC; border-radius: 999px">散点图</span>
+<span style="padding: 6px 12px; border: 1px solid #E4E7EC; border-radius: 999px">热力图</span>
+<span style="padding: 6px 12px; border: 1px solid #E4E7EC; border-radius: 999px">小提琴图</span>
+<span style="padding: 6px 12px; border: 1px solid #E4E7EC; border-radius: 999px">直方图</span>
+<span style="padding: 6px 12px; border: 1px solid #E4E7EC; border-radius: 999px">PR 曲线</span>
+</div>
+</section>
+
+<section id="assistant" style="max-width: 1200px; margin: 0 auto; padding: 120px 28px 0; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 20px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #5F6773">03 · ASSISTANT</div>
+<h2 style="margin: 0; font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">说出想改的地方。<br>先预览，再应用。</h2>
+<p style="margin: 0; color: #4A5361">绘图助手只能通过 13 个受校验的工具修改图表：3 个只读，10 个可预览修改。每次调整先成为提案，你确认后整组应用，一步就能撤销。</p>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+<li style="display: flex; gap: 12px; align-items: flex-start"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px"><path d="M5 12 L10 17 L19 7"></path></svg><span>与你的手动编辑合并，有冲突时拦截</span></li>
+<li style="display: flex; gap: 12px; align-items: flex-start"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px"><path d="M5 12 L10 17 L19 7"></path></svg><span>限制步数、预算与超时，随时可以取消</span></li>
+<li style="display: flex; gap: 12px; align-items: flex-start"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px"><path d="M5 12 L10 17 L19 7"></path></svg><span>接入任意兼容 Chat Completions 的模型，密钥只留在本机后端</span></li>
+</ul>
+</div>
+<div style="flex: 1 1 440px; min-width: 0; background: #F5F6F8; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="align-self: flex-end; max-width: 80%; padding: 12px 16px; border-radius: 16px 16px 4px 16px; background: #0E1116; color: #FFFFFF; font-size: 14px">把图例放到右侧，Proposed 加粗，字号改成 16。</div>
+<div style="background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px">
+<span style="font-weight: 600">提案 · 3 处修改</span>
+<span style="padding: 3px 9px; border-radius: 999px; background: #EEF3FC; color: #1F4FB8; font-size: 12px">已通过校验 · 预览中</span>
+</div>
+<div style="display: flex; flex-direction: column; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; border: 1px solid #EEF0F3; border-radius: 10px; overflow: hidden">
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid #EEF0F3"><span>set_legend · position</span><span><span style="color: #5F6773; text-decoration: line-through">top</span> → <span style="color: #146C45; font-weight: 500">right</span></span></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid #EEF0F3"><span>set_series · Proposed.width</span><span><span style="color: #5F6773; text-decoration: line-through">2</span> → <span style="color: #146C45; font-weight: 500">3</span></span></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px"><span>set_style · font.size</span><span><span style="color: #5F6773; text-decoration: line-through">12</span> → <span style="color: #146C45; font-weight: 500">16</span></span></div>
+</div>
+<div style="display: flex; gap: 10px">
+<span style="flex: 1; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #0E1116; color: #FFFFFF; font-size: 14px; font-weight: 600">应用这组调整</span>
+<span style="flex: 1; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid #D5DAE1; border-radius: 10px; background: #FFFFFF; color: #0E1116; font-size: 14px">继续修改</span>
+</div>
+</div>
+<div style="font-size: 12px; color: #5F6773; text-align: center">确认后只更新草稿，正式保存仍由你决定。</div>
+</div>
+</section>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 96px 28px 0">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); border-top: 1px solid #E4E7EC; border-bottom: 1px solid #E4E7EC">
+<div style="padding: 28px 8px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 32px; font-weight: 800; letter-spacing: -0.02em">161</span><span style="font-size: 13px; color: #5F6773">后端测试（Java）</span></div>
+<div style="padding: 28px 8px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 32px; font-weight: 800; letter-spacing: -0.02em">156</span><span style="font-size: 13px; color: #5F6773">前端测试（Vitest）</span></div>
+<div style="padding: 28px 8px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 32px; font-weight: 800; letter-spacing: -0.02em">51</span><span style="font-size: 13px; color: #5F6773">端到端浏览器流程</span></div>
+<div style="padding: 28px 8px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 32px; font-weight: 800; letter-spacing: -0.02em">30</span><span style="font-size: 13px; color: #5F6773">助手评测用例（正常 / 拒绝 / 追问）</span></div>
+</div>
+</section>
+
+<section id="start" style="max-width: 1200px; margin: 0 auto; padding: 96px 28px 80px">
+<div style="background: #0E1116; color: #FFFFFF; border-radius: 28px; padding: 64px 48px; display: flex; flex-wrap: wrap; gap: 40px; align-items: center; justify-content: space-between">
+<div style="flex: 1 1 380px; display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-size: 38px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">在本机跑起来，<br>一个脚本完成。</h2>
+<p style="margin: 0; color: #B8C0CC">需要 Node 22、Java 21 和 MySQL 8（可用仓库里的 compose.yaml 启动 MySQL）。不用注册账号，数据不会离开本机。</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px">
+<a href="https://github.com/[你的用户名]/labflow" style="display: flex; align-items: center; height: 48px; padding: 0 22px; border-radius: 12px; background: #FFFFFF; color: #0E1116; font-weight: 600">在 GitHub 查看</a>
+<a href="https://github.com/[你的用户名]/labflow#readme" style="display: flex; align-items: center; height: 48px; padding: 0 22px; border-radius: 12px; border: 1px solid #3A424E; color: #FFFFFF">阅读文档</a>
+</div>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; background: #1B2028; border: 1px solid #2B323C; border-radius: 16px; padding: 22px 24px; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 2; overflow-x: auto">
+<div style="color: #8A93A0"># Windows · 首次运行会准备依赖</div>
+<div><span style="color: #7FD1AE">&gt;</span> git clone https://github.com/[你的用户名]/labflow</div>
+<div><span style="color: #7FD1AE">&gt;</span> cd labflow</div>
+<div><span style="color: #7FD1AE">&gt;</span> powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1</div>
+<div style="color: #8A93A0"># 打开 http://127.0.0.1:5176</div>
+</div>
+</div>
+</section>
+
+<footer style="border-top: 1px solid #EEF0F3">
+<div style="max-width: 1200px; margin: 0 auto; padding: 28px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 13px; color: #5F6773">
+<span>LabFlow · 开源 · [许可证]</span>
+<span>Made by 路晨</span>
+</div>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,763 @@
+From 6808caf2b2b06d454adb6e03055096edb60a2ecb Mon Sep 17 00:00:00 2001
+From: claude <x@x>
+Date: Thu, 22 Oct 2026 13:09:11 +0900
+Subject: [PATCH] fix(plot): distinct group colors, integer ticks, confusion
+ layout, AUC/AP legend
+
+---
+ frontend/src/editor/EvaluationPanel.tsx |  10 ++
+ frontend/src/editor/confusion.ts        |  21 ++-
+ frontend/src/editor/distribution.ts     |  11 +-
+ frontend/src/editor/empirical.ts        |  23 ++-
+ frontend/src/editor/encoding.test.ts    | 218 ++++++++++++++++++++++++
+ frontend/src/editor/encoding.ts         |  97 +++++++++++
+ frontend/src/editor/evaluation.ts       |  20 ++-
+ frontend/src/editor/heatmap.ts          |   2 +
+ frontend/src/editor/model.ts            |   3 +
+ frontend/src/editor/plot-core.ts        |  60 +++++--
+ 10 files changed, 434 insertions(+), 31 deletions(-)
+ create mode 100644 frontend/src/editor/encoding.test.ts
+ create mode 100644 frontend/src/editor/encoding.ts
+
+diff --git a/frontend/src/editor/EvaluationPanel.tsx b/frontend/src/editor/EvaluationPanel.tsx
+index f4c913c..f0e576e 100644
+--- a/frontend/src/editor/EvaluationPanel.tsx
++++ b/frontend/src/editor/EvaluationPanel.tsx
+@@ -97,6 +97,16 @@ export function EvaluationPanel({
+             onChange={(v) => set({ baseline: v.target.checked })}
+           />
+         </label>
++        <label className="toggle-label">
++          图例显示 {c.type === "pr" ? "AP" : "AUC"}
++          <input
++            type="checkbox"
++            role="switch"
++            aria-label="图例显示评估指标"
++            checked={!!e.legendMetric}
++            onChange={(v) => set({ legendMetric: v.target.checked })}
++          />
++        </label>
+         <p className="tiny-note">
+           ROC AUC 采用梯形积分；AP
+           采用逐阈值召回增量加权精确率。并列分数一起处理，PR 阶梯线与 AP
+diff --git a/frontend/src/editor/confusion.ts b/frontend/src/editor/confusion.ts
+index c0abf2c..3821278 100644
+--- a/frontend/src/editor/confusion.ts
++++ b/frontend/src/editor/confusion.ts
+@@ -17,6 +17,13 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
+   );
+   const escape = (v: string) =>
+     v.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
++  /** Colorbar labels follow the figure language (axis defaults are English). */
++  const colorbarTitle = {
++    count: "Count",
++    true: "Share of true class",
++    pred: "Share of predicted class",
++    all: "Share of all samples",
++  };
+   const title = {
+     count: "样本数",
+     true: "真实类别内比例",
+@@ -118,16 +125,28 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
+     }),
+   );
+   heat.yaxis = { ...heat.yaxis, range: [report.classes.length - 0.5, -0.5] };
++  // Anchor the subtitle's baseline above the plot area and reserve room for
++  // it, so it can never be painted underneath the first row of cells.
+   heat.annotations.push({
+     xref: "paper",
+     yref: "paper",
+     x: 0.5,
+     y: 1,
+-    yshift: 14,
++    yanchor: "bottom",
++    yshift: 6,
+     showarrow: false,
+     text: escape(`${report.series} · ${report.group} · n=${report.n}`),
+     font: { size: c.style.fontSize, color: "#566072" },
+   });
++  heat.marginTop = c.style.fontSize + 14;
++  const colorbar = heat.traces[0]?.marker?.colorbar;
++  if (colorbar)
++    Object.assign(colorbar, {
++      title: { text: escape(colorbarTitle[k.normalization]), side: "right" },
++      ...(k.normalization === "count"
++        ? { tickformat: "d", dtick: Math.max(1, Math.ceil(max / 5)) }
++        : { tickformat: ".0%" }),
++    });
+   heat.traces.forEach((t) => {
+     t.customdata = t.x.map(() => report.seriesId);
+     t.text = t.x.map((x: number, i: number) => {
+diff --git a/frontend/src/editor/distribution.ts b/frontend/src/editor/distribution.ts
+index 743a599..01bd64a 100644
+--- a/frontend/src/editor/distribution.ts
++++ b/frontend/src/editor/distribution.ts
+@@ -1,3 +1,4 @@
++import { groupEncoding, groupTraceName } from "./encoding";
+ import type { Dataset } from "../lib/api";
+ import { defaultDistribution, type Config } from "./model";
+ 
+@@ -45,7 +46,8 @@ export function distributionTraces(c: Config, rows: Dataset["rows"]) {
+     };
+   for (const s of c.series.filter((s) => s.visible)) {
+     const groups = c.group ? [...new Set(rows.map((r) => r[c.group]))] : [""];
+-    for (const group of groups) {
++    for (const [groupIndex, group] of groups.entries()) {
++      const paint = groupEncoding(c, s, groupIndex, groups.length);
+       const selected = rows.filter(
+         (r) => r[c.x] != null && (!c.group || r[c.group] === group),
+       );
+@@ -53,6 +55,7 @@ export function distributionTraces(c: Config, rows: Dataset["rows"]) {
+       const validRows: Dataset["rows"] = [],
+         sparseRows: Dataset["rows"] = [];
+       const name = s.name + (c.group ? ` · ${group ?? "缺失分组"}` : "");
++      const legendName = groupTraceName(c, s, group);
+       for (const category of categories) {
+         const sample = selected.filter((r) => r[c.x] === category);
+         const finite = sample.filter(
+@@ -93,11 +96,11 @@ export function distributionTraces(c: Config, rows: Dataset["rows"]) {
+         }
+       }
+       const common = {
+-        name: escape(name),
++        name: escape(legendName),
+         legendgroup: s.id + ":" + JSON.stringify(group),
+         opacity: s.opacity,
+-        line: { color: s.color, width: s.width },
+-        marker: { color: s.color, size: s.size, symbol: s.symbol },
++        line: { color: paint.color, width: s.width },
++        marker: { color: paint.color, size: s.size, symbol: paint.symbol },
+       };
+       if (validRows.length)
+         traces.push({
+diff --git a/frontend/src/editor/empirical.ts b/frontend/src/editor/empirical.ts
+index 15c9247..8063c04 100644
+--- a/frontend/src/editor/empirical.ts
++++ b/frontend/src/editor/empirical.ts
+@@ -1,3 +1,4 @@
++import { groupEncoding, groupTraceName } from "./encoding";
+ import type { Dataset } from "../lib/api";
+ import { defaultEmpirical, type Config } from "./model";
+ import type { SampleSummary } from "./distribution";
+@@ -30,7 +31,8 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
+       }
+     }
+   for (const s of c.series.filter((s) => s.visible))
+-    for (const group of groups) {
++    for (const [groupIndex, group] of groups.entries()) {
++      const paint = groupEncoding(c, s, groupIndex, groups.length);
+       const selected = c.group
+         ? rows.filter((r) => r[c.group] === group)
+         : rows;
+@@ -43,6 +45,7 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
+         .filter((v) => !c.axes.x.log || v > 0)
+         .sort((a, b) => a - b);
+       const name = s.name + (c.group ? ` · ${group ?? "缺失分组"}` : "");
++      const legendName = groupTraceName(c, s, group);
+       let excluded = finite.length - values.length;
+       if (excluded)
+         warnings.push(
+@@ -82,7 +85,7 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
+           traces.push({
+             type: "bar",
+             textposition: "none",
+-            name: escape(name),
++            name: escape(legendName),
+             legendgroup: s.id + JSON.stringify(group),
+             x: counts.map((_, i) => start + (i + 0.5) * width),
+             y: counts.map((n) =>
+@@ -96,7 +99,10 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
+               (width * 0.9) /
+               (groups.length * c.series.filter((s) => s.visible).length),
+             opacity: s.opacity,
+-            marker: { color: s.color, line: { color: s.color, width: 0.5 } },
++            marker: {
++              color: paint.color,
++              line: { color: paint.color, width: 0.5 },
++            },
+             customdata: counts.map(() => s.id),
+             text: counts.map(
+               (n, i) =>
+@@ -125,13 +131,18 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
+         traces.push({
+           type: "scatter",
+           mode: "lines+markers",
+-          name: escape(name),
++          name: escape(legendName),
+           legendgroup: s.id + JSON.stringify(group),
+           x,
+           y,
+           customdata: x.map(() => s.id),
+-          line: { color: s.color, width: s.width, dash: s.dash, shape: "hv" },
+-          marker: { color: s.color, size: s.size, symbol: s.symbol },
++          line: {
++            color: paint.color,
++            width: s.width,
++            dash: paint.dash,
++            shape: "hv",
++          },
++          marker: { color: paint.color, size: s.size, symbol: paint.symbol },
+           opacity: s.opacity,
+           hovertemplate:
+             "%{x}<br>累计概率：%{y:.4f}<extra>%{fullData.name}</extra>",
+diff --git a/frontend/src/editor/encoding.test.ts b/frontend/src/editor/encoding.test.ts
+new file mode 100644
+index 0000000..20faff3
+--- /dev/null
++++ b/frontend/src/editor/encoding.test.ts
+@@ -0,0 +1,218 @@
++import { describe, it, expect } from "vitest";
++import type { Dataset } from "../lib/api";
++import {
++  defaults,
++  defaultClassification,
++  defaultEvaluation,
++  makeSeries,
++  type Config,
++} from "./model";
++import { buildPlot } from "./plot";
++import { groupEncoding, integerAxisStep } from "./encoding";
++
++const grouped: Dataset = {
++  id: 1,
++  dataset_id: 1,
++  version: 1,
++  filename: "synthetic-grouped.csv",
++  sha256: "demo",
++  row_count: 6,
++  warnings: [],
++  fields: [
++    { name: "epoch", type: "number", missing: 0 },
++    { name: "model", type: "string", missing: 0 },
++    { name: "accuracy", type: "number", missing: 0 },
++    { name: "loss", type: "number", missing: 0 },
++  ],
++  rows: [
++    { epoch: 1, model: "Baseline", accuracy: 0.65, loss: 0.9 },
++    { epoch: 2, model: "Baseline", accuracy: 0.8, loss: 0.6 },
++    { epoch: 3, model: "Baseline", accuracy: 0.86, loss: 0.5 },
++    { epoch: 1, model: "Method A", accuracy: 0.72, loss: 0.8 },
++    { epoch: 2, model: "Method A", accuracy: 0.86, loss: 0.5 },
++    { epoch: 3, model: "Method A", accuracy: 0.92, loss: 0.4 },
++  ],
++};
++function groupedLine(): Config {
++  const c = defaults(grouped);
++  return {
++    ...c,
++    type: "line",
++    x: "epoch",
++    group: "model",
++    series: [{ ...makeSeries("accuracy"), name: "Accuracy · mean ± SEM" }],
++  };
++}
++const legendTraces = (traces: any[]) =>
++  traces.filter((t) => t.showlegend !== false);
++
++describe("grouped series encoding", () => {
++  it("gives every group of a single series its own color", () => {
++    const p = buildPlot(groupedLine(), grouped);
++    const [a, b] = legendTraces(p.traces);
++    expect(a.line.color).not.toBe(b.line.color);
++    expect(a.marker.color).toBe(a.line.color);
++    expect(b.marker.color).toBe(b.line.color);
++  });
++  it("keeps the user's series color for the first group", () => {
++    const c = groupedLine();
++    c.series[0].color = "#123456";
++    const [first] = legendTraces(buildPlot(c, grouped).traces);
++    expect(first.line.color).toBe("#123456");
++  });
++  it("names grouped traces by group and moves the series name to the legend title", () => {
++    const p = buildPlot(groupedLine(), grouped);
++    expect(legendTraces(p.traces).map((t) => t.name)).toEqual([
++      "Baseline",
++      "Method A",
++    ]);
++    expect(p.layout.legend.title.text).toBe("Accuracy · mean ± SEM");
++  });
++  it("uses color for group and dash for series when several series are grouped", () => {
++    const c = groupedLine();
++    c.series = [makeSeries("accuracy"), makeSeries("loss", 1)];
++    const traces = legendTraces(buildPlot(c, grouped).traces);
++    expect(traces.map((t) => t.name)).toEqual([
++      "accuracy · Baseline",
++      "accuracy · Method A",
++      "loss · Baseline",
++      "loss · Method A",
++    ]);
++    expect(traces[0].line.color).toBe(traces[2].line.color);
++    expect(traces[0].line.color).not.toBe(traces[1].line.color);
++    expect(traces[0].line.dash).not.toBe(traces[2].line.dash);
++    expect(buildPlot(c, grouped).layout.legend.title).toBeUndefined();
++  });
++  it("leaves ungrouped series untouched", () => {
++    const c = groupedLine();
++    c.group = "";
++    const s = c.series[0];
++    expect(groupEncoding(c, s, 0, 1)).toEqual({
++      color: s.color,
++      dash: s.dash,
++      symbol: s.symbol,
++    });
++    const p = buildPlot(c, grouped);
++    expect(p.traces[0].name).toBe("Accuracy · mean ± SEM");
++    expect(p.layout.legend.title).toBeUndefined();
++  });
++});
++
++describe("integer x axis ticks", () => {
++  it("steps by one on short integer axes", () => {
++    expect(integerAxisStep([1, 2, 3])).toBe(1);
++    expect(buildPlot(groupedLine(), grouped).layout.xaxis.dtick).toBe(1);
++  });
++  it("leaves long, fractional or user-set axes to Plotly", () => {
++    expect(integerAxisStep([0, 60])).toBeUndefined();
++    expect(integerAxisStep([0.5, 1, 1.5])).toBeUndefined();
++    expect(integerAxisStep(["a", "b"])).toBeUndefined();
++    const c = groupedLine();
++    c.axes.x.dtick = "0.5";
++    expect(buildPlot(c, grouped).layout.xaxis.dtick).toBe(0.5);
++  });
++});
++
++describe("confusion matrix layout", () => {
++  const rows = [
++    ["A", "A"],
++    ["A", "B"],
++    ["B", "B"],
++    ["B", "B"],
++    ["C", "C"],
++    ["C", "A"],
++  ].map(([truth, a], i) => ({ id: i + 1, truth, a }));
++  const data: Dataset = {
++    id: 1,
++    dataset_id: 1,
++    version: 1,
++    filename: "synthetic-classes.csv",
++    sha256: "demo",
++    row_count: rows.length,
++    warnings: [],
++    fields: [
++      { name: "id", type: "number", missing: 0 },
++      { name: "truth", type: "string", missing: 0 },
++      { name: "a", type: "string", missing: 0 },
++    ],
++    rows,
++  };
++  function confusion(): Config {
++    return {
++      ...defaults(data),
++      type: "confusion",
++      series: [{ ...makeSeries("id"), name: "Model A", prediction: "a" }],
++      classification: {
++        ...defaultClassification,
++        label: "truth",
++        classes: ["A", "B", "C"],
++      },
++    };
++  }
++  it("anchors the subtitle above the cells and reserves top margin for it", () => {
++    const c = confusion();
++    const p = buildPlot(c, data);
++    const subtitle = p.layout.annotations.find((a: any) =>
++      String(a.text).includes("n=6"),
++    );
++    expect(subtitle).toMatchObject({ yref: "paper", y: 1, yanchor: "bottom" });
++    const plain = buildPlot({ ...c, type: "line", x: "id" }, data);
++    expect(p.layout.margin.t).toBeGreaterThan(plain.layout.margin.t);
++  });
++  it("uses integer colorbar ticks for counts and percentages for shares", () => {
++    const c = confusion();
++    const counts = buildPlot(c, data).traces[0].marker.colorbar;
++    expect(counts.tickformat).toBe("d");
++    expect(Number.isInteger(counts.dtick)).toBe(true);
++    expect(counts.title.text).toBe("Count");
++    c.classification!.normalization = "true";
++    expect(buildPlot(c, data).traces[0].marker.colorbar.tickformat).toBe(
++      ".0%",
++    );
++  });
++});
++
++describe("evaluation legend metric", () => {
++  const data: Dataset = {
++    id: 1,
++    dataset_id: 1,
++    version: 1,
++    filename: "synthetic-evaluation.csv",
++    sha256: "demo",
++    row_count: 4,
++    warnings: [],
++    fields: [
++      { name: "label", type: "string", missing: 0 },
++      { name: "score", type: "number", missing: 0 },
++    ],
++    rows: [0.1, 0.4, 0.35, 0.8].map((score, i) => ({
++      label: i < 2 ? "neg" : "pos",
++      score,
++    })),
++  };
++  function roc(legendMetric?: boolean): Config {
++    const evaluation = { ...defaultEvaluation, label: "label", positive: "pos" };
++    if (legendMetric === undefined) delete evaluation.legendMetric;
++    else evaluation.legendMetric = legendMetric;
++    return {
++      ...defaults(data),
++      type: "roc",
++      series: [{ ...makeSeries("score"), name: "Model A" }],
++      evaluation,
++    };
++  }
++  it("appends AUC for new charts and AP for PR curves", () => {
++    expect(buildPlot(roc(true), data).traces[0].name).toBe(
++      "Model A (AUC = 0.750)",
++    );
++    const pr = roc(true);
++    pr.type = "pr";
++    expect(buildPlot(pr, data).traces[0].name).toMatch(
++      /^Model A \(AP = 0\.83\d\)$/,
++    );
++  });
++  it("keeps charts saved without the option unchanged", () => {
++    expect(buildPlot(roc(undefined), data).traces[0].name).toBe("Model A");
++    expect(buildPlot(roc(false), data).traces[0].name).toBe("Model A");
++  });
++});
+diff --git a/frontend/src/editor/encoding.ts b/frontend/src/editor/encoding.ts
+new file mode 100644
+index 0000000..eb113d8
+--- /dev/null
++++ b/frontend/src/editor/encoding.ts
+@@ -0,0 +1,97 @@
++import type { Config, Series } from "./model";
++import { palettes } from "./model";
++import { stylePresets } from "./stylePresets";
++
++const DASHES = ["solid", "dash", "dot", "dashdot"];
++const SYMBOLS = ["circle", "square", "diamond", "triangle-up"];
++
++export const visibleSeries = (c: Config) => c.series.filter((s) => s.visible);
++
++/** Palette of the active style preset; falls back to the legacy model palettes. */
++export function presetColors(c: Config): readonly string[] {
++  return (
++    stylePresets.find((p) => p.key === c.style.preset)?.colors ||
++    palettes[c.style.preset] ||
++    palettes["Clean Academic"]
++  );
++}
++
++/**
++ * Visual encoding for one category group inside one series.
++ *
++ * - No grouping (or a single group): the series keeps its own color/dash/symbol.
++ * - One visible series split by groups: group 0 keeps the series color, later
++ *   groups continue through the preset palette so every group is distinct.
++ * - Several visible series × groups: color identifies the group, dash/symbol
++ *   identify the series.
++ *
++ * Series identity for selection stays in `customdata`; this only changes paint.
++ */
++export function groupEncoding(
++  c: Config,
++  s: Series,
++  groupIndex: number,
++  groupCount: number,
++): { color: string; dash: string; symbol: string } {
++  if (groupCount <= 1) return { color: s.color, dash: s.dash, symbol: s.symbol };
++  const colors = presetColors(c);
++  const visible = visibleSeries(c);
++  if (visible.length <= 1) {
++    if (groupIndex === 0) return { color: s.color, dash: s.dash, symbol: s.symbol };
++    const own = colors.findIndex((v) => v.toLowerCase() === s.color.toLowerCase());
++    // Skip the series' own color so group 1+ never repeats group 0.
++    const pool = own >= 0 ? colors.filter((_, i) => i !== own) : colors;
++    const start = own >= 0 ? own : 0;
++    return {
++      color: pool[(start + groupIndex - 1) % pool.length],
++      dash: s.dash,
++      symbol: s.symbol,
++    };
++  }
++  const seriesIndex = Math.max(
++    0,
++    visible.findIndex((v) => v.id === s.id),
++  );
++  return {
++    color: colors[groupIndex % colors.length],
++    dash: DASHES[seriesIndex % DASHES.length],
++    symbol: SYMBOLS[seriesIndex % SYMBOLS.length],
++  };
++}
++
++/**
++ * Legend label for a grouped trace. With one visible series the group value is
++ * enough (the series name becomes the legend title); otherwise keep both.
++ */
++export function groupTraceName(
++  c: Config,
++  s: Series,
++  group: unknown,
++  missingLabel = "缺失分组",
++): string {
++  if (!c.group) return s.name;
++  const label = String(group ?? missingLabel);
++  return visibleSeries(c).length === 1 ? label : `${s.name} · ${label}`;
++}
++
++/** Legend title used when a single series is split into groups. */
++export function groupLegendTitle(c: Config): string {
++  const visible = visibleSeries(c);
++  return c.group && visible.length === 1 ? visible[0].name : "";
++}
++
++/**
++ * Plotly picks fractional steps (1, 1.5, 2 …) for short integer axes such as
++ * epochs or seeds. Use a step of 1 when every finite value is an integer and
++ * the span is short; leave everything else to Plotly's automatic ticks.
++ */
++export function integerAxisStep(values: unknown[]): number | undefined {
++  const numbers = values.filter(
++    (v): v is number => typeof v === "number" && Number.isFinite(v),
++  );
++  if (numbers.length < 2 || numbers.length !== values.filter((v) => v != null).length)
++    return undefined;
++  if (!numbers.every((v) => Number.isInteger(v))) return undefined;
++  const span = Math.max(...numbers) - Math.min(...numbers);
++  return span > 0 && span <= 10 ? 1 : undefined;
++}
+diff --git a/frontend/src/editor/evaluation.ts b/frontend/src/editor/evaluation.ts
+index d0fa817..903ddcc 100644
+--- a/frontend/src/editor/evaluation.ts
++++ b/frontend/src/editor/evaluation.ts
+@@ -1,5 +1,6 @@
+ import type { Config } from "./model";
+ import { defaultEvaluation } from "./model";
++import { groupEncoding, groupTraceName } from "./encoding";
+ import { sampleSelection } from "./sampling";
+ type Row = Record<string, string | number | null>;
+ export type EvaluationMetric = {
+@@ -110,7 +111,8 @@ export function evaluationTraces(
+     return { traces, metrics, warnings };
+   }
+   for (const s of c.series.filter((s) => s.visible))
+-    for (const group of groups) {
++    for (const [groupIndex, group] of groups.entries()) {
++      const paint = groupEncoding(c, s, groupIndex, groups.length);
+       const selected = c.group
+         ? rows.filter((r) => r[c.group] === group)
+         : rows;
+@@ -153,20 +155,26 @@ export function evaluationTraces(
+         continue;
+       }
+       const key = s.id + ":" + JSON.stringify(group);
++      const score = c.type === "roc" ? values.auc : values.ap;
++      const legendName =
++        groupTraceName(c, s, group, "缺失") +
++        (e.legendMetric && score != null
++          ? ` (${c.type === "roc" ? "AUC" : "AP"} = ${score.toFixed(3)})`
++          : "");
+       traces.push({
+         type: "scatter",
+         mode: "lines+markers",
+-        name: escape(name),
++        name: escape(legendName),
+         legendgroup: key,
+         x: points.map((p) => (c.type === "roc" ? p.fpr : p.recall)),
+         y: points.map((p) => (c.type === "roc" ? p.recall : p.precision)),
+         line: {
+-          color: s.color,
++          color: paint.color,
+           width: s.width,
+-          dash: s.dash,
++          dash: paint.dash,
+           shape: c.type === "pr" ? "vh" : "linear",
+         },
+-        marker: { color: s.color, size: s.size, symbol: s.symbol },
++        marker: { color: paint.color, size: s.size, symbol: paint.symbol },
+         opacity: s.opacity,
+         customdata: points.map(() => s.id),
+         connectgaps: false,
+@@ -191,7 +199,7 @@ export function evaluationTraces(
+                   result.positive / samples.length,
+                 ],
+           line: {
+-            color: c.type === "roc" ? "#a2a9b5" : s.color,
++            color: c.type === "roc" ? "#a2a9b5" : paint.color,
+             width: 1,
+             dash: "dot",
+           },
+diff --git a/frontend/src/editor/heatmap.ts b/frontend/src/editor/heatmap.ts
+index 005b380..c5841b8 100644
+--- a/frontend/src/editor/heatmap.ts
++++ b/frontend/src/editor/heatmap.ts
+@@ -15,6 +15,8 @@ export type VectorPlot = {
+   annotations: any[];
+   xaxis: Record<string, unknown>;
+   yaxis: Record<string, unknown>;
++  /** Extra top margin (px) a plot needs for text drawn above the axes. */
++  marginTop?: number;
+ };
+ export function vectorHeatmap(c: Config, rows: Dataset["rows"]): VectorPlot {
+   const xs = [...new Set(rows.map((r) => r[c.x]).filter((v) => v != null))];
+diff --git a/frontend/src/editor/model.ts b/frontend/src/editor/model.ts
+index 1fa25c4..ae9d614 100644
+--- a/frontend/src/editor/model.ts
++++ b/frontend/src/editor/model.ts
+@@ -106,6 +106,8 @@ export type Config = {
+     rocYTitle: string;
+     prXTitle: string;
+     prYTitle: string;
++    /** Append "(AUC = …)" / "(AP = …)" to legend entries. Absent on charts saved before 2026-10. */
++    legendMetric?: boolean;
+   };
+   publication?: {
+     enabled: boolean;
+@@ -208,6 +210,7 @@ export const defaultEvaluation: NonNullable<Config["evaluation"]> = {
+   rocYTitle: "",
+   prXTitle: "",
+   prYTitle: "",
++  legendMetric: true,
+ };
+ export const defaultBand: NonNullable<Series["band"]> = {
+   enabled: false,
+diff --git a/frontend/src/editor/plot-core.ts b/frontend/src/editor/plot-core.ts
+index a141660..de736ee 100644
+--- a/frontend/src/editor/plot-core.ts
++++ b/frontend/src/editor/plot-core.ts
+@@ -9,6 +9,12 @@ import { evaluationTraces } from "./evaluation";
+ import { bandTraces } from "./bands";
+ import { classificationReports } from "./classification";
+ import { confusionPlot } from "./confusion";
++import {
++  groupEncoding,
++  groupLegendTitle,
++  groupTraceName,
++  integerAxisStep,
++} from "./encoding";
+ const plain = (s: string) =>
+   s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+ export function filteredRows(c: Config, d: Dataset) {
+@@ -86,10 +92,11 @@ export function buildSinglePlot(
+         continue;
+       }
+       const groups = c.group ? [...new Set(rows.map((r) => r[c.group]))] : [""];
+-      for (const group of groups) {
++      for (const [groupIndex, group] of groups.entries()) {
+         const selected = c.group
+           ? rows.filter((r) => r[c.group] === group)
+           : rows;
++        const paint = groupEncoding(c, s, groupIndex, groups.length);
+         const valid = selected.filter((r) => {
+           if (c.axes.x.log && typeof r[c.x] === "number" && Number(r[c.x]) <= 0)
+             return false;
+@@ -99,7 +106,7 @@ export function buildSinglePlot(
+         });
+         const band = bandTraces(
+           c,
+-          s,
++          { ...s, color: paint.color },
+           selected,
+           s.id + ":" + JSON.stringify(group),
+         );
+@@ -113,17 +120,17 @@ export function buildSinglePlot(
+         traces.push({
+           type: c.type === "bar" ? "bar" : "scatter",
+           mode: c.type === "scatter" ? "markers" : "lines+markers",
+-          name: plain(s.name + (c.group ? " · " + String(group) : "")),
++          name: plain(groupTraceName(c, s, group)),
+           legendgroup: s.id + ":" + JSON.stringify(group),
+           x: valid.map((r) => r[c.x]),
+           y: valid.map((r) => r[s.y]),
+           opacity: s.opacity,
+-          line: { color: s.color, width: s.width, dash: s.dash },
++          line: { color: paint.color, width: s.width, dash: paint.dash },
+           marker: {
+-            color: s.color,
++            color: paint.color,
+             size: s.size,
+-            symbol: s.symbol,
+-            line: { width: c.type === "scatter" ? 0 : 1, color: s.color },
++            symbol: paint.symbol,
++            line: { width: c.type === "scatter" ? 0 : 1, color: paint.color },
+           },
+           error_y:
+             s.error &&
+@@ -133,7 +140,7 @@ export function buildSinglePlot(
+                   type: "data",
+                   array: errors,
+                   visible: true,
+-                  color: s.color,
++                  color: paint.color,
+                   thickness: 1,
+                   width: 3,
+                 }
+@@ -182,6 +189,20 @@ export function buildSinglePlot(
+       automargin: true,
+     };
+   };
++  const legendTitle = heat ? "" : groupLegendTitle(c);
++  const xStep =
++    !heat &&
++    !distribution &&
++    !empirical &&
++    !evaluation &&
++    !c.axes.x.log &&
++    !(c.axes.x.dtick && Number(c.axes.x.dtick) > 0)
++      ? integerAxisStep(
++          traces
++            .filter((t) => t.fill !== "toself")
++            .flatMap((t) => (Array.isArray(t.x) ? t.x : [])),
++        )
++      : undefined;
+   const pos =
+     c.legend.position === "bottom"
+       ? { x: 0.5, y: -0.22, xanchor: "center", yanchor: "top" }
+@@ -208,12 +229,13 @@ export function buildSinglePlot(
+     paper_bgcolor: c.style.background,
+     plot_bgcolor: c.style.background,
+     margin: {
+-      t: Math.max(
+-        c.style.top,
+-        c.legend.show && c.legend.position === "top"
+-          ? c.style.fontSize * 3 + 40
+-          : c.style.fontSize * 2 + 24,
+-      ),
++      t:
++        Math.max(
++          c.style.top,
++          c.legend.show && c.legend.position === "top"
++            ? c.style.fontSize * 3 + 40
++            : c.style.fontSize * 2 + 24,
++        ) + (heat?.marginTop || 0),
+       b: c.style.bottom,
+       l: c.style.left,
+       r: c.style.right,
+@@ -225,6 +247,7 @@ export function buildSinglePlot(
+           : c.axes.x,
+       ),
+       ...heat?.xaxis,
++      ...(xStep ? { dtick: xStep, tick0: 0 } : {}),
+       ...(distribution ? { type: "category" } : {}),
+       ...(empirical
+         ? {
+@@ -246,6 +269,15 @@ export function buildSinglePlot(
+       ...pos,
+       orientation: c.legend.orientation,
+       font: { size: c.style.fontSize - 1 },
++      ...(legendTitle
++        ? {
++            title: {
++              text: plain(legendTitle),
++              side: c.legend.orientation === "h" ? "left" : "top",
++              font: { size: c.style.fontSize - 1 },
++            },
++          }
++        : {}),
+     },
+     barmode: "group",
+     boxmode: "group",
+-- 
+2.43.0
+

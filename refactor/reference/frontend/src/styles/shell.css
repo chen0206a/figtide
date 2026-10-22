@@ -1,0 +1,172 @@
+/* App shell — one header for every page (phase 3).
+   Import after styles.css and every components/*.css file. Selectors are
+   prefixed with .app-shell so they outrank the legacy .refined-shell rules;
+   phase 8 deletes those legacy masthead rules (styles.css, navigation.css,
+   showcase.css, home.css). Class names match the current App.tsx markup. */
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--lf-bg);
+}
+
+.app-shell .masthead {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--lf-surface);
+  border-bottom: 1px solid var(--lf-border);
+}
+/* Same full-width bar on home and workbench pages (fixes the jump). */
+.app-shell .masthead-bar,
+.app-shell.home-shell .masthead-bar {
+  max-width: none;
+  margin: 0;
+  min-height: var(--lf-header-h);
+  padding: 0 var(--lf-gutter);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lf-space-3) var(--lf-space-6);
+}
+.app-shell .masthead .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--lf-text);
+  font-size: var(--lf-text-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* segmented nav */
+.app-shell .workspace-nav {
+  position: relative;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--lf-radius-md);
+  background: var(--lf-surface-sunken);
+}
+.app-shell .workspace-nav .nav-indicator {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  border-radius: var(--lf-radius-sm);
+  background: var(--lf-surface);
+  box-shadow: var(--lf-shadow-xs);
+  transition:
+    transform 240ms var(--lf-ease),
+    width 240ms var(--lf-ease);
+}
+.app-shell .workspace-nav-link {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--lf-radius-sm);
+  color: var(--lf-text-2);
+  font-size: var(--lf-text-sm);
+  white-space: nowrap;
+}
+.app-shell .workspace-nav-link.active {
+  color: var(--lf-text);
+  font-weight: 600;
+}
+
+.app-shell .global-right {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lf-space-2);
+}
+.app-shell .global-right select {
+  height: var(--lf-control-h);
+  max-width: 240px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius-md);
+  background-color: var(--lf-surface);
+  color: var(--lf-text);
+  font-size: var(--lf-text-sm);
+}
+.app-shell .local-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--lf-text-3);
+  font-size: var(--lf-text-xs);
+}
+.app-shell .local-badge > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lf-success-dot);
+}
+
+/* tool page header (PageHeader.tsx) */
+.lf-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--lf-space-4);
+  padding-bottom: var(--lf-space-5);
+  margin-bottom: var(--lf-space-6);
+  border-bottom: 1px solid var(--lf-border);
+}
+.lf-page-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.lf-page-header h1 {
+  margin: 0;
+  font-size: var(--lf-text-2xl);
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: var(--lf-tracking-tight);
+}
+.lf-page-header p {
+  margin: 0;
+  color: var(--lf-text-3);
+  font-size: var(--lf-text-sm);
+}
+.lf-page-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lf-space-2);
+}
+
+/* tool pages share the same content width as home */
+.app-shell.workbench-shell .page-content {
+  max-width: var(--lf-page-max);
+  margin: 0 auto;
+  padding: var(--lf-space-8) var(--lf-gutter) var(--lf-space-14);
+}
+.app-shell .page-content.home-page {
+  max-width: none;
+  padding: 0;
+}
+
+@media (max-width: 720px) {
+  .app-shell .masthead-bar {
+    padding: var(--lf-space-2) var(--lf-space-4);
+  }
+  .app-shell .global-right {
+    margin-left: 0;
+    width: 100%;
+  }
+  .app-shell .global-right select {
+    flex: 1;
+    max-width: none;
+  }
+  .app-shell.workbench-shell .page-content {
+    padding: var(--lf-space-5) var(--lf-space-4) var(--lf-space-10);
+  }
+}
