@@ -126,7 +126,12 @@ export function buildFacets(
       f.mode === "field"
         ? { ...d, rows: d.rows.filter((r) => r[f.field] === entry.value) }
         : d;
-    const child = buildSinglePlot(childConfig, childData, evaluationLabels, c);
+    const child = buildSinglePlot(childConfig, childData, evaluationLabels, c, {
+      config: c,
+      groups: c.group
+        ? [...new Set(filteredRows(c, d).map((row) => row[c.group]))]
+        : [""],
+    });
     child.warnings.forEach((w) => warnings.add(w));
     const suffix = i ? String(i + 1) : "",
       xref = `x${suffix}`,

@@ -1,5 +1,28 @@
 # 第一阶段验收记录
 
+## 任务 01：图表正确性修复（2026-10-22）
+
+完成 A1–A7：分组使用不同颜色，单序列图例只显示组名并以序列名作标题；区间带、点和误差棒使用对应组色；短整数X轴自动步长1，尊重用户刻度/对数设置；混淆矩阵副标题预留空间，计数色条使用整数与英文Count，比例色条使用百分比；新增可选 `evaluation.legendMetric` 开关显示真实AUC/AP；新序列颜色从唯一的stylePresets派生，Clean Academic首色为 `#3568b5`。
+
+前端主要文件：`encoding.ts`、`encoding.test.ts`、`model.ts`、`plot-core.ts`、`facets.ts`、`evaluation.ts`、`distribution.ts`、`empirical.ts`、`confusion.ts`、`heatmap.ts`、`EvaluationPanel.tsx`。后端仅改 `ConfigValidator.java` 的一条布尔校验与 `ConfigValidatorTest.java`，无迁移、API信封或助手/harness逻辑变化。另增加 `frontend/e2e/chart-corrections.spec.ts`、`scripts/check-refactor01-exports.ps1` 及API说明/验收附件。
+
+最终实际验证：
+
+- `cd frontend; npm test`：**28文件、175/175通过，0失败，10.33秒**，包含补丁的11项及新增2项色板/分面回归。短整数轴还覆盖160000个值，避免展开参数超限。
+- `cd frontend; npm run build`：**TypeScript与Vite构建通过，13.86秒**；既有大chunk提示保留。
+- `mvn.cmd -B -f backend/pom.xml -Dtest=ConfigValidatorTest test`：**10/10通过**。配置测试覆盖缺失、true、false，以及字符串/数值/null/数组/对象等无效开关值。
+- `mvn.cmd -B -f backend/pom.xml test`：**171项运行、170通过、1项真实服务评测按开关跳过，0失败/错误，33.556秒**；完整Java回归未调用付费模型。
+- `$env:CI='true'; .\scripts\test-agent.ps1 -All`：**完整Chrome 56/56通过，4.6分钟**，新JVM审计恢复检查通过。其中任务指定的 processing **3/3**、evaluation **2/2**、classification **2/2**、editor **2/2**，新增图表修复 **3/3**。新验收通过真实Java/MySQL处理合成逐seed观测，检查组色/区间带/整数刻度、矩阵副标题与色条几何位置、AUC/AP、新旧配置开关状态及保存恢复。
+- `.\scripts\check-refactor01-exports.ps1`：**通过**。SEM/混淆矩阵/ROC各导出SVG与PDF，PDF均为1页、0栅格图像，保留预期文字；PR SVG保留 `AP = 0.833`。已用Poppler渲染并人工查看三份PDF，标题、图例、坐标、矩阵副标题及Count刻度清晰，无遮挡。检查结果见 [导出证据](test-evidence/refactor01-exports.json)。
+
+过程问题如实保留：首轮Vite测试服务随标准输入关闭而退出，7项通过后其余49项受连接错误影响；后续运行设置CI=true稳定服务。第二轮52/56通过，2项新夹具误用了未初始化评估配置/未选择PDF支持字体，另外2项在MySQL33316停止监听时失败。已修正新夹具、恢复经路径核实的项目私有MySQL，再完整重跑得到上述56/56；没有放宽既有断言，没有更改数据库配置或统计逻辑。主服务已加载新的校验，保留既有模型连接配置，未向收费服务发请求。
+
+与任务的偏差：前端补丁直接应用；01b仅应用Java部分，API说明手动补入以保留现有内容并避免整份换行重写。另补齐分面中颜色/线型映射的一致性，以及大数组整数刻度边界。可选的ROC 560×560默认画布未实施，画布尺寸保持原规则。演示检查使用隔离测试项目，没有向用户主库seed。已知影响：**旧分组图重新打开后会显示不同组色及更短的图例，属于本轮修复；已保存的非分组颜色不变，缺少legendMetric的旧ROC/PR不自动显示指标或补写配置。**
+
+主库前后保持 projects107 / charts181 / dataset_versions172 / experiments13 / agent_runs9 / agent_sessions0；最终清理50个测试项目后，隔离库为 projects1 / agent_runs0 / agent_sessions0。无关测试生成的既有截图/导出附件已还原。需要人决定的事：无。任务01完成后停下，未开始任务02。
+
+截图：[SEM](screenshots/refactor-01-sem.png)、[混淆矩阵](screenshots/refactor-01-confusion.png)、[ROC](screenshots/refactor-01-roc.png)。导出：[SEM PDF](exports/refactor-01-sem.pdf)、[矩阵 PDF](exports/refactor-01-confusion.pdf)、[ROC PDF](exports/refactor-01-roc.pdf)、[PR SVG](exports/refactor-01-pr.svg)。全部来自明确标识的合成演示数据。
+
 ## 任务 00：前端重构基线（2026-10-22）
 
 按用户要求仅完成 `refactor/tasks/00-baseline.md`，未开始任务 01，也未修复业务代码。压缩包中的根 `AGENTS.md` 与 `refactor/` 共27个文件已放入仓库，并逐文件校验与压缩包字节一致；参考代码和补丁只保存，未应用。

@@ -1,5 +1,9 @@
 # API v1
 
+## 任务 01：评估图例可选指标（2026-10-22）
+
+schema_version:1 新增可选 `evaluation.legendMetric:boolean`。true 时 ROC 图例显示实际计算的 AUC，PR 图例显示 AP（3位小数）；false 或字段缺失时保留原有图例文字。新图默认 true，旧图打开时不补写此字段。服务端拒绝非布尔值；保存、重新打开和导出使用同一配置，不改统计算法或原始数据。
+
 ## 数据解析与选图（2026-10-22）
 
 导入扩展到 CSV/TSV/TXT/XLSX/JSON/JSONL，复用 datasets preview/commit。`POST /projects/{p}/agent/runs` 增加可选 `mode:"recommend"`，工具集仅提供读画像、读图型规范、提交字段方案；状态 answered 时可返回 recommendations。用户明确创建时才调用既有 lint 和 charts API。字段契约、请求示例、兼容性、隐私与限制见 [DATA-TO-FIGURE.md](DATA-TO-FIGURE.md)。

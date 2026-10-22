@@ -1,4 +1,5 @@
 import type { Dataset } from "../lib/api";
+import { stylePresets } from "./stylePresets";
 export type Series = {
   id: string;
   y: string;
@@ -106,6 +107,8 @@ export type Config = {
     rocYTitle: string;
     prXTitle: string;
     prYTitle: string;
+    /** Append "(AUC = …)" / "(AP = …)" to legend entries. Absent on charts saved before 2026-10. */
+    legendMetric?: boolean;
   };
   publication?: {
     enabled: boolean;
@@ -159,21 +162,9 @@ export type Config = {
     value: string;
   }[];
 };
-export const palettes: Record<string, string[]> = {
-  "Clean Academic": ["#6758ce", "#269e95", "#d99641", "#db6d87", "#518ac0"],
-  "Nature-inspired": ["#3b5488", "#00a087", "#e64b35", "#f39b7f", "#8491b4"],
-  "Modern Research": ["#735fe8", "#21a7a0", "#eaab54", "#df729a", "#62a0db"],
-  "Okabe–Ito": [
-    "#0072b2",
-    "#e69f00",
-    "#009e73",
-    "#cc79a7",
-    "#d55e00",
-    "#56b4e9",
-    "#000000",
-    "#f0e442",
-  ],
-};
+export const palettes: Record<string, readonly string[]> = Object.fromEntries(
+  stylePresets.map((p) => [p.key, p.colors]),
+);
 export const defaultSampling: NonNullable<Config["sampling"]> = {
   policy: "independent",
   id: "",
@@ -208,6 +199,7 @@ export const defaultEvaluation: NonNullable<Config["evaluation"]> = {
   rocYTitle: "",
   prXTitle: "",
   prYTitle: "",
+  legendMetric: true,
 };
 export const defaultBand: NonNullable<Series["band"]> = {
   enabled: false,

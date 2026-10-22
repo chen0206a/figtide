@@ -180,6 +180,7 @@ public final class ConfigValidator {
           "决策阈值须为有限数值");
       for (String k : List.of("rocXTitle", "rocYTitle", "prXTitle", "prYTitle"))
         text(e.path(k), 500, "评估轴名称");
+      require(!e.has("legendMetric") || e.path("legendMetric").isBoolean(), "图例指标开关无效");
     }
     if (c.has("publication")) {
       var p = c.path("publication");

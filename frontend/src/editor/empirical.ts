@@ -1,9 +1,18 @@
+import {
+  traceEncoding,
+  groupTraceName,
+  type EncodingContext,
+} from "./encoding";
 import type { Dataset } from "../lib/api";
 import { defaultEmpirical, type Config } from "./model";
 import type { SampleSummary } from "./distribution";
 const escape = (s: string) =>
   s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
+export function empiricalTraces(
+  c: Config,
+  rows: Dataset["rows"],
+  encoding?: EncodingContext,
+) {
   const e = c.empirical || defaultEmpirical,
     traces: any[] = [],
     warnings: string[] = [],
@@ -31,6 +40,7 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
     }
   for (const s of c.series.filter((s) => s.visible))
     for (const group of groups) {
+      const paint = traceEncoding(c, s, group, groups, encoding);
       const selected = c.group
         ? rows.filter((r) => r[c.group] === group)
         : rows;
@@ -43,6 +53,7 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
         .filter((v) => !c.axes.x.log || v > 0)
         .sort((a, b) => a - b);
       const name = s.name + (c.group ? ` · ${group ?? "缺失分组"}` : "");
+      const legendName = groupTraceName(encoding?.config || c, s, group);
       let excluded = finite.length - values.length;
       if (excluded)
         warnings.push(
@@ -82,7 +93,7 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
           traces.push({
             type: "bar",
             textposition: "none",
-            name: escape(name),
+            name: escape(legendName),
             legendgroup: s.id + JSON.stringify(group),
             x: counts.map((_, i) => start + (i + 0.5) * width),
             y: counts.map((n) =>
@@ -96,7 +107,10 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
               (width * 0.9) /
               (groups.length * c.series.filter((s) => s.visible).length),
             opacity: s.opacity,
-            marker: { color: s.color, line: { color: s.color, width: 0.5 } },
+            marker: {
+              color: paint.color,
+              line: { color: paint.color, width: 0.5 },
+            },
             customdata: counts.map(() => s.id),
             text: counts.map(
               (n, i) =>
@@ -125,13 +139,18 @@ export function empiricalTraces(c: Config, rows: Dataset["rows"]) {
         traces.push({
           type: "scatter",
           mode: "lines+markers",
-          name: escape(name),
+          name: escape(legendName),
           legendgroup: s.id + JSON.stringify(group),
           x,
           y,
           customdata: x.map(() => s.id),
-          line: { color: s.color, width: s.width, dash: s.dash, shape: "hv" },
-          marker: { color: s.color, size: s.size, symbol: s.symbol },
+          line: {
+            color: paint.color,
+            width: s.width,
+            dash: paint.dash,
+            shape: "hv",
+          },
+          marker: { color: paint.color, size: s.size, symbol: paint.symbol },
           opacity: s.opacity,
           hovertemplate:
             "%{x}<br>累计概率：%{y:.4f}<extra>%{fullData.name}</extra>",

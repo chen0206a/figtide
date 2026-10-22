@@ -1,3 +1,8 @@
+import {
+  traceEncoding,
+  groupTraceName,
+  type EncodingContext,
+} from "./encoding";
 import type { Dataset } from "../lib/api";
 import { defaultDistribution, type Config } from "./model";
 
@@ -16,7 +21,11 @@ const escape = (s: unknown) =>
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
-export function distributionTraces(c: Config, rows: Dataset["rows"]) {
+export function distributionTraces(
+  c: Config,
+  rows: Dataset["rows"],
+  encoding?: EncodingContext,
+) {
   const options = c.distribution || defaultDistribution;
   const traces: any[] = [],
     warnings: string[] = [],
@@ -46,6 +55,7 @@ export function distributionTraces(c: Config, rows: Dataset["rows"]) {
   for (const s of c.series.filter((s) => s.visible)) {
     const groups = c.group ? [...new Set(rows.map((r) => r[c.group]))] : [""];
     for (const group of groups) {
+      const paint = traceEncoding(c, s, group, groups, encoding);
       const selected = rows.filter(
         (r) => r[c.x] != null && (!c.group || r[c.group] === group),
       );
@@ -53,6 +63,7 @@ export function distributionTraces(c: Config, rows: Dataset["rows"]) {
       const validRows: Dataset["rows"] = [],
         sparseRows: Dataset["rows"] = [];
       const name = s.name + (c.group ? ` · ${group ?? "缺失分组"}` : "");
+      const legendName = groupTraceName(encoding?.config || c, s, group);
       for (const category of categories) {
         const sample = selected.filter((r) => r[c.x] === category);
         const finite = sample.filter(
@@ -93,11 +104,11 @@ export function distributionTraces(c: Config, rows: Dataset["rows"]) {
         }
       }
       const common = {
-        name: escape(name),
+        name: escape(legendName),
         legendgroup: s.id + ":" + JSON.stringify(group),
         opacity: s.opacity,
-        line: { color: s.color, width: s.width },
-        marker: { color: s.color, size: s.size, symbol: s.symbol },
+        line: { color: paint.color, width: s.width },
+        marker: { color: paint.color, size: s.size, symbol: paint.symbol },
       };
       if (validRows.length)
         traces.push({
