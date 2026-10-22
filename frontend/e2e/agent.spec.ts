@@ -176,7 +176,7 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
     reopened.getByRole("heading", { name: "已接受", exact: true }),
   ).toBeVisible();
   await expect(reopened.getByLabel("历史运行详情")).toContainText(
-    "figure-assistant-v5",
+    "figure-assistant-v6",
   );
   await reopened
     .getByText("第 1 步 · 文字与字体 · 调用", { exact: true })
@@ -284,4 +284,97 @@ test("explicit rejection is persisted, redacted, immutable and readable after re
   );
   expect(conflict.status()).toBe(409);
   expect(JSON.stringify(row)).not.toContain("Agent proposal · synthetic");
+});
+
+test("three proposal rounds preserve a manual edit, confirm once, undo once and save the complete result", async ({
+  page,
+  request,
+}) => {
+  const f = await fixture(request);
+  await page.goto(f.url);
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  const panel = page.getByRole("complementary", {
+    name: "绘图助手",
+    exact: true,
+  });
+  await panel
+    .getByRole("textbox", { name: "希望怎样调整？" })
+    .fill("标题、字号18和右侧图例");
+  await panel.getByRole("checkbox").check();
+  await panel.getByRole("button", { name: "生成调整提案" }).click();
+  await expect(
+    panel.getByRole("button", { name: "继续修改提案" }),
+  ).toBeVisible();
+  await panel.getByRole("button", { name: "收起绘图助手" }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  await page
+    .getByRole("combobox", { name: "字重", exact: true })
+    .selectOption("bold");
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  await expect(
+    panel.getByRole("button", { name: "应用这组调整" }),
+  ).toBeDisabled();
+  await panel
+    .getByRole("textbox", { name: "希望怎样调整？" })
+    .fill("续改字号20，其他保留");
+  await panel.getByRole("button", { name: "继续修改提案" }).click();
+  await expect(
+    panel.getByRole("textbox", { name: "希望怎样调整？" }),
+  ).toHaveValue("");
+  await expect(
+    panel.getByRole("button", { name: "应用这组调整" }),
+  ).toBeEnabled();
+  await panel
+    .getByRole("textbox", { name: "希望怎样调整？" })
+    .fill("续改隐藏网格：只隐藏Y轴网格");
+  await panel.getByRole("button", { name: "继续修改提案" }).click();
+  await expect(
+    panel.getByRole("textbox", { name: "希望怎样调整？" }),
+  ).toHaveValue("");
+  await expect(
+    panel.getByRole("button", { name: "应用这组调整" }),
+  ).toBeEnabled();
+  const historyUrl = `/api/projects/${f.project.id}/agent/history?chart_id=${f.chart.id}`;
+  const before = await (await request.get(historyUrl)).json();
+  expect(before.items.map((r: any) => r.outcome).sort()).toEqual([
+    "pending",
+    "superseded",
+    "superseded",
+  ]);
+  expect((await (await request.get(f.api)).json()).config).toEqual(f.config);
+  await expect(page.getByTestId("plot").locator(".gtitle")).toHaveText(
+    "Before agent",
+  );
+  await page.screenshot({
+    path: "../docs/screenshots/agent-refinement.png",
+    fullPage: true,
+  });
+  await panel.getByRole("button", { name: "应用这组调整" }).click();
+  await expect(panel.getByText("已接受", { exact: true })).toBeVisible();
+  await expect(page.getByTestId("plot").locator(".gtitle")).toHaveText(
+    "Agent proposal · synthetic",
+  );
+  await page.getByRole("button", { name: "撤销", exact: true }).click();
+  await expect(page.getByTestId("plot").locator(".gtitle")).toHaveText(
+    "Before agent",
+  );
+  await panel.getByRole("button", { name: "收起绘图助手" }).click();
+  await expect(
+    page.getByRole("combobox", { name: "字重", exact: true }),
+  ).toHaveValue("bold");
+  await page.getByRole("button", { name: "重做", exact: true }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
+  await expect(page.getByText("已保存 v2", { exact: true })).toBeVisible();
+  await page.reload();
+  const saved = await (await request.get(f.api)).json();
+  expect(saved.config.style.fontSize).toBe(20);
+  expect(saved.config.style.bold).toBe(true);
+  expect(saved.config.legend.position).toBe("right");
+  expect(saved.config.axes.y.grid).toBe(false);
+  expect(saved.revision).toBe(2);
+  expect(
+    (await (await request.get(historyUrl)).json()).items.filter(
+      (r: any) => r.outcome === "accepted",
+    ),
+  ).toHaveLength(1);
 });

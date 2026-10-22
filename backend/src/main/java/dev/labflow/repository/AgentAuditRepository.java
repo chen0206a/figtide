@@ -15,8 +15,8 @@ public class AgentAuditRepository {
   public void create(Object... values) {
     db.update(
         "INSERT INTO agent_runs"
-            + " (run_id,project_id,instance_id,chart_id,base_revision,dataset_version_id,source_sha256,snapshot_hash,model,endpoint,prompt_version,catalog_hash,status,outcome,max_steps,max_tokens,timeout_seconds,trace_json,created_at)"
-            + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?, 'queued','running',?,?,?, '[]',?)",
+            + " (run_id,project_id,instance_id,chart_id,base_revision,dataset_version_id,source_sha256,snapshot_hash,model,endpoint,prompt_version,catalog_hash,status,outcome,max_steps,max_tokens,timeout_seconds,trace_json,created_at,parent_run_id)"
+            + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?, 'queued','running',?,?,?, '[]',?,?)",
         values);
   }
 
@@ -41,6 +41,15 @@ public class AgentAuditRepository {
             "SELECT * FROM agent_runs WHERE project_id=? AND run_id=? FOR UPDATE", project, id);
     if (rows.isEmpty()) throw new dev.labflow.api.ApiException(404, "运行记录不存在或不属于当前项目");
     return rows.getFirst();
+  }
+
+  public boolean hasActiveChild(long project, String id) {
+    return !db.queryForList(
+            "SELECT run_id FROM agent_runs WHERE project_id=? AND parent_run_id=? AND status IN"
+                + " ('queued','running') LIMIT 1",
+            project,
+            id)
+        .isEmpty();
   }
 
   public int decide(
@@ -72,7 +81,7 @@ public class AgentAuditRepository {
     args.add(offset);
     return db.queryForList(
         "SELECT"
-            + " run_id,chart_id,status,outcome,model,tokens,latency_ms,created_at,finished_at,decision_at"
+            + " run_id,chart_id,parent_run_id,status,outcome,model,tokens,latency_ms,created_at,finished_at,decision_at"
             + " FROM agent_runs"
             + where
             + " ORDER BY created_at DESC,run_id DESC LIMIT ? OFFSET ?",

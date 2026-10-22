@@ -259,6 +259,45 @@ class AgentAuditIntegrationTest {
   }
 
   @Test
+  void childAuditFailureRollsBackParentSupersessionAndRetryCommitsBoth() throws Exception {
+    var parent = run();
+    request.put("parent_run_id", parent.path("run_id").asText());
+    var call = json.createObjectNode().put("id", "next").put("type", "function");
+    call.putObject("function").put("name", "set_style").put("arguments", "{\"fontSize\":20}");
+    var msg = json.createObjectNode().put("role", "assistant");
+    msg.putArray("tool_calls").add(call);
+    when(provider.complete(any(), any(), anyInt(), any()))
+        .thenReturn(
+            new ModelProvider.Reply(msg, 40, 20, "fixture", "tool_calls"),
+            new ModelProvider.Reply(
+                json.createObjectNode().put("role", "assistant").put("content", "确认"),
+                30,
+                10,
+                "fixture",
+                "stop"));
+    AtomicBoolean unavailable = new AtomicBoolean(true);
+    doAnswer(
+            inv -> {
+              if (unavailable.get()) throw new IllegalStateException("storage failure");
+              return inv.callRealMethod();
+            })
+        .when(db)
+        .finish(any(Object[].class));
+    var child = run();
+    assertFalse(child.path("persisted").asBoolean());
+    assertEquals(
+        "pending", audit.detail(project, parent.path("run_id").asText()).path("outcome").asText());
+    unavailable.set(false);
+    var retried = json.valueToTree(agent.get(project, child.path("run_id").asText()));
+    assertTrue(retried.path("persisted").asBoolean());
+    assertEquals(
+        "superseded",
+        audit.detail(project, parent.path("run_id").asText()).path("outcome").asText());
+    assertEquals(
+        "pending", audit.detail(project, child.path("run_id").asText()).path("outcome").asText());
+  }
+
+  @Test
   void initialAuditFailureNeverCallsAModel() throws Exception {
     doThrow(new IllegalStateException("private-storage-error"))
         .when(db)

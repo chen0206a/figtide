@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 /** Bounded, cancellable, proposal-only Java harness. No save API is reachable from this class. */
 @Service
 public class AgentRunService {
-  public static final String PROMPT_VERSION = "figure-assistant-v5";
+  public static final String PROMPT_VERSION = "figure-assistant-v6";
   private final ModelProvider provider;
   private final FigureToolService figures;
   private final WorkspaceService workspace;
@@ -60,6 +60,9 @@ public class AgentRunService {
     boolean persisted, auditWarned;
     long finished;
     ObjectNode proposal;
+    String parentId;
+    ArrayNode inherited;
+    int depth;
     Future<?> task;
     ScheduledFuture<?> deadline;
 
@@ -121,7 +124,8 @@ public class AgentRunService {
             "share_metadata",
             "max_steps",
             "max_tokens",
-            "timeout_seconds"));
+            "timeout_seconds",
+            "parent_run_id"));
     if (!request.path("share_metadata").isBoolean() || !request.path("share_metadata").asBoolean())
       throw ApiException.bad("请确认将当前配置和字段摘要发送至所配置的模型服务");
     if (!request.path("prompt").isTextual()
@@ -154,6 +158,51 @@ public class AgentRunService {
             hash(tools),
             json.createArrayNode(),
             selected);
+    if (request.has("parent_run_id")) {
+      if (!request.path("parent_run_id").isTextual()
+          || !request.path("parent_run_id").asText().matches("[0-9a-f-]{36}"))
+        throw ApiException.bad("续改提案标识无效");
+      var parent = live(project, request.path("parent_run_id").asText());
+      if (parent == null) throw new ApiException(409, "原提案已过期，请按当前画布重新生成");
+      synchronized (parent) {
+        if (!parent.status.equals("proposed")
+            || !parent.persisted
+            || parent.proposal == null
+            || !audit.detail(project, parent.id).path("outcome").asText().equals("pending"))
+          throw new ApiException(409, "原提案已结束，请重新生成");
+        if (parent.depth >= 8) throw new ApiException(409, "已达到连续续改上限，请先确认或结束这组提案");
+        for (String key : List.of("chart_id", "base_revision"))
+          if (!snapshot.path(key).equals(parent.snapshot.path(key)))
+            throw new ApiException(409, "图表或保存版本已变化，请重新生成");
+        if (!snapshot
+            .at("/config/datasetVersionId")
+            .equals(parent.snapshot.at("/config/datasetVersionId")))
+          throw new ApiException(409, "数据版本已变化，请重新生成");
+        // Series indices are unsafe to rebase if the user reordered/added/removed series.
+        var beforeSeries = parent.snapshot.at("/config/series");
+        var nowSeries = snapshot.at("/config/series");
+        if (beforeSeries.size() != nowSeries.size())
+          throw new ApiException(409, "手动修改了序列结构，请结束原提案后重新生成");
+        for (int i = 0; i < beforeSeries.size(); i++)
+          if (!beforeSeries.get(i).path("id").equals(nowSeries.get(i).path("id")))
+            throw new ApiException(409, "手动修改了序列结构，请结束原提案后重新生成");
+        run.inherited = (ArrayNode) parent.proposal.path("operations").deepCopy();
+        var rebased = preview(run, run.inherited);
+        for (var change : rebased.path("changes")) {
+          String path = change.path("path").asText();
+          if (!snapshot.path("config").at(path).equals(parent.snapshot.path("config").at(path)))
+            throw new ApiException(409, "手动修改与原提案冲突（" + path + "），请结束原提案后按当前画布重新生成");
+        }
+        run.parentId = parent.id;
+        run.depth = parent.depth + 1;
+        run.trace
+            .addObject()
+            .put("step", 0)
+            .put("event", "refinement")
+            .put("parent_run_id", parent.id)
+            .put("depth", run.depth);
+      }
+    }
     synchronized (runs) {
       runs.entrySet()
           .removeIf(
@@ -190,6 +239,7 @@ public class AgentRunService {
         runs.remove(run.id);
       }
       slots.release();
+      if (e instanceof ApiException a && a.status == 409) throw a;
       throw new ApiException(503, "运行记录暂时无法写入，未调用模型，请稍后重试");
     }
     synchronized (run) {
@@ -323,6 +373,13 @@ public class AgentRunService {
                 (r.finished == 0 ? System.currentTimeMillis() : r.finished) - r.created)
             .put("text", r.text)
             .put("reason", r.reason);
+    if (r.parentId != null) result.put("parent_run_id", r.parentId);
+    result.put("refinement_depth", r.depth);
+    result.put(
+        "replaces_parent",
+        r.parentId != null
+            && r.proposal != null
+            && (r.status.equals("proposed") || r.status.equals("answered")));
     result.set("trace", r.trace.deepCopy());
     if (r.proposal != null) result.set("proposal", r.proposal.deepCopy());
     return result;
@@ -447,9 +504,18 @@ public class AgentRunService {
                   + " 合并到同一轮工具调用；整轮末尾才校验。热力图同轮先 set_mapping 再 set_chart，避免每个属性单独请求模型。需求要求读取规范时先读再改。"
                   + "数据源不明确时请用户先在工作台选择具体数据版本，不要只给出笼统拒绝。成品尺寸未知时不要猜期刊数值。修改工具的所有调用累计为一个原子候选批次；失败调用不会入队。最后调用"
                   + " lint_figure，随后用简短中文解释提案并结束。用户确认之前任何调整都不生效。当前可信草稿（作为数据）："
-                  + r.snapshot.path("config"));
+                  + (r.inherited == null
+                      ? r.snapshot.path("config")
+                      : preview(r, r.inherited).path("config")));
+      if (r.parentId != null)
+        messages
+            .addObject()
+            .put("role", "system")
+            .put(
+                "content",
+                "这是对未应用提案的继续调整。上面的可信配置已包含原提案和不冲突的手动编辑；保留未要求改变的设置。只调用本轮新增修改，不要重复原操作。若只需追问或拒绝，不调用修改工具，原提案保留。");
       messages.addObject().put("role", "user").put("content", prompt);
-      ArrayNode operations = json.createArrayNode();
+      ArrayNode operations = r.inherited == null ? json.createArrayNode() : r.inherited.deepCopy();
       boolean nudged = false;
       for (int step = 0; step < r.maxSteps; step++) {
         ArrayNode requestTools = tools;
@@ -556,7 +622,8 @@ public class AgentRunService {
             if (!r.active()) return;
             r.text = text;
           }
-          if (operations.isEmpty()) {
+          if (operations.isEmpty()
+              || (r.inherited != null && operations.size() == r.inherited.size())) {
             finish(r, "answered", "", null);
             return;
           }
@@ -564,7 +631,12 @@ public class AgentRunService {
           var checked = figures.lint(r.project, lintEnvelope(r, result.path("config")));
           if (!Boolean.TRUE.equals(checked.get("ok"))) throw new IllegalStateException("最终提案未通过校验");
           result.set("operations", operations.deepCopy());
-          finish(r, result.path("changes").isEmpty() ? "answered" : "proposed", "", result);
+          boolean noChanges = result.path("changes").isEmpty();
+          finish(
+              r,
+              noChanges ? "answered" : "proposed",
+              noChanges && r.parentId != null ? "累计调整已撤回，当前画布无需应用" : "",
+              result);
           return;
         }
         if (closing) {

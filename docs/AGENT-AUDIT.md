@@ -44,7 +44,7 @@ Flyway `V5__agent_audit.sql` 新增一张 `agent_runs` 表，一次运行一行�
 | status | 初始outcome | 决策 |
 |---|---|---|
 | queued / running | running | 不允许 |
-| proposed | pending | accepted 或 rejected |
+| proposed | pending | accepted、rejected 或由有效续改替代为 superseded |
 | answered | answered | 不允许；包含回复/拒绝/追问，2d规则初筛不改变此运行状态，语义仍需评审 |
 | cancelled | cancelled | 不允许 |
 | failed | failed | 不允许 |
@@ -83,3 +83,6 @@ Flyway `V5__agent_audit.sql` 新增一张 `agent_runs` 表，一次运行一行�
 ```
 
 脚本只用本机协议fixture，独立 `labflow_e2e` 库、构建目录和端口。重启验收先创建已拒绝的完整审计及一个慢速在途运行，终止测试Java进程后启动新进程，确认完整审计逐字段不变、在途标记中断且用量不完整，再清理测试项目。不会停止普通8086工作台，不调用真实收费模型。
+
+
+2026-10-22：Flyway V6 新增 `parent_run_id`。成功续改与父提案 superseded 同事务提交，写入失败回滚；失败/取消/纯追问保留父提案。历史保留父运行入口，superseded 不能覆写为用户接受/拒绝。详见 [连续调整的并发与审计](AGENT-REFINEMENT.md)。

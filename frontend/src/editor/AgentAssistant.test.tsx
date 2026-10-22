@@ -365,3 +365,159 @@ it("records confirmation without overwriting a draft changed while the decision 
   expect(s.onApply).not.toHaveBeenCalled();
   expect(s.onClose).not.toHaveBeenCalled();
 });
+
+it("refines an unapplied proposal against the latest manual draft and applies the whole batch once", async () => {
+  let calls = 0;
+  const manual = structuredClone(config);
+  manual.axes.x.title = "Manual label";
+  const merged = structuredClone(changed);
+  merged.axes.x.title = "Manual label";
+  merged.legend.position = "right";
+  const second: AgentRun = {
+    ...run,
+    run_id: "run-2",
+    parent_run_id: "run-1",
+    proposal_hash: "second-hash",
+    proposal: {
+      ...run.proposal!,
+      config: merged,
+      operation_count: 2,
+      operations: [
+        ...run.proposal!.operations,
+        { tool: "set_legend", arguments: { position: "right" } },
+      ],
+      changes: [
+        ...run.proposal!.changes,
+        {
+          path: "/legend/position",
+          before: config.legend.position,
+          after: "right",
+        },
+      ],
+    },
+  };
+  const s = setup(
+    (url) =>
+      url.endsWith("/runs")
+        ? ++calls === 1
+          ? run
+          : second
+        : url.endsWith("/run-2")
+          ? second
+          : undefined,
+    true,
+  );
+  await start();
+  await screen.findByRole("button", { name: "继续修改提案" });
+  s.rerender(s.ui({ ...s.props, config: manual, token: "manual-draft" }));
+  expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled();
+  fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
+    target: { value: "图例放右侧，其他保留" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改提案" }));
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "应用这组调整" })).toBeEnabled(),
+  );
+  await waitFor(() =>
+    expect(screen.getByRole("log")).toHaveTextContent("已由续改替代"),
+  );
+  const sent = s.fetcher.mock.calls
+    .filter(([url, init]) => url.endsWith("/runs") && init?.method === "POST")
+    .at(-1)!;
+  expect(JSON.parse(sent[1]!.body as string)).toMatchObject({
+    parent_run_id: "run-1",
+    config: manual,
+  });
+  expect(s.onApply).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "应用这组调整" }));
+  await waitFor(() => expect(s.onApply).toHaveBeenCalledOnce());
+  expect(s.onApply).toHaveBeenCalledWith("manual-draft", merged, 2);
+});
+
+it.each(["failed", "answered", "cancelled"] as const)(
+  "keeps the previous proposal after a %s refinement",
+  async (status) => {
+    let calls = 0;
+    const s = setup(
+      (url) =>
+        url.endsWith("/runs")
+          ? ++calls === 1
+            ? run
+            : {
+                ...run,
+                run_id: "run-2",
+                parent_run_id: "run-1",
+                status,
+                outcome: status,
+                proposal: undefined,
+                text: "本轮没有生成新提案",
+              }
+          : undefined,
+      true,
+    );
+    await start();
+    await screen.findByRole("button", { name: "继续修改提案" });
+    fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
+      target: { value: "继续调整" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "继续修改提案" }));
+    await screen.findByText("本轮没有生成新提案");
+    expect(screen.getByRole("button", { name: "应用这组调整" })).toBeEnabled();
+    expect(screen.getByLabelText("修改明细")).toHaveTextContent("18");
+    fireEvent.click(screen.getByRole("button", { name: "应用这组调整" }));
+    await waitFor(() =>
+      expect(s.onApply).toHaveBeenCalledWith("snapshot-1", changed, 1),
+    );
+  },
+);
+
+it("retires the previous proposal when the server validates a complete withdrawal", async () => {
+  let calls = 0;
+  setup(
+    (url) =>
+      url.endsWith("/runs")
+        ? ++calls === 1
+          ? run
+          : {
+              ...run,
+              run_id: "run-2",
+              parent_run_id: "run-1",
+              replaces_parent: true,
+              status: "answered",
+              outcome: "answered",
+              proposal: undefined,
+              text: "累计调整已撤回",
+            }
+        : undefined,
+    true,
+  );
+  await start();
+  await screen.findByRole("button", { name: "继续修改提案" });
+  fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
+    target: { value: "撤回全部调整" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改提案" }));
+  await screen.findByText("累计调整已撤回");
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled(),
+  );
+  expect(screen.getByRole("log")).toHaveTextContent("已由续改替代");
+  expect(screen.getByRole("button", { name: "开始新对话" })).toBeEnabled();
+});
+
+it("retains the old proposal when refinement fails before a run is created", async () => {
+  let calls = 0;
+  const s = setup((url) => {
+    if (url.endsWith("/runs") && ++calls > 1)
+      throw new Error("手动修改与原提案冲突");
+  }, true);
+  await start();
+  await screen.findByRole("button", { name: "继续修改提案" });
+  fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
+    target: { value: "继续" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改提案" }));
+  await screen.findByText("手动修改与原提案冲突");
+  expect(screen.getByLabelText("修改明细")).toHaveTextContent("18");
+  expect(s.onApply).not.toHaveBeenCalled();
+});

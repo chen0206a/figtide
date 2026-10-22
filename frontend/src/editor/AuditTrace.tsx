@@ -4,6 +4,7 @@ export const outcomeLabels: Record<string, string> = {
   pending: "待决定",
   accepted: "已接受",
   rejected: "已拒绝",
+  superseded: "已由续改替代",
   answered: "助手回复",
   cancelled: "已取消",
   failed: "失败",
@@ -62,9 +63,11 @@ export function AuditTrace({ trace }: { trace: AgentRun["trace"] }) {
           ) : (
             <span>
               第 {event.step} 步 ·{" "}
-              {event.event === "model_request"
-                ? "请求模型"
-                : `模型响应 · ${event.tokens} tokens`}
+              {event.event === "refinement"
+                ? "基于上一份提案继续调整"
+                : event.event === "model_request"
+                  ? "请求模型"
+                  : `模型响应 · ${event.tokens} tokens`}
             </span>
           )}
         </li>

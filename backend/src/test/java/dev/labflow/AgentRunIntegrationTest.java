@@ -98,6 +98,169 @@ class AgentRunIntegrationTest {
     return null;
   }
 
+  JsonNode propose(String tool, String args) throws Exception {
+    when(provider.complete(any(), any(), anyInt(), any()))
+        .thenReturn(reply("[" + call("change", tool, args) + "]", ""), reply(null, "请确认调整"));
+    return await(start().path("run_id").asText());
+  }
+
+  ObjectNode accepted(JsonNode r) {
+    return json.createObjectNode()
+        .put("outcome", "accepted")
+        .put("proposal_hash", r.path("proposal_hash").asText());
+  }
+
+  @Test
+  void threeRoundsPreserveManualEditsAndSupersedeParentsWithoutSaving() throws Exception {
+    var bytes = (byte[]) workspace.original(project, dataset).get("original_file");
+    var first = propose("set_style", "{\"fontSize\":18}");
+    request.put("parent_run_id", first.path("run_id").asText());
+    ((ObjectNode) request.at("/config/axes/x")).put("title", "Manual epoch label");
+    var second = propose("set_legend", "{\"position\":\"right\"}");
+    assertEquals("proposed", second.path("status").asText());
+    assertEquals(18, second.at("/proposal/config/style/fontSize").asInt());
+    assertEquals("Manual epoch label", second.at("/proposal/config/axes/x/title").asText());
+    assertEquals(
+        "superseded",
+        json.valueToTree(agent.get(project, first.path("run_id").asText()))
+            .path("outcome")
+            .asText());
+    assertThrows(
+        dev.labflow.api.ApiException.class,
+        () -> agent.decide(project, first.path("run_id").asText(), accepted(first)));
+    request.put("parent_run_id", second.path("run_id").asText());
+    var third = propose("set_style", "{\"fontSize\":20}");
+    assertEquals("proposed", third.path("status").asText());
+    assertEquals(20, third.at("/proposal/config/style/fontSize").asInt());
+    assertEquals("right", third.at("/proposal/config/legend/position").asText());
+    assertEquals("Manual epoch label", third.at("/proposal/config/axes/x/title").asText());
+    assertEquals(3, third.at("/proposal/operation_count").asInt());
+    var savedAudit = json.valueToTree(agent.detail(project, third.path("run_id").asText()));
+    assertEquals(second.path("run_id"), savedAudit.path("parent_run_id"));
+    assertFalse(savedAudit.toString().contains("Manual epoch label"));
+    assertEquals(
+        "accepted",
+        json.valueToTree(agent.decide(project, third.path("run_id").asText(), accepted(third)))
+            .path("outcome")
+            .asText());
+    assertEquals(1, workspace.chart(project, chart).get("revision"));
+    assertEquals(1, workspace.versions(project, chart).size());
+    assertArrayEquals(bytes, (byte[]) workspace.original(project, dataset).get("original_file"));
+  }
+
+  @Test
+  void overlappingManualEditAndOriginallyNoopPropertyFailBeforeModelCall() throws Exception {
+    var first =
+        propose(
+            "set_style",
+            json.createObjectNode()
+                .put("fontSize", 18)
+                .put("title", request.at("/config/style/title").asText())
+                .toString());
+    request.put("parent_run_id", first.path("run_id").asText());
+    ((ObjectNode) request.at("/config/style")).put("title", "Manual title");
+    clearInvocations(provider);
+    var error = assertThrows(dev.labflow.api.ApiException.class, () -> start());
+    assertEquals(409, error.status);
+    assertTrue(error.getMessage().contains("/style/title"));
+    verify(provider, never()).complete(any(), any(), anyInt(), any());
+    assertEquals(
+        "pending",
+        json.valueToTree(agent.get(project, first.path("run_id").asText()))
+            .path("outcome")
+            .asText());
+  }
+
+  @Test
+  void cancellationPreservesParentAndConcurrentSiblingOrDecisionIsBlocked() throws Exception {
+    var first = propose("set_style", "{\"fontSize\":18}");
+    request.put("parent_run_id", first.path("run_id").asText());
+    CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+    when(provider.complete(any(), any(), anyInt(), any()))
+        .thenAnswer(
+            inv -> {
+              entered.countDown();
+              release.await(5, TimeUnit.SECONDS);
+              return reply(null, "未修改");
+            });
+    var child = start();
+    try {
+      assertTrue(entered.await(2, TimeUnit.SECONDS));
+      assertEquals(
+          409,
+          assertThrows(
+                  dev.labflow.api.ApiException.class,
+                  () -> agent.decide(project, first.path("run_id").asText(), accepted(first)))
+              .status);
+      assertEquals(409, assertThrows(dev.labflow.api.ApiException.class, () -> start()).status);
+      agent.cancel(project, child.path("run_id").asText());
+      assertEquals(
+          "pending",
+          json.valueToTree(agent.get(project, first.path("run_id").asText()))
+              .path("outcome")
+              .asText());
+      assertEquals(
+          "accepted",
+          json.valueToTree(agent.decide(project, first.path("run_id").asText(), accepted(first)))
+              .path("outcome")
+              .asText());
+    } finally {
+      release.countDown();
+    }
+  }
+
+  @Test
+  void clarificationAndFailureKeepPreviousProposalPending() throws Exception {
+    var first = propose("set_style", "{\"fontSize\":18}");
+    request.put("parent_run_id", first.path("run_id").asText());
+    when(provider.complete(any(), any(), anyInt(), any())).thenReturn(reply(null, "请问要调整哪条曲线？"));
+    var question = await(start().path("run_id").asText());
+    assertEquals("answered", question.path("status").asText());
+    assertFalse(question.has("proposal"));
+    when(provider.complete(any(), any(), anyInt(), any()))
+        .thenThrow(new RuntimeException("upstream down"));
+    assertEquals("failed", await(start().path("run_id").asText()).path("status").asText());
+    assertEquals(
+        "pending",
+        json.valueToTree(agent.get(project, first.path("run_id").asText()))
+            .path("outcome")
+            .asText());
+  }
+
+  @Test
+  void refinementCannotCrossChartOrSavedRevision() throws Exception {
+    var first = propose("set_style", "{\"fontSize\":18}");
+    request.put("parent_run_id", first.path("run_id").asText());
+    var other =
+        json.valueToTree(workspace.saveChart(project, null, "Other", null, request.path("config")))
+            .path("id")
+            .asLong();
+    request.put("chart_id", other);
+    assertEquals(409, assertThrows(dev.labflow.api.ApiException.class, () -> start()).status);
+    request.put("chart_id", chart);
+    workspace.saveChart(project, chart, "New saved revision", 1, request.path("config"));
+    request.put("base_revision", 2);
+    assertEquals(409, assertThrows(dev.labflow.api.ApiException.class, () -> start()).status);
+    verify(provider, times(2)).complete(any(), any(), anyInt(), any());
+  }
+
+  @Test
+  void revertingAllPendingChangesEndsTheChainWithoutAnApplicableProposal() throws Exception {
+    int original = request.at("/config/style/fontSize").asInt();
+    var first = propose("set_style", "{\"fontSize\":18}");
+    request.put("parent_run_id", first.path("run_id").asText());
+    var reverted = propose("set_style", "{\"fontSize\":" + original + "}");
+    assertEquals("answered", reverted.path("status").asText());
+    assertTrue(reverted.path("replaces_parent").asBoolean());
+    assertFalse(reverted.has("proposal"));
+    assertEquals(
+        "superseded",
+        json.valueToTree(agent.get(project, first.path("run_id").asText()))
+            .path("outcome")
+            .asText());
+    assertEquals(1, workspace.chart(project, chart).get("revision"));
+  }
+
   @Test
   void disabledTestCleanupIsReally404AndWrongMethodsAre405RatherThanInternalErrors()
       throws Exception {

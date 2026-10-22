@@ -567,3 +567,8 @@
     border-bottom: 1px solid #e7e9ed;
   }
 }
+
+.agent-lineage-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -314,3 +314,8 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 - 图表复制复用现有 `POST /charts`，不增加重复接口；409 冲突仍通过现有 revision 检测，界面支持另存副本。
 
 前端草稿仅保存配置、名称、原 revision 和时间，不保存原数据。localStorage 键按项目/图表区分；正式保存成功后清理对应草稿。恢复旧 revision 的草稿不会绕过服务器并发校验。
+
+
+## 提案续改（2026-10-22）
+
+`POST /projects/{p}/agent/runs` 可选 `parent_run_id`，其余信封字段仍绑定当前真实画布。服务端继承可信父提案操作，合并不冲突的手动修改；冲突/旧版本/已结束父提案/活跃兄弟运行返回409且不调用模型。运行返回 `parent_run_id / refinement_depth / replaces_parent`，审计新增 `parent_run_id`，历史筛选支持 `superseded`。成功替代与子终态原子落库，失败或取消保留父提案。全部调整仍由用户一次确认，不自动保存。完整契约、撤回全部调整及边界见 [连续调整](AGENT-REFINEMENT.md)。

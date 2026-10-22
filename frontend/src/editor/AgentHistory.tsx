@@ -167,6 +167,23 @@ export function AgentHistory(p: {
                 </span>
               </div>
               <dl className="agent-audit-meta">
+                {detail.data.parent_run_id && (
+                  <>
+                    <dt>续改来源</dt>
+                    <dd>
+                      <button
+                        className="agent-lineage-link"
+                        onClick={() => {
+                          setSelected(detail.data.parent_run_id!);
+                          setReason("");
+                          setError("");
+                        }}
+                      >
+                        查看上一轮提案
+                      </button>
+                    </dd>
+                  </>
+                )}
                 <dt>模型</dt>
                 <dd>{detail.data.model}</dd>
                 <dt>服务</dt>

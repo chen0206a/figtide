@@ -35,8 +35,15 @@ public class AgentAuditService {
     db.recover(INSTANCE);
   }
 
+  @Transactional
   public void begin(
       long project, JsonNode snapshot, JsonNode initial, ModelProvider.Info info, JsonNode source) {
+    String parent = initial.path("parent_run_id").asText(null);
+    if (parent != null) {
+      var row = db.lock(project, parent);
+      if (!"pending".equals(row.get("outcome")) || db.hasActiveChild(project, parent))
+        throw new ApiException(409, "原提案已结束或正在续改，请等待当前运行结束");
+    }
     db.create(
         initial.path("run_id").asText(),
         project,
@@ -53,9 +60,11 @@ public class AgentAuditService {
         initial.path("max_steps").asInt(),
         initial.path("max_tokens").asInt(),
         initial.path("timeout_seconds").asInt(),
-        Timestamp.from(Instant.now()));
+        Timestamp.from(Instant.now()),
+        parent);
   }
 
+  @Transactional
   public void finish(
       long project,
       JsonNode result,
@@ -66,6 +75,18 @@ public class AgentAuditService {
     var proposal = result.path("proposal");
     boolean hasProposal = proposal.isObject();
     String status = result.path("status").asText();
+    String parent = result.path("parent_run_id").asText(null);
+    if (parent != null && result.path("replaces_parent").asBoolean()) {
+      var row = db.lock(project, parent);
+      if (!"pending".equals(row.get("outcome")) && !"superseded".equals(row.get("outcome")))
+        throw new ApiException(409, "原提案已结束");
+      db.decide(
+          project,
+          parent,
+          "superseded",
+          "由续改提案 " + result.path("run_id").asText() + " 替代",
+          Timestamp.from(Instant.now()));
+    }
     db.finish(
         status,
         outcome(status),
@@ -105,6 +126,7 @@ public class AgentAuditService {
     for (String key :
         List.of(
             "run_id",
+            "parent_run_id",
             "chart_id",
             "base_revision",
             "dataset_version_id",
@@ -165,7 +187,8 @@ public class AgentAuditService {
                 "cancelled",
                 "failed",
                 "incomplete",
-                "interrupted")
+                "interrupted",
+                "superseded")
             .contains(outcome)) throw ApiException.bad("运行结果筛选无效");
     var rows = db.list(project, chart, outcome, size + 1, page * size);
     var items = new ArrayList<Map<String, Object>>();
@@ -208,6 +231,7 @@ public class AgentAuditService {
     if (decision.equals(row.get("outcome")) && note.equals(row.get("decision_reason")))
       return render(row);
     if (!"pending".equals(row.get("outcome"))) throw new ApiException(409, "该提案已记录最终决策，不能覆盖");
+    if (db.hasActiveChild(project, id)) throw new ApiException(409, "提案正在续改，请等待运行结束或取消后再决定");
     if (decision.equals("accepted")
         && (!live || !Objects.equals(expectedHash, row.get("proposal_hash"))))
       throw new ApiException(409, "历史提案仅供追溯，请重新生成后应用");

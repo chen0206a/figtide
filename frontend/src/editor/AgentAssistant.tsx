@@ -80,6 +80,9 @@ function AssistantSurface(p: {
 
 export type AgentRun = {
   run_id: string;
+  parent_run_id?: string;
+  refinement_depth?: number;
+  replaces_parent?: boolean;
   status:
     | "queued"
     | "running"
@@ -151,12 +154,17 @@ export function AgentAssistant(p: {
   const [turns, setTurns] = useState<ConversationTurn[]>([]);
   const sentPrompt = useRef("");
   const thread = useRef<HTMLDivElement>(null);
+  const composer = useRef<HTMLTextAreaElement>(null);
   const proposalFooter = useRef<HTMLDivElement>(null);
   const proposalPreview = useRef<HTMLElement>(null);
   const [tab, setTab] = useState<"edit" | "history">("edit");
   const [rejectionReason, setRejectionReason] = useState("");
   const [consent, setConsent] = useState(false);
   const [run, setRun] = useState<AgentRun | null>(null);
+  const [candidate, setCandidate] = useState<{
+    run: AgentRun;
+    snapshot: { token: string; config: Config };
+  } | null>(null);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [applying, setApplying] = useState(false);
@@ -168,7 +176,31 @@ export function AgentAssistant(p: {
   const path = `/projects/${p.project}/agent/runs`;
   useEffect(() => {
     if (!run || active(run)) return;
+    if (
+      run.status === "proposed" &&
+      run.outcome === "pending" &&
+      run.persisted &&
+      captured.current
+    ) {
+      setCandidate({ run, snapshot: captured.current });
+      setPrompt("");
+    }
+    if (run.replaces_parent && run.status === "answered" && run.persisted) {
+      setCandidate(null);
+      setPrompt("");
+    }
     setTurns((previous) => {
+      if (
+        ((run.status === "proposed" && run.outcome === "pending") ||
+          run.replaces_parent) &&
+        run.persisted &&
+        run.parent_run_id
+      )
+        previous = previous.map((turn) =>
+          turn.id === run.parent_run_id
+            ? { ...turn, outcome: "superseded" }
+            : turn,
+        );
       const index = previous.findIndex((turn) => turn.id === run.run_id);
       if (index >= 0)
         return previous.map((turn, i) =>
@@ -235,6 +267,7 @@ export function AgentAssistant(p: {
           chart_id: p.chartId,
           base_revision: p.chartId ? p.revision : 0,
           config: p.config,
+          ...(pendingRun ? { parent_run_id: pendingRun.run_id } : {}),
           prompt: context.prompt,
           share_metadata: consent,
           max_tokens: 60000,
@@ -266,11 +299,11 @@ export function AgentAssistant(p: {
       setError((e as Error).message);
     }
   }
-  const result =
-    run?.status === "proposed" && run.outcome === "pending" && run.persisted
-      ? run.proposal
-      : undefined;
-  const snapshot = captured.current;
+  const currentProposal =
+    run?.status === "proposed" && run.outcome === "pending" && run.persisted;
+  const pendingRun = currentProposal ? run : candidate?.run;
+  const result = pendingRun?.proposal;
+  const snapshot = currentProposal ? captured.current : candidate?.snapshot;
   const trusted =
     !!result &&
     !!snapshot &&
@@ -294,6 +327,21 @@ export function AgentAssistant(p: {
   const proposalActions = (
     <div className="quick-result-footer" ref={proposalFooter}>
       <p>确认后只更新草稿，可一步撤销。保存正式版本仍由你决定。</p>
+      {!!result && (
+        <Button
+          variant="outline"
+          disabled={busy}
+          onClick={() => {
+            composer.current?.focus();
+            composer.current?.scrollIntoView({
+              block: "nearest",
+              behavior: "auto",
+            });
+          }}
+        >
+          继续修改
+        </Button>
+      )}
       <Button
         disabled={
           busy ||
@@ -302,16 +350,17 @@ export function AgentAssistant(p: {
           snapshot?.token !== p.token
         }
         onClick={async () => {
-          if (!result || !snapshot || !run) return;
+          if (!result || !snapshot || !pendingRun) return;
           setApplying(true);
           try {
             // Re-check the persisted revision and run status immediately before applying.
-            const latest = await api<AgentRun>(`${path}/${run.run_id}`);
+            const latest = await api<AgentRun>(`${path}/${pendingRun.run_id}`);
             if (
               latest.status !== "proposed" ||
               latest.outcome !== "pending" ||
               !latest.persisted
             ) {
+              setCandidate(null);
               setRun(latest);
               throw new Error("提案已失效，请重新生成");
             }
@@ -331,18 +380,17 @@ export function AgentAssistant(p: {
               throw new Error("画布已变化，请重新生成提案");
             // Acceptance records user approval, before applying to the local draft. It is not a chart save.
             const decision = await api<AgentRun>(
-              `${path}/${run.run_id}/decision`,
+              `${path}/${pendingRun.run_id}/decision`,
               send("POST", {
                 outcome: "accepted",
-                proposal_hash: run.proposal_hash,
+                proposal_hash: pendingRun.proposal_hash,
               }),
             );
             if (decision.outcome !== "accepted")
               throw new Error("确认记录未写入，请重试");
             if (!mounted.current) return;
-            setRun((v) =>
-              v ? { ...v, outcome: "accepted", proposal: undefined } : null,
-            );
+            setCandidate(null);
+            setRun({ ...pendingRun, outcome: "accepted", proposal: undefined });
             if (current.current.token !== snapshot.token)
               throw new Error(
                 "确认已记录，但画布已变化，本次未应用。请重新生成提案。",
@@ -383,23 +431,26 @@ export function AgentAssistant(p: {
             variant="outline"
             disabled={busy}
             onClick={async () => {
-              if (!run) return;
+              if (!pendingRun) return;
               setApplying(true);
               setError("");
               try {
                 const decision = await api<AgentRun>(
-                  `${path}/${run.run_id}/decision`,
+                  `${path}/${pendingRun.run_id}/decision`,
                   send("POST", {
                     outcome: "rejected",
                     reason: rejectionReason,
-                    proposal_hash: run.proposal_hash,
+                    proposal_hash: pendingRun.proposal_hash,
                   }),
                 );
                 if (decision.outcome !== "rejected")
                   throw new Error("拒绝记录未写入，请重试");
-                setRun((v) =>
-                  v ? { ...v, outcome: "rejected", proposal: undefined } : null,
-                );
+                setCandidate(null);
+                setRun({
+                  ...pendingRun,
+                  outcome: "rejected",
+                  proposal: undefined,
+                });
               } catch (e) {
                 setError((e as Error).message);
               } finally {
@@ -412,7 +463,7 @@ export function AgentAssistant(p: {
         </details>
       )}
       {result && snapshot && snapshot.token !== p.token && (
-        <p role="alert">画布已变化，请重新生成提案。</p>
+        <p role="alert">画布已变化，请继续修改以合并手动编辑，再确认应用。</p>
       )}
     </div>
   );
@@ -444,7 +495,8 @@ export function AgentAssistant(p: {
         <AgentHistory
           project={p.project}
           chartId={p.chartId}
-          onDecision={(record) =>
+          onDecision={(record) => {
+            if (candidate?.run.run_id === record.run_id) setCandidate(null);
             setRun((currentRun) =>
               currentRun?.run_id === record.run_id
                 ? {
@@ -453,8 +505,8 @@ export function AgentAssistant(p: {
                     proposal: undefined,
                   }
                 : currentRun,
-            )
-          }
+            );
+          }}
         />
       ) : (
         <>
@@ -553,10 +605,19 @@ export function AgentAssistant(p: {
                   开始新对话
                 </Button>
               )}
-              <div className="agent-composer" hidden={p.docked && !!result}>
+              {result &&
+                run &&
+                !active(run) &&
+                run.run_id !== pendingRun?.run_id && (
+                  <p className="agent-context-note">
+                    上一份提案仍保留，可继续修改或确认应用。
+                  </p>
+                )}
+              <div className="agent-composer">
                 <label className="agent-prompt">
                   希望怎样调整？
                   <textarea
+                    ref={composer}
                     value={prompt}
                     maxLength={2000}
                     rows={4}
@@ -576,7 +637,7 @@ export function AgentAssistant(p: {
                 )}
                 {!!result && (
                   <p className="agent-context-note">
-                    先应用或拒绝当前提案，再继续下一轮调整。
+                    继续描述修改，原提案会保留到新提案就绪；最后一次确认即可。
                   </p>
                 )}
                 <div className="agent-suggestions">
@@ -609,7 +670,7 @@ export function AgentAssistant(p: {
                     disabled={
                       busy ||
                       !provider.data?.available ||
-                      !!result ||
+                      (!!result && !trusted) ||
                       p.config.datasetVersionId !== p.data.id ||
                       !consent ||
                       !prompt.trim()
@@ -620,7 +681,11 @@ export function AgentAssistant(p: {
                     ) : (
                       <MessageSquare size={15} />
                     )}
-                    {busy ? "正在生成提案…" : "生成调整提案"}
+                    {busy
+                      ? "正在生成提案…"
+                      : result
+                        ? "继续修改提案"
+                        : "生成调整提案"}
                   </Button>
                   {active(run) && (
                     <Button variant="outline" onClick={cancel}>
@@ -670,6 +735,7 @@ export function AgentAssistant(p: {
                   )}
                   {run.status === "proposed" &&
                     run.outcome === "pending" &&
+                    !!result &&
                     !trusted && (
                       <p role="alert">提案来源或配置不一致，请重新生成。</p>
                     )}

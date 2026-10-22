@@ -31,6 +31,9 @@ const server = http.createServer(async (req, res) => {
     prompt.includes("轴方向测试") && !prompt.includes("本轮需求：");
   const followup =
     prompt.includes("轴方向测试") && prompt.includes("本轮需求：");
+  const lastPrompt = prompt.split("本轮需求：\n").at(-1);
+  const refineFont = lastPrompt.includes("续改字号20");
+  const refineAxis = lastPrompt.includes("续改隐藏网格");
   const nonce = prompt.match(/[0-9a-f-]{36}/)?.[0];
   const connectionChat = prompt.startsWith("LabFlow connection check.");
   const connectionTool = prompt.startsWith("LabFlow tool check.");
@@ -53,15 +56,19 @@ const server = http.createServer(async (req, res) => {
           : {
               role: "assistant",
               content: null,
-              tool_calls: followup
-                ? [tool("axis", "set_axis", { axis: "y", min: 0, max: 1 })]
-                : [
-                    tool("title", "set_style", {
-                      title: "Agent proposal · synthetic",
-                      fontSize: 18,
-                    }),
-                    tool("legend", "set_legend", { position: "right" }),
-                  ],
+              tool_calls: refineFont
+                ? [tool("font", "set_style", { fontSize: 20 })]
+                : refineAxis
+                  ? [tool("grid", "set_axis", { axis: "y", grid: false })]
+                  : followup
+                    ? [tool("axis", "set_axis", { axis: "y", min: 0, max: 1 })]
+                    : [
+                        tool("title", "set_style", {
+                          title: "Agent proposal · synthetic",
+                          fontSize: 18,
+                        }),
+                        tool("legend", "set_legend", { position: "right" }),
+                      ],
             };
   const respond = () => {
     if (res.destroyed) return;
