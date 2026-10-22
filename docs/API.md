@@ -319,3 +319,8 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 ## 提案续改（2026-10-22）
 
 `POST /projects/{p}/agent/runs` 可选 `parent_run_id`，其余信封字段仍绑定当前真实画布。服务端继承可信父提案操作，合并不冲突的手动修改；冲突/旧版本/已结束父提案/活跃兄弟运行返回409且不调用模型。运行返回 `parent_run_id / refinement_depth / replaces_parent`，审计新增 `parent_run_id`，历史筛选支持 `superseded`。成功替代与子终态原子落库，失败或取消保留父提案。全部调整仍由用户一次确认，不自动保存。完整契约、撤回全部调整及边界见 [连续调整](AGENT-REFINEMENT.md)。
+
+
+## 会话预算与恢复（2026-10-22）
+
+运行POST支持 `request_id / session_id / session_budget / user_message`；返回session预算摘要。新增只读 `GET /projects/{p}/agent/runs/{id}/resume`，恢复存活运行、近期对话、可信基线与待确认提案，不重新调用模型。重复请求ID同内容复用运行、不同内容409；会话预算在数据库预留与结算，未知用量不误退款。协议、恢复限制及字段见 [AGENT-SESSIONS.md](AGENT-SESSIONS.md)。

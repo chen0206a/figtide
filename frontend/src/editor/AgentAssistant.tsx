@@ -9,7 +9,7 @@ import {
   Plus,
   Settings2,
 } from "lucide-react";
-import { api, send, type Dataset } from "../lib/api";
+import { ApiError, api, send, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
 import { Dialog } from "../components/ui/dialog";
 import type { Config } from "./model";
@@ -26,6 +26,14 @@ import {
 import "./quick-actions.css";
 import "./agent-assistant.css";
 import { conversationPrompt, type ConversationTurn } from "./agentConversation";
+
+import {
+  recoveryKey,
+  recoveryRead,
+  recoveryWrite,
+  sameConfig,
+  type SessionBudget,
+} from "./agentRecovery";
 
 function AssistantSurface(p: {
   children: ReactNode;
@@ -80,6 +88,8 @@ function AssistantSurface(p: {
 
 export type AgentRun = {
   run_id: string;
+  session_id?: string;
+  session?: SessionBudget;
   parent_run_id?: string;
   refinement_depth?: number;
   replaces_parent?: boolean;
@@ -149,6 +159,15 @@ export function AgentAssistant(p: {
       }>("/agent/provider"),
     staleTime: 0,
   });
+  const [session, setSession] = useState<SessionBudget | null>(null);
+  const [sessionLimit, setSessionLimit] = useState(180000);
+  const [recovering, setRecovering] = useState(false);
+  const [disconnected, setDisconnected] = useState(false);
+  const [storageNote, setStorageNote] = useState("");
+  const [recoveryNote, setRecoveryNote] = useState("");
+  const cursor = useRef<string | null>(null);
+  const failures = useRef(0);
+  const storeKey = recoveryKey(p.project, p.chartId, p.data.id);
   const [prompt, setPrompt] = useState("");
   const [connectionOpen, setConnectionOpen] = useState(false);
   const [turns, setTurns] = useState<ConversationTurn[]>([]);
@@ -175,11 +194,13 @@ export function AgentAssistant(p: {
   const ownedRun = useRef<string | null>(null);
   const path = `/projects/${p.project}/agent/runs`;
   useEffect(() => {
+    if (run?.session) setSession(run.session);
     if (!run || active(run)) return;
     if (
       run.status === "proposed" &&
       run.outcome === "pending" &&
       run.persisted &&
+      run.proposal &&
       captured.current
     ) {
       setCandidate({ run, snapshot: captured.current });
@@ -217,6 +238,101 @@ export function AgentAssistant(p: {
       ].slice(-12);
     });
   }, [run?.run_id, run?.status, run?.outcome]);
+  function remember(id: string | null) {
+    cursor.current = id;
+    try {
+      recoveryWrite(storeKey, id);
+    } catch {
+      setStorageNote(
+        "浏览器未允许保存恢复标识；本页可继续使用，刷新后需重新开始。",
+      );
+    }
+  }
+  async function reconnect(id = cursor.current) {
+    if (!id) return;
+    setRecovering(true);
+    setError("");
+    try {
+      const restored = await api<{
+        run: AgentRun;
+        session?: SessionBudget;
+        baseline?: {
+          chart_id: number | null;
+          base_revision: number;
+          config: Config;
+        };
+        candidate?: {
+          run: AgentRun;
+          baseline: {
+            chart_id: number | null;
+            base_revision: number;
+            config: Config;
+          };
+        };
+        turns: ConversationTurn[];
+        input_text?: string;
+        recovery_note?: string;
+      }>(`${path}/${id}/resume`);
+      if (!mounted.current) return;
+      const now = current.current;
+      if (
+        restored.session &&
+        (restored.session.dataset_version_id !== now.data.id ||
+          restored.session.chart_id !== now.chartId)
+      )
+        throw new Error("恢复记录不属于当前图表或数据版本");
+      const capture = (baseline: NonNullable<typeof restored.baseline>) => ({
+        config: baseline.config,
+        token:
+          baseline.chart_id === now.chartId &&
+          baseline.base_revision === (now.chartId ? now.revision : 0) &&
+          sameConfig(baseline.config, now.config)
+            ? now.token
+            : `restored-stale:${id}`,
+      });
+      captured.current = restored.baseline ? capture(restored.baseline) : null;
+      setCandidate(
+        restored.candidate
+          ? {
+              run: restored.candidate.run,
+              snapshot: capture(restored.candidate.baseline),
+            }
+          : null,
+      );
+      const next = { ...restored.run };
+      if (next.status === "proposed" && !restored.candidate)
+        next.proposal = undefined;
+      setTurns(restored.turns || []);
+      sentPrompt.current = restored.input_text || "恢复的本轮请求";
+      setRun(next);
+      setSession(restored.session || next.session || null);
+      setRecoveryNote(
+        restored.recovery_note || "已恢复本次对话；尚未应用的提案仍需确认。",
+      );
+      ownedRun.current = active(next) ? next.run_id : null;
+      remember(next.run_id);
+      failures.current = 0;
+      setDisconnected(false);
+    } catch (e) {
+      if (mounted.current) {
+        setError((e as Error).message);
+        setDisconnected(true);
+      }
+    } finally {
+      if (mounted.current) setRecovering(false);
+    }
+  }
+  useEffect(() => {
+    try {
+      const saved = recoveryRead(storeKey);
+      if (saved) {
+        cursor.current = saved;
+        void reconnect(saved);
+      }
+    } catch {
+      setStorageNote("浏览器未允许恢复本次对话。");
+    }
+  }, [storeKey]);
   // A disappearing editor cancels only the run it owns; no pending request may apply on unmount.
   useEffect(() => {
     mounted.current = true;
@@ -229,29 +345,39 @@ export function AgentAssistant(p: {
     };
   }, [path]);
   useEffect(() => {
-    if (!active(run)) return;
+    if (!active(run) || recovering) return;
     let alive = true;
-    const timer = setTimeout(async () => {
-      try {
-        const next = await api<AgentRun>(`${path}/${run!.run_id}`);
-        if (alive) {
-          setRun(next);
-          setError("");
-          if (!active(next)) ownedRun.current = null;
+    const timer = setTimeout(
+      async () => {
+        try {
+          const next = await api<AgentRun>(`${path}/${run!.run_id}`);
+          if (alive) {
+            setRun(next);
+            setError("");
+            failures.current = 0;
+            setDisconnected(false);
+            if (!active(next)) ownedRun.current = null;
+          }
+        } catch (e) {
+          if (alive) {
+            failures.current++;
+            setDisconnected(true);
+            setError((e as Error).message);
+            setRun((v) => (v ? { ...v } : null));
+          }
         }
-      } catch (e) {
-        if (alive) {
-          setError((e as Error).message);
-          setRun((v) => (v ? { ...v } : null));
-        }
-      }
-    }, 650);
+      },
+      Math.min(8000, 650 * 2 ** Math.min(failures.current, 4)),
+    );
     return () => {
       alive = false;
       clearTimeout(timer);
     };
-  }, [run, path]);
+  }, [run, path, recovering]);
   async function start() {
+    const previousCursor = cursor.current;
+    const requestId = crypto.randomUUID();
+    remember(requestId);
     captured.current = { token: p.token, config: structuredClone(p.config) };
     setSubmitting(true);
     setError("");
@@ -264,6 +390,13 @@ export function AgentAssistant(p: {
         path,
         send("POST", {
           protocol_version: 1,
+          request_id: requestId,
+          user_message: prompt,
+          ...(session
+            ? { session_id: session.session_id }
+            : pendingRun?.session_id
+              ? { session_id: pendingRun.session_id }
+              : { session_budget: sessionLimit }),
           chart_id: p.chartId,
           base_revision: p.chartId ? p.revision : 0,
           config: p.config,
@@ -278,8 +411,11 @@ export function AgentAssistant(p: {
         return;
       }
       ownedRun.current = active(result) ? result.run_id : null;
+      remember(result.run_id);
       setRun(result);
     } catch (e) {
+      if (e instanceof ApiError) remember(previousCursor);
+      else setDisconnected(true);
       setError((e as Error).message);
     } finally {
       setSubmitting(false);
@@ -300,7 +436,10 @@ export function AgentAssistant(p: {
     }
   }
   const currentProposal =
-    run?.status === "proposed" && run.outcome === "pending" && run.persisted;
+    run?.status === "proposed" &&
+    run.outcome === "pending" &&
+    run.persisted &&
+    !!run.proposal;
   const pendingRun = currentProposal ? run : candidate?.run;
   const result = pendingRun?.proposal;
   const snapshot = currentProposal ? captured.current : candidate?.snapshot;
@@ -317,7 +456,7 @@ export function AgentAssistant(p: {
       result.config,
       structuralAllowance(result.operations),
     );
-  const busy = submitting || active(run) || applying;
+  const busy = submitting || active(run) || applying || recovering;
   const context = conversationPrompt(turns, prompt);
   useEffect(() => {
     if (!p.docked || p.open === false) return;
@@ -345,6 +484,7 @@ export function AgentAssistant(p: {
       <Button
         disabled={
           busy ||
+          disconnected ||
           !trusted ||
           !result?.changes.length ||
           snapshot?.token !== p.token
@@ -558,6 +698,75 @@ export function AgentAssistant(p: {
                   </div>
                 )
               )}
+              <details className="agent-budget">
+                <summary>
+                  会话预算 ·{" "}
+                  {session
+                    ? `${(session.used_budget + session.reserved_budget).toLocaleString()} / ${session.max_budget.toLocaleString()}`
+                    : sessionLimit.toLocaleString()}
+                </summary>
+                {!session && (
+                  <label>
+                    本次对话额度
+                    <select
+                      aria-label="本次对话额度"
+                      value={sessionLimit}
+                      disabled={busy}
+                      onChange={(e) => setSessionLimit(Number(e.target.value))}
+                    >
+                      {[60000, 180000, 360000, 600000].map((value) => (
+                        <option key={value} value={value}>
+                          {value.toLocaleString()}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+                <p>
+                  跨轮累计的保守预算单位，不是实际账单 token；单轮最多 60,000。
+                </p>
+                {session && (
+                  <p>
+                    已用 {session.used_budget.toLocaleString()} · 预留{" "}
+                    {session.reserved_budget.toLocaleString()} · 剩余{" "}
+                    {session.remaining_budget.toLocaleString()}。模型上报{" "}
+                    {session.reported_tokens.toLocaleString()} tokens。
+                  </p>
+                )}
+                {!!session?.uncertain_runs && (
+                  <p>
+                    有 {session.uncertain_runs} 次请求用量未明，已保留整轮额度。
+                  </p>
+                )}
+              </details>
+              {!!session && session.remaining_budget < 2000 && !busy && (
+                <p role="status" className="agent-context-note">
+                  本次会话剩余额度不足；仍可查看或应用已有提案，开始新对话可重新设置额度。
+                </p>
+              )}
+              {recovering && (
+                <p role="status">正在恢复已有运行，不会重新调用模型…</p>
+              )}
+              {recoveryNote && (
+                <p className="agent-context-note">{recoveryNote}</p>
+              )}
+              {storageNote && (
+                <p role="status" className="agent-context-note">
+                  {storageNote}
+                </p>
+              )}
+              {disconnected && (
+                <div className="agent-reconnect" role="status">
+                  <p>连接中断。恢复只读取原运行，不会重复提交模型请求。</p>
+                  <Button
+                    variant="outline"
+                    disabled={recovering || submitting || applying}
+                    onClick={() => reconnect()}
+                  >
+                    重新连接
+                  </Button>
+                </div>
+              )}
               <div
                 className="agent-thread"
                 role="log"
@@ -589,12 +798,17 @@ export function AgentAssistant(p: {
                 )}
                 <div ref={thread} />
               </div>
-              {!!turns.length && (
+              {(!!turns.length || !!session || disconnected) && (
                 <Button
                   variant="ghost"
                   size="sm"
                   disabled={busy || !!result}
                   onClick={() => {
+                    remember(null);
+                    setSession(null);
+                    setRecoveryNote("");
+                    setDisconnected(false);
+                    setError("");
                     setTurns([]);
                     setRun(null);
                     setPrompt("");
@@ -632,7 +846,7 @@ export function AgentAssistant(p: {
                       ? `本轮附带最近 ${context.included} 轮对话`
                       : "本轮按独立需求发送"}
                     {context.omitted > 0 ? " · 较早对话未附带" : ""}
-                    。对话仅在当前图表会话中保留。
+                    。刷新后可恢复仍存活的会话。
                   </p>
                 )}
                 {!!result && (
@@ -669,6 +883,8 @@ export function AgentAssistant(p: {
                     onClick={start}
                     disabled={
                       busy ||
+                      disconnected ||
+                      (!!session && session.remaining_budget < 2000) ||
                       !provider.data?.available ||
                       (!!result && !trusted) ||
                       p.config.datasetVersionId !== p.data.id ||

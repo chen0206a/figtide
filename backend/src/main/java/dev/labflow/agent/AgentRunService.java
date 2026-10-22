@@ -45,10 +45,14 @@ public class AgentRunService {
   }
 
   private static final class Run {
-    final String id = UUID.randomUUID().toString();
+    String id = UUID.randomUUID().toString();
+    String sessionId = UUID.randomUUID().toString(), requestHash, inputText = "";
+    boolean newSession = true;
+    int sessionBudget = 180000;
     final long project, created = System.currentTimeMillis();
     final ObjectNode snapshot;
-    final int maxSteps, maxTokens, timeout;
+    final int maxSteps, timeout;
+    int maxTokens;
     final String hash;
     final ArrayNode trace;
     final ModelProvider selectedProvider;
@@ -112,7 +116,7 @@ public class AgentRunService {
     return node.asInt();
   }
 
-  public Object start(long project, JsonNode request) {
+  public synchronized Object start(long project, JsonNode request) {
     fields(
         request,
         Set.of(
@@ -125,7 +129,25 @@ public class AgentRunService {
             "max_steps",
             "max_tokens",
             "timeout_seconds",
-            "parent_run_id"));
+            "parent_run_id",
+            "session_id",
+            "session_budget",
+            "request_id",
+            "user_message"));
+    String requestId =
+        request.has("request_id")
+            ? uuid(request.path("request_id"), "请求")
+            : UUID.randomUUID().toString();
+    String requestHash = AuditSanitizer.hash(request);
+    if (request.has("request_id") && audit.repeated(project, requestId, requestHash))
+      return get(project, requestId);
+    if (request.has("user_message")
+        && (!request.path("user_message").isTextual()
+            || request.path("user_message").asText().length() > 2000))
+      throw ApiException.bad("本轮消息最多2000字");
+    if (request.has("session_budget")
+        && (request.has("session_id") || request.has("parent_run_id")))
+      throw ApiException.bad("会话预算只能在开始新对话时指定");
     if (!request.path("share_metadata").isBoolean() || !request.path("share_metadata").asBoolean())
       throw ApiException.bad("请确认将当前配置和字段摘要发送至所配置的模型服务");
     if (!request.path("prompt").isTextual()
@@ -158,6 +180,16 @@ public class AgentRunService {
             hash(tools),
             json.createArrayNode(),
             selected);
+    run.id = requestId;
+    run.requestHash = requestHash;
+    run.sessionBudget = limit(request, "session_budget", 180000, 60000, 600000);
+    run.inputText = request.path("user_message").asText(request.path("prompt").asText());
+    String safeInput = selected.redactSecret(run.inputText);
+    if (safeInput != null) run.inputText = safeInput;
+    if (request.has("session_id")) {
+      run.sessionId = uuid(request.path("session_id"), "会话");
+      run.newSession = false;
+    }
     if (request.has("parent_run_id")) {
       if (!request.path("parent_run_id").isTextual()
           || !request.path("parent_run_id").asText().matches("[0-9a-f-]{36}"))
@@ -193,6 +225,10 @@ public class AgentRunService {
           if (!snapshot.path("config").at(path).equals(parent.snapshot.path("config").at(path)))
             throw new ApiException(409, "手动修改与原提案冲突（" + path + "），请结束原提案后按当前画布重新生成");
         }
+        if (request.has("session_id") && !run.sessionId.equals(parent.sessionId))
+          throw new ApiException(409, "续改不能切换会话预算");
+        run.sessionId = parent.sessionId;
+        run.newSession = false;
         run.parentId = parent.id;
         run.depth = parent.depth + 1;
         run.trace
@@ -228,18 +264,20 @@ public class AgentRunService {
       runs.put(run.id, run);
     }
     try {
-      audit.begin(
-          project,
-          snapshot,
-          (JsonNode) view(run),
-          selected.info(),
-          json.valueToTree(lint.get("source")));
+      var initial = snapshot(run);
+      initial
+          .put("new_session", run.newSession)
+          .put("session_budget", run.sessionBudget)
+          .put("request_hash", run.requestHash);
+      run.maxTokens =
+          audit.begin(
+              project, snapshot, initial, selected.info(), json.valueToTree(lint.get("source")));
     } catch (RuntimeException e) {
       synchronized (runs) {
         runs.remove(run.id);
       }
       slots.release();
-      if (e instanceof ApiException a && a.status == 409) throw a;
+      if (e instanceof ApiException a) throw a;
       throw new ApiException(503, "运行记录暂时无法写入，未调用模型，请稍后重试");
     }
     synchronized (run) {
@@ -266,6 +304,69 @@ public class AgentRunService {
           timer.schedule(() -> stop(run, "incomplete", "运行超时，未应用任何修改"), timeout, TimeUnit.SECONDS);
     }
     return view(run);
+  }
+
+  private static String uuid(JsonNode value, String label) {
+    if (!value.isTextual()
+        || !value.asText().matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"))
+      throw ApiException.bad(label + "标识无效");
+    return value.asText();
+  }
+
+  /**
+   * Read-only reconnection. Raw prompts/configurations are never restored from the audit database.
+   */
+  public Object resume(long project, String id) {
+    JsonNode requested = json.valueToTree(get(project, id));
+    String session = requested.path("session_id").asText("");
+    if (session.isBlank())
+      return Map.of("run", requested, "turns", List.of(), "recovery_note", "此历史运行没有可恢复的会话，请重新生成提案");
+    var records = audit.sessionRuns(project, session);
+    var out = json.createObjectNode();
+    out.set("session", audit.session(project, session));
+    var turns = out.putArray("turns");
+    JsonNode latest =
+        records.isEmpty()
+            ? requested
+            : json.valueToTree(get(project, String.valueOf(records.getFirst().get("run_id"))));
+    out.set("run", latest);
+    // Keep chronological complete turns, bounded independently of the persistent budget.
+    for (int i = Math.min(12, records.size()) - 1; i >= 0; i--) {
+      var record = records.get(i);
+      var live = live(project, String.valueOf(record.get("run_id")));
+      if (live == null) continue;
+      JsonNode value = json.valueToTree(view(live));
+      if (live.active()) continue;
+      turns
+          .addObject()
+          .put("id", live.id)
+          .put("prompt", live.inputText)
+          .put("text", live.text.isBlank() ? live.reason : live.text)
+          .put("outcome", value.path("outcome").asText(live.status));
+    }
+    for (var record : records) {
+      if (!"pending".equals(record.get("outcome"))) continue;
+      var pending = live(project, String.valueOf(record.get("run_id")));
+      if (pending == null) break;
+      var value = json.valueToTree(view(pending));
+      if (!value.path("persisted").asBoolean() || !value.has("proposal")) break;
+      try {
+        var lint = figures.lint(project, pending.snapshot);
+        if (!Boolean.TRUE.equals(lint.get("ok"))) break;
+        var candidate = out.putObject("candidate");
+        candidate.set("run", value);
+        candidate.set("baseline", pending.snapshot.deepCopy());
+      } catch (ApiException e) {
+        out.put("recovery_note", "图表保存版本或数据已变化，原提案仅供追溯，请重新生成");
+      }
+      break;
+    }
+    Run latestLive = live(project, latest.path("run_id").asText());
+    if (latestLive != null) {
+      out.set("baseline", latestLive.snapshot.deepCopy());
+      out.put("input_text", latestLive.inputText);
+    } else out.put("recovery_note", "服务已重启或运行缓存已过期；预算与审计保留，提案需要重新生成");
+    return out;
   }
 
   public Object get(long project, String id) {
@@ -341,6 +442,7 @@ public class AgentRunService {
       if (!r.active() && !r.persisted) persist(r);
       ObjectNode result = snapshot(r);
       result.put("persisted", r.persisted);
+      result.set("session", audit.session(r.project, r.sessionId));
       if (!r.active() && r.persisted) {
         var saved = audit.detail(r.project, r.id);
         for (String field : List.of("outcome", "proposal_hash", "decision_at", "decision_reason"))
@@ -358,6 +460,7 @@ public class AgentRunService {
     var result =
         json.createObjectNode()
             .put("run_id", r.id)
+            .put("session_id", r.sessionId)
             .put("status", r.status)
             .put("model", r.model)
             .put("prompt_version", PROMPT_VERSION)

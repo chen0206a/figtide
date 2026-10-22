@@ -90,3 +90,6 @@ $env:LABFLOW_AGENT_API_KEY = '<你自己的密钥>'
 
 
 连续修订在 v6 接入：可信父提案由服务端继承，合并不冲突的手动草稿；一次确认、一次撤销。网页可在提案生成后继续发送需求，不再要求先应用或拒绝。父子运行及失败保留语义见 [AGENT-REFINEMENT.md](AGENT-REFINEMENT.md)。
+
+
+2026-10-22补充：会话累计额度、请求ID幂等与刷新/断线恢复已接入；只恢复已有运行，不自动重发模型。会话费用边界与缓存保留规则见 [AGENT-SESSIONS.md](AGENT-SESSIONS.md)。

@@ -29,6 +29,11 @@ public class AgentController {
     return service.get(p, id);
   }
 
+  @GetMapping("/projects/{p}/agent/runs/{id}/resume")
+  Object resume(@PathVariable long p, @PathVariable String id) {
+    return service.resume(p, id);
+  }
+
   @PostMapping("/projects/{p}/agent/runs/{id}/cancel")
   Object cancel(@PathVariable long p, @PathVariable String id) {
     return service.cancel(p, id);

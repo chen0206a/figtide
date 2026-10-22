@@ -70,6 +70,7 @@ const run: AgentRun = {
 };
 afterEach(() => {
   cleanup();
+  sessionStorage.clear();
   vi.unstubAllGlobals();
 });
 it("permits explicit appearance edits in a structural batch without allowing other series styles to drift", () => {
@@ -520,4 +521,80 @@ it("retains the old proposal when refinement fails before a run is created", asy
   await screen.findByText("手动修改与原提案冲突");
   expect(screen.getByLabelText("修改明细")).toHaveTextContent("18");
   expect(s.onApply).not.toHaveBeenCalled();
+});
+
+it("restores a pending proposal using a server baseline without resubmitting or restoring consent", async () => {
+  const id = "d550105c-893b-4f7b-b02b-8a1e2daa32a1";
+  sessionStorage.setItem("labflow:assistant:v1:1:1:1", id);
+  const baseline = { chart_id: 1, base_revision: 1, config };
+  const s = setup(
+    (url) =>
+      url.endsWith("/resume")
+        ? {
+            run,
+            baseline,
+            candidate: { run, baseline },
+            turns: [
+              {
+                id: run.run_id,
+                prompt: "恢复前的需求",
+                text: run.text,
+                outcome: "pending",
+              },
+            ],
+          }
+        : undefined,
+    true,
+  );
+  await screen.findByText("已恢复本次对话；尚未应用的提案仍需确认。");
+  expect(screen.getByRole("log")).toHaveTextContent("恢复前的需求");
+  expect(screen.getByRole("checkbox")).not.toBeChecked();
+  expect(
+    s.fetcher.mock.calls.some(
+      ([url, init]) => url.endsWith("/runs") && init?.method === "POST",
+    ),
+  ).toBe(false);
+  fireEvent.click(screen.getByRole("button", { name: "应用这组调整" }));
+  await waitFor(() =>
+    expect(s.onApply).toHaveBeenCalledWith("snapshot-1", changed, 1),
+  );
+});
+
+it("restoring against a different local draft never makes the old proposal applicable", async () => {
+  const id = "d550105c-893b-4f7b-b02b-8a1e2daa32a1";
+  sessionStorage.setItem("labflow:assistant:v1:1:1:1", id);
+  let release!: (value: unknown) => void;
+  const waiting = new Promise((resolve) => {
+    release = resolve;
+  });
+  const s = setup(
+    (url) => (url.endsWith("/resume") ? waiting : undefined),
+    true,
+  );
+  const manual = structuredClone(config);
+  manual.axes.x.title = "Manual";
+  s.rerender(s.ui({ ...s.props, config: manual, token: "manual-draft" }));
+  const baseline = { chart_id: 1, base_revision: 1, config };
+  release({ run, baseline, candidate: { run, baseline }, turns: [] });
+  await screen.findByText("已恢复本次对话；尚未应用的提案仍需确认。");
+  expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled();
+  expect(s.onApply).not.toHaveBeenCalled();
+});
+
+it("a lost start response reconnects by the preassigned identifier and never posts a second request", async () => {
+  const baseline = { chart_id: 1, base_revision: 1, config };
+  const s = setup((url) => {
+    if (url.endsWith("/runs")) throw new Error("network interrupted");
+    if (url.endsWith("/resume"))
+      return { run, baseline, candidate: { run, baseline }, turns: [] };
+  }, true);
+  await start();
+  fireEvent.click(await screen.findByRole("button", { name: "重新连接" }));
+  await screen.findByText("已恢复本次对话；尚未应用的提案仍需确认。");
+  expect(
+    s.fetcher.mock.calls.filter(
+      ([url, init]) => url.endsWith("/runs") && init?.method === "POST",
+    ),
+  ).toHaveLength(1);
+  expect(screen.getByRole("button", { name: "应用这组调整" })).toBeEnabled();
 });

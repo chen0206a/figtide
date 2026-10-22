@@ -378,3 +378,126 @@ test("three proposal rounds preserve a manual edit, confirm once, undo once and 
     ),
   ).toHaveLength(1);
 });
+
+test("refresh during a live run restores progress, budget and pending proposal without a duplicate call", async ({
+  page,
+  request,
+}) => {
+  const f = await fixture(request);
+  const posts: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().endsWith("/agent/runs") && r.method() === "POST")
+      posts.push(r.postDataJSON().request_id);
+  });
+  await page.goto(f.url);
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  const panel = page.getByRole("complementary", {
+    name: "绘图助手",
+    exact: true,
+  });
+  await panel
+    .getByRole("textbox", { name: "希望怎样调整？" })
+    .fill("慢速恢复测试：字号18，图例右侧");
+  await panel.getByRole("checkbox").check();
+  const started = page.waitForResponse(
+    (r) => r.url().endsWith("/agent/runs") && r.request().method() === "POST",
+  );
+  await panel.getByRole("button", { name: "生成调整提案" }).click();
+  const initial = await (await started).json();
+  await page.reload();
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  await expect(
+    panel.getByText("已恢复本次对话；尚未应用的提案仍需确认。"),
+  ).toBeVisible();
+  await expect(panel.getByRole("checkbox")).not.toBeChecked();
+  await expect(panel.getByRole("button", { name: "应用这组调整" })).toBeEnabled(
+    { timeout: 20000 },
+  );
+  expect(posts).toEqual([initial.run_id]);
+  const resumed = await (
+    await request.get(
+      `/api/projects/${f.project.id}/agent/runs/${initial.run_id}/resume`,
+    )
+  ).json();
+  expect(resumed.session.session_id).toBe(initial.session_id);
+  expect(resumed.session.used_budget).toBeGreaterThan(0);
+  expect(resumed.session.reserved_budget).toBe(0);
+  await page.reload();
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  await expect(
+    panel.getByRole("button", { name: "应用这组调整" }),
+  ).toBeEnabled();
+  expect(posts).toHaveLength(1);
+  await panel.getByRole("button", { name: "应用这组调整" }).click();
+  await expect(panel.getByText("已接受", { exact: true })).toBeVisible();
+  expect((await (await request.get(f.api)).json()).revision).toBe(1);
+});
+
+test("lost HTTP start response recovers the original run; explicit new conversation resets an exhausted allowance", async ({
+  page,
+  request,
+}) => {
+  const f = await fixture(request);
+  let posts = 0;
+  await page.route("**/api/projects/*/agent/runs", async (route) => {
+    if (route.request().method() !== "POST") return route.continue();
+    posts++;
+    await route.fetch();
+    await route.abort("failed");
+  });
+  await page.goto(f.url);
+  await page.getByRole("button", { name: "绘图助手", exact: true }).click();
+  const panel = page.getByRole("complementary", {
+    name: "绘图助手",
+    exact: true,
+  });
+  await panel.getByRole("textbox", { name: "希望怎样调整？" }).fill("修改字号");
+  await panel.getByRole("checkbox").check();
+  await panel.getByRole("button", { name: "生成调整提案" }).click();
+  await panel.getByRole("button", { name: "重新连接" }).click();
+  await expect(
+    panel.getByRole("button", { name: "应用这组调整" }),
+  ).toBeEnabled();
+  expect(posts).toBe(1);
+  await panel.getByText("不采用这份提案").click();
+  await panel.getByRole("button", { name: "拒绝提案", exact: true }).click();
+  await panel.getByRole("button", { name: "开始新对话" }).click();
+  await page.unroute("**/api/projects/*/agent/runs");
+  await panel.locator(".agent-budget summary").click();
+  await panel
+    .getByRole("combobox", { name: "本次对话额度" })
+    .selectOption("60000");
+  await panel
+    .getByRole("textbox", { name: "希望怎样调整？" })
+    .fill("慢速预算测试");
+  const started = page.waitForResponse(
+    (r) => r.url().endsWith("/agent/runs") && r.request().method() === "POST",
+  );
+  await panel.getByRole("button", { name: "生成调整提案" }).click();
+  const initial = await (await started).json();
+  await panel.getByRole("button", { name: "取消运行" }).click();
+  await expect(
+    panel.getByText(
+      "本次会话剩余额度不足；仍可查看或应用已有提案，开始新对话可重新设置额度。",
+    ),
+  ).toBeVisible();
+  const cancelled = await (
+    await request.get(
+      `/api/projects/${f.project.id}/agent/runs/${initial.run_id}`,
+    )
+  ).json();
+  expect(cancelled.session.used_budget).toBe(60000);
+  expect(cancelled.session.uncertain_runs).toBe(1);
+  await panel.getByRole("textbox", { name: "希望怎样调整？" }).fill("再改一次");
+  await expect(
+    panel.getByRole("button", { name: "生成调整提案" }),
+  ).toBeDisabled();
+  await panel.getByRole("button", { name: "开始新对话" }).click();
+  await expect(
+    panel.getByRole("combobox", { name: "本次对话额度" }),
+  ).toBeEnabled();
+  await page.screenshot({
+    path: "../docs/screenshots/agent-session-budget.png",
+    fullPage: true,
+  });
+});

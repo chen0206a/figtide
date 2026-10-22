@@ -572,3 +572,35 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+.agent-budget {
+  border-bottom: 1px solid #eceef0;
+  padding: 0 0 14px;
+  margin-bottom: 18px;
+  font-size: 12px;
+  color: #737984;
+  line-height: 1.8;
+}
+.agent-budget summary {
+  cursor: pointer;
+  color: #505966;
+}
+.agent-budget label {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+.agent-budget p {
+  margin: 10px 0 0;
+}
+.agent-reconnect {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 12px 0;
+}
+.agent-dock .quick-result-footer > .btn + .btn {
+  margin-top: 8px;
+}

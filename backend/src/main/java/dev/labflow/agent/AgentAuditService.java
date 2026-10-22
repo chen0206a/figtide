@@ -36,7 +36,7 @@ public class AgentAuditService {
   }
 
   @Transactional
-  public void begin(
+  public int begin(
       long project, JsonNode snapshot, JsonNode initial, ModelProvider.Info info, JsonNode source) {
     String parent = initial.path("parent_run_id").asText(null);
     if (parent != null) {
@@ -44,6 +44,29 @@ public class AgentAuditService {
       if (!"pending".equals(row.get("outcome")) || db.hasActiveChild(project, parent))
         throw new ApiException(409, "原提案已结束或正在续改，请等待当前运行结束");
     }
+    String session = initial.path("session_id").asText(UUID.randomUUID().toString());
+    Long chart =
+        snapshot.path("chart_id").isIntegralNumber() ? snapshot.path("chart_id").asLong() : null;
+    long dataset = snapshot.at("/config/datasetVersionId").asLong();
+    if (initial.path("new_session").asBoolean() || !initial.hasNonNull("session_id"))
+      db.createSession(
+          project, session, chart, dataset, initial.path("session_budget").asInt(180000));
+    var budget = db.lockSession(project, session);
+    if (!Objects.equals(
+            chart,
+            budget.get("chart_id") == null ? null : ((Number) budget.get("chart_id")).longValue())
+        || dataset != ((Number) budget.get("dataset_version_id")).longValue())
+      throw new ApiException(409, "会话绑定的图表或数据版本已变化，请开始新对话");
+    if (db.sessionRuns(project, session).stream()
+        .anyMatch(row -> Set.of("queued", "running").contains(row.get("status"))))
+      throw new ApiException(409, "本会话已有运行，请恢复连接或等待其结束");
+    long available =
+        ((Number) budget.get("max_budget")).longValue()
+            - ((Number) budget.get("used_budget")).longValue()
+            - ((Number) budget.get("reserved_budget")).longValue();
+    int reserved = (int) Math.min(initial.path("max_tokens").asInt(), available);
+    if (reserved < 2000) throw new ApiException(429, "本次会话预算不足，未调用模型；可以查看历史或明确开始新对话");
+    db.reserveSession(project, session, reserved);
     db.create(
         initial.path("run_id").asText(),
         project,
@@ -58,10 +81,15 @@ public class AgentAuditService {
         initial.path("prompt_version").asText(),
         initial.path("catalog_hash").asText(),
         initial.path("max_steps").asInt(),
-        initial.path("max_tokens").asInt(),
+        reserved,
         initial.path("timeout_seconds").asInt(),
         Timestamp.from(Instant.now()),
-        parent);
+        parent,
+        session,
+        initial.path("request_hash").asText(null),
+        reserved,
+        ((Number) budget.get("turn_count")).intValue() + 1);
+    return reserved;
   }
 
   @Transactional
@@ -87,24 +115,79 @@ public class AgentAuditService {
           "由续改提案 " + result.path("run_id").asText() + " 替代",
           Timestamp.from(Instant.now()));
     }
-    db.finish(
-        status,
-        outcome(status),
-        reasonCode,
-        modelName(result.path("model").asText()),
-        result.path("steps").asInt(),
-        promptTokens,
-        completionTokens,
-        result.path("tokens").asLong(),
-        result.path("budget_used").asLong(),
-        usageComplete,
-        result.path("latency_ms").asLong(),
-        result.path("trace").toString(),
-        hasProposal ? AuditSanitizer.proposal(proposal).toString() : null,
-        hasProposal ? AuditSanitizer.hash(proposal.path("config")) : null,
-        Timestamp.from(Instant.now()),
-        result.path("run_id").asText(),
-        project);
+    var before = db.find(project, result.path("run_id").asText());
+    String session = (String) before.get("session_id");
+    if (session != null) db.lockSession(project, session);
+    int changed =
+        db.finish(
+            status,
+            outcome(status),
+            reasonCode,
+            modelName(result.path("model").asText()),
+            result.path("steps").asInt(),
+            promptTokens,
+            completionTokens,
+            result.path("tokens").asLong(),
+            result.path("budget_used").asLong(),
+            usageComplete,
+            result.path("latency_ms").asLong(),
+            result.path("trace").toString(),
+            hasProposal ? AuditSanitizer.proposal(proposal).toString() : null,
+            hasProposal ? AuditSanitizer.hash(proposal.path("config")) : null,
+            Timestamp.from(Instant.now()),
+            result.path("run_id").asText(),
+            project);
+    if (changed == 1 && session != null) {
+      long reserved = ((Number) before.get("reservation")).longValue();
+      long charge =
+          usageComplete
+              ? Math.max(result.path("budget_used").asLong(), result.path("tokens").asLong())
+              : Math.max(reserved, result.path("budget_used").asLong());
+      db.settleSession(
+          project, session, reserved, charge, result.path("tokens").asLong(), !usageComplete);
+      db.sessionCharge(project, result.path("run_id").asText(), charge);
+    }
+  }
+
+  public ObjectNode session(long project, String id) {
+    var row = db.session(project, id);
+    var out = json.createObjectNode();
+    for (String key :
+        List.of(
+            "session_id",
+            "chart_id",
+            "dataset_version_id",
+            "max_budget",
+            "used_budget",
+            "reserved_budget",
+            "reported_tokens",
+            "uncertain_runs")) out.set(key, json.valueToTree(row.get(key)));
+    out.put(
+        "remaining_budget",
+        Math.max(
+            0,
+            out.path("max_budget").asLong()
+                - out.path("used_budget").asLong()
+                - out.path("reserved_budget").asLong()));
+    return out;
+  }
+
+  public List<Map<String, Object>> sessionRuns(long project, String id) {
+    db.session(project, id);
+    return db.sessionRuns(project, id);
+  }
+
+  public boolean repeated(long project, String id, String requestHash) {
+    Map<String, Object> row;
+    try {
+      row = db.find(project, id);
+    } catch (dev.labflow.api.ApiException e) {
+      if (e.status == 404) return false;
+      throw e;
+    }
+    if (!Objects.equals(requestHash, row.get("request_hash")))
+      throw new ApiException(409, "请求标识已用于其他内容，请勿重复提交");
+    return true;
   }
 
   private static String outcome(String status) {
@@ -127,6 +210,9 @@ public class AgentAuditService {
         List.of(
             "run_id",
             "parent_run_id",
+            "session_id",
+            "reservation",
+            "session_charge",
             "chart_id",
             "base_revision",
             "dataset_version_id",

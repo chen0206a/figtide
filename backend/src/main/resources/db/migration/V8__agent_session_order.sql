@@ -1,0 +1,2 @@
+ALTER TABLE agent_sessions ADD COLUMN turn_count INT NOT NULL DEFAULT 0;
+ALTER TABLE agent_runs ADD COLUMN turn_index INT NOT NULL DEFAULT 0;

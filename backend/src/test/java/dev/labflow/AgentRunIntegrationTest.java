@@ -262,6 +262,131 @@ class AgentRunIntegrationTest {
   }
 
   @Test
+  void cancelledUnknownUsageConsumesReservationAndExhaustedSessionMakesNoNewModelCall()
+      throws Exception {
+    request.put("session_budget", 60000).put("max_tokens", 60000);
+    CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+    when(provider.complete(any(), any(), anyInt(), any()))
+        .thenAnswer(
+            inv -> {
+              entered.countDown();
+              release.await(5, TimeUnit.SECONDS);
+              return reply(null, "reply");
+            });
+    var initial = start();
+    try {
+      assertTrue(entered.await(2, TimeUnit.SECONDS));
+      var cancelled = json.valueToTree(agent.cancel(project, initial.path("run_id").asText()));
+      assertEquals(60000, cancelled.at("/session/used_budget").asLong());
+      assertEquals(0, cancelled.at("/session/reserved_budget").asLong());
+      assertEquals(1, cancelled.at("/session/uncertain_runs").asInt());
+      assertEquals(
+          cancelled.path("session"),
+          json.valueToTree(agent.cancel(project, initial.path("run_id").asText())).path("session"));
+      request.remove("session_budget");
+      request.put("session_id", initial.path("session_id").asText());
+      clearInvocations(provider);
+      assertEquals(429, assertThrows(dev.labflow.api.ApiException.class, () -> start()).status);
+      verify(provider, never()).complete(any(), any(), anyInt(), any());
+    } finally {
+      release.countDown();
+    }
+  }
+
+  @Test
+  void settledBudgetAccumulatesAndNextRoundIsCappedToRemainingAllowance() throws Exception {
+    request.put("session_budget", 60000).put("max_tokens", 60000);
+    when(provider.complete(any(), any(), anyInt(), any())).thenReturn(reply(null, "请问具体调整哪根轴？"));
+    var first = await(start().path("run_id").asText());
+    long spent = first.at("/session/used_budget").asLong();
+    assertTrue(spent > first.path("tokens").asLong());
+    assertEquals(60000 - spent, first.at("/session/remaining_budget").asLong());
+    request.remove("session_budget");
+    request.put("session_id", first.path("session_id").asText());
+    var second = await(start().path("run_id").asText());
+    assertEquals(60000 - spent, second.path("max_tokens").asLong());
+    assertEquals(120, second.at("/session/reported_tokens").asLong());
+    assertTrue(second.at("/session/used_budget").asLong() > spent);
+    assertEquals(0, second.at("/session/reserved_budget").asLong());
+    request.put(
+        "chart_id",
+        json.valueToTree(workspace.saveChart(project, null, "Other", null, request.path("config")))
+            .path("id")
+            .asLong());
+    assertEquals(409, assertThrows(dev.labflow.api.ApiException.class, () -> start()).status);
+  }
+
+  @Test
+  void requestIdentityPreventsDuplicateCallsAndReusingItForDifferentContent() throws Exception {
+    request.put("request_id", java.util.UUID.randomUUID().toString());
+    CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+    when(provider.complete(any(), any(), anyInt(), any()))
+        .thenAnswer(
+            inv -> {
+              entered.countDown();
+              release.await(5, TimeUnit.SECONDS);
+              return reply(null, "reply");
+            });
+    var first = start();
+    try {
+      assertTrue(entered.await(2, TimeUnit.SECONDS));
+      assertEquals(first.path("run_id"), start().path("run_id"));
+      request.put("prompt", "different request");
+      assertEquals(409, assertThrows(dev.labflow.api.ApiException.class, () -> start()).status);
+      verify(provider, times(1)).complete(any(), any(), anyInt(), any());
+      request.put("prompt", "把字号改为18");
+      agent.cancel(project, first.path("run_id").asText());
+      assertEquals("cancelled", start().path("status").asText());
+    } finally {
+      release.countDown();
+    }
+  }
+
+  @Test
+  void resumeIsReadOnlyAndSourceRevisionChangeRemovesApplicableCandidate() throws Exception {
+    var proposed = propose("set_style", "{\"fontSize\":18}");
+    clearInvocations(provider);
+    var restored = json.valueToTree(agent.resume(project, proposed.path("run_id").asText()));
+    assertEquals(request.path("config"), restored.at("/candidate/baseline/config"));
+    assertEquals(proposed.path("proposal"), restored.at("/candidate/run/proposal"));
+    assertEquals(1, restored.path("turns").size());
+    assertEquals(proposed.path("session"), restored.path("session"));
+    workspace.saveChart(project, chart, "New revision", 1, request.path("config"));
+    var stale = json.valueToTree(agent.resume(project, proposed.path("run_id").asText()));
+    assertFalse(stale.has("candidate"));
+    assertTrue(stale.path("recovery_note").asText().contains("版本"));
+    verify(provider, never()).complete(any(), any(), anyInt(), any());
+    assertThrows(
+        dev.labflow.api.ApiException.class,
+        () -> agent.resume(project + 999999, proposed.path("run_id").asText()));
+  }
+
+  @Test
+  void activeSessionRejectsParallelNewRoundsEvenWithoutAParentProposal() throws Exception {
+    CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+    when(provider.complete(any(), any(), anyInt(), any()))
+        .thenAnswer(
+            inv -> {
+              entered.countDown();
+              release.await(5, TimeUnit.SECONDS);
+              return reply(null, "reply");
+            });
+    var first = start();
+    try {
+      assertTrue(entered.await(2, TimeUnit.SECONDS));
+      request.put("session_id", first.path("session_id").asText());
+      assertEquals(409, assertThrows(dev.labflow.api.ApiException.class, () -> start()).status);
+      var recovery = json.valueToTree(agent.resume(project, first.path("run_id").asText()));
+      assertEquals(first.path("run_id"), recovery.at("/run/run_id"));
+      assertTrue(recovery.has("baseline"));
+      verify(provider, times(1)).complete(any(), any(), anyInt(), any());
+    } finally {
+      agent.cancel(project, first.path("run_id").asText());
+      release.countDown();
+    }
+  }
+
+  @Test
   void disabledTestCleanupIsReally404AndWrongMethodsAre405RatherThanInternalErrors()
       throws Exception {
     mvc.perform(delete("/api/test/projects?after=1").header("X-LabFlow-Test-Run", "1"))

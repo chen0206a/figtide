@@ -15,8 +15,8 @@ public class AgentAuditRepository {
   public void create(Object... values) {
     db.update(
         "INSERT INTO agent_runs"
-            + " (run_id,project_id,instance_id,chart_id,base_revision,dataset_version_id,source_sha256,snapshot_hash,model,endpoint,prompt_version,catalog_hash,status,outcome,max_steps,max_tokens,timeout_seconds,trace_json,created_at,parent_run_id)"
-            + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?, 'queued','running',?,?,?, '[]',?,?)",
+            + " (run_id,project_id,instance_id,chart_id,base_revision,dataset_version_id,source_sha256,snapshot_hash,model,endpoint,prompt_version,catalog_hash,status,outcome,max_steps,max_tokens,timeout_seconds,trace_json,created_at,parent_run_id,session_id,request_hash,reservation,turn_index)"
+            + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?, 'queued','running',?,?,?, '[]',?,?,?,?,?,?)",
         values);
   }
 
@@ -88,12 +88,100 @@ public class AgentAuditRepository {
         args.toArray());
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public void recover(String instance) {
+    var interrupted =
+        db.queryForList(
+            "SELECT * FROM agent_runs WHERE status IN ('queued','running') AND instance_id<>?",
+            instance);
+    for (var row : interrupted) {
+      String session = (String) row.get("session_id");
+      long project = ((Number) row.get("project_id")).longValue();
+      if (session != null) lockSession(project, session);
+      int changed =
+          db.update(
+              "UPDATE agent_runs SET"
+                  + " status='incomplete',outcome='interrupted',reason_code='process_interrupted',usage_complete=FALSE,finished_at=CURRENT_TIMESTAMP(3),latency_ms=TIMESTAMPDIFF(MICROSECOND,created_at,CURRENT_TIMESTAMP(3))/1000,session_charge=reservation"
+                  + " WHERE run_id=? AND status IN ('queued','running') AND instance_id<>?",
+              row.get("run_id"),
+              instance);
+      if (changed == 1 && session != null)
+        settleSession(
+            project,
+            session,
+            ((Number) row.get("reservation")).longValue(),
+            ((Number) row.get("reservation")).longValue(),
+            0,
+            true);
+    }
+  }
+
+  public void createSession(long project, String id, Long chart, long dataset, int budget) {
     db.update(
-        "UPDATE agent_runs SET"
-            + " status='incomplete',outcome='interrupted',reason_code='process_interrupted',usage_complete=FALSE,finished_at=CURRENT_TIMESTAMP(3),latency_ms=TIMESTAMPDIFF(MICROSECOND,created_at,CURRENT_TIMESTAMP(3))/1000"
-            + " WHERE status IN ('queued','running') AND instance_id<>?",
-        instance);
+        "INSERT INTO agent_sessions(session_id,project_id,chart_id,dataset_version_id,max_budget)"
+            + " VALUES (?,?,?,?,?)",
+        id,
+        project,
+        chart,
+        dataset,
+        budget);
+  }
+
+  public Map<String, Object> session(long project, String id) {
+    var rows =
+        db.queryForList(
+            "SELECT * FROM agent_sessions WHERE project_id=? AND session_id=?", project, id);
+    if (rows.isEmpty()) throw new dev.labflow.api.ApiException(404, "会话不存在或不属于当前项目");
+    return rows.getFirst();
+  }
+
+  public Map<String, Object> lockSession(long project, String id) {
+    var rows =
+        db.queryForList(
+            "SELECT * FROM agent_sessions WHERE project_id=? AND session_id=? FOR UPDATE",
+            project,
+            id);
+    if (rows.isEmpty()) throw new dev.labflow.api.ApiException(404, "会话不存在或不属于当前项目");
+    return rows.getFirst();
+  }
+
+  public List<Map<String, Object>> sessionRuns(long project, String id) {
+    return db.queryForList(
+        "SELECT run_id,status,outcome FROM agent_runs WHERE project_id=? AND session_id=? ORDER BY"
+            + " created_at DESC,run_id DESC LIMIT 40",
+        project,
+        id);
+  }
+
+  public void reserveSession(long project, String id, int budget) {
+    db.update(
+        "UPDATE agent_sessions SET turn_count=turn_count+1,reserved_budget=reserved_budget+? WHERE"
+            + " project_id=? AND session_id=?",
+        budget,
+        project,
+        id);
+  }
+
+  public void settleSession(
+      long project, String id, long reserved, long charged, long tokens, boolean uncertain) {
+    db.update(
+        "UPDATE agent_sessions SET"
+            + " reserved_budget=reserved_budget-?,used_budget=used_budget+?,reported_tokens=reported_tokens+?,uncertain_runs=uncertain_runs+?"
+            + " WHERE project_id=? AND session_id=?",
+        reserved,
+        charged,
+        tokens,
+        uncertain ? 1 : 0,
+        project,
+        id);
+  }
+
+  public void sessionCharge(long project, String id, long charged) {
+    db.update(
+        "UPDATE agent_runs SET session_charge=? WHERE project_id=? AND run_id=?",
+        charged,
+        project,
+        id);
   }
 
   public int chartRevision(long project, long chart) {

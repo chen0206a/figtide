@@ -86,3 +86,6 @@ Flyway `V5__agent_audit.sql` 新增一张 `agent_runs` 表，一次运行一行�
 
 
 2026-10-22：Flyway V6 新增 `parent_run_id`。成功续改与父提案 superseded 同事务提交，写入失败回滚；失败/取消/纯追问保留父提案。历史保留父运行入口，superseded 不能覆写为用户接受/拒绝。详见 [连续调整的并发与审计](AGENT-REFINEMENT.md)。
+
+
+2026-10-22补充：V7/V8增加会话额度、run预留/结算及轮次序号；开始与终态事务同时管理预算，补写不重复扣额，进程恢复按未知用量保守结算。审计仍不保存完整配置或原始对话。详见 [AGENT-SESSIONS.md](AGENT-SESSIONS.md)。

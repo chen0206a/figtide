@@ -87,6 +87,8 @@ async function api(url, data, method = "POST") {
         watermark,
         audit,
         pending: pending.run_id,
+        pending_session: pending.session_id,
+        pending_reservation: pending.max_tokens,
       }),
     );
     console.log(
@@ -103,6 +105,19 @@ async function api(url, data, method = "POST") {
     );
     assert.equal(recovered.outcome, "interrupted");
     assert.equal(recovered.usage_complete, false);
+    const sessionRecovery = await api(
+      `/projects/${saved.project}/agent/runs/${saved.pending}/resume`,
+    );
+    assert.equal(sessionRecovery.session.session_id, saved.pending_session);
+    assert.equal(sessionRecovery.session.reserved_budget, 0);
+    assert.equal(
+      sessionRecovery.session.used_budget,
+      saved.pending_reservation,
+    );
+    assert.equal(sessionRecovery.session.uncertain_runs, 1);
+    assert.equal(sessionRecovery.candidate, undefined);
+    assert.equal(sessionRecovery.baseline, undefined);
+
     assert.equal(recovered.proposal, undefined);
     const response = await fetch(
       base + `/test/projects?after=${saved.watermark}`,
