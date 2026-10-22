@@ -111,7 +111,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
   await page.getByRole("link", { name: "项目概览", exact: true }).click();
-  await page.getByRole("button", { name: /草稿恢复验收 · 副本/ }).click();
+  await openHomeChart(page, "草稿恢复验收 · 副本");
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Learning accuracy · synthetic data",
@@ -139,3 +139,4 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   ).toHaveLength(2);
   expect(errors).toEqual([]);
 });
+import { openHomeChart } from "./fixtures/home-navigation";

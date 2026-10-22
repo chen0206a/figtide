@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import { defaults } from "../src/editor/model";
+import { openHomeChart } from "./fixtures/home-navigation";
 test.use({ reducedMotion: "reduce" });
 // Only remove templates created by this run, including the restored backup's copies.
 const ownedProjects = new Set<number>();
@@ -210,10 +211,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   expect({ ...restoredConfig.config, datasetVersionId: target.id }).toEqual(
     reopened.config,
   );
-  await page
-    .getByRole("button", { name: copy.name, exact: false })
-    .first()
-    .click();
+  await openHomeChart(page, copy.name);
   await expect(page.getByLabel("图表名称", { exact: true })).toHaveValue(
     copy.name,
   );
@@ -285,10 +283,7 @@ test("vector PDF retains bold CJK multiline labels and heatmap cells", async ({
     p.id,
   );
   await page.goto("/");
-  await page
-    .getByRole("button", { name: "矢量热力图 · 合成", exact: false })
-    .first()
-    .click();
+  await openHomeChart(page, "矢量热力图 · 合成");
   await expect(page.getByTestId("plot")).toBeVisible();
   await page.getByRole("button", { name: "导出", exact: true }).click();
   await page.getByLabel("文件格式").selectOption("pdf");

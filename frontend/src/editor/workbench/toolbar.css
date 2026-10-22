@@ -1,0 +1,34 @@
+.editor-toolbar .figure-info {
+  flex: 1 1 var(--lf-editor-title-basis);
+  min-width: 0;
+}
+.editor-toolbar .figure-info > div { flex: 1; min-width: 0; }
+.editor-toolbar .figure-info input { min-width: 0; flex: 1; width: 100%; }
+.editor-save-group { display: inline-flex; align-items: center; gap: var(--lf-space-1); }
+.editor-save-menu { position: relative; }
+.editor-save-menu [role="menu"] {
+  position: absolute;
+  top: calc(100% + var(--lf-space-2));
+  right: 0;
+  z-index: 50;
+  min-width: var(--lf-project-picker-compact-w);
+  padding: var(--lf-space-1);
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius-md);
+  background: var(--lf-surface);
+  box-shadow: var(--lf-shadow-sm);
+}
+.editor-save-menu [role="menuitem"] {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: var(--lf-space-2) var(--lf-space-3);
+  border-radius: var(--lf-radius-sm);
+  color: var(--lf-text);
+  font-size: var(--lf-text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+.editor-save-menu [role="menuitem"]:focus-visible,
+.editor-save-menu [role="menuitem"]:hover { background: var(--lf-selected); outline: none; }

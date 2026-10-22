@@ -12,6 +12,7 @@
 | 4 · 快捷键 hook | 同脚本 `-Step shortcuts` | 190/190，19.59 秒 | 通过，20.15 秒 | 同上 |
 | 5 · 保存/导出 hooks | 同脚本 `-Step save-export-final` | 190/190，19.63 秒 | 通过，19.82 秒 | 同上 |
 | 6 · 绘图队列 hook | 同脚本 `-Step plot` | 190/190，19.20 秒 | 通过，19.77 秒 | 同上 |
+| 7 · 工具栏与保存菜单 | 同脚本 `-Step toolbar` | 192/192，19.54 秒 | 通过，19.52 秒 | 全量 52/58；修正旧首页定位后相关 9/9 补跑通过，58 个唯一用例均有成功记录 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 
@@ -20,6 +21,12 @@
 步骤 5 保存/导出函数转译后的 JavaScript 与 04 基线相同（仅 p 字段拆为独立参数、PDF 动态 import 调整相对目录）；静态比对脚本通过。构建曾提示导出 graph.current 可空，使用不改变运行行为的非空类型断言后重跑通过。提取辅助脚本的范围和简写属性识别错误已在生成时纠正，未纳入产品或提交。
 
 步骤 6 原样保留 deferred config、drawn.current、plotReady.current 的串行队列和 Plotly 点击/图例点击选中逻辑。首轮构建提示画布与统计底栏仍读取 rendered/renderConfig，因此 hook 额外返回这两个只读快照，重跑通过；没有改变队列调度或导出等待。
+
+步骤 7：面板开关使用 PanelLeft/PanelRight 并保留 name/aria-pressed；另存副本移到保存旁的语义菜单，支持方向键、Esc、外部点击关闭；标题输入区加宽。新增两项菜单单测、两项真实浏览器兼容用例。静态类型修复 History 与 DOM History 的同名冲突。仅工具栏 CSS 作任务明确允许的修改。
+
+完整命令 `$env:CI='true'; .\.runtime\test-refactor03-stable.ps1 -All`：**52/58 通过，14.3 分钟**；6 个失败均为 04 后 delivery/experience/refinements 仍按旧首页图表名称寻找按钮（2+3+1），没有失败于图表或保存逻辑。新增统一 home-navigation 测试辅助，根据最新图继续编辑卡片/旧图列表做等价定位，保留所有业务断言。隔离流程补跑 `test e2e/delivery.spec.ts e2e/experience.spec.ts e2e/refinements.spec.ts e2e/editor-compat.spec.ts`：**9/9 通过，1.0 分钟**，新 JVM 恢复检查通过。本轮不宣称同一次完整套件全绿；最终拆分结束后再跑完整套件。两轮分别清理 67 / 9 个测试项目。新增用例实际验证点击曲线选序列、指针拖拽面板、菜单无隐式保存，以及两个真实标签页 v1/v2 冲突保留草稿。截图 `docs/screenshots/refactor-05-editor.png`。
+
+任务文件提到 refinements 的“另存副本”需要改成菜单，但实际该调用位于冲突 Dialog 内，必须保留其按钮与流程；因此该断言不变，另外新增菜单 E2E。无后端或助手业务修改。
 
 ## 任务 04：真实研究工作区首页（2026-10-22）
 

@@ -43,7 +43,7 @@ async function fixture(page: Page, request: APIRequestContext) {
     project.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: /体验回归图 · 合成/ }).click();
+  await openHomeChart(page, "体验回归图 · 合成");
   await expect(
     page.getByTestId("plot").locator(".main-svg").first(),
   ).toBeVisible();
@@ -268,3 +268,4 @@ test("focused inspector keeps data and appearance separate without changing the 
   ).json();
   expect(saved.revision).toBe(chart.revision);
 });
+import { openHomeChart } from "./fixtures/home-navigation";

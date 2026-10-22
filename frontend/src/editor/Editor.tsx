@@ -9,8 +9,6 @@ import {
   ChevronDown,
   ChevronRight,
   Database,
-  Download,
-  Eye,
   Filter,
   Grid2X2,
   History,
@@ -19,15 +17,12 @@ import {
   MousePointer2,
   Palette,
   Plus,
-  Redo2,
   RotateCcw,
-  Save,
   ScatterChart,
   SlidersHorizontal,
   Table2,
   Trash2,
   Type,
-  Undo2,
   Upload,
   ZoomIn,
   ZoomOut,
@@ -85,6 +80,7 @@ import { ConflictDialog } from "./workbench/dialogs/ConflictDialog";
 import { ExportDialog } from "./workbench/dialogs/ExportDialog";
 import { RecoveryDialog } from "./workbench/dialogs/RecoveryDialog";
 import { VersionHistoryDialog } from "./workbench/dialogs/VersionHistoryDialog";
+import { EditorToolbar } from "./workbench/EditorToolbar";
 import { useChartSave } from "./workbench/useChartSave";
 import { useEditorShortcuts } from "./workbench/useEditorShortcuts";
 import { useFigureExport } from "./workbench/useFigureExport";
@@ -447,7 +443,15 @@ function Workbench({
     .filter((f) => f.type === "number")
     .map((f) => f.name);
   const fields = data.fields.map((f) => f.name);
-  const { plot, plotPending, plotError, graph, plotReady, rendered, renderConfig } = usePlotRenderer({
+  const {
+    plot,
+    plotPending,
+    plotError,
+    graph,
+    plotReady,
+    rendered,
+    renderConfig,
+  } = usePlotRenderer({
     c,
     data,
     onDataset,
@@ -509,159 +513,37 @@ function Workbench({
       aria-busy={saving}
       className={`editor ${preview ? "preview-mode" : ""} ${!panels.left ? "hide-left" : ""} ${!panels.right ? "hide-right" : ""} ${agentOpen ? "assistant-open" : ""}`}
     >
-      <div className="editor-toolbar">
-        <div className="figure-info">
-          <span className="figure-icon">
-            <ChartNoAxesCombined size={19} />
-          </span>
-          <div>
-            <input
-              aria-label="图表名称"
-              disabled={saving}
-              value={name}
-              maxLength={120}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <small>
-              {projectName}
-              <ChevronRight size={10} /> 图版{" "}
-              {id ? String(id).padStart(2, "0") : "草稿"}
-            </small>
-          </div>
-          <span className={`save-state ${dirty ? "unsaved" : ""}`}>
-            {saving ? (
-              "保存中…"
-            ) : dirty ? (
-              draftStatus || "正在保留草稿…"
-            ) : id ? (
-              <>
-                <Check size={12} /> 已保存 v{revision}
-              </>
-            ) : (
-              "新图表 · 可以直接编辑"
-            )}
-          </span>
-        </div>
-        <div className="toolbar-actions">
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-pressed={panels.left}
-            onClick={() => togglePanel("left")}
-          >
-            数据栏
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-pressed={panels.right && !agentOpen}
-            onClick={() => {
-              if (agentOpen) {
-                setAgentOpen(false);
-                if (!panels.right) togglePanel("right");
-              } else togglePanel("right");
-            }}
-          >
-            属性栏
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            title="快捷操作 Ctrl+K"
-            disabled={saving || c.datasetVersionId !== data.id}
-            onClick={() => setQuickOpen(true)}
-          >
-            快捷操作
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={saving || c.datasetVersionId !== data.id}
-            aria-expanded={agentOpen}
-            aria-controls="figure-assistant"
-            onClick={() => setAgentOpen((value) => !value)}
-          >
-            绘图助手
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setReuseTab("style");
-              setReuseOpen(true);
-            }}
-            disabled={saving || c.datasetVersionId !== data.id}
-          >
-            复用
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={saving || !name.trim() || c.datasetVersionId !== data.id}
-            onClick={() => save(true)}
-          >
-            另存副本
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            title="撤销 Ctrl+Z"
-            aria-label="撤销"
-            disabled={saving || !history.past.length}
-            onClick={() => dispatch({ type: "undo" })}
-          >
-            <Undo2 size={17} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            title="重做 Ctrl+Shift+Z"
-            aria-label="重做"
-            disabled={saving || !history.future.length}
-            onClick={() => dispatch({ type: "redo" })}
-          >
-            <Redo2 size={17} />
-          </Button>
-          <span className="toolbar-divider" />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setPreview(!preview)}
-          >
-            <Eye size={15} />
-            {preview ? "退出预览" : "预览"}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={
-              saving ||
-              !name.trim() ||
-              (!!id && !dirty) ||
-              c.datasetVersionId !== data.id
-            }
-            onClick={() => save()}
-          >
-            <Save size={14} />
-            保存
-          </Button>
-          <Button
-            size="sm"
-            disabled={
-              exporting ||
-              plotPending ||
-              !!plotError ||
-              !plot.traces.length ||
-              c.datasetVersionId !== data.id
-            }
-            onClick={() => setExportOpen(true)}
-          >
-            <Download size={14} />
-            {exporting ? "导出中…" : "导出"}
-            <ChevronDown size={12} />
-          </Button>
-        </div>
-      </div>
+      <EditorToolbar
+        {...{
+          saving,
+          name,
+          setName,
+          projectName,
+          id,
+          dirty,
+          draftStatus,
+          revision,
+          panels,
+          togglePanel,
+          agentOpen,
+          setAgentOpen,
+          c,
+          data,
+          setQuickOpen,
+          setReuseTab,
+          setReuseOpen,
+          save,
+          history,
+          dispatch,
+          setPreview,
+          preview,
+          exporting,
+          plotPending,
+          plotError,
+          plot,
+          setExportOpen,
+        }}
+      />
       {data.source_meta && (
         <div className="provenance-strip">
           <SourceProvenance source={data.source_meta} project={project} />
