@@ -90,6 +90,7 @@ import { ConflictDialog } from "./workbench/dialogs/ConflictDialog";
 import { ExportDialog } from "./workbench/dialogs/ExportDialog";
 import { RecoveryDialog } from "./workbench/dialogs/RecoveryDialog";
 import { VersionHistoryDialog } from "./workbench/dialogs/VersionHistoryDialog";
+import { useEditorShortcuts } from "./workbench/useEditorShortcuts";
 import { usePanelLayout } from "./workbench/usePanelLayout";
 
 const fittedZoom = (stage: HTMLElement, width: number, height: number) =>
@@ -592,47 +593,16 @@ function Workbench({
       setSaving(false);
     }
   }
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        if (
-          !saving &&
-          !document.querySelector('[role="dialog"]') &&
-          c.datasetVersionId === data.id
-        )
-          setQuickOpen(true);
-        return;
-      }
-      if (quickOpen || (e.target as HTMLElement).closest(".agent-dock")) {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s")
-          e.preventDefault();
-        return;
-      }
-      if (saving) {
-        if (
-          (e.ctrlKey || e.metaKey) &&
-          ["s", "z"].includes(e.key.toLowerCase())
-        )
-          e.preventDefault();
-        return;
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
-        e.preventDefault();
-        void save();
-      }
-      if (
-        (e.ctrlKey || e.metaKey) &&
-        e.key.toLowerCase() === "z" &&
-        !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName)
-      ) {
-        e.preventDefault();
-        dispatch({ type: e.shiftKey ? "redo" : "undo" });
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+  useEditorShortcuts({
+    saving,
+    c,
+    data,
+    setQuickOpen,
+    quickOpen,
+    save,
+    dispatch,
   });
+
   async function download() {
     if (exporting || plotPending) return;
     setExporting(true);
