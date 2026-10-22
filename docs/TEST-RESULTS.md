@@ -15,6 +15,7 @@
 | 7 · 工具栏与保存菜单 | 同脚本 `-Step toolbar` | 192/192，19.54 秒 | 通过，19.52 秒 | 全量 52/58；修正旧首页定位后相关 9/9 补跑通过，58 个唯一用例均有成功记录 |
 | 8a · 数据图层左栏 | 同脚本 `-Step data-panel` | 192/192，22.94 秒 | 通过，19.65 秒 | 最终统一回归 |
 | 8b · 画布 | 同脚本 `-Step canvas`（npm test -- --maxWorkers=2） | 192/192，26.29 秒 | 通过，20.47 秒 | 最终统一回归 |
+| 8c · 底部数据区 | 同脚本 `-Step bottom-drawer`（后续 npm test 均限制 4 workers，断言不变） | 192/192，14.05 秒 | 通过，19.90 秒 | 最终统一回归 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 

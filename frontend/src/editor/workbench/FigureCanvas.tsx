@@ -1,24 +1,16 @@
 import {
-  AlertTriangle,
-  ChartCandlestick,
-  ChartNoAxesCombined,
-  Check,
-  History,
   Layers,
   Maximize2,
   MousePointer2,
-  Table2,
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
 import type { RefObject } from "react";
-import { DataTable } from "../../components/DataTable";
 import { Button } from "../../components/ui/button";
 import { type Dataset } from "../../lib/api";
-import { ClassificationResults } from "../ClassificationResults";
-import { EvaluationResults } from "../EvaluationResults";
 import { type Config } from "../model";
 import "../styles-library.css";
+import { BottomDrawer } from "./BottomDrawer";
 import { fittedZoom } from "./fitZoom";
 import { usePlotRenderer } from "./usePlotRenderer";
 
@@ -195,139 +187,21 @@ export function FigureCanvas({
             </div>
           )}
       </div>
-      <div className="bottom-tabs">
-        {evaluation && (
-          <button
-            className={bottom === "evaluation" ? "active" : ""}
-            onClick={() =>
-              setBottom(bottom === "evaluation" ? "" : "evaluation")
-            }
-          >
-            <ChartNoAxesCombined size={14} />
-            模型评估
-            <span>
-              {c.type === "confusion"
-                ? plot.classificationReports.length
-                : plot.metrics.length}
-            </span>
-          </button>
-        )}
-        {(c.type === "box" || c.type === "violin" || empirical) && (
-          <button
-            className={bottom === "samples" ? "active" : ""}
-            onClick={() => setBottom(bottom === "samples" ? "" : "samples")}
-          >
-            <ChartCandlestick size={14} />
-            样本检查<span>{plot.summaries.length}</span>
-          </button>
-        )}
-        <button
-          className={bottom === "data" ? "active" : ""}
-          onClick={() => setBottom(bottom === "data" ? "" : "data")}
-        >
-          <Table2 size={14} />
-          数据预览<span>{plot.shownRows}</span>
-        </button>
-        <button
-          className={bottom === "warnings" ? "active" : ""}
-          onClick={() => setBottom(bottom === "warnings" ? "" : "warnings")}
-        >
-          <AlertTriangle size={14} />
-          告警
-          <span className={plot.warnings.length ? "warning-count" : ""}>
-            {plot.warnings.length}
-          </span>
-        </button>
-        <button
-          className={bottom === "log" ? "active" : ""}
-          onClick={() => setBottom(bottom === "log" ? "" : "log")}
-        >
-          <History size={14} />
-          操作记录
-        </button>
-        <span className="bottom-status">
-          <span className="green-dot" />
-          {plotPending ? "正在更新预览…" : "实时画布"}
-        </span>
-      </div>
-      {bottom && (
-        <div
-          className="bottom-content"
-          aria-busy={plotPending}
-          inert={plotPending}
-        >
-          {bottom === "evaluation" ? (
-            c.type === "confusion" ? (
-              <ClassificationResults
-                reports={plot.classificationReports}
-                config={renderConfig}
-                project={project}
-              />
-            ) : (
-              <EvaluationResults metrics={plot.metrics} config={renderConfig} />
-            )
-          ) : bottom === "samples" ? (
-            <>
-              <p className="sample-summary-note">
-                按当前过滤、分箱范围与对数轴统计；缺失与排除分开列出，均不作为零。汇总数据不能替代逐次观测。
-              </p>
-              <table className="sample-summary">
-                <thead>
-                  <tr>
-                    {[
-                      "子图",
-                      "序列",
-                      "类别",
-                      "有效 n",
-                      "缺失",
-                      "排除",
-                      "最小值",
-                      "最大值",
-                    ].map((title) => (
-                      <th key={title}>{title}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {plot.summaries.map((row, i) => (
-                    <tr key={i}>
-                      <td>{row.panel || "单图"}</td>
-                      <td>{row.series}</td>
-                      <td>{row.category}</td>
-                      <td>{row.n}</td>
-                      <td>{row.missing}</td>
-                      <td>{row.excluded}</td>
-                      <td>{row.min ?? "—"}</td>
-                      <td>{row.max ?? "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          ) : bottom === "data" ? (
-            <DataTable data={data} />
-          ) : bottom === "warnings" ? (
-            plot.warnings.length ? (
-              plot.warnings.map((w) => (
-                <div className="warning" key={w}>
-                  {w}
-                </div>
-              ))
-            ) : (
-              <p className="subtle">
-                没有数据告警。缺失值按断点展示，不自动插值。
-              </p>
-            )
-          ) : (
-            logs.map((l, i) => (
-              <p className="log-line" key={i}>
-                <Check size={12} />
-                {l}
-              </p>
-            ))
-          )}
-        </div>
-      )}
+      <BottomDrawer
+        {...{
+          evaluation,
+          bottom,
+          setBottom,
+          c,
+          plot,
+          empirical,
+          plotPending,
+          renderConfig,
+          project,
+          data,
+          logs,
+        }}
+      />
     </section>
   );
 }
