@@ -1,93 +1,91 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useQuery,useQueryClient } from "@tanstack/react-query";
 import {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useReducer,
-  useRef,
-  useMemo,
-  useDeferredValue,
-} from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+AlertTriangle,
+AudioLines,
+ChartCandlestick,
+ChartColumn,
+ChartNoAxesCombined,
+Check,
+ChevronDown,
+ChevronRight,
+Database,
+Download,
+Eye,
+Filter,
+Grid2X2,
+History,
+Layers,
+Maximize2,
+MousePointer2,
+Palette,
+Plus,
+Redo2,
+RotateCcw,
+Save,
+ScatterChart,
+SlidersHorizontal,
+Table2,
+Trash2,
+Type,
+Undo2,
+Upload,
+ZoomIn,
+ZoomOut
+} from "lucide-react";
 import Plotly from "plotly.js-cartesian-dist-min";
 import {
-  chartDraftKey,
-  readChartDraft,
-  sameDraftContent,
-} from "../lib/chartDraft";
-import { WorkbenchSkeleton } from "../components/WorkbenchSkeleton";
-import { DraftWriter } from "../lib/draftWriter";
-import { layoutPatch } from "./layoutPatch";
-import {
-  ArrowLeft,
-  ChevronDown,
-  ChevronRight,
-  Plus,
-  Undo2,
-  Redo2,
-  Eye,
-  Download,
-  Save,
-  Check,
-  Database,
-  Layers,
-  SlidersHorizontal,
-  Type,
-  Grid2X2,
-  ChartNoAxesCombined,
-  ChartColumn,
-  ScatterChart,
-  Hash,
-  FileSpreadsheet,
-  Trash2,
-  RotateCcw,
-  AlertTriangle,
-  Table2,
-  History,
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
-  Upload,
-  Filter,
-  Palette,
-  MousePointer2,
-  ChartCandlestick,
-  AudioLines,
-} from "lucide-react";
-import { ApiError, api, send, type Dataset } from "../lib/api";
+useDeferredValue,
+useEffect,
+useLayoutEffect,
+useMemo,
+useReducer,
+useRef,
+useState,
+} from "react";
+import { useLocation,useNavigate } from "react-router-dom";
+import { DataTable } from "../components/DataTable";
 import { Button } from "../components/ui/button";
 import { Dialog } from "../components/ui/dialog";
-import { DataTable } from "../components/DataTable";
-import {
-  defaults,
-  makeSeries,
-  historyReducer,
-  defaultEmpirical,
-  defaultEvaluation,
-  defaultClassification,
-  type Config,
-  type Series,
-} from "./model";
 import { useConfirm } from "../components/useConfirm";
+import { WorkbenchSkeleton } from "../components/WorkbenchSkeleton";
 import { SourceProvenance } from "../experiments/SourceProvenance";
-import { buildPlot } from "./plot";
-import { ProfessionalPanel } from "./ProfessionalPanel";
+import { ApiError,api,send,type Dataset } from "../lib/api";
+import {
+chartDraftKey,
+readChartDraft,
+sameDraftContent,
+} from "../lib/chartDraft";
+import { downloadBlob } from "../lib/download";
+import { DraftWriter } from "../lib/draftWriter";
+import { AgentAssistant } from "./AgentAssistant";
+import { ClassificationResults } from "./ClassificationResults";
 import { BandPanel } from "./EvaluationPanel";
 import { EvaluationResults } from "./EvaluationResults";
-import { ClassificationResults } from "./ClassificationResults";
-import { ReuseDialog } from "./ReuseDialog";
-import { QuickActions } from "./QuickActions";
-import { AgentAssistant } from "./AgentAssistant";
-import { stylePresets, presetThumbnail } from "./stylePresets";
-import { StyleThumbnail } from "./StyleThumbnail";
-import "./styles-library.css";
-import { downloadBlob } from "../lib/download";
+import { layoutPatch } from "./layoutPatch";
 import {
-  exportChecks,
-  publicationMetrics,
-  physicalSvg,
-  pngDensity,
+defaultClassification,
+defaultEmpirical,
+defaultEvaluation,
+defaults,
+historyReducer,
+makeSeries,
+type Config,
+type Series,
+} from "./model";
+import { buildPlot } from "./plot";
+import { ProfessionalPanel } from "./ProfessionalPanel";
+import {
+exportChecks,
+physicalSvg,
+pngDensity,
+publicationMetrics,
 } from "./publication";
+import { QuickActions } from "./QuickActions";
+import { ReuseDialog } from "./ReuseDialog";
+import { presetThumbnail,stylePresets } from "./stylePresets";
+import "./styles-library.css";
+import { StyleThumbnail } from "./StyleThumbnail";
+import { NumberInput,Section,Select,Text,Toggle } from "./workbench/controls";
 
 const fittedZoom = (stage: HTMLElement, width: number, height: number) =>
   Math.max(
@@ -2350,145 +2348,5 @@ function Workbench(
         )}
       </Dialog>
     </div>
-  );
-}
-function Section({
-  title,
-  icon,
-  children,
-}: {
-  title: string;
-  icon?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <details
-      className="property-section property-disclosure"
-      open={
-        !["画布设置", "图例", "数据过滤 · 可复现", "图层操作"].includes(title)
-      }
-    >
-      <summary>
-        {icon}
-        <span>{title}</span>
-        <ChevronDown size={13} />
-      </summary>
-      <div className="property-content">{children}</div>
-    </details>
-  );
-}
-function Text({
-  label,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <label>
-      {label}
-      <input
-        aria-label={label}
-        value={value}
-        placeholder={placeholder}
-        maxLength={500}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </label>
-  );
-}
-function NumberInput({
-  label,
-  value,
-  onChange,
-  min,
-  max,
-  step = 1,
-}: {
-  label: string;
-  value: number;
-  onChange: (v: number) => void;
-  min: number;
-  max: number;
-  step?: number;
-}) {
-  return (
-    <label>
-      {label}
-      <input
-        aria-label={label}
-        type="number"
-        value={value}
-        min={min}
-        max={max}
-        step={step}
-        onChange={(e) => {
-          const n = Number(e.target.value);
-          if (Number.isFinite(n)) onChange(Math.max(min, Math.min(max, n)));
-        }}
-      />
-    </label>
-  );
-}
-function Select({
-  label,
-  value,
-  options,
-  onChange,
-  empty = "无",
-}: {
-  label: string;
-  value: string;
-  options: (string | { value: string; label: string })[];
-  onChange: (v: string) => void;
-  empty?: string;
-}) {
-  const opts = options.map((o) =>
-    typeof o === "string" ? { value: o, label: o || empty } : o,
-  );
-  return (
-    <label>
-      {label}
-      <select
-        aria-label={label}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {!opts.some((o) => o.value === value) && (
-          <option value={value}>⚠ {value || "请选择"}</option>
-        )}
-        {opts.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}
-function Toggle({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <label className="toggle-label">
-      {label}
-      <input
-        type="checkbox"
-        role="switch"
-        aria-label={label}
-        checked={value}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-    </label>
   );
 }

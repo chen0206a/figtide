@@ -1,5 +1,15 @@
 # 第一阶段验收记录
 
+## 任务 05：编辑器按块拆分（2026-10-22，逐步验证记录）
+
+遵循任务文件逐块移动、验证、独立提交；不改变 DOM、类名和可访问标签，只有第 7 步明确允许的工具栏调整例外。后端、historyReducer、DraftWriter、layoutPatch、buildPlot 和助手状态机不在修改范围。
+
+| 步骤 | 实际命令 | 单测 | 构建 | 浏览器 |
+| --- | --- | --- | --- | --- |
+| 1 · 公共控件 | `.\.runtime\check-refactor05.ps1 -Step controls`（执行 npm test / npm run build） | 190/190，20.22 秒 | 通过，20.81 秒 | 按任务要求在第 7 步及最终统一回归 |
+
+本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
+
 ## 任务 04：真实研究工作区首页（2026-10-22）
 
 按 `refactor/tasks/04-home.md` 替换首页，参考实现按原组件边界分为 HomePage、ContinueCard、HomeSide、HomeTables，另有 homeData 与 token 化 home.css。继续编辑区域使用真实图表配置和不可变数据版本渲染；项目表只显示已有计数，最近图表使用图标，不虚构缩略图、备份时间或项目更新时间。保留搜索/分页/项目切换、空/错/加载状态与本机草稿标记。新增 FigurePreview 并由 StylePreview 共用，保留 style-preview 类名和可访问 busy 状态。
