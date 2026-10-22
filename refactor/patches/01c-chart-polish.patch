@@ -1,0 +1,226 @@
+From a1d40162496f49cad0f409d30c542c0647fd0010 Mon Sep 17 00:00:00 2001
+From: claude <x@x>
+Date: Thu, 22 Oct 2026 14:11:11 +0900
+Subject: [PATCH] style(plot): drop inline legend title; single-hue square
+ confusion matrix; no empty legend band
+
+---
+ frontend/src/editor/confusion.ts     | 41 ++++++++++++++++++++++++----
+ frontend/src/editor/encoding.test.ts | 26 ++++++++++++++++--
+ frontend/src/editor/encoding.ts      |  8 +-----
+ frontend/src/editor/plot-core.ts     | 19 ++++---------
+ 4 files changed, 67 insertions(+), 27 deletions(-)
+
+diff --git a/frontend/src/editor/confusion.ts b/frontend/src/editor/confusion.ts
+index 3821278..cecb2e6 100644
+--- a/frontend/src/editor/confusion.ts
++++ b/frontend/src/editor/confusion.ts
+@@ -1,7 +1,10 @@
+ import { defaultClassification, type Config } from "./model";
+ import type { ClassificationReport } from "./classification";
+ import { vectorHeatmap } from "./heatmap";
+-import { labelColor, interpolate, scientificScales } from "./color";
++import { labelColor, interpolate } from "./color";
++
++/** Single-hue sequential scale: reads as "more" without viridis' yellow glare. */
++export const MATRIX_BLUES = ["#f7fbff", "#c6dbef", "#6baed6", "#2171b5", "#08306b"];
+ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
+   const k = c.classification || defaultClassification;
+   const report = reports.find(
+@@ -59,7 +62,7 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
+       heatZ: title,
+       axes: { x: { ...c.axes.x, log: false }, y: { ...c.axes.y, log: false } },
+       heatmap: {
+-        palette: "viridis",
++        palette: "viridis", // overridden below with a single-hue scale
+         min: "0",
+         max: String(max),
+         center: "",
+@@ -87,7 +90,7 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
+         color =
+           v == null
+             ? "#f1f3f6"
+-            : interpolate(scientificScales.viridis, v / max);
++            : interpolate(MATRIX_BLUES, v / max);
+       if (v == null)
+         heat.shapes.push({
+           type: "rect",
+@@ -124,7 +127,33 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
+       };
+     }),
+   );
+-  heat.yaxis = { ...heat.yaxis, range: [report.classes.length - 0.5, -0.5] };
++  heat.yaxis = {
++    ...heat.yaxis,
++    range: [report.classes.length - 0.5, -0.5],
++    // Square cells: a k×k matrix should look like one.
++    scaleanchor: "x",
++    scaleratio: 1,
++    constrain: "domain",
++  };
++  heat.xaxis = { ...heat.xaxis, constrain: "domain" };
++  // Recolor cells with the single-hue scale and separate them with hairlines
++  // in the background color, so adjacent equal values stay readable.
++  const cellValue = new Map(
++    report.classes.flatMap((_, i) =>
++      report.classes.map((__, j) => [`${j}:${i}`, report.matrix[i][j]] as const),
++    ),
++  );
++  heat.shapes.forEach((shape) => {
++    const v = cellValue.get(`${shape.x0 + 0.5}:${shape.y0 + 0.5}`);
++    if (v != null) shape.fillcolor = interpolate(MATRIX_BLUES, v / max);
++    shape.line = { width: 2, color: c.style.background };
++  });
++  const marker = heat.traces[0]?.marker;
++  if (marker)
++    marker.colorscale = MATRIX_BLUES.map((stop, i) => [
++      i / (MATRIX_BLUES.length - 1),
++      stop,
++    ]);
+   // Anchor the subtitle's baseline above the plot area and reserve room for
+   // it, so it can never be painted underneath the first row of cells.
+   heat.annotations.push({
+@@ -135,7 +164,9 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
+     yanchor: "bottom",
+     yshift: 6,
+     showarrow: false,
+-    text: escape(`${report.series} · ${report.group} · n=${report.n}`),
++    text: escape(
++      `${c.group ? `${report.series} · ${report.group}` : report.series} · n=${report.n}`,
++    ),
+     font: { size: c.style.fontSize, color: "#566072" },
+   });
+   heat.marginTop = c.style.fontSize + 14;
+diff --git a/frontend/src/editor/encoding.test.ts b/frontend/src/editor/encoding.test.ts
+index 20faff3..7306a4b 100644
+--- a/frontend/src/editor/encoding.test.ts
++++ b/frontend/src/editor/encoding.test.ts
+@@ -60,13 +60,13 @@ describe("grouped series encoding", () => {
+     const [first] = legendTraces(buildPlot(c, grouped).traces);
+     expect(first.line.color).toBe("#123456");
+   });
+-  it("names grouped traces by group and moves the series name to the legend title", () => {
++  it("names grouped traces by group only, without an inline legend title", () => {
+     const p = buildPlot(groupedLine(), grouped);
+     expect(legendTraces(p.traces).map((t) => t.name)).toEqual([
+       "Baseline",
+       "Method A",
+     ]);
+-    expect(p.layout.legend.title.text).toBe("Accuracy · mean ± SEM");
++    expect(p.layout.legend.title).toBeUndefined();
+   });
+   it("uses color for group and dash for series when several series are grouped", () => {
+     const c = groupedLine();
+@@ -159,6 +159,28 @@ describe("confusion matrix layout", () => {
+     const plain = buildPlot({ ...c, type: "line", x: "id" }, data);
+     expect(p.layout.margin.t).toBeGreaterThan(plain.layout.margin.t);
+   });
++  it("draws square, single-hue cells separated by hairlines", () => {
++    const p = buildPlot(confusion(), data);
++    expect(p.layout.yaxis).toMatchObject({ scaleanchor: "x", scaleratio: 1 });
++    expect(p.traces[0].marker.colorscale[0][1]).toBe("#f7fbff");
++    expect(p.layout.shapes.every((s: any) => s.line.width === 2)).toBe(true);
++    const fills = new Set(p.layout.shapes.map((s: any) => s.fillcolor));
++    expect([...fills].every((f) => !String(f).startsWith("#44015"))).toBe(true);
++  });
++  it("omits the implicit all-samples group from the subtitle", () => {
++    const p = buildPlot(confusion(), data);
++    const texts = p.layout.annotations.map((a: any) => String(a.text));
++    expect(texts).toContain("Model A · n=6");
++    expect(texts.some((t: string) => t.includes("全部"))).toBe(false);
++  });
++  it("does not reserve a legend band when nothing is in the legend", () => {
++    const c = confusion();
++    const p = buildPlot(c, data);
++    expect(p.layout.showlegend).toBe(false);
++    expect(p.layout.margin.t).toBe(
++      Math.max(c.style.top, c.style.fontSize * 2 + 24) + c.style.fontSize + 14,
++    );
++  });
+   it("uses integer colorbar ticks for counts and percentages for shares", () => {
+     const c = confusion();
+     const counts = buildPlot(c, data).traces[0].marker.colorbar;
+diff --git a/frontend/src/editor/encoding.ts b/frontend/src/editor/encoding.ts
+index eb113d8..b87beff 100644
+--- a/frontend/src/editor/encoding.ts
++++ b/frontend/src/editor/encoding.ts
+@@ -61,7 +61,7 @@ export function groupEncoding(
+ 
+ /**
+  * Legend label for a grouped trace. With one visible series the group value is
+- * enough (the series name becomes the legend title); otherwise keep both.
++ * enough (the series name is already on the y axis); otherwise keep both.
+  */
+ export function groupTraceName(
+   c: Config,
+@@ -74,12 +74,6 @@ export function groupTraceName(
+   return visibleSeries(c).length === 1 ? label : `${s.name} · ${label}`;
+ }
+ 
+-/** Legend title used when a single series is split into groups. */
+-export function groupLegendTitle(c: Config): string {
+-  const visible = visibleSeries(c);
+-  return c.group && visible.length === 1 ? visible[0].name : "";
+-}
+-
+ /**
+  * Plotly picks fractional steps (1, 1.5, 2 …) for short integer axes such as
+  * epochs or seeds. Use a step of 1 when every finite value is an integer and
+diff --git a/frontend/src/editor/plot-core.ts b/frontend/src/editor/plot-core.ts
+index de736ee..9b1dba9 100644
+--- a/frontend/src/editor/plot-core.ts
++++ b/frontend/src/editor/plot-core.ts
+@@ -11,7 +11,6 @@ import { classificationReports } from "./classification";
+ import { confusionPlot } from "./confusion";
+ import {
+   groupEncoding,
+-  groupLegendTitle,
+   groupTraceName,
+   integerAxisStep,
+ } from "./encoding";
+@@ -189,7 +188,10 @@ export function buildSinglePlot(
+       automargin: true,
+     };
+   };
+-  const legendTitle = heat ? "" : groupLegendTitle(c);
++  // Heatmaps and confusion matrices draw no legend entries; do not reserve
++  // a legend band above them (it left a large empty gap under the title).
++  const legendShown =
++    c.legend.show && traces.some((t) => t.showlegend !== false);
+   const xStep =
+     !heat &&
+     !distribution &&
+@@ -232,7 +234,7 @@ export function buildSinglePlot(
+       t:
+         Math.max(
+           c.style.top,
+-          c.legend.show && c.legend.position === "top"
++          legendShown && c.legend.position === "top"
+             ? c.style.fontSize * 3 + 40
+             : c.style.fontSize * 2 + 24,
+         ) + (heat?.marginTop || 0),
+@@ -264,20 +266,11 @@ export function buildSinglePlot(
+     },
+     yaxis: { ...axis(c.axes.y), ...heat?.yaxis },
+     shapes: heat?.shapes || [],
+-    showlegend: c.legend.show,
++    showlegend: legendShown,
+     legend: {
+       ...pos,
+       orientation: c.legend.orientation,
+       font: { size: c.style.fontSize - 1 },
+-      ...(legendTitle
+-        ? {
+-            title: {
+-              text: plain(legendTitle),
+-              side: c.legend.orientation === "h" ? "left" : "top",
+-              font: { size: c.style.fontSize - 1 },
+-            },
+-          }
+-        : {}),
+     },
+     barmode: "group",
+     boxmode: "group",
+-- 
+2.43.0
+

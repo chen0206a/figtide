@@ -244,6 +244,10 @@ export const makeSeries = (y: string, i = 0): Series => ({
   visible: true,
 });
 export function defaults(d: Dataset): Config {
+  const axisTitle = (field: string) => {
+    const label = field.replaceAll("_", " ");
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  };
   const comparison =
     d.source_meta?.kind === "experiment_comparison" ? d.source_meta : undefined;
   const processing =
@@ -328,7 +332,7 @@ export function defaults(d: Dataset): Config {
     }),
     axes: {
       x: {
-        title: comparison ? "实验" : x || "X",
+        title: comparison ? "实验" : axisTitle(x || "X"),
         min: "",
         max: "",
         log: false,
@@ -336,13 +340,14 @@ export function defaults(d: Dataset): Config {
         dtick: "",
       },
       y: {
-        title:
+        title: axisTitle(
           comparison?.metric ||
-          processing?.statistics[0]?.metric ||
-          ys[0] ||
-          nums.find((n) => n !== x && n !== error) ||
-          nums[0] ||
-          "Y",
+            processing?.statistics[0]?.metric ||
+            ys[0] ||
+            nums.find((n) => n !== x && n !== error) ||
+            nums[0] ||
+            "Y",
+        ),
         min: "",
         max: "",
         log: false,

@@ -86,7 +86,7 @@ export function groupEncoding(
 
 /**
  * Legend label for a grouped trace. With one visible series the group value is
- * enough (the series name becomes the legend title); otherwise keep both.
+ * enough (the series name is already on the y axis); otherwise keep both.
  */
 export function groupTraceName(
   c: Config,
@@ -97,12 +97,6 @@ export function groupTraceName(
   if (!c.group) return s.name;
   const label = String(group ?? missingLabel);
   return visibleSeries(c).length === 1 ? label : `${s.name} · ${label}`;
-}
-
-/** Legend title used when a single series is split into groups. */
-export function groupLegendTitle(c: Config): string {
-  const visible = visibleSeries(c);
-  return c.group && visible.length === 1 ? visible[0].name : "";
 }
 
 /**

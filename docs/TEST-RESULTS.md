@@ -1,5 +1,35 @@
 # 第一阶段验收记录
 
+## 任务 01c：图表默认观感修正（2026-10-22）
+
+已合并 `refactor-01c.zip` 中的任务文件与补丁（两个文件均与 ZIP 逐字节哈希一致）。执行 `git apply --3way refactor/patches/01c-chart-polish.patch`；仅 `plot-core.ts` 的导入冲突，手动保留上一轮 `traceEncoding / EncodingContext` 的分面配色逻辑，并移除 `groupLegendTitle`。未修改后端、API/schema、Flyway、编辑器历史/草稿或助手状态与预算逻辑。
+
+改动文件：
+
+- `frontend/src/editor/plot-core.ts`、`encoding.ts`：去除行内图例标题；仅存在可见图例项时显示图例并计算其顶部空间。
+- `frontend/src/editor/confusion.ts`：格子、色条及文字对比度统一使用五级蓝阶；轴比例锁定为正方形，背景色 2px 分隔线；无分组时副标题为 `Model A · n=7`。
+- `frontend/src/editor/model.ts`：实施可选项，仅新建配置的轴标题首字母大写、下划线换空格，字段映射和已保存标题不变。
+- `frontend/src/editor/encoding.test.ts`、`model.test.ts`、`frontend/src/processing/processing.test.tsx`：更新/补充图例、蓝阶、正方形、无图例边距及新旧轴标题测试。
+- `frontend/e2e/chart-corrections.spec.ts`、`processing.spec.ts`、`publication.spec.ts`：更新真实浏览器断言，覆盖区间带完整性、矩阵格子几何尺寸、副标题间隙、稀疏区间告警和普通热力图顶部边距。实际热力图用例在 `publication.spec.ts`，因此除任务指定四个 spec 外补跑该文件及 `evaluation.spec.ts`。
+- `docs/screenshots/refactor-01-{sem,confusion,roc}.png`、`docs/exports/refactor-01-{sem,confusion,roc}.{svg,pdf}`、`docs/test-evidence/refactor01-exports.json`：替换验收附件；另纳入本次两份 `refactor/` 文件和本记录。
+
+SEM 断带结论：原始合成样例中 **Method A / epoch 3 只有一次有效运行，n=1 无法计算 SEM，断开正确，并非绘图 bug**。原始 `samples/synthetic-grouped-runs.csv` 没有改动；验收夹具显式增加两条合成运行后再交给真实 Java 聚合，每个点有三次有效运行。图中两条区间带均覆盖 epoch 1–3；Y 轴明确标注 `Accuracy (mean ± SEM)`。另保留既有缺失上下界单测，并在独立 processing E2E 中验证缺失区间不跨点补画，编辑器底部显示「1 行区间数据缺失或不适用于对数轴，区间带在此断开」。没有为真实数据补造误差或改写统计计算。
+
+实际命令与结果：
+
+- `cd frontend; npm test`：**28 文件、180/180 通过，0 失败，13.34 秒**。
+- `cd frontend; npm run build`：**TypeScript 与 Vite 构建通过，17.11 秒**。首轮发现新增测试对象的字段类型被推宽为 string，已增加 Dataset 类型声明后重跑通过；既有大 chunk 提示仍在。
+- `$env:CI='true'; .\scripts\test-agent.ps1 -All`：完整 Chrome 首轮 **55/56 通过，4.2 分钟**；唯一失败为移除图例标题后 SEM 演示图未再显示 SEM 口径。已将该说明放进演示图 Y 轴标题并重跑。此处不宣称整套 56 项同轮全绿。
+- 隔离脚本复用原 `scripts/test-agent.ps1` 的建库、后端、协议夹具和清理流程，仅在忽略目录 `.runtime/test-refactor01c.ps1` 将 Playwright 选择器设为 `test e2e/chart-corrections.spec.ts e2e/classification.spec.ts e2e/processing.spec.ts e2e/professional.spec.ts e2e/publication.spec.ts e2e/evaluation.spec.ts`。首次补跑 **12/15 通过，1.1 分钟**；3 项均在覆盖已有 PNG 时出现 Windows `UNKNOWN: unknown error, open ...png`，未失败于图表断言。保留旧截图到 `.runtime` 后再次执行，**14/15 通过，56.6 秒**，剩余 ROC 同样为旧 PNG 覆盖错误。
+- 移走旧 ROC PNG 后，使用同一隔离流程执行 `test e2e/chart-corrections.spec.ts --grep "new AUC/AP"`：**1/1 通过，9.9 秒，脚本退出码 0**；新 JVM 审计恢复检查通过。最终相关 **15 条用例均有成功记录（14 条 + ROC 单独重跑 1 条）**，包含任务指定的 chart-corrections 3、classification 2、processing 3、professional 3，以及补充的 publication 2、evaluation 2。未删断言，也未用重试配置掩盖问题。
+- `.\scripts\check-refactor01-exports.ps1`：**通过**。三份 PDF 均为 1 页、0 栅格图像，SVG 无 image，保留预期文字与 SEM 组色；PR SVG 仍有真实 `AP = 0.833`。用 Poppler 重新渲染三份 PDF 并逐张查看，标题、图例、轴标签、副标题及 Count 刻度无遮挡，矩阵格子正方形且文字对比清楚。三张最终 PNG 捕获时间为本日 14:25:24 / 14:25:28 / 14:27:02（SEM / 矩阵 / ROC）。
+
+主库前后均为 projects107 / charts181 / dataset_versions172 / experiments13 / agent_runs9 / agent_sessions0；各轮测试项目已自动清理，隔离库最终 projects1 / agent_runs0 / agent_sessions0。主服务 5176 健康检查为 ok，未重启用户服务或调用收费模型。无关测试截图、导出文件已还原。未另跑 Java 测试（本任务无后端修改；隔离浏览器运行仅打包后端并使用真实 MySQL）。
+
+与任务文件的偏差：仅导入冲突按任务说明手动处理；E2E 使用隔离环境并补跑实际热力图所在 spec。可选轴标题整理已完成。需要人决定的事：无。任务 01c 完成后停止，未开始 02。
+
+重新导出：[SEM 截图](screenshots/refactor-01-sem.png)、[混淆矩阵截图](screenshots/refactor-01-confusion.png)、[ROC 截图](screenshots/refactor-01-roc.png)；[SEM PDF](exports/refactor-01-sem.pdf)、[矩阵 PDF](exports/refactor-01-confusion.pdf)、[ROC PDF](exports/refactor-01-roc.pdf)。
+
 ## 任务 01：图表正确性修复（2026-10-22）
 
 完成 A1–A7：分组使用不同颜色，单序列图例只显示组名并以序列名作标题；区间带、点和误差棒使用对应组色；短整数X轴自动步长1，尊重用户刻度/对数设置；混淆矩阵副标题预留空间，计数色条使用整数与英文Count，比例色条使用百分比；新增可选 `evaluation.legendMetric` 开关显示真实AUC/AP；新序列颜色从唯一的stylePresets派生，Clean Academic首色为 `#3568b5`。

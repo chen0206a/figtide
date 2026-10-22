@@ -71,7 +71,14 @@ test("grouped SEM keeps distinct colors, short legend and integer ticks in brows
   request,
 }) => {
   const p = await project(request);
-  const bytes = fs.readFileSync("../samples/synthetic-grouped-runs.csv");
+  // Keep the sparse source fixture intact; this acceptance figure uses three
+  // explicitly synthetic runs at every point, including Method A / epoch 3.
+  const bytes = Buffer.concat([
+    fs.readFileSync("../samples/synthetic-grouped-runs.csv"),
+    Buffer.from(
+      "Method A,3,2,0.90,synthetic_demo\nMethod A,3,3,0.94,synthetic_demo\n",
+    ),
+  ]);
   const raw = await upload(request, p, "synthetic-grouped-runs.csv", bytes);
   const processed = await request.post(
     `/api/projects/${p}/data/${raw.id}/process`,
@@ -105,6 +112,7 @@ test("grouped SEM keeps distinct colors, short legend and integer ticks in brows
   config.style.title = "Repeated runs (synthetic)";
   config.style.font = "Noto Sans SC";
   config.series[0].name = "Accuracy · mean ± SEM";
+  config.axes.y.title = "Accuracy (mean ± SEM)";
   const chart = await save(request, p, config);
   await page.goto(`/projects/${p}/figures/${chart.id}`);
   const plot = page.getByTestId("plot");
@@ -112,9 +120,7 @@ test("grouped SEM keeps distinct colors, short legend and integer ticks in brows
     "Baseline",
     "Method A",
   ]);
-  await expect(plot.locator(".legendtitletext")).toHaveText(
-    "Accuracy · mean ± SEM",
-  );
+  await expect(plot.locator(".legendtitletext")).toHaveCount(0);
   await expect(plot.locator(".xtick text")).toHaveText(["1", "2", "3"]);
   const paint = await plot.evaluate((el: any) => ({
     lines: el.data
@@ -123,9 +129,14 @@ test("grouped SEM keeps distinct colors, short legend and integer ticks in brows
     bands: el.data
       .filter((t: any) => t.fill === "toself")
       .map((t: any) => t.line.color),
+    bandX: el.data.filter((t: any) => t.fill === "toself").map((t: any) => t.x),
   }));
   expect(new Set(paint.lines).size).toBe(2);
   expect(paint.bands).toEqual(paint.lines);
+  expect(paint.bandX).toEqual([
+    [1, 2, 3, 3, 2, 1],
+    [1, 2, 3, 3, 2, 1],
+  ]);
   await plot.screenshot({ path: "../docs/screenshots/refactor-01-sem.png" });
   await exports(page, "sem", ["Baseline", "Method A", "Accuracy", "SEM"]);
   expect(
@@ -171,7 +182,7 @@ test("confusion subtitle clears the matrix and count colorbar has integer labels
   await expect(plot.locator(".shapelayer path")).toHaveCount(9);
   const subtitle = plot
     .locator(".annotation")
-    .filter({ hasText: "Model A · 全部 · n=7" });
+    .filter({ hasText: "Model A · n=7" });
   await expect(subtitle).toBeVisible();
   const textBox = await subtitle.boundingBox();
   const matrixTop = await plot
@@ -180,6 +191,25 @@ test("confusion subtitle clears the matrix and count colorbar has integer labels
       Math.min(...paths.map((p) => p.getBoundingClientRect().top)),
     );
   expect(textBox!.y + textBox!.height).toBeLessThan(matrixTop);
+  expect(matrixTop - (textBox!.y + textBox!.height)).toBeLessThan(20);
+  const cells = await plot.locator(".shapelayer path").evaluateAll((paths) =>
+    paths.map((p) => {
+      const rect = p.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    }),
+  );
+  for (const cell of cells)
+    expect(Math.abs(cell.width - cell.height)).toBeLessThan(1);
+  const appearance = await plot.evaluate((el: any) => ({
+    showlegend: el.layout.showlegend,
+    firstStop: el.data[0].marker.colorscale[0][1],
+    lines: el.layout.shapes.map((s: any) => s.line),
+  }));
+  expect(appearance.showlegend).toBe(false);
+  expect(appearance.firstStop).toBe("#f7fbff");
+  expect(appearance.lines).toEqual(
+    Array(9).fill({ width: 2, color: "#ffffff" }),
+  );
   const ticks = await plot
     .locator('[class*="colorbar"] .cbaxis text')
     .allTextContents();

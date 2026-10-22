@@ -221,6 +221,11 @@ test("duplicate run guard → repair groups → interval preview invalidation �
         ),
     )
     .toEqual([undefined, undefined]);
+  await page.getByRole("button", { name: /告警/ }).click();
+  await expect(page.locator(".bottom-content")).toContainText(
+    "1 行区间数据缺失或不适用于对数轴，区间带在此断开",
+  );
+  await page.getByRole("button", { name: /告警/ }).click();
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v1", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();

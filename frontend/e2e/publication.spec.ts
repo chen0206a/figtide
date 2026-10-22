@@ -214,6 +214,13 @@ test("scientific heatmap scale, contrasting numeric labels, and rejected invalid
         .evaluate((el: any) => el.layout.annotations.map((a: any) => a.text)),
     )
     .toEqual(["-2", "0", "3", "6"]);
+  const heatLayout = await page.getByTestId("plot").evaluate((el: any) => ({
+    showlegend: el.layout.showlegend,
+    top: el.layout.margin.t,
+    fontSize: el.layout.font.size,
+  }));
+  expect(heatLayout.showlegend).toBe(false);
+  expect(heatLayout.top).toBe(Math.max(70, heatLayout.fontSize * 2 + 24));
   await expect
     .poll(() =>
       page

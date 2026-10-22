@@ -92,13 +92,13 @@ describe("grouped series encoding", () => {
     const [first] = legendTraces(buildPlot(c, grouped).traces);
     expect(first.line.color).toBe("#123456");
   });
-  it("names grouped traces by group and moves the series name to the legend title", () => {
+  it("names grouped traces by group only, without an inline legend title", () => {
     const p = buildPlot(groupedLine(), grouped);
     expect(legendTraces(p.traces).map((t) => t.name)).toEqual([
       "Baseline",
       "Method A",
     ]);
-    expect(p.layout.legend.title.text).toBe("Accuracy · mean ± SEM");
+    expect(p.layout.legend.title).toBeUndefined();
   });
   it("uses color for group and dash for series when several series are grouped", () => {
     const c = groupedLine();
@@ -191,8 +191,58 @@ describe("confusion matrix layout", () => {
       String(a.text).includes("n=6"),
     );
     expect(subtitle).toMatchObject({ yref: "paper", y: 1, yanchor: "bottom" });
-    const plain = buildPlot({ ...c, type: "line", x: "id" }, data);
+    const plain = buildPlot(
+      { ...c, type: "line", x: "id", legend: { ...c.legend, show: false } },
+      data,
+    );
     expect(p.layout.margin.t).toBeGreaterThan(plain.layout.margin.t);
+  });
+  it("draws square, single-hue cells separated by hairlines", () => {
+    const p = buildPlot(confusion(), data);
+    expect(p.layout.yaxis).toMatchObject({ scaleanchor: "x", scaleratio: 1 });
+    expect(p.traces[0].marker.colorscale[0][1]).toBe("#f7fbff");
+    expect(p.layout.shapes.every((s: any) => s.line.width === 2)).toBe(true);
+    const fills = new Set(p.layout.shapes.map((s: any) => s.fillcolor));
+    expect([...fills].every((f) => !String(f).startsWith("#44015"))).toBe(true);
+  });
+  it("omits the implicit all-samples group from the subtitle", () => {
+    const p = buildPlot(confusion(), data);
+    const texts = p.layout.annotations.map((a: any) => String(a.text));
+    expect(texts).toContain("Model A · n=6");
+    expect(texts.some((t: string) => t.includes("全部"))).toBe(false);
+  });
+  it("does not reserve a legend band when nothing is in the legend", () => {
+    const c = confusion();
+    const p = buildPlot(c, data);
+    expect(p.layout.showlegend).toBe(false);
+    expect(p.layout.margin.t).toBe(
+      Math.max(c.style.top, c.style.fontSize * 2 + 24) + c.style.fontSize + 14,
+    );
+  });
+  it("also removes the unused legend band from ordinary heatmaps", () => {
+    const c = {
+      ...confusion(),
+      type: "heatmap" as const,
+      x: "truth",
+      heatY: "a",
+      heatZ: "id",
+    };
+    const unique = {
+      ...data,
+      rows: [
+        { truth: "A", a: "A", id: 1 },
+        { truth: "B", a: "B", id: 2 },
+      ],
+    };
+    const p = buildPlot(c, unique);
+    expect(p.layout.showlegend).toBe(false);
+    expect(p.layout.margin.t).toBe(
+      Math.max(c.style.top, c.style.fontSize * 2 + 24),
+    );
+    expect(p.layout.margin.t).toBe(
+      buildPlot({ ...c, legend: { ...c.legend, show: false } }, unique).layout
+        .margin.t,
+    );
   });
   it("uses integer colorbar ticks for counts and percentages for shares", () => {
     const c = confusion();

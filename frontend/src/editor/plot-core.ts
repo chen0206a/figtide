@@ -12,7 +12,6 @@ import { confusionPlot } from "./confusion";
 import {
   traceEncoding,
   type EncodingContext,
-  groupLegendTitle,
   groupTraceName,
   integerAxisStep,
 } from "./encoding";
@@ -191,7 +190,10 @@ export function buildSinglePlot(
       automargin: true,
     };
   };
-  const legendTitle = heat ? "" : groupLegendTitle(c);
+  // Heatmaps and confusion matrices draw no legend entries; do not reserve
+  // a legend band above them (it left a large empty gap under the title).
+  const legendShown =
+    c.legend.show && traces.some((t) => t.showlegend !== false);
   const xStep =
     !heat &&
     !distribution &&
@@ -234,7 +236,7 @@ export function buildSinglePlot(
       t:
         Math.max(
           c.style.top,
-          c.legend.show && c.legend.position === "top"
+          legendShown && c.legend.position === "top"
             ? c.style.fontSize * 3 + 40
             : c.style.fontSize * 2 + 24,
         ) + (heat?.marginTop || 0),
@@ -266,20 +268,11 @@ export function buildSinglePlot(
     },
     yaxis: { ...axis(c.axes.y), ...heat?.yaxis },
     shapes: heat?.shapes || [],
-    showlegend: c.legend.show,
+    showlegend: legendShown,
     legend: {
       ...pos,
       orientation: c.legend.orientation,
       font: { size: c.style.fontSize - 1 },
-      ...(legendTitle
-        ? {
-            title: {
-              text: plain(legendTitle),
-              side: c.legend.orientation === "h" ? "left" : "top",
-              font: { size: c.style.fontSize - 1 },
-            },
-          }
-        : {}),
     },
     barmode: "group",
     boxmode: "group",
