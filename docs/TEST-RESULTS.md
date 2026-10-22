@@ -24,6 +24,7 @@
 | 9f · 注释标签 | 同脚本 -Step annotations-tab | 192/192，14.09s | 通过，19.47s | 最终统一回归 |
 | 9g · 状态栏 | 同脚本 -Step statusbar | 192/192，14.17s | 通过，20.25s | 最终统一回归 |
 | 10a · 草稿 hooks 与组合外壳 | 同脚本 `-Step draft-final` | 192/192，14.53 秒 | 通过，21.04 秒 | 最终统一回归 |
+| 10b · 对话框纯组合 | 同脚本 `-Step composition-final` | 192/192，14.66 秒 | 通过，20.51 秒 | 最终统一回归 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 

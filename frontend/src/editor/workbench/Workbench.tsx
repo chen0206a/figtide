@@ -7,14 +7,8 @@ import { api, type Dataset } from "../../lib/api";
 import { AgentAssistant } from "../AgentAssistant";
 import { historyReducer, type Config, type Series } from "../model";
 import { publicationMetrics } from "../publication";
-import { QuickActions } from "../QuickActions";
-import { ReuseDialog } from "../ReuseDialog";
 import "../styles-library.css";
 import { DataLayersPanel } from "./DataLayersPanel";
-import { ConflictDialog } from "./dialogs/ConflictDialog";
-import { ExportDialog } from "./dialogs/ExportDialog";
-import { RecoveryDialog } from "./dialogs/RecoveryDialog";
-import { VersionHistoryDialog } from "./dialogs/VersionHistoryDialog";
 import { EditorStatusBar } from "./EditorStatusBar";
 import { EditorToolbar } from "./EditorToolbar";
 import { FigureCanvas } from "./FigureCanvas";
@@ -27,6 +21,7 @@ import { useEditorShortcuts } from "./useEditorShortcuts";
 import { useFigureExport } from "./useFigureExport";
 import { usePanelLayout } from "./usePanelLayout";
 import { usePlotRenderer } from "./usePlotRenderer";
+import { WorkbenchOverlays } from "./WorkbenchOverlays";
 export function Workbench({
   project,
   projectName,
@@ -375,7 +370,7 @@ export function Workbench({
       </div>
       <EditorStatusBar {...{ data }} />
       {confirmDialog}
-      <RecoveryDialog
+      <WorkbenchOverlays
         {...{
           recovery,
           draftKey,
@@ -384,57 +379,32 @@ export function Workbench({
           change,
           setName,
           setRevision,
-        }}
-      />
-      <ConflictDialog {...{ conflict, setConflict, saving, save }} />
-      {quickOpen && (
-        <QuickActions
-          project={project}
-          chartId={id}
-          revision={revision}
-          config={c}
-          data={data}
-          token={JSON.stringify({ serialized, id, revision })}
-          onClose={() => setQuickOpen(false)}
-          onApply={(token, config, count) => {
-            if (
-              token !== JSON.stringify({ serialized, id, revision }) ||
-              saving
-            )
-              return false;
-            change(config);
-            setLogs((l) => [`已应用快捷调整 · ${count} 项`, ...l].slice(0, 30));
-            notify(`已应用 ${count} 项调整，可撤销`);
-            return true;
-          }}
-        />
-      )}
-      {reuseOpen && (
-        <ReuseDialog
-          project={project}
-          config={c}
-          name={name}
-          datasets={datasets}
-          data={data}
-          initialTab={reuseTab}
-          initialPreset={previewPreset || c.style.preset}
-          onClose={() => setReuseOpen(false)}
-          onApply={change}
-          onReused={(result) => {
-            queryClient.setQueryData(["chart", project, result.id], result);
-            setReuseOpen(false);
-            onSaved(result.id);
-            notify("已创建复用图表，源图保持不变");
-          }}
-        />
-      )}
-      <ExportDialog
-        {...{
+          conflict,
+          setConflict,
+          saving,
+          save,
+          quickOpen,
+          project,
+          id,
+          revision,
+          c,
+          data,
+          serialized,
+          setQuickOpen,
+          setLogs,
+          notify,
+          reuseOpen,
+          name,
+          datasets,
+          reuseTab,
+          previewPreset,
+          setReuseOpen,
+          queryClient,
+          onSaved,
           exportOpen,
           setExportOpen,
           format,
           setFormat,
-          c,
           scale,
           setScale,
           output,
@@ -442,16 +412,10 @@ export function Workbench({
           exporting,
           plotPending,
           download,
-        }}
-      />
-      <VersionHistoryDialog
-        {...{
           historyOpen,
           setHistoryOpen,
           versions,
-          change,
           onDataset,
-          notify,
         }}
       />
     </div>
