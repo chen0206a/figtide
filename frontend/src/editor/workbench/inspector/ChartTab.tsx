@@ -1,7 +1,6 @@
 import { Database, Filter, Plus, Trash2 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { type Config, type Series } from "../../model";
-import "../../styles-library.css";
 import { Section, Select, Text } from "../controls";
 
 type ChartTabProps = {

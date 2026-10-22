@@ -4,7 +4,6 @@ import { useConfirm } from "../../components/useConfirm";
 import { type Dataset } from "../../lib/api";
 import { defaults, type Config, type Series } from "../model";
 import { ProfessionalPanel } from "../ProfessionalPanel";
-import "../styles-library.css";
 import { AnnotationsTab } from "./inspector/AnnotationsTab";
 import { AppearanceTab } from "./inspector/AppearanceTab";
 import { AxesTab } from "./inspector/AxesTab";

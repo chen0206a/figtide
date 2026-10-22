@@ -11,7 +11,6 @@ import { type Dataset } from "../../lib/api";
 import { ClassificationResults } from "../ClassificationResults";
 import { EvaluationResults } from "../EvaluationResults";
 import { type Config } from "../model";
-import "../styles-library.css";
 import { usePlotRenderer } from "./usePlotRenderer";
 
 type BottomDrawerProps = {

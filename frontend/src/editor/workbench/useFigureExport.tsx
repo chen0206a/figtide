@@ -3,7 +3,6 @@ import type { RefObject } from "react";
 import { downloadBlob } from "../../lib/download";
 import { type Config } from "../model";
 import { physicalSvg, pngDensity, publicationMetrics } from "../publication";
-import "../styles-library.css";
 
 type useFigureExportProps = {
   exporting: boolean;

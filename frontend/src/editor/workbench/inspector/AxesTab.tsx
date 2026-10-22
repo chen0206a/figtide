@@ -4,7 +4,6 @@ import {
   defaultEvaluation,
   type Config,
 } from "../../model";
-import "../../styles-library.css";
 import { Section, Text, Toggle } from "../controls";
 
 type AxesTabProps = {

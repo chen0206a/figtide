@@ -1,7 +1,6 @@
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { type Config } from "../../model";
-import "../../styles-library.css";
 import { NumberInput, Section, Text } from "../controls";
 
 type AnnotationsTabProps = {

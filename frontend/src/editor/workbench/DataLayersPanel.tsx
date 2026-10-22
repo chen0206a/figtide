@@ -14,11 +14,10 @@ import {
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { type Dataset } from "../../lib/api";
-import type { StoredChart } from "../Editor";
 import { defaultClassification, makeSeries, type Config } from "../model";
 import { presetThumbnail, stylePresets } from "../stylePresets";
-import "../styles-library.css";
 import { StyleThumbnail } from "../StyleThumbnail";
+import type { StoredChart } from "./types";
 
 type DataLayersPanelProps = {
   widths: { left: number; right: number };

@@ -4,7 +4,6 @@ import type { ChartDraft } from "../../lib/chartDraft";
 import { chartDraftKey } from "../../lib/chartDraft";
 import { DraftWriter } from "../../lib/draftWriter";
 import { type Config } from "../model";
-import "../styles-library.css";
 
 type useChartSaveProps = {
   saving: boolean;

@@ -3,7 +3,6 @@ import { Button } from "../../../components/ui/button";
 import { Dialog } from "../../../components/ui/dialog";
 import { type Config } from "../../model";
 import { exportChecks, publicationMetrics } from "../../publication";
-import "../../styles-library.css";
 import { NumberInput, Select } from "../controls";
 
 type ExportDialogProps = {

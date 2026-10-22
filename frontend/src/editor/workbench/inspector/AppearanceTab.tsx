@@ -1,6 +1,5 @@
 import { Maximize2, Type } from "lucide-react";
 import { type Config } from "../../model";
-import "../../styles-library.css";
 import { NumberInput, Section, Select, Text, Toggle } from "../controls";
 
 type AppearanceTabProps = {

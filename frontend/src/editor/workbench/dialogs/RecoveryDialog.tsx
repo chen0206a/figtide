@@ -2,7 +2,6 @@ import { Button } from "../../../components/ui/button";
 import { Dialog } from "../../../components/ui/dialog";
 import type { ChartDraft } from "../../../lib/chartDraft";
 import { type Config } from "../../model";
-import "../../styles-library.css";
 
 type RecoveryDialogProps = {
   recovery: ChartDraft | null;

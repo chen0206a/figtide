@@ -2,10 +2,23 @@
   flex: 1 1 var(--lf-editor-title-basis);
   min-width: 0;
 }
-.editor-toolbar .figure-info > div { flex: 1; min-width: 0; }
-.editor-toolbar .figure-info input { min-width: 0; flex: 1; width: 100%; }
-.editor-save-group { display: inline-flex; align-items: center; gap: var(--lf-space-1); }
-.editor-save-menu { position: relative; }
+.editor-toolbar .figure-info > div {
+  flex: 1;
+  min-width: 0;
+}
+.editor-toolbar .figure-info input {
+  min-width: 0;
+  flex: 1;
+  width: 100%;
+}
+.editor-save-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lf-space-1);
+}
+.editor-save-menu {
+  position: relative;
+}
 .editor-save-menu [role="menu"] {
   position: absolute;
   top: calc(100% + var(--lf-space-2));
@@ -31,4 +44,7 @@
   cursor: pointer;
 }
 .editor-save-menu [role="menuitem"]:focus-visible,
-.editor-save-menu [role="menuitem"]:hover { background: var(--lf-selected); outline: none; }
+.editor-save-menu [role="menuitem"]:hover {
+  background: var(--lf-selected);
+  outline: none;
+}

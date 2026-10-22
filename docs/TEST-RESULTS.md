@@ -23,6 +23,7 @@
 | 9e · 坐标轴标签 | 同脚本 -Step axes-tab | 192/192，14.77s | 通过，19.35s | 最终统一回归 |
 | 9f · 注释标签 | 同脚本 -Step annotations-tab | 192/192，14.09s | 通过，19.47s | 最终统一回归 |
 | 9g · 状态栏 | 同脚本 -Step statusbar | 192/192，14.17s | 通过，20.25s | 最终统一回归 |
+| 10a · 草稿 hooks 与组合外壳 | 同脚本 `-Step draft-final` | 192/192，14.53 秒 | 通过，21.04 秒 | 最终统一回归 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 
@@ -37,6 +38,8 @@
 完整命令 `$env:CI='true'; .\.runtime\test-refactor03-stable.ps1 -All`：**52/58 通过，14.3 分钟**；6 个失败均为 04 后 delivery/experience/refinements 仍按旧首页图表名称寻找按钮（2+3+1），没有失败于图表或保存逻辑。新增统一 home-navigation 测试辅助，根据最新图继续编辑卡片/旧图列表做等价定位，保留所有业务断言。隔离流程补跑 `test e2e/delivery.spec.ts e2e/experience.spec.ts e2e/refinements.spec.ts e2e/editor-compat.spec.ts`：**9/9 通过，1.0 分钟**，新 JVM 恢复检查通过。本轮不宣称同一次完整套件全绿；最终拆分结束后再跑完整套件。两轮分别清理 67 / 9 个测试项目。新增用例实际验证点击曲线选序列、指针拖拽面板、菜单无隐式保存，以及两个真实标签页 v1/v2 冲突保留草稿。截图 `docs/screenshots/refactor-05-editor.png`。
 
 任务文件提到 refinements 的“另存副本”需要改成菜单，但实际该调用位于冲突 Dialog 内，必须保留其按钮与流程；因此该断言不变，另外新增菜单 E2E。无后端或助手业务修改。
+
+步骤 10a：Editor.tsx 只留查询和加载外壳（77 行），状态组合移到 workbench/Workbench.tsx。草稿采用同文件中 useEditorDraft（种子与恢复状态）和 useDraftPersistence（写入/离开保护）两个阶段，避免在 history/name 初始化前读取它们；不是改为新的草稿协议。对照 04 基线，离开保护、DraftWriter 生命周期、自动保存调度三段 effect 转译后的 JavaScript 完全相同，证据见 `docs/test-evidence/refactor05-draft.json`。不改 DraftWriter 或 historyReducer。共享类型收在 types.ts；移除新拆组件重复的样式副作用导入，CSS 仍由编辑器根模块加载。Workbench 此时 459 行，继续抽出纯对话框组合以达到最终 400 行上限。
 
 ## 任务 04：真实研究工作区首页（2026-10-22）
 

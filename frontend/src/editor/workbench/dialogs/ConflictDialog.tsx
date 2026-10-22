@@ -1,6 +1,5 @@
 import { Button } from "../../../components/ui/button";
 import { Dialog } from "../../../components/ui/dialog";
-import "../../styles-library.css";
 
 type ConflictDialogProps = {
   conflict: boolean;

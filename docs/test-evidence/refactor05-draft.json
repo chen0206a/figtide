@@ -1,0 +1,17 @@
+{
+  "baseline": "d6f4755",
+  "checks": [
+    {
+      "name": "leave-guard",
+      "emitted_javascript_unchanged": true
+    },
+    {
+      "name": "writer-lifecycle",
+      "emitted_javascript_unchanged": true
+    },
+    {
+      "name": "draft-scheduling",
+      "emitted_javascript_unchanged": true
+    }
+  ]
+}

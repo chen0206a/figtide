@@ -1,8 +1,8 @@
+import type { UseQueryResult } from "@tanstack/react-query";
 import { Button } from "../../../components/ui/button";
 import { Dialog } from "../../../components/ui/dialog";
-import type { ChartVersion } from "../../Editor";
 import { type Config } from "../../model";
-import "../../styles-library.css";
+import type { ChartVersion } from "../types";
 
 type VersionHistoryDialogProps = {
   historyOpen: boolean;
@@ -56,4 +56,3 @@ export function VersionHistoryDialog({
     </Dialog>
   );
 }
-import type { UseQueryResult } from "@tanstack/react-query";

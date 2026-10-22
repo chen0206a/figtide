@@ -1,5 +1,4 @@
 import { type Dataset } from "../../lib/api";
-import "../styles-library.css";
 
 type EditorStatusBarProps = {
   data: Dataset;

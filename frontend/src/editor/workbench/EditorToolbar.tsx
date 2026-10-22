@@ -14,7 +14,6 @@ import {
 import { Button } from "../../components/ui/button";
 import { type Dataset } from "../../lib/api";
 import { type Config, type History } from "../model";
-import "../styles-library.css";
 import { SaveMenu } from "./SaveMenu";
 import "./toolbar.css";
 

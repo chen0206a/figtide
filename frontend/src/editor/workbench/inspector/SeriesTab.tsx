@@ -3,7 +3,6 @@ import { Button } from "../../../components/ui/button";
 import { type Dataset } from "../../../lib/api";
 import { BandPanel } from "../../EvaluationPanel";
 import { type Config, type Series } from "../../model";
-import "../../styles-library.css";
 import { NumberInput, Section, Select, Text, Toggle } from "../controls";
 
 type SeriesTabProps = {

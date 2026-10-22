@@ -4,7 +4,6 @@ import { type Dataset } from "../../lib/api";
 import { layoutPatch } from "../layoutPatch";
 import { type Config } from "../model";
 import { buildPlot } from "../plot";
-import "../styles-library.css";
 
 type usePlotRendererProps = {
   c: Config;
@@ -120,5 +119,13 @@ export function usePlotRenderer({
     [],
   );
 
-  return { plot, plotPending, plotError, graph, plotReady, rendered, renderConfig };
+  return {
+    plot,
+    plotPending,
+    plotError,
+    graph,
+    plotReady,
+    rendered,
+    renderConfig,
+  };
 }

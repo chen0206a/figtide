@@ -9,7 +9,6 @@ import type { RefObject } from "react";
 import { Button } from "../../components/ui/button";
 import { type Dataset } from "../../lib/api";
 import { type Config } from "../model";
-import "../styles-library.css";
 import { BottomDrawer } from "./BottomDrawer";
 import { fittedZoom } from "./fitZoom";
 import { usePlotRenderer } from "./usePlotRenderer";

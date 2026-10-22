@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { type Dataset } from "../../lib/api";
 import { type Config } from "../model";
-import "../styles-library.css";
 
 type useEditorShortcutsProps = {
   saving: boolean;
