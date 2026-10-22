@@ -122,6 +122,11 @@
   --lf-gutter: 28px;
   --lf-control-h: 38px; /* inputs, secondary buttons */
   --lf-control-h-lg: 44px; /* primary actions, touch target */
+  --lf-project-picker-w: 200px;
+  --lf-project-picker-compact-w: 150px;
+  --lf-nav-item-w: 104px;
+  --lf-selection-bar-h: 70px;
+  --lf-selection-bar-mobile-h: 116px;
 
   /* ---- motion ---- */
   --lf-ease: cubic-bezier(0.22, 1, 0.36, 1);

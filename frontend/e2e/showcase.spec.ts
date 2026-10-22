@@ -69,7 +69,8 @@ test("reference gallery keeps scrolling on hover and focus, credits sources and 
       .toBe(true);
   }
   const header = await page.locator(".masthead-bar").boundingBox();
-  expect(header!.width).toBe(1200);
+  expect(header!.width).toBe(2560);
+  expect(header!.x).toBe(0);
   expect(Math.abs(header!.x + header!.width / 2 - 1280)).toBeLessThan(1);
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: "../docs/screenshots/home-wide.png" });

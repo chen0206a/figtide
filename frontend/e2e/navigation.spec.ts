@@ -140,9 +140,7 @@ test("module navigation resumes the exact chart without save prompts or silent d
   await page.getByRole("link", { name: "实验记录", exact: true }).click();
   await expect(page).toHaveURL(`/projects/${project.id}/experiments`);
   await page.reload();
-  await expect(
-    page.getByRole("heading", { name: "把探索，沉淀为记录。" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "实验记录" })).toBeVisible();
   const other = (await (await request.get("/api/projects")).json()).find(
     (p: any) => p.id !== project.id && !p.archived,
   );

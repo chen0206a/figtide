@@ -70,15 +70,11 @@ test("brand entrance is sequenced, real navigation works, return skips intro", a
     fullPage: true,
   });
   await page.getByRole("button", { name: /^实验笔记/ }).click();
-  await expect(
-    page.getByRole("heading", { name: "把探索，沉淀为记录。" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "实验记录" })).toBeVisible();
   await page.getByRole("link", { name: "项目概览", exact: true }).click();
   await expect(page.locator(".launch-home")).toHaveClass(/intro-seen/);
   await page.getByRole("button", { name: /^数据资料库/ }).click();
-  await expect(
-    page.getByRole("heading", { name: "每一份数据，都有来源。" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "数据管理" })).toBeVisible();
   await page.getByRole("link", { name: "项目概览", exact: true }).click();
   const chooser = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: /^导入数据/ }).click();

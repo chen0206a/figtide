@@ -1,5 +1,40 @@
 # 第一阶段验收记录
 
+## 任务 03：统一外壳、拆出数据页与整理实验页（2026-10-22）
+
+按用户“做完 01d 进入 03”的授权执行 `refactor/tasks/03-shell-and-pages.md`。本轮仅调整前端布局、组件组织和对应断言，不修改后端、API、schema、Flyway、实验对比/数据处理/上传逻辑、编辑器历史与草稿，也不修改助手的状态机、预算、幂等或恢复逻辑。
+
+改动文件：
+
+- `frontend/src/styles/shell.css`、`styles/tokens.css`、`main.tsx`：参考外壳样式放在最后加载；统一桌面 64px 通栏顶栏，固定导航项宽度，保留管理项目/模型连接/新建项目按钮与项目选择器；窄屏使用紧凑排列，模型连接只显示图标，补齐新建项目按钮 aria-label。新尺寸集中定义为 token。
+- `frontend/src/components/PageHeader.tsx`、`experiments/Experiments.tsx`：用紧凑标题替换工具页标语。实验状态使用 lf-chip 的四种语义色，选择栏明确最多 8 个实验。
+- `frontend/src/data/{DataPage.tsx,data-page.css}`、`App.tsx`：原 props、查询键、处理/选图回调保留，DataPage 独立导出；App.tsx 从 771 行降至 545 行，减少 226 行。planner-entry 不再使用内联样式；文件名采用 lf-mono；表格不再将少量列拉满，窄屏仍保留表格内部滚动。
+- `frontend/src/experiments/experiments.css`：卡片使用 space-5 内边距，计数不换行，列表预留选择栏高度加 16px，适配 390px 筛选栏、卡片和底栏。
+- `frontend/e2e/{home,navigation,design-tokens,showcase,shell-pages}.spec.ts`：保留原业务断言，更新任务明确要求的标题和通栏几何断言；新增真实 Java/MySQL 下的导航位置、紧凑标题、状态标签、底栏间距、文件名字体、表格列宽和两种屏宽截图验证。
+
+实际验证：
+
+- `cd frontend; npm test`：最终 **28 文件、183/183 通过，0 失败，20.95 秒**。
+- `cd frontend; npm run build`：最终 **TypeScript / Vite 构建通过，18.71 秒**；既有大 chunk 提示保留。
+- 用既有隔离流程执行 `test e2e/shell-pages.spec.ts`：修正后 **1/1 通过，6.6 秒**，新 JVM 审计恢复检查通过。
+- 完整隔离 Chrome 回归：`$env:CI='true'; .\.runtime\test-refactor03-stable.ps1 -All` 最终 **58/58 通过，3.4 分钟**，新 JVM 审计恢复检查通过。包含任务指定 navigation 2、experiments 1、seamless 2、home 3，以及新增 shell-pages 和其余编辑器/助手/导出用例。既有 teardown 清理本轮 67 个测试项目。
+- `rg -n 'style=\{' frontend/src/data/DataPage.tsx` 与旧工具页标语全文检查均无匹配；`git diff --check` 通过。后端、Editor.tsx、AgentAssistant.tsx 没有本轮改动。未执行 Java 单元/集成测试（后端未改）；未执行真实模型评测或调用收费模型。
+
+过程问题与修复：首轮新页面检查在 390px 下发现旧 `.app-shell { min-width:1120px }` 造成横向溢出；外壳覆盖为 min-width:0，并补齐数据操作区与实验卡片换行后复验通过。第一次完整回归 **57/58 通过**，唯一失败是旧 showcase 测试仍断言首页顶栏宽 1200px，实际已按任务改为通栏 2560px；将断言等价更新为宽 2560px、左侧为 0，保留居中检查后复跑完整套件。没有删除断言或放宽重试配置。
+
+第二次完整运行 **38/58 通过、20 失败**：隔离 Vite 服务 5178 在运行中退出，首个失败页面显示 Failed to fetch，随后均为 ECONNREFUSED；Java 8087 仍正常，既有 teardown 已清理本次 49 个测试项目。改用忽略目录 `.runtime/test-refactor03-stable.ps1` 托管带 CI=true 的隐藏 Vite 进程并由 finally 停止，其他测试、后端和清理流程保持原脚本一致。未修改产品代码来处理测试服务退出。
+
+截图与证据：实验页、数据页分别保存 1440px 与 390px 全页截图，见下表；1280/1920px 下首页→实验页→数据页的 brand/nav/header 坐标完全一致，几何记录见 `docs/test-evidence/refactor03-shell.json`。两种屏宽均无页面级横向溢出，滚动到底后最后一张实验卡片不被选择栏遮挡。截图内为明确标注的合成演示夹具。
+
+| 页面 | 1440px | 390px |
+| --- | --- | --- |
+| 实验记录 | [截图](screenshots/refactor-03-experiments-1440.png) | [截图](screenshots/refactor-03-experiments-390.png) |
+| 数据管理 | [截图](screenshots/refactor-03-data-1440.png) | [截图](screenshots/refactor-03-data-390.png) |
+
+工作区核对：主库 projects107 / charts181 / dataset_versions172 / experiments13 / agent_runs9 / agent_sessions0 与开工前一致；用户端口 5176 健康检查 ok。测试生成的无关既有附件已还原。
+
+与任务文件的偏差：参考 CSS 额外处理了旧样式的最小宽度和优先级，并增加窄屏排列及独立 E2E；没有改变业务行为。需要人决定的事：无。用户随后明确授权连续执行 03、04、05，03 独立验收提交后继续 04，完成 05 再停。
+
 ## 任务 01d：ROC 等比例、矩阵色条贴近（2026-10-22）
 
 按用户追加要求完成并独立提交，然后继续已授权的任务 03。改动 `frontend/src/editor/plot-core.ts`、`encoding.test.ts`、`frontend/e2e/chart-corrections.spec.ts`，补记 `refactor/tasks/01d-chart-aspect.md`，另新增本轮图像、SVG/PDF 与导出证据。

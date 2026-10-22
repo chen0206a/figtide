@@ -11,6 +11,7 @@ import "./components/experience.css";
 import "./components/navigation.css";
 import "./components/showcase.css";
 import "./components/home-workspace.css";
+import "./styles/shell.css";
 const client = new QueryClient({
   defaultOptions: {
     queries: { retry: 1, staleTime: 30_000, refetchOnWindowFocus: false },

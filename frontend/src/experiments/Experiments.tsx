@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, FlaskConical, Copy, ArrowUpRight } from "lucide-react";
 import { api, type Experiment, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
+import { PageHeader } from "../components/PageHeader";
 import {
   ExperimentForm,
   statuses,
@@ -103,22 +104,21 @@ export function Experiments({
         />
       ) : (
         <>
-          <div className="page-eyebrow">实验工作区</div>
-          <div className="page-heading">
-            <div>
-              <h1>把探索，沉淀为记录。</h1>
-              <p>把参数、指标和数据版本连在一起，从记录走向可追溯的对比。</p>
-            </div>
-            <div className="button-row">
-              <Button variant="outline" onClick={() => onData()}>
-                项目数据文件
-              </Button>
-              <Button onClick={create}>
-                <Plus size={16} />
-                记录实验
-              </Button>
-            </div>
-          </div>
+          <PageHeader
+            title="实验记录"
+            description="参数、指标和数据版本关联在一起，可以选择 2–8 个实验进行对比。"
+            actions={
+              <>
+                <Button variant="outline" onClick={() => onData()}>
+                  项目数据文件
+                </Button>
+                <Button onClick={create}>
+                  <Plus size={16} />
+                  记录实验
+                </Button>
+              </>
+            }
+          />
           <div className="experiment-filters">
             <input
               aria-label="搜索实验"
@@ -200,7 +200,19 @@ export function Experiments({
                         {r.revision}
                       </span>
                     </button>
-                    <span className={`experiment-status status-${r.status}`}>
+                    <span
+                      className="lf-chip"
+                      data-tone={
+                        (
+                          {
+                            planned: "neutral",
+                            running: "info",
+                            completed: "success",
+                            failed: "danger",
+                          } as const
+                        )[r.status]
+                      }
+                    >
                       {statuses[r.status]}
                     </span>
                     <Button
@@ -289,7 +301,7 @@ export function Experiments({
           )}
           <div className="comparison-selection">
             <span>
-              已选 {selected.length} / 8 个实验
+              已选 {selected.length} 个实验（最多 8 个）
               {selected.some((id) => !filtered.some((r) => r.id === id))
                 ? "（含筛选外记录）"
                 : ""}

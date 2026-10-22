@@ -14,16 +14,18 @@
   margin-left: auto;
   color: var(--lf-text-3);
   font-size: 13px;
+  white-space: nowrap;
 }
 .experiment-records {
   display: grid;
   gap: 14px;
+  padding-bottom: calc(var(--lf-selection-bar-h) + var(--lf-space-4));
 }
 .experiment-record {
   border: 1px solid #e2e7ef;
   background: var(--lf-surface);
   border-radius: 14px;
-  padding: 20px 24px;
+  padding: var(--lf-space-5);
   transition: border-color 0.2s;
 }
 .experiment-record.selected {
@@ -173,6 +175,7 @@
   box-shadow: 0 8px 30px #172c4710;
   margin-top: 22px;
   z-index: 2;
+  min-height: var(--lf-selection-bar-h);
 }
 .comparison-selection > span {
   margin-right: auto;
@@ -392,6 +395,57 @@
 }
 .source-files small {
   overflow-wrap: anywhere;
+}
+@media (max-width: 720px) {
+  .experiment-filters {
+    flex-wrap: wrap;
+    gap: var(--lf-space-3);
+  }
+  .experiment-filters input {
+    width: 100%;
+  }
+  .experiment-filters select {
+    flex: 1;
+    min-width: 0;
+  }
+  .experiment-filters > span {
+    width: 100%;
+  }
+  .experiment-records {
+    --lf-selection-bar-h: var(--lf-selection-bar-mobile-h);
+  }
+  .record-heading {
+    flex-wrap: wrap;
+    gap: var(--lf-space-3);
+  }
+  .record-title {
+    flex-basis: calc(100% - var(--lf-space-10));
+  }
+  .record-values {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--lf-space-3);
+  }
+  .record-foot {
+    flex-direction: column;
+    gap: var(--lf-space-3);
+  }
+  .record-foot p {
+    max-width: 100%;
+  }
+  .record-foot > div {
+    text-align: left;
+    align-items: flex-start;
+  }
+  .comparison-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--lf-space-2);
+    padding: var(--lf-space-3);
+    min-height: var(--lf-selection-bar-mobile-h);
+  }
+  .comparison-selection > span {
+    grid-column: 1 / -1;
+  }
 }
 .provenance-strip {
   display: flex;

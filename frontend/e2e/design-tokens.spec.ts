@@ -102,9 +102,25 @@ test("four real workspace pages keep their layout while adopting shared tokens",
     const frame = await page.locator(entry.frame).boundingBox();
     const header = await page.locator(".masthead").boundingBox();
     if (previous) {
-      expect(header).toEqual(previous[entry.name].header);
-      expect(frame!.x).toBe(previous[entry.name].frame.x);
-      expect(frame!.width).toBe(previous[entry.name].frame.width);
+      const sizing = await page.locator(":root").evaluate((el) => {
+        const s = getComputedStyle(el);
+        return {
+          header: parseFloat(s.getPropertyValue("--lf-header-h")),
+          max: parseFloat(s.getPropertyValue("--lf-page-max")),
+          gutter: parseFloat(s.getPropertyValue("--lf-gutter")),
+        };
+      });
+      expect(header).toEqual({
+        ...previous[entry.name].header,
+        height: sizing.header,
+      });
+      const inset =
+        entry.name === "experiments" || entry.name === "data"
+          ? (1440 - sizing.max) / 2 +
+            (entry.name === "data" ? sizing.gutter : 0)
+          : previous[entry.name].frame.x;
+      expect(frame!.x).toBe(inset);
+      expect(frame!.width).toBe(1440 - 2 * inset);
     }
     measurements[entry.name] = {
       frame,
