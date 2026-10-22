@@ -14,7 +14,7 @@
     box-shadow 260ms;
 }
 .home-shell .launch-tool:focus-visible {
-  outline: 2px solid #646464;
+  outline: 2px solid var(--lf-text-2);
   outline-offset: 5px;
 }
 .home-shell .tool-featured {
@@ -26,8 +26,8 @@
   padding: 28px 30px;
   border-radius: 28px;
   border: 0;
-  background: #181818;
-  color: #fff;
+  background: var(--lf-primary);
+  color: var(--lf-surface);
 }
 .home-shell .tool-featured:hover {
   transform: translateY(-3px);
@@ -51,10 +51,10 @@
   gap: 10px;
   font-size: 14px;
   font-weight: 500;
-  color: #dfdfdf;
+  color: var(--lf-text-on-inverse-2);
 }
 .featured-corner {
-  color: #b6b6b6;
+  color: var(--lf-text-on-inverse-2);
   transition: transform 240ms;
 }
 .tool-featured:hover .featured-corner {
@@ -65,12 +65,12 @@
   font-weight: 550;
   line-height: 1.4;
   letter-spacing: -0.9px;
-  color: #fff;
+  color: var(--lf-surface);
   margin: 24px 0 10px;
 }
 .home-shell .featured-copy p {
   font-size: 13px;
-  color: #acacac;
+  color: var(--lf-text-on-inverse-2);
   line-height: 1.7;
   margin: 0 0 26px;
 }
@@ -81,7 +81,7 @@
   gap: 8px;
   min-width: 0;
   font-size: 12px;
-  color: #b8b8b8;
+  color: var(--lf-text-on-inverse-2);
 }
 .featured-context > span:last-child {
   overflow: hidden;
@@ -91,7 +91,7 @@
 .featured-dot {
   width: 5px;
   height: 5px;
-  background: #b4b4b4;
+  background: var(--lf-text-on-inverse-2);
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -103,8 +103,8 @@
   padding: 11px 16px;
   margin: 0;
   border-radius: 24px;
-  color: #202020;
-  background: #fff;
+  color: var(--lf-text);
+  background: var(--lf-surface);
   font-size: 13px;
   font-weight: 550;
 }
@@ -119,8 +119,8 @@
   display: flex;
   flex-direction: column;
   border-radius: 28px;
-  border: 1px solid #ececec;
-  background: #fff;
+  border: 1px solid var(--lf-surface-sunken);
+  background: var(--lf-surface);
   overflow: hidden;
 }
 .home-shell .tool-shortcut {
@@ -134,8 +134,8 @@
   border: 0;
   border-radius: 0;
   padding: 20px 25px;
-  background: #fff;
-  color: #171717;
+  background: var(--lf-surface);
+  color: var(--lf-text);
   transition: background 220ms;
 }
 .home-shell .tool-shortcut:not(:last-child)::after {
@@ -145,15 +145,15 @@
   left: 26px;
   right: 26px;
   height: 1px;
-  background: #efefef;
+  background: var(--lf-surface-sunken);
 }
 .home-shell .tool-shortcut:hover {
   transform: none;
   box-shadow: none;
-  background: #f7f7f7;
+  background: var(--lf-surface-2);
 }
 .home-shell .tool-shortcut:active {
-  background: #f0f0f0;
+  background: var(--lf-surface-sunken);
 }
 .home-shell .tool-shortcut:focus-visible {
   outline-offset: -4px;
@@ -168,26 +168,26 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  color: #444;
-  background: #f2f2f2;
+  color: var(--lf-text-2);
+  background: var(--lf-surface-sunken);
   transition:
     background 220ms,
     transform 260ms;
 }
 .home-shell .tool-shortcut:hover .tool-icon {
   transform: rotate(-5deg);
-  background: #e9e9e9;
+  background: var(--lf-border);
 }
 .home-shell .tool-shortcut h2 {
   font-size: 17px;
-  color: #171717;
+  color: var(--lf-text);
   font-weight: 550;
   letter-spacing: -0.3px;
   margin: 0 0 6px;
 }
 .home-shell .tool-shortcut p {
   font-size: 13px;
-  color: #737373;
+  color: var(--lf-text-3);
   line-height: 1.5;
   margin: 0;
 }
@@ -195,7 +195,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #6a6a6a;
+  color: var(--lf-text-3);
   font-size: 12px;
   font-weight: 400;
   padding: 0;
@@ -204,7 +204,7 @@
 }
 .home-shell .tool-shortcut:hover .tool-arrow {
   transform: translate(2px, -2px);
-  color: #171717;
+  color: var(--lf-text);
 }
 .home-shell .launch-workspace {
   padding: 0 2px;
@@ -214,7 +214,7 @@
   gap: 24px;
 }
 .home-shell .workspace-eyebrow {
-  color: #808080;
+  color: var(--lf-text-3);
   font-size: 12px;
   letter-spacing: 0.6px;
   margin-bottom: 10px;
@@ -223,11 +223,11 @@
   font-size: 26px;
   font-weight: 550;
   letter-spacing: -0.7px;
-  color: #242424;
+  color: var(--lf-text);
 }
 .home-shell .workspace-summary {
   font-size: 12px;
-  color: #7c7c7c;
+  color: var(--lf-text-3);
   padding-bottom: 2px;
 }
 .home-shell .workspace-columns {
@@ -251,18 +251,18 @@
 .home-shell .workspace-panel-head h3 {
   font-size: 15px;
   font-weight: 550;
-  color: #333;
+  color: var(--lf-text);
   gap: 9px;
 }
 .home-shell .workspace-panel-head h3 span {
   font-weight: 400;
-  color: #818181;
-  background: #ededed;
+  color: var(--lf-text-3);
+  background: var(--lf-surface-sunken);
   padding: 2px 7px;
   border-radius: 20px;
 }
 .home-shell .workspace-panel-head > span {
-  color: #7e7e7e;
+  color: var(--lf-text-3);
   font-size: 12px;
 }
 .home-shell .workspace-panel-head button {
@@ -273,13 +273,13 @@
   width: auto;
   height: 32px;
   padding: 0 9px;
-  color: #5b5b5b;
+  color: var(--lf-text-2);
   border-radius: 18px;
   font-size: 12px;
 }
 .home-shell .workspace-panel-head button:hover {
-  background: #ececec;
-  color: #202020;
+  background: var(--lf-surface-sunken);
+  color: var(--lf-text);
 }
 .home-shell .workspace-search {
   position: relative;
@@ -290,7 +290,7 @@
   position: absolute;
   top: 13px;
   left: 14px;
-  color: #878787;
+  color: var(--lf-text-3);
   pointer-events: none;
 }
 .home-shell .launch-workspace .workspace-search input {
@@ -298,9 +298,9 @@
   min-height: 42px;
   padding: 11px 14px 11px 40px;
   border: 1px solid transparent;
-  background: #f0f0f0;
+  background: var(--lf-surface-sunken);
   border-radius: 12px;
-  color: #333;
+  color: var(--lf-text);
   font: 400 13px var(--font-sans);
   outline: none;
   transition:
@@ -308,12 +308,12 @@
     border-color 200ms;
 }
 .home-shell .launch-workspace .workspace-search input:focus {
-  background: #fff;
-  border-color: #b3b3b3;
+  background: var(--lf-surface);
+  border-color: var(--lf-text-3);
   box-shadow: 0 0 0 3px #00000004;
 }
 .home-shell .launch-workspace .workspace-search input::placeholder {
-  color: #838383;
+  color: var(--lf-text-3);
 }
 .home-shell .workspace-projects {
   max-height: none;
@@ -334,50 +334,50 @@
     transform 220ms;
 }
 .home-shell .workspace-project:hover {
-  background: #f0f0f0;
+  background: var(--lf-surface-sunken);
   transform: translateX(2px);
 }
 .home-shell .workspace-project.is-current {
-  background: #eeeeee;
+  background: var(--lf-surface-sunken);
 }
 .home-shell .workspace-folder {
-  background: #eeeeee;
+  background: var(--lf-surface-sunken);
   border: 0;
   border-radius: 13px;
-  color: #727272;
+  color: var(--lf-text-3);
   width: 39px;
   height: 39px;
 }
 .home-shell .is-current .workspace-folder {
-  background: #fff;
-  color: #333;
+  background: var(--lf-surface);
+  color: var(--lf-text);
 }
 .home-shell .workspace-project strong {
   font-size: 13px;
   font-weight: 500;
-  color: #3c3c3c;
+  color: var(--lf-text-2);
 }
 .home-shell .workspace-project small {
   font-size: 11.5px;
-  color: #787878;
+  color: var(--lf-text-3);
   gap: 6px;
 }
 .home-shell .project-check {
-  color: #646464;
+  color: var(--lf-text-2);
   font-size: 11.5px;
 }
 .home-shell .workspace-project > svg {
-  color: #8a8a8a;
+  color: var(--lf-text-3);
 }
 .home-shell .workspace-current-note {
   background: transparent;
   border: 0;
   font-size: 12px;
-  color: #7d7d7d;
+  color: var(--lf-text-3);
   padding: 16px 10px 0;
 }
 .home-shell .current-indicator {
-  background: #989898;
+  background: var(--lf-text-3);
 }
 .home-shell .workspace-recents {
   display: grid;
@@ -395,26 +395,26 @@
   gap: 18px;
   min-height: 185px;
   padding: 20px;
-  border: 1px solid #ececec;
+  border: 1px solid var(--lf-surface-sunken);
   border-radius: 20px;
-  background: #fff;
+  background: var(--lf-surface);
   transition:
     transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 260ms,
     border-color 220ms;
 }
 .home-shell .workspace-chart:hover {
-  background: #fff;
+  background: var(--lf-surface);
   transform: translateY(-3px);
-  border-color: #d5d5d5;
+  border-color: var(--lf-border-strong);
   box-shadow: 0 8px 24px #00000004;
 }
 .home-shell .recent-figure-icon {
   width: 36px;
   height: 36px;
   border-radius: 11px;
-  color: #636363;
-  background: #f1f1f1;
+  color: var(--lf-text-2);
+  background: var(--lf-surface-sunken);
 }
 .home-shell .workspace-chart .recent-chart-copy {
   flex: 1;
@@ -424,11 +424,11 @@
 .home-shell .workspace-chart strong {
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: var(--lf-text);
 }
 .home-shell .workspace-chart small {
   font-size: 11.5px;
-  color: #828282;
+  color: var(--lf-text-3);
   gap: 5px;
   margin-top: 8px;
   flex-wrap: wrap;
@@ -438,7 +438,7 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #6b6b6b;
+  color: var(--lf-text-3);
 }
 .home-shell .workspace-chart:hover .recent-chart-action > svg {
   transform: translate(2px, -2px);
@@ -456,46 +456,46 @@
   background: transparent;
   padding: 10px 12px;
   margin-top: 10px;
-  color: #686868;
+  color: var(--lf-text-2);
   font-size: 12px;
 }
 .home-shell .workspace-more:hover {
-  background: #ededed;
-  color: #222;
+  background: var(--lf-surface-sunken);
+  color: var(--lf-text);
 }
 .home-shell .workspace-empty,
 .home-shell .workspace-skeleton {
   grid-column: 1/-1;
   border-radius: 20px;
-  background: #f3f3f3;
+  background: var(--lf-surface-sunken);
   padding: 26px;
   min-height: 185px;
 }
 .home-shell .workspace-empty p {
-  color: #717171;
+  color: var(--lf-text-3);
   font-size: 13px;
   text-align: center;
 }
 .home-shell .workspace-empty button {
   font-size: 13px;
-  color: #363636;
+  color: var(--lf-text);
 }
 .home-shell .workspace-skeleton i {
   height: 46px;
-  background: #e7e7e7;
+  background: var(--lf-border);
 }
 .home-shell .launch-footer {
   margin-top: 44px;
   padding-top: 24px;
-  color: #868686;
-  border-color: #e6e6e6;
+  color: var(--lf-text-3);
+  border-color: var(--lf-border);
   gap: 20px;
 }
 .home-shell .workspace-project:focus-visible,
 .home-shell .workspace-chart:focus-visible,
 .home-shell .workspace-more:focus-visible,
 .home-shell .workspace-panel-head button:focus-visible {
-  outline: 2px solid #7a7a7a;
+  outline: 2px solid var(--lf-text-3);
   outline-offset: 3px;
 }
 @media (max-width: 1100px) {

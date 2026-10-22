@@ -1,0 +1,70 @@
+[
+  {
+    "page": "home",
+    "before": {
+      "x": 120,
+      "y": 69,
+      "width": 1200,
+      "height": 1851.609375
+    },
+    "after": {
+      "x": 120,
+      "y": 69,
+      "width": 1200,
+      "height": 1851.609375
+    },
+    "frame_unchanged": true,
+    "header_unchanged": true
+  },
+  {
+    "page": "experiments",
+    "before": {
+      "x": 0,
+      "y": 69,
+      "width": 1440,
+      "height": 676.875
+    },
+    "after": {
+      "x": 0,
+      "y": 69,
+      "width": 1440,
+      "height": 676.875
+    },
+    "frame_unchanged": true,
+    "header_unchanged": true
+  },
+  {
+    "page": "data",
+    "before": {
+      "x": 40,
+      "y": 283.5,
+      "width": 1360,
+      "height": 613.140625
+    },
+    "after": {
+      "x": 40,
+      "y": 283.5,
+      "width": 1360,
+      "height": 613.140625
+    },
+    "frame_unchanged": true,
+    "header_unchanged": true
+  },
+  {
+    "page": "editor",
+    "before": {
+      "x": 0,
+      "y": 69,
+      "width": 1440,
+      "height": 932
+    },
+    "after": {
+      "x": 0,
+      "y": 69,
+      "width": 1440,
+      "height": 932
+    },
+    "frame_unchanged": true,
+    "header_unchanged": true
+  }
+]

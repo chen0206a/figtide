@@ -1,54 +1,13 @@
 @import "tailwindcss";
 
-/* ============================================================
-   LabFlow · Editorial design system
-   Warm paper · hairline rules · serif display · one clay accent
-   Sections: tokens · base · forms · buttons · masthead · hero
-             plates · capabilities · home · overlays · data
-             lab notebook · figure workbench · responsive
-   ============================================================ */
+/* LabFlow interface styles · design variables live in styles/tokens.css */
 
 @theme {
-  --color-primary: #b65c3a;
-  --font-sans: "Inter Variable", Inter, "Segoe UI", "Microsoft YaHei", sans-serif;
-  --font-serif: "Newsreader Variable", Georgia, "Songti SC", serif;
+  --color-primary: #0e1116;
+  --font-sans:
+    "Inter Variable", Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans SC",
+    system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
-}
-
-:root {
-  --paper: #f7f4ee;
-  --paper-2: #f2eee6;
-  --card: #fffdf9;
-  --ink: #1c1a17;
-  --ink-2: #4b453c;
-  --ink-3: #8a8276;
-  --line: #e4ddd1;
-  --line-2: #d2c8b7;
-  --clay: #b65c3a;
-  --clay-soft: #f0e2d8;
-  --sage: #6c7a62;
-  --sky: #3f6e8c;
-  --amber: #a8762b;
-  --danger: #a63f33;
-  --r-xs: 2px;
-  --r-sm: 3px;
-  --r-md: 4px;
-  --shadow-card: 0 1px 0 rgba(28, 26, 23, 0.04), 0 12px 28px -24px rgba(28, 26, 23, 0.5);
-  --shadow-paper: 0 1px 0 rgba(28, 26, 23, 0.1), 0 18px 40px -26px rgba(28, 26, 23, 0.55),
-    0 42px 80px -60px rgba(28, 26, 23, 0.4);
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --font-sans: "Inter Variable", Inter, "Segoe UI", "Microsoft YaHei", sans-serif;
-  --font-serif: "Newsreader Variable", Georgia, "Songti SC", serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
-  font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--ink);
-  background: var(--paper);
-  color-scheme: light;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
 }
 
 /* ---------- base ---------- */
@@ -60,6 +19,12 @@ body {
   margin: 0;
   background: var(--paper);
   min-height: 100vh;
+  font-family: var(--lf-font-sans);
+}
+body {
+  /* Preserve the workspace's existing text rhythm during the token migration. */
+  font-size: var(--lf-text-md);
+  line-height: var(--lf-leading-relaxed);
 }
 #root {
   min-height: 100vh;
@@ -178,7 +143,7 @@ select {
 }
 input::placeholder,
 textarea::placeholder {
-  color: #a9a094;
+  color: var(--lf-text-3);
 }
 input:focus,
 select:focus,
@@ -282,13 +247,13 @@ label textarea {
   opacity: 0.85;
 }
 .btn-primary {
-  color: var(--paper);
-  background: var(--ink);
-  border: 1px solid var(--ink);
+  color: var(--lf-text-on-inverse);
+  background: var(--lf-primary);
+  border: 1px solid var(--lf-primary);
 }
 .btn-primary:hover {
-  background: #000;
-  border-color: #000;
+  background: var(--lf-primary-hover);
+  border-color: var(--lf-primary-hover);
 }
 .btn-outline {
   color: var(--ink-2);
@@ -376,10 +341,9 @@ label textarea {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 22px;
   font-weight: 500;
-  letter-spacing: -0.02em;
   color: var(--ink);
 }
 .brand > svg {
@@ -491,7 +455,7 @@ label textarea {
   font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #a9a094;
+  color: var(--lf-text-3);
 }
 
 /* ---------- page ---------- */
@@ -531,11 +495,10 @@ label textarea {
 }
 .page-heading h1 {
   margin-bottom: 12px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 42px;
   font-weight: 400;
   line-height: 1.06;
-  letter-spacing: -0.025em;
   color: var(--ink);
 }
 .page-heading p {
@@ -569,15 +532,13 @@ label textarea {
 }
 .hero-main h1 {
   margin: 20px 0 0;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: clamp(46px, 5vw, 68px);
   font-weight: 400;
   line-height: 1.02;
-  letter-spacing: -0.03em;
   color: var(--ink);
 }
 .hero-main h1 em {
-  font-style: italic;
   color: var(--clay);
 }
 .lede {
@@ -631,10 +592,9 @@ label textarea {
 }
 .hero-toc b {
   display: block;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 16px;
   font-weight: 500;
-  letter-spacing: -0.01em;
   color: var(--ink);
 }
 .hero-toc small {
@@ -644,7 +604,7 @@ label textarea {
   color: var(--ink-3);
 }
 .hero-toc a > svg {
-  color: #b3a99a;
+  color: var(--lf-text-3);
 }
 .hero-meta {
   display: grid;
@@ -709,12 +669,11 @@ label textarea {
   gap: 3px;
 }
 .stat strong {
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 36px;
   font-weight: 400;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  letter-spacing: -0.02em;
   color: var(--ink);
 }
 .stat > div > span {
@@ -740,10 +699,9 @@ label textarea {
 }
 .section-head h2 {
   margin-top: 12px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 30px;
   font-weight: 400;
-  letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--ink);
 }
@@ -803,10 +761,9 @@ label textarea {
 }
 .plate-caption h3 {
   margin: 9px 0 5px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 18px;
   font-weight: 500;
-  letter-spacing: -0.01em;
   color: var(--ink);
 }
 .plate-caption p {
@@ -837,10 +794,9 @@ label textarea {
   color: var(--clay);
 }
 .cap-item h3 {
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 19px;
   font-weight: 500;
-  letter-spacing: -0.01em;
   color: var(--ink);
 }
 .cap-item p {
@@ -879,10 +835,9 @@ label textarea {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 21px;
   font-weight: 500;
-  letter-spacing: -0.015em;
   color: var(--ink);
 }
 .section-heading h2 > span {
@@ -930,7 +885,7 @@ label textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #b3a99a;
+  color: var(--lf-text-3);
 }
 .project-icon {
   display: grid;
@@ -947,18 +902,17 @@ label textarea {
 }
 .project-icon.p1 {
   color: var(--sage);
-  background: #e7eae0;
+  background: var(--lf-success-soft);
 }
 .project-icon.p2 {
   color: var(--sky);
-  background: #e3eaef;
+  background: var(--lf-info-soft);
 }
 .project-card h3 {
   margin: 14px 0 7px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 19px;
   font-weight: 500;
-  letter-spacing: -0.015em;
   line-height: 1.3;
   color: var(--ink);
 }
@@ -1008,7 +962,7 @@ label textarea {
 }
 .new-project-card small {
   font-size: 11.5px;
-  color: #a9a094;
+  color: var(--lf-text-3);
 }
 .home-guide {
   padding: 24px;
@@ -1036,11 +990,10 @@ label textarea {
 }
 .home-guide h2 {
   margin-bottom: 12px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 25px;
   font-weight: 400;
   line-height: 1.32;
-  letter-spacing: -0.02em;
   color: var(--ink);
 }
 .home-guide > p {
@@ -1087,7 +1040,7 @@ label textarea {
   font-family: var(--font-mono);
   font-size: 11.5px;
   letter-spacing: 0.08em;
-  color: #a9a094;
+  color: var(--lf-text-3);
 }
 .chart-list {
   border-top: 1px solid var(--line);
@@ -1110,10 +1063,9 @@ label textarea {
 }
 .chart-list strong {
   display: block;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 16px;
   font-weight: 500;
-  letter-spacing: -0.01em;
   color: var(--ink);
 }
 .chart-list small {
@@ -1128,7 +1080,7 @@ label textarea {
   margin-left: auto;
   font-family: var(--font-mono);
   font-size: 11.5px;
-  color: #a9a094;
+  color: var(--lf-text-3);
 }
 .mini-chart {
   display: grid;
@@ -1172,17 +1124,15 @@ label textarea {
   text-align: center;
 }
 .empty-state h1 {
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 34px;
   font-weight: 400;
-  letter-spacing: -0.02em;
   color: var(--ink);
 }
 .empty-state h2 {
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 26px;
   font-weight: 400;
-  letter-spacing: -0.02em;
   color: var(--ink);
 }
 .empty-state p {
@@ -1300,10 +1250,9 @@ label textarea {
 }
 .dialog-content h2 {
   margin-bottom: 8px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 26px;
   font-weight: 400;
-  letter-spacing: -0.02em;
   color: var(--ink);
 }
 .dialog-content > p {
@@ -1316,7 +1265,7 @@ label textarea {
   position: absolute;
   top: 20px;
   right: 20px;
-  color: #a9a094;
+  color: var(--lf-text-3);
   transition: color 0.15s var(--ease);
 }
 .dialog-close:hover {
@@ -1383,7 +1332,7 @@ label textarea {
   display: block;
   max-width: 168px;
   overflow: hidden;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 15px;
   font-weight: 500;
   text-overflow: ellipsis;
@@ -1411,10 +1360,9 @@ label textarea {
 }
 .data-title h2 {
   margin-bottom: 7px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 22px;
   font-weight: 500;
-  letter-spacing: -0.015em;
   color: var(--ink);
 }
 .data-title .muted {
@@ -1447,7 +1395,7 @@ label textarea {
 .field-pills small {
   font-family: var(--font-mono);
   font-size: 11.5px;
-  color: #a9a094;
+  color: var(--lf-text-3);
 }
 .data-table {
   font-size: 13px;
@@ -1485,7 +1433,7 @@ td {
   color: var(--ink-2);
 }
 tbody tr:hover {
-  background: #fbf8f2;
+  background: var(--lf-surface-2);
 }
 .field-type {
   margin-right: 6px;
@@ -1497,12 +1445,12 @@ tbody tr:hover {
   width: 44px;
   font-family: var(--font-mono);
   font-size: 11.5px;
-  color: #b3a99a;
+  color: var(--lf-text-3);
   text-align: center;
 }
 .null-cell {
   font-style: italic;
-  color: #b9b0a3;
+  color: var(--lf-text-3);
 }
 .table-footer {
   display: flex;
@@ -1513,7 +1461,7 @@ tbody tr:hover {
   font-size: 11.5px;
   letter-spacing: 0.06em;
   color: var(--ink-3);
-  background: #fbf8f2;
+  background: var(--lf-surface-2);
   border-top: 1px solid var(--line);
 }
 .table-footer > div {
@@ -1526,8 +1474,8 @@ tbody tr:hover {
   padding: 11px 13px;
   font-size: 12.5px;
   line-height: 1.7;
-  color: #7a5a1f;
-  background: #fdf3e0;
+  color: var(--lf-warning);
+  background: var(--lf-warning-soft);
   border: 1px solid #efdcb8;
   border-left: 2px solid var(--amber);
 }
@@ -1550,7 +1498,7 @@ tbody tr:hover {
 }
 .experiment-list > button > svg {
   align-self: center;
-  color: #b3a99a;
+  color: var(--lf-text-3);
 }
 .experiment-list > button:hover {
   padding-left: 10px;
@@ -1562,10 +1510,9 @@ tbody tr:hover {
 }
 .experiment-list h3 {
   margin-bottom: 7px;
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 22px;
   font-weight: 500;
-  letter-spacing: -0.015em;
   color: var(--ink);
 }
 .experiment-list p {
@@ -1649,10 +1596,9 @@ tbody tr:hover {
   min-height: 24px !important;
   padding: 0 !important;
   overflow: hidden;
-  font-family: var(--font-serif) !important;
+  font-family: var(--lf-font-sans);
   font-size: 17px !important;
   font-weight: 500;
-  letter-spacing: -0.015em;
   text-overflow: ellipsis;
   white-space: nowrap;
   background: none !important;
@@ -1732,7 +1678,7 @@ tbody tr:hover {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.14em;
-  color: #b3a99a;
+  color: var(--lf-text-3);
 }
 .left-section {
   padding: 16px;
@@ -1766,7 +1712,7 @@ tbody tr:hover {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: #b3a99a;
+  color: var(--lf-text-3);
 }
 .left-section select {
   padding: 7px 9px;
@@ -1808,7 +1754,7 @@ tbody tr:hover {
 .field-list small {
   margin-left: auto;
   font-size: 11.5px;
-  color: #b3a99a;
+  color: var(--lf-text-3);
 }
 .number-symbol,
 .string-symbol {
@@ -1890,7 +1836,7 @@ tbody tr:hover {
 .layer-item small {
   font-family: var(--font-mono);
   font-size: 11.5px;
-  color: #b3a99a;
+  color: var(--lf-text-3);
 }
 .series-line {
   width: 15px;
@@ -1938,7 +1884,7 @@ tbody tr:hover {
   margin: 6px 0;
   font-size: 11.5px;
   line-height: 1.7;
-  color: #a9a094;
+  color: var(--lf-text-3);
 }
 .left-foot {
   display: flex;
@@ -1949,7 +1895,7 @@ tbody tr:hover {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.06em;
-  color: #a9a094;
+  color: var(--lf-text-3);
   border-top: 1px solid var(--line);
 }
 
@@ -2015,7 +1961,10 @@ tbody tr:hover {
   min-height: 200px;
   padding: 44px;
   overflow: auto;
-  background-image: radial-gradient(rgba(28, 26, 23, 0.13) 0.6px, transparent 0.6px);
+  background-image: radial-gradient(
+    rgba(28, 26, 23, 0.13) 0.6px,
+    transparent 0.6px
+  );
   background-size: 16px 16px;
 }
 .canvas-loading {
@@ -2051,7 +2000,7 @@ tbody tr:hover {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.12em;
-  color: #a9a094;
+  color: var(--lf-text-3);
   text-transform: uppercase;
 }
 .paper-caption span:first-child {
@@ -2059,12 +2008,12 @@ tbody tr:hover {
   color: var(--ink-3);
 }
 .paper-wrap {
-  background: #fff;
+  background: var(--lf-surface);
   outline: 1px solid rgba(28, 26, 23, 0.14);
   box-shadow: var(--shadow-paper);
 }
 .paper {
-  background: #fff;
+  background: var(--lf-surface);
   transform-origin: 0 0;
 }
 .paper .gtitle,
@@ -2080,7 +2029,7 @@ tbody tr:hover {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.04em;
-  color: #a9a094;
+  color: var(--lf-text-3);
 }
 .paper-footnote span {
   display: flex;
@@ -2229,7 +2178,8 @@ tbody tr:hover {
   font-size: 11px;
   color: var(--ink-3);
 }
-.property-section input:not([type="range"]):not([type="color"]):not([type="checkbox"]),
+.property-section
+  input:not([type="range"]):not([type="color"]):not([type="checkbox"]),
 .property-section select {
   min-height: 31px;
   padding: 6px 9px;
@@ -2272,7 +2222,7 @@ tbody tr:hover {
   left: 2px;
   width: 12px;
   height: 12px;
-  background: #fff;
+  background: var(--lf-surface);
   border-radius: 50%;
   transition: left 0.15s var(--ease);
 }
@@ -2308,7 +2258,7 @@ tbody tr:hover {
   border-bottom: 1px solid var(--line);
 }
 .version-row b {
-  font-family: var(--font-serif);
+  font-family: var(--lf-font-sans);
   font-size: 16px;
   font-weight: 500;
   color: var(--ink);
@@ -2345,7 +2295,7 @@ tbody tr:hover {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.06em;
-  color: #a9a094;
+  color: var(--lf-text-3);
   background: var(--paper-2);
   border-top: 1px solid var(--line);
 }

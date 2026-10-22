@@ -1,18 +1,13 @@
 /* Interface chrome only. Plotly's SVG and exported paper keep their own styles. */
 .refined-shell {
-  --r-xs: 7px;
-  --ink-3: #657080;
-  --clay-soft: #eaf0fb;
-  --line-2: #d2d9e3;
-  --shadow-paper: 0 2px 6px #26364d08, 0 16px 40px #26364d12;
-  background: #fafbfc;
+  background: var(--lf-bg);
 }
 .refined-shell :is(h1, h2, h3) {
   font-family: var(--font-sans);
 }
 .refined-shell :is(button, a, input, select, textarea):focus-visible,
 .dialog-content :is(button, a, input, select, textarea):focus-visible {
-  outline: 2px solid #5282cc;
+  outline: 2px solid var(--lf-focus);
   outline-offset: 3px;
 }
 .refined-shell .btn,
@@ -35,7 +30,7 @@
 }
 .refined-shell input::placeholder,
 .dialog-content input::placeholder {
-  color: #737d8d;
+  color: var(--lf-text-3);
 }
 .refined-shell
   :is(
@@ -47,7 +42,7 @@
   ),
 .dialog-content {
   scrollbar-width: thin;
-  scrollbar-color: #c7cfdb transparent;
+  scrollbar-color: var(--lf-border-strong) transparent;
 }
 .refined-shell
   :is(
@@ -75,13 +70,13 @@
   font-family: var(--font-sans);
 }
 .refined-shell .editor-left {
-  background: #fafbfc;
+  background: var(--lf-surface-2);
 }
 .refined-shell .editor-left > .panel-title {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: #fafbfc;
+  background: var(--lf-surface-2);
 }
 .refined-shell .section-label {
   letter-spacing: 0.025em;
@@ -113,12 +108,12 @@
   background: #94b5e8;
 }
 .refined-shell .canvas-column {
-  background: #eef1f5;
+  background: var(--lf-surface-sunken);
 }
 .refined-shell .canvas-toolbar {
-  background: #f8f9fb;
+  background: var(--lf-surface-2);
   letter-spacing: 0;
-  color: #657080;
+  color: var(--lf-text-3);
 }
 .refined-shell .canvas-toolbar .btn {
   width: 28px;
@@ -155,26 +150,26 @@
   font-family: var(--font-sans);
 }
 .refined-shell .bottom-tabs {
-  background: #fafbfc;
+  background: var(--lf-surface-2);
 }
 .refined-shell .bottom-tabs button.active {
   color: #3465b3;
   border-color: #4778c4;
 }
 .refined-shell .editor-statusbar {
-  background: #f8f9fb;
-  color: #657080;
+  background: var(--lf-surface-2);
+  color: var(--lf-text-3);
   font-family: var(--font-sans);
   letter-spacing: 0.015em;
 }
 .refined-shell .data-table tbody tr:hover {
-  background: #f3f7fd;
+  background: var(--lf-surface-2);
 }
 .refined-shell .data-table th {
   position: sticky;
   top: 0;
   z-index: 1;
-  background: #f6f8fb;
+  background: var(--lf-surface-2);
 }
 .refined-shell .table-scroll[aria-busy="true"] {
   cursor: progress;
@@ -186,7 +181,7 @@
   width: 100%;
   font-size: 13px;
   padding: 8px 11px;
-  background: #f8f9fb;
+  background: var(--lf-surface-2);
 }
 .workspace-more {
   display: flex;
@@ -196,13 +191,13 @@
   width: 100%;
   min-height: 38px;
   padding: 8px 16px;
-  border-top: 1px solid #edf0f4;
+  border-top: 1px solid var(--lf-surface-sunken);
   color: #4d6d9c;
   font-size: 12px;
   transition: background-color 160ms;
 }
 .workspace-more:hover {
-  background: #f4f7fb;
+  background: var(--lf-surface-2);
 }
 .home-shell .masthead-meta,
 .home-shell .nav-note,
@@ -211,7 +206,7 @@
   color: #707b8b;
 }
 .home-shell .nav-link {
-  color: #657080;
+  color: var(--lf-text-3);
 }
 .launch-tool small,
 .workspace-panel-head > span,
@@ -269,7 +264,6 @@
   animation: fade-in 160ms ease-out both;
 }
 .dialog-content[role="dialog"] {
-  --r-xs: 8px;
   max-width: calc(100vw - 40px);
   max-height: calc(100dvh - 64px);
   padding: 28px;
@@ -292,7 +286,7 @@
   transition: background-color 160ms;
 }
 .dialog-content .dialog-close:hover {
-  background: #f0f3f8;
+  background: var(--lf-surface-sunken);
 }
 .dialog-overlay[data-state="closed"] {
   animation: experience-overlay-out 120ms ease-in both;
@@ -305,14 +299,14 @@
   min-height: 500px;
   display: flex;
   flex-direction: column;
-  background: #f0f3f7;
+  background: var(--lf-surface-sunken);
 }
 .workbench-skeleton > p {
   padding: 18px 24px;
-  background: white;
-  border-bottom: 1px solid #e4e8ee;
+  background: var(--lf-surface);
+  border-bottom: 1px solid var(--lf-border);
   font-size: 13px;
-  color: #657080;
+  color: var(--lf-text-3);
 }
 .workbench-skeleton-layout {
   display: grid;
@@ -322,12 +316,12 @@
 }
 .workbench-skeleton-layout > div {
   padding: 24px 18px;
-  background: #fafbfc;
+  background: var(--lf-surface-2);
 }
 .workbench-skeleton-layout i {
   display: block;
   height: 28px;
-  background: #e9edf3;
+  background: var(--lf-surface-sunken);
   border-radius: 7px;
   margin-bottom: 18px;
 }
@@ -389,11 +383,11 @@
   min-height: 48px;
   font-size: 13px;
   letter-spacing: 0;
-  background: #fff;
+  background: var(--lf-surface);
 }
 .editor .editor-left,
 .editor .editor-right {
-  background: #fafbfc;
+  background: var(--lf-surface-2);
 }
 .editor .section-label {
   font-family: var(--font-sans);
@@ -426,7 +420,7 @@
   border-color: #d5e0fa;
 }
 .editor .chart-type-grid button:hover {
-  background: #eef1f6;
+  background: var(--lf-surface-sunken);
 }
 .editor .inspector-tabs {
   height: auto;
@@ -434,7 +428,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 4px;
   padding: 9px;
-  background: #fff;
+  background: var(--lf-surface);
 }
 .editor .inspector-tabs button {
   min-height: 32px;
@@ -515,7 +509,7 @@
   font-size: 11.5px;
 }
 .editor .canvas-stage {
-  background-color: #f0f2f5;
+  background-color: var(--lf-surface-sunken);
   background-image: none;
 }
 @media (prefers-reduced-motion: reduce) {

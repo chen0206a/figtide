@@ -1,10 +1,33 @@
 import { test, expect } from "@playwright/test";
+import { defaults } from "../src/editor/model";
 async function openHome(page: any, request: any) {
-  const projects = await (await request.get("/api/projects")).json();
-  const p =
-    projects.find((p: any) => p.name === "视觉模型泛化研究 · 合成演示") ||
-    projects[0];
-  expect(p).toBeTruthy();
+  // Each case owns a usable dataset and chart; the newest unrelated project
+  // may be empty when this spec runs independently or after pagination tests.
+  const created = await request.post("/api/projects", {
+    data: {
+      name: `首页交互验收 ${Date.now()}`,
+      description: "合成演示；独立导航夹具",
+    },
+  });
+  expect(created.ok()).toBeTruthy();
+  const p = await created.json();
+  const uploaded = await request.post(`/api/projects/${p.id}/datasets`, {
+    multipart: {
+      file: {
+        name: "synthetic-home.csv",
+        mimeType: "text/csv",
+        buffer: Buffer.from("epoch,accuracy\n1,0.7\n2,0.8\n3,0.9"),
+      },
+    },
+  });
+  expect(uploaded.ok()).toBeTruthy();
+  const saved = await request.post(`/api/projects/${p.id}/charts`, {
+    data: {
+      name: "首页演示 · 合成曲线",
+      config: defaults(await uploaded.json()),
+    },
+  });
+  expect(saved.ok()).toBeTruthy();
   await page.addInitScript(
     (id: number) => localStorage.setItem("labflow-project", String(id)),
     p.id,

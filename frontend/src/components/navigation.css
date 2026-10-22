@@ -15,7 +15,7 @@
   bottom: 4px;
   z-index: -1;
   border-radius: 8px;
-  background: #edf0f5;
+  background: var(--lf-selected);
   pointer-events: none;
   transition:
     transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -29,7 +29,7 @@
   padding: 0 15px;
   border-radius: 8px;
   font: 500 13px var(--font-sans);
-  color: #6a7280;
+  color: var(--lf-text-3);
   white-space: nowrap;
   transition:
     color 160ms,
@@ -38,7 +38,7 @@
 .workspace-nav-link:hover,
 .workspace-nav-link:focus-visible,
 .workspace-nav-link.active {
-  color: #20252e;
+  color: var(--lf-text);
 }
 .workspace-nav-link:hover {
   transform: translateY(-1px);
@@ -47,7 +47,7 @@
   transform: translateY(0) scale(0.97);
 }
 .refined-shell .masthead {
-  background: #fff;
+  background: var(--lf-surface);
   backdrop-filter: none;
 }
 .refined-shell .masthead-bar {
@@ -69,7 +69,7 @@
   width: 200px;
   max-width: 200px;
   font-family: var(--font-sans);
-  background-color: #f7f8fa;
+  background-color: var(--lf-surface-2);
   border-color: transparent;
 }
 .refined-shell .local-badge {
@@ -79,11 +79,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #838b98;
+  color: var(--lf-text-3);
   font-size: 12px;
 }
 .refined-shell .workbench-context > a {
-  color: #546175;
+  color: var(--lf-text-2);
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -91,8 +91,8 @@
   border-radius: 6px;
 }
 .refined-shell .workbench-context > a:hover {
-  background: #f0f2f6;
-  color: #20252e;
+  background: var(--lf-surface-sunken);
+  color: var(--lf-text);
 }
 .refined-shell .route-view {
   outline: none;
@@ -153,29 +153,23 @@
 }
 /* Quiet tool surfaces, informed by real product references on Mobbin. */
 .refined-shell.workbench-shell {
-  --paper: #f7f7f5;
-  --paper-2: #fbfbfa;
-  --ink: #25272b;
-  --ink-2: #4e5662;
-  --ink-3: #6a7280;
-  --line: #e8e9eb;
-  background: #f7f7f5;
+  background: var(--lf-bg);
 }
 .refined-shell .workspace-nav-link.active {
-  color: #3f5bc2;
+  color: var(--lf-link);
 }
 .refined-shell .workspace-nav .nav-indicator {
-  background: #eef0f5;
+  background: var(--lf-selected);
 }
 .refined-shell.workbench-shell .editor-left,
 .refined-shell.workbench-shell .editor-right {
-  background: #fbfbfa;
+  background: var(--lf-surface-2);
 }
 .refined-shell.workbench-shell .canvas-stage {
-  background: #efefed;
+  background: var(--lf-canvas);
 }
 .refined-shell.workbench-shell .canvas-toolbar {
-  background: #f7f7f5;
+  background: var(--lf-surface-2);
 }
 .refined-shell.workbench-shell .editor-left select,
 .refined-shell.workbench-shell
@@ -184,31 +178,31 @@
 .refined-shell.workbench-shell .inspector-scroll select {
   font-size: 13px !important;
   min-height: 34px;
-  border-color: #dedfe3;
+  border-color: var(--lf-border);
 }
 .refined-shell.workbench-shell .property-section label {
   font-size: 13px;
-  color: #626976;
+  color: var(--lf-text-2);
 }
 
 /* Keep module controls steady; transition the work surface instead of flashing the full shell. */
 .workspace-nav {
   gap: 3px;
   border-radius: 14px;
-  background: #f7f7f7;
+  background: var(--lf-surface-2);
 }
 .workspace-nav-link {
   gap: 7px;
   border-radius: 10px;
-  color: #737373;
+  color: var(--lf-text-3);
 }
 .refined-shell .workspace-nav-link.active {
-  color: #242424;
-  background: #eaeaea;
+  color: var(--lf-link);
+  background: var(--lf-selected);
   font-weight: 550;
 }
 .refined-shell .workspace-nav .nav-indicator {
-  background: #efefef;
+  background: var(--lf-surface-sunken);
   border-radius: 10px;
 }
 .refined-shell .global-right select {
@@ -223,19 +217,19 @@
 .refined-shell.workbench-shell .page-eyebrow {
   font-size: 12px;
   letter-spacing: 0.06em;
-  color: #898989;
+  color: var(--lf-text-3);
 }
 .refined-shell.workbench-shell .page-heading h1 {
   font-size: 28px;
   font-weight: 550;
 }
 .refined-shell.workbench-shell .page-heading p {
-  color: #797979;
+  color: var(--lf-text-3);
   line-height: 1.7;
 }
 .refined-shell.workbench-shell .dataset-list {
   border-radius: 18px;
-  background: #fff;
+  background: var(--lf-surface);
 }
 .refined-shell.workbench-shell .dataset-list button {
   border-radius: 11px;
@@ -244,11 +238,11 @@
     color 180ms;
 }
 .refined-shell.workbench-shell .dataset-list button:hover {
-  background: #f5f5f5;
+  background: var(--lf-surface-2);
 }
 .refined-shell.workbench-shell .dataset-list button.active {
-  background: #ededed;
-  color: #252525;
+  background: var(--lf-surface-sunken);
+  color: var(--lf-text);
 }
 .refined-shell.workbench-shell .data-detail {
   border-radius: 18px;
@@ -260,13 +254,13 @@
   font-size: 12px;
   border-radius: 20px;
   padding: 6px 10px;
-  background: #f5f5f3;
-  color: #757570;
+  background: var(--lf-surface-2);
+  color: var(--lf-text-3);
   white-space: nowrap;
 }
 .refined-shell.workbench-shell .save-state.unsaved {
-  color: #707070;
-  background: #f3f3f3;
+  color: var(--lf-text-3);
+  background: var(--lf-surface-sunken);
 }
 @media (prefers-reduced-motion: reduce) {
   .refined-shell .route-view {

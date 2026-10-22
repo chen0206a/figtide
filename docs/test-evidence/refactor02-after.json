@@ -1,0 +1,74 @@
+{
+  "home": {
+    "frame": {
+      "x": 120,
+      "y": 69,
+      "width": 1200,
+      "height": 1851.609375
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 69
+    },
+    "typography": {
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "color": "rgb(14, 17, 22)"
+    }
+  },
+  "experiments": {
+    "frame": {
+      "x": 0,
+      "y": 69,
+      "width": 1440,
+      "height": 676.875
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 69
+    },
+    "typography": {
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "color": "rgb(14, 17, 22)"
+    }
+  },
+  "data": {
+    "frame": {
+      "x": 40,
+      "y": 283.5,
+      "width": 1360,
+      "height": 613.140625
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 69
+    },
+    "typography": {
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "color": "rgb(14, 17, 22)"
+    }
+  },
+  "editor": {
+    "frame": {
+      "x": 0,
+      "y": 69,
+      "width": 1440,
+      "height": 932
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 69
+    },
+    "typography": {
+      "font": "\"Open Sans\", verdana, arial, sans-serif",
+      "color": "rgb(14, 17, 22)"
+    }
+  }
+}

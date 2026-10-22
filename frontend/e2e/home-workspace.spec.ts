@@ -1,14 +1,43 @@
 import { test, expect } from "@playwright/test";
+import { defaults } from "../src/editor/model";
 
 test("home workspace stays open and compact, searches real projects and reveals more without inner scrolling", async ({
   page,
   request,
 }) => {
+  // Pagination needs at least twelve real projects. Seed them here rather than
+  // depending on projects left by earlier specs in a full-suite run.
+  const stamp = Date.now();
+  const owned = [];
+  for (let i = 0; i < 12; i++) {
+    const created = await request.post("/api/projects", {
+      data: {
+        name: `工作区分页验收 ${stamp} / ${String(i).padStart(2, "0")}`,
+        description: "合成演示；独立布局夹具",
+      },
+    });
+    expect(created.ok()).toBeTruthy();
+    owned.push(await created.json());
+  }
+  const upload = await request.post(`/api/projects/${owned[0].id}/datasets`, {
+    multipart: {
+      file: {
+        name: "synthetic-workspace.csv",
+        mimeType: "text/csv",
+        buffer: Buffer.from("epoch,accuracy\n1,0.7\n2,0.8"),
+      },
+    },
+  });
+  expect(upload.ok()).toBeTruthy();
+  const saved = await request.post(`/api/projects/${owned[0].id}/charts`, {
+    data: {
+      name: "布局检查 · 合成图表",
+      config: defaults(await upload.json()),
+    },
+  });
+  expect(saved.ok()).toBeTruthy();
   const projects = await (await request.get("/api/projects")).json();
-  const selected =
-    projects.find(
-      (p: any) => !p.archived && p.name === "成果复用与交付 · 合成演示",
-    ) || projects.find((p: any) => !p.archived && p.chart_count > 0);
+  const selected = projects.find((p: any) => p.id === owned[0].id);
   expect(selected).toBeTruthy();
   await page.setViewportSize({ width: 1440, height: 1200 });
   await page.addInitScript((id: number) => {

@@ -81,11 +81,11 @@ test("reference gallery keeps scrolling on hover and focus, credits sources and 
     const primary = (await card.getAttribute("class"))!.includes("tool-blue");
     await expect(card).toHaveCSS(
       "background-color",
-      primary ? "rgb(24, 24, 24)" : "rgb(255, 255, 255)",
+      primary ? "rgb(14, 17, 22)" : "rgb(255, 255, 255)",
     );
     await expect(card.locator("h2")).toHaveCSS(
       "color",
-      primary ? "rgb(255, 255, 255)" : "rgb(23, 23, 23)",
+      primary ? "rgb(255, 255, 255)" : "rgb(14, 17, 22)",
     );
   }
   await page.screenshot({ path: "../docs/screenshots/home-actions.png" });

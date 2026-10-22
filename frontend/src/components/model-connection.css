@@ -2,7 +2,7 @@
   width: min(560px, calc(100vw - 32px));
   padding: 30px;
   border-radius: 22px;
-  color: #202124;
+  color: var(--lf-text);
   display: flex;
   flex-direction: column;
   max-height: calc(100dvh - 48px);
@@ -31,7 +31,7 @@
   padding: 16px 0 20px;
   margin: 0 0 18px;
   flex-shrink: 0;
-  border-bottom: 1px solid #ececee;
+  border-bottom: 1px solid var(--lf-surface-sunken);
 }
 .connection-mark {
   width: 44px;
@@ -39,7 +39,7 @@
   border-radius: 13px;
   display: grid;
   place-items: center;
-  background: #f3f3f4;
+  background: var(--lf-surface-sunken);
 }
 .connection-summary > div {
   flex: 1;
@@ -52,13 +52,13 @@
   overflow-wrap: anywhere;
 }
 .connection-summary > div > span {
-  color: #777b83;
+  color: var(--lf-text-3);
   font-size: 12px;
 }
 .connection-dot {
   width: 7px;
   height: 7px;
-  background: #c4c6cb;
+  background: var(--lf-border-strong);
   border-radius: 50%;
 }
 .connection-dot.verified {
@@ -83,15 +83,15 @@
   width: 100%;
   height: 43px;
   padding: 10px 12px;
-  background: #fff;
-  border: 1px solid #dedee2;
+  background: var(--lf-surface);
+  border: 1px solid var(--lf-border);
   border-radius: 9px;
   font: inherit;
   font-weight: 400;
-  color: #25262b;
+  color: var(--lf-text);
 }
 .model-connection-dialog input:focus-visible {
-  outline: 2px solid #24262c;
+  outline: 2px solid var(--lf-text);
   outline-offset: 2px;
 }
 .connection-key {
@@ -115,12 +115,12 @@
   color: #757982;
 }
 .connection-key button:hover {
-  background: #f1f2f3;
-  color: #222;
+  background: var(--lf-surface-sunken);
+  color: var(--lf-text);
 }
 .connection-hint {
   font-size: 12px;
-  color: #777b83;
+  color: var(--lf-text-3);
   line-height: 1.7;
   margin: 13px 0;
 }
@@ -137,7 +137,7 @@
   width: 15px;
   height: 15px;
   margin: 3px 0 0;
-  accent-color: #24262c;
+  accent-color: var(--lf-text);
   flex-shrink: 0;
 }
 .connection-feedback {
@@ -147,7 +147,7 @@
   font-size: 13px;
   line-height: 1.65;
   padding: 13px;
-  border: 1px solid #e5e5e7;
+  border: 1px solid var(--lf-border);
   border-radius: 10px;
   margin-top: 17px;
   overflow-wrap: anywhere;
@@ -158,16 +158,16 @@
 }
 .connection-feedback span {
   display: block;
-  color: #777b83;
+  color: var(--lf-text-3);
   font-size: 12px;
   margin-top: 3px;
 }
 .connection-feedback.success {
-  background: #f7faf8;
+  background: var(--lf-surface-2);
   color: #356c55;
 }
 .connection-feedback.error {
-  background: #fff9f8;
+  background: var(--lf-surface-2);
   color: #a33e38;
 }
 .connection-feedback .btn {
@@ -188,7 +188,7 @@
   align-items: center;
   margin-top: 25px;
   padding-top: 19px;
-  border-top: 1px solid #ececee;
+  border-top: 1px solid var(--lf-surface-sunken);
   flex-shrink: 0;
 }
 .connection-footer > div {
@@ -201,7 +201,7 @@
   justify-content: center;
   gap: 10px;
   padding: 55px 0;
-  color: #777b83;
+  color: var(--lf-text-3);
   font-size: 13px;
 }
 .connection-spin {

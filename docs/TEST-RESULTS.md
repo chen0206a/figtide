@@ -1,5 +1,42 @@
 # 第一阶段验收记录
 
+## 任务 02：统一设计 token、移除暖纸层与衬线字体（2026-10-22）
+
+完成 `refactor/tasks/02-design-tokens.md`。以参考实现建立 `frontend/src/styles/tokens.css`；Inter / JetBrains Mono 为 UI 字体，中文使用系统回退。旧变量只在 token 文件中作为别名定义，移除 styles.css 的暖纸 root 以及首页、工作台、弹窗、experience 中发现的额外覆盖。保留原有选择器与组件结构。移除 Newsreader 导入和依赖，锁文件只删除对应包；没有升级其他依赖。
+
+改动文件：
+
+- `frontend/src/styles/tokens.css`、`main.tsx`、`styles.css`、`package.json`、`package-lock.json`。
+- `frontend/src/components/{navigation,refinements,experience,home,home-workspace,showcase,chart-planner,model-connection}.css`、`frontend/src/experiments/experiments.css`、`frontend/src/processing/processing.css`：将近似中性色、白色表面和已有蓝色交互态机械映射到 token；保留布局与动效声明。深色首页卡片使用反色文字 token，说明文字对比度为 10.31:1。
+- `frontend/e2e/design-tokens.spec.ts`：新增真实 Java/MySQL 四页 1440px 截图、字体/变量继承、导航和内容横向几何位置、标志可见、无横向溢出及保存配置不变检查；截图等待首页示例图片完成解码。
+- `frontend/e2e/showcase.spec.ts`：仅将两处颜色断言更新为 token 值：主卡片背景 `rgb(24,24,24)` → `rgb(14,17,22)`；普通卡片标题 `rgb(23,23,23)` → `rgb(14,17,22)`，白色断言不变。
+- `frontend/e2e/home-workspace.spec.ts`、`home.spec.ts`：保留断言，改为自行创建真实分页项目及带数据/图表的首页夹具，使其可独立运行。
+- `scripts/check-refactor02-tokens.mjs`、`docs/test-evidence/refactor02-{tokens,before,after,comparison}.json`、`docs/screenshots/refactor-02-{before,after}-{home,experiments,data,editor}.png` 及本记录。
+
+实际验证：
+
+- `npm.cmd uninstall @fontsource-variable/newsreader --ignore-scripts --no-audit --no-fund`：成功，仅移除 1 个包。
+- `cd frontend; npm test`：最终 **28 文件、180/180 通过，0 失败，10.90 秒**。
+- `cd frontend; npm run build`：最终 **TypeScript / Vite 构建通过，11.65 秒**。既有大 chunk 提示仍保留。
+- `$env:CI='true'; .\scripts\test-agent.ps1 -All`：**完整 Chrome 57/57 通过，3.6 分钟，退出码 0**，新 JVM 审计恢复检查通过。包含任务指定的 navigation **2/2**、editor **2/2**、experience **3/3**；同时覆盖助手、草稿、保存/恢复、图表和矢量导出。运行使用隔离 `labflow_e2e` 和本地协议夹具，没有调用收费模型。
+- 最终深色文字 token 修正后，用同一隔离流程执行 `test e2e/design-tokens.spec.ts e2e/home.spec.ts e2e/home-workspace.spec.ts e2e/showcase.spec.ts`：**6/6 通过，16.9 秒，退出码 0**，新 JVM 恢复检查通过。其余产品逻辑没有改动，未再次重复整个套件。
+- 补上异步示例图片解码等待后，单独再执行 `test e2e/design-tokens.spec.ts`：**1/1 通过，8.3 秒**，重新生成四页最终截图及几何证据，恢复检查通过。
+- `node scripts/check-refactor02-tokens.mjs`：**通过**。按任务 00 的六位十六进制正则计数，从 **417 → 276 种，减少 33.8%**（包含新增 token 文件）；三种正文色在白底/应用底色上的最低对比度 **5.29:1**；反色主/次文字在深底上的对比度 **18.91 / 10.31:1**。对照起点 `529ff1b`，原有 15 个 CSS 文件的 **2,570 条布局、尺寸及动效声明全部未改**。
+- `rg -n 'Newsreader|font-serif' frontend/src`：仅剩 token 文件内未使用的 `--font-serif` 兼容别名，符合任务例外；Newsreader 不再加载。editor 专用 CSS、stylePresets、plot-core、后端、API/schema、Flyway、草稿与助手状态/预算逻辑未修改。
+
+截图对比：改动前先在隔离库留存四页截图。参考 token 的默认 14px / 1.5 会让既有内容略收紧，因此为当前正文保留 token 化的 15px / 1.6，避免此任务改变布局。最终同数据规模的四页容器 x/y/宽/高及导航高度与基线完全一致；数据页文件名列表由衬线改为无衬线，另有预期的少量色彩、圆角与阴影调整。截图与几何结果见 comparison / before / after JSON。完整套件中其他测试项目会暂时增加首页列表高度，最终截图在清理后单独生成，未使用前端 Mock。
+
+过程问题如实记录：最终首页补跑第一次 **5/6**，旧分页测试要求至少 12 个项目，独立运行时只有 2 个；补齐独立夹具后再次 **5/6**，旧首页导航测试取最新的空项目，导致没有绘图器。已分别改为各用例自行创建项目/数据/图表，保留全部业务断言，随后得到上述 **6/6**。这两项属于原有测试的顺序依赖，不是通过放宽断言规避 UI 回归。本轮预先将旧测试截图保存到忽略目录，再生成新文件，未出现上一阶段的 PNG 覆盖错误；所有无关的既有截图和导出附件均已还原。
+
+边界与偏差：为维持现有布局，参考 token 补充了正文行距 token；为满足深色文字对比度，使用反色语义 token。除任务点名的第一块覆盖外，还清掉了实际存在的同类覆盖，避免旧变量继续漂移。增加自包含测试夹具与可重跑的样式审计，不改产品功能或组件结构。未执行 Java 单元/集成测试（本轮无后端修改；浏览器测试仅打包既有后端）；未执行真实模型评测。核对主库为 projects107 / charts181 / dataset_versions172 / experiments13 / agent_runs9 / agent_sessions0；隔离库清理后 projects1 / agent_runs0 / agent_sessions0。用户服务 5176 健康检查 ok，未重启用户服务。需要人决定的事：无。任务 02 完成后停止，未开始 03。
+
+| 页面 | 改动前（1440px） | 改动后（1440px） |
+| --- | --- | --- |
+| 首页 | [截图](screenshots/refactor-02-before-home.png) | [截图](screenshots/refactor-02-after-home.png) |
+| 实验页 | [截图](screenshots/refactor-02-before-experiments.png) | [截图](screenshots/refactor-02-after-experiments.png) |
+| 数据页 | [截图](screenshots/refactor-02-before-data.png) | [截图](screenshots/refactor-02-after-data.png) |
+| 编辑器 | [截图](screenshots/refactor-02-before-editor.png) | [截图](screenshots/refactor-02-after-editor.png) |
+
 ## 任务 01c：图表默认观感修正（2026-10-22）
 
 已合并 `refactor-01c.zip` 中的任务文件与补丁（两个文件均与 ZIP 逐字节哈希一致）。执行 `git apply --3way refactor/patches/01c-chart-polish.patch`；仅 `plot-core.ts` 的导入冲突，手动保留上一轮 `traceEncoding / EncodingContext` 的分面配色逻辑，并移除 `groupLegendTitle`。未修改后端、API/schema、Flyway、编辑器历史/草稿或助手状态与预算逻辑。
