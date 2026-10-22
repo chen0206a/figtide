@@ -16,6 +16,7 @@
 | 8a · 数据图层左栏 | 同脚本 `-Step data-panel` | 192/192，22.94 秒 | 通过，19.65 秒 | 最终统一回归 |
 | 8b · 画布 | 同脚本 `-Step canvas`（npm test -- --maxWorkers=2） | 192/192，26.29 秒 | 通过，20.47 秒 | 最终统一回归 |
 | 8c · 底部数据区 | 同脚本 `-Step bottom-drawer`（后续 npm test 均限制 4 workers，断言不变） | 192/192，14.05 秒 | 通过，19.90 秒 | 最终统一回归 |
+| 9a · 属性面板外框 | 同脚本 `-Step inspector` | 192/192，14.03 秒 | 通过，19.99 秒 | 最终统一回归 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 
