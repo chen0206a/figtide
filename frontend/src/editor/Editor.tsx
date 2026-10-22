@@ -48,13 +48,12 @@ import { Button } from "../components/ui/button";
 import { useConfirm } from "../components/useConfirm";
 import { WorkbenchSkeleton } from "../components/WorkbenchSkeleton";
 import { SourceProvenance } from "../experiments/SourceProvenance";
-import { ApiError, api, send, type Dataset } from "../lib/api";
+import { api, type Dataset } from "../lib/api";
 import {
   chartDraftKey,
   readChartDraft,
   sameDraftContent,
 } from "../lib/chartDraft";
-import { downloadBlob } from "../lib/download";
 import { DraftWriter } from "../lib/draftWriter";
 import { AgentAssistant } from "./AgentAssistant";
 import { ClassificationResults } from "./ClassificationResults";
@@ -73,7 +72,7 @@ import {
 } from "./model";
 import { buildPlot } from "./plot";
 import { ProfessionalPanel } from "./ProfessionalPanel";
-import { physicalSvg, pngDensity, publicationMetrics } from "./publication";
+import { publicationMetrics } from "./publication";
 import { QuickActions } from "./QuickActions";
 import { ReuseDialog } from "./ReuseDialog";
 import { presetThumbnail, stylePresets } from "./stylePresets";
@@ -90,7 +89,9 @@ import { ConflictDialog } from "./workbench/dialogs/ConflictDialog";
 import { ExportDialog } from "./workbench/dialogs/ExportDialog";
 import { RecoveryDialog } from "./workbench/dialogs/RecoveryDialog";
 import { VersionHistoryDialog } from "./workbench/dialogs/VersionHistoryDialog";
+import { useChartSave } from "./workbench/useChartSave";
 import { useEditorShortcuts } from "./workbench/useEditorShortcuts";
+import { useFigureExport } from "./workbench/useFigureExport";
 import { usePanelLayout } from "./workbench/usePanelLayout";
 
 const fittedZoom = (stage: HTMLElement, width: number, height: number) =>
@@ -546,53 +547,31 @@ function Workbench({
     },
     [],
   );
-  async function save(asCopy = false) {
-    if (saving || c.datasetVersionId !== data.id) return;
-    setSaving(true);
-    const snapshot = c,
-      saveName = asCopy ? `${name.slice(0, 115)} · 副本` : name;
-    const saveId = asCopy ? null : id;
-    try {
-      const result = await api(
-        `/projects/${project}/charts${saveId ? "/" + saveId : ""}`,
-        send(saveId ? "PUT" : "POST", {
-          name: saveName,
-          revision,
-          config: snapshot,
-        }),
-      );
-      queryClient.setQueryData(["chart", project, result.id], result);
-      if (!mounted.current) {
-        void queryClient.invalidateQueries({ queryKey: ["charts", project] });
-        void queryClient.invalidateQueries({ queryKey: ["projects"] });
-        return;
-      }
-      if (!asCopy)
-        try {
-          draftWriter.current?.clear(draftKey);
-          if (initialDraft?.storageKey && initialDraft.storageKey !== draftKey)
-            localStorage.removeItem(initialDraft.storageKey);
-        } catch {}
-      try {
-        sessionStorage.setItem(
-          `labflow-editor-view:${chartDraftKey(project, result.id, originDataset)}`,
-          JSON.stringify({ panel, seriesId }),
-        );
-      } catch {}
-      setConflict(false);
-      setId(result.id);
-      setRevision(result.revision);
-      setBaseline(JSON.stringify({ config: snapshot, name: saveName }));
-      setLogs((l) => [`已保存版本 v${result.revision}`, ...l].slice(0, 30));
-      notify(`图表已保存 · v${result.revision}`);
-      onSaved(result.id);
-    } catch (e) {
-      if (e instanceof ApiError && e.status === 409) setConflict(true);
-      notify((e as Error).message);
-    } finally {
-      setSaving(false);
-    }
-  }
+  const { save } = useChartSave({
+    saving,
+    c,
+    data,
+    setSaving,
+    name,
+    id,
+    project,
+    revision,
+    queryClient,
+    mounted,
+    draftWriter,
+    draftKey,
+    initialDraft,
+    originDataset,
+    panel,
+    seriesId,
+    setConflict,
+    setId,
+    setRevision,
+    setBaseline,
+    setLogs,
+    notify,
+    onSaved,
+  });
   useEditorShortcuts({
     saving,
     c,
@@ -603,55 +582,21 @@ function Workbench({
     dispatch,
   });
 
-  async function download() {
-    if (exporting || plotPending) return;
-    setExporting(true);
-    try {
-      await plotReady.current;
-      const metrics = publicationMetrics(c, scale);
-      if (
-        format === "png" &&
-        (metrics.pixelWidth * metrics.pixelHeight > 40000000 ||
-          Math.max(metrics.pixelWidth, metrics.pixelHeight) > 12000)
-      )
-        throw new Error(
-          "输出超过 4000 万像素或单边 12000 px，请降低 DPI / 倍率",
-        );
-      let url = await Plotly.toImage(graph.current, {
-        format: format === "pdf" ? "svg" : format,
-        width: c.style.width,
-        height: c.style.height,
-        scale: format === "png" ? metrics.scale : 1,
-      });
-      if (format === "svg") url = physicalSvg(url, c);
-      if (format === "png" && metrics.enabled)
-        url = pngDensity(url, metrics.effectiveDpi);
-      const filename =
-        (name.replace(/[^\p{L}\p{N}_-]/gu, "_") || "figure") + "." + format;
-      if (format === "pdf") {
-        const { vectorPdf } = await import("./pdf");
-        downloadBlob(await vectorPdf(url, c), filename);
-      } else {
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-        link.click();
-      }
-      setLogs((l) =>
-        [
-          `导出 ${format.toUpperCase()} · ${c.style.width} × ${c.style.height}`,
-          ...l,
-        ].slice(0, 30),
-      );
-      setExportOpen(false);
-      notify(`${format.toUpperCase()} 已导出`);
-    } catch (e) {
-      setExportOpen(true);
-      notify("导出失败：" + (e as Error).message);
-    } finally {
-      setExporting(false);
-    }
-  }
+  const { download } = useFigureExport({
+    exporting,
+    plotPending,
+    setExporting,
+    plotReady,
+    c,
+    scale,
+    format,
+    graph,
+    name,
+    setLogs,
+    setExportOpen,
+    notify,
+  });
+
   return (
     <div
       aria-busy={saving}
