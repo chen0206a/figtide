@@ -11,12 +11,15 @@
 | 3 · 面板布局 hook | 同脚本 `-Step layout` | 190/190，19.38 秒 | 通过，20.91 秒 | 同上 |
 | 4 · 快捷键 hook | 同脚本 `-Step shortcuts` | 190/190，19.59 秒 | 通过，20.15 秒 | 同上 |
 | 5 · 保存/导出 hooks | 同脚本 `-Step save-export-final` | 190/190，19.63 秒 | 通过，19.82 秒 | 同上 |
+| 6 · 绘图队列 hook | 同脚本 `-Step plot` | 190/190，19.20 秒 | 通过，19.77 秒 | 同上 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 
 步骤 2 把 Recovery/Conflict/Export/VersionHistory 四个 Dialog 原样移出，props 明确列举所需值和回调；原始图表/历史快照及布局状态补充静态类型，不改变解析和运行行为。首轮构建发现抽取时把可空草稿推窄、历史查询推成成功态，已恢复 ChartDraft|null 和完整 UseQueryResult 类型后重跑通过。
 
 步骤 5 保存/导出函数转译后的 JavaScript 与 04 基线相同（仅 p 字段拆为独立参数、PDF 动态 import 调整相对目录）；静态比对脚本通过。构建曾提示导出 graph.current 可空，使用不改变运行行为的非空类型断言后重跑通过。提取辅助脚本的范围和简写属性识别错误已在生成时纠正，未纳入产品或提交。
+
+步骤 6 原样保留 deferred config、drawn.current、plotReady.current 的串行队列和 Plotly 点击/图例点击选中逻辑。首轮构建提示画布与统计底栏仍读取 rendered/renderConfig，因此 hook 额外返回这两个只读快照，重跑通过；没有改变队列调度或导出等待。
 
 ## 任务 04：真实研究工作区首页（2026-10-22）
 
