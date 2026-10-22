@@ -30,6 +30,53 @@ class WorkspaceIntegrationTest {
   }
 
   @Test
+  void jsonPreviewDoesNotImportAndExplicitArrayRulesReplayOnCommit() throws Exception {
+    long p =
+        request("/api/projects", "{\"name\":\"JSON import test\",\"description\":\"synthetic\"}")
+            .path("id")
+            .asLong();
+    String root = "/api/projects/" + p;
+    var file =
+        new MockMultipartFile(
+            "file",
+            "runs.json",
+            "application/json",
+            "{\"train\":[{\"epoch\":1,\"accuracy\":0.9}],\"test\":[{\"epoch\":2,\"accuracy\":0.8}]}"
+                .getBytes());
+    var preview =
+        json.readTree(
+            mvc.perform(multipart(root + "/datasets/preview").file(file))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString());
+    assertEquals(2, preview.path("record_paths").size());
+    assertFalse(preview.path("issues").isEmpty());
+    mvc.perform(get(root + "/datasets")).andExpect(content().json("[]"));
+    String rules =
+        "{\"schema_version\":1,\"delimiter\":\",\",\"sheet\":0,\"missingValues\":[],\"types\":{},\"roles\":{\"epoch\":\"x\",\"accuracy\":\"y\"},\"recordsPath\":\"/test\"}";
+    var checked =
+        json.readTree(
+            mvc.perform(multipart(root + "/datasets/preview").file(file).param("rules", rules))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString());
+    assertTrue(checked.path("issues").isEmpty());
+    var data =
+        json.readTree(
+            mvc.perform(multipart(root + "/datasets").file(file).param("rules", rules))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString());
+    assertEquals(checked.path("rows"), data.path("rows"));
+    assertEquals("/test", data.at("/parse_rules/recordsPath").asText());
+    mvc.perform(get(root + "/data/" + data.path("id").asLong() + "/original"))
+        .andExpect(content().bytes(file.getBytes()));
+  }
+
+  @Test
   void empiricalAndPhysicalConfigSurviveRealMysql() throws Exception {
     long p =
         request(

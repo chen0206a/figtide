@@ -61,7 +61,8 @@ public final class AuditSanitizer {
           "remove_series",
           "get_figure_spec",
           "get_dataset_profile",
-          "lint_figure");
+          "lint_figure",
+          "recommend_charts");
 
   private AuditSanitizer() {}
 

@@ -1,0 +1,15 @@
+{
+  "description": "合成演示数据，不是真实实验结果；请选择 /train 或 /validation",
+  "train": [
+    { "epoch": 1, "accuracy": 0.64, "loss": 1.02 },
+    { "epoch": 2, "accuracy": 0.73, "loss": 0.78 },
+    { "epoch": 3, "accuracy": 0.81, "loss": 0.54 },
+    { "epoch": 4, "accuracy": 0.86, "loss": 0.39 }
+  ],
+  "validation": [
+    { "epoch": 1, "accuracy": 0.59, "loss": 1.14 },
+    { "epoch": 2, "accuracy": 0.68, "loss": 0.91 },
+    { "epoch": 3, "accuracy": 0.74, "loss": 0.75 },
+    { "epoch": 4, "accuracy": 0.77, "loss": 0.68 }
+  ]
+}

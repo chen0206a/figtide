@@ -1,5 +1,7 @@
 # LabFlow
 
+新增[文件解析与选图流程](docs/DATA-TO-FIGURE.md)：CSV/TSV/TXT/XLSX/JSON/JSONL → 确认解析 → 可选 Agent 推荐 → 用户选择并预览真实数据 → 创建图表并进入编辑器。无模型也可手动完成全流程。
+
 面向 AI / ML 研究生的本地实验数据管理与科研绘图工作台。React 工作台 + Java 21 / Spring Boot 3 + 真实 MySQL 8；核心绘图完全本地运行，无需 AI API 或订阅。绘图助手为可选功能，默认禁用，需自行配置模型服务。
 
 已完成八批功能增量：[导入与工作台体验](docs/BATCH-1.md)、[实验关联与对比](docs/BATCH-2.md)、[分布图与多子图](docs/BATCH-3.md)、[论文尺寸与经验分布](docs/BATCH-4.md)、[模型评估与实际区间](docs/BATCH-5.md)、[数据处理与重复实验汇总](docs/BATCH-6.md)、[混淆矩阵与共同样本](docs/BATCH-7.md)、[科研成果复用与交付](docs/BATCH-8.md)。当前支持 11 种图表，完整流程连接真实 Java API 和 MySQL。

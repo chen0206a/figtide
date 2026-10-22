@@ -29,7 +29,14 @@ export function UploadDialog({
   onClose: () => void;
   onImported: (d: Dataset) => void;
 }) {
-  const [rules, setRules] = useState<ImportRules>(defaultImportRules);
+  const [rules, setRules] = useState<ImportRules>(() => ({
+    ...defaultImportRules(),
+    delimiter: /\.tsv$/i.test(file.name)
+      ? "\t"
+      : /\.txt$/i.test(file.name)
+        ? "auto"
+        : ",",
+  }));
   const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -46,11 +53,13 @@ export function UploadDialog({
     const timer = setTimeout(async () => {
       try {
         if (
-          !/\.(csv|xlsx)$/i.test(file.name) ||
+          !/\.(csv|tsv|txt|xlsx|json|jsonl)$/i.test(file.name) ||
           file.size === 0 ||
           file.size > 10 * 1024 * 1024
         )
-          throw new Error("请选择 10 MB 以内的非空 CSV / XLSX 文件");
+          throw new Error(
+            "请选择 10 MB 以内的非空 CSV、TSV、TXT、XLSX、JSON 或 JSONL 文件",
+          );
         const form = new FormData();
         form.append("file", file);
         form.append("rules", rulesKey);
@@ -121,10 +130,11 @@ export function UploadDialog({
         </span>
       </div>
       <fieldset disabled={committing} className="import-options">
-        {/\.csv$/i.test(file.name) ? (
+        {/\.(csv|tsv|txt)$/i.test(file.name) ? (
           <label>
             分隔符
             <select
+              disabled={/\.tsv$/i.test(file.name)}
               value={rules.delimiter}
               onChange={(e) =>
                 setRules({
@@ -135,12 +145,14 @@ export function UploadDialog({
                 })
               }
             >
+              <option value="auto">自动识别</option>
+              <option value="|">竖线</option>
               <option value=",">逗号</option>
               <option value=";">分号</option>
               <option value={"\t"}>制表符</option>
             </select>
           </label>
-        ) : (
+        ) : /\.xlsx$/i.test(file.name) ? (
           <label>
             工作表
             <select
@@ -163,6 +175,32 @@ export function UploadDialog({
               )}
             </select>
           </label>
+        ) : /\.json$/i.test(file.name) ? (
+          <label>
+            JSON 记录路径
+            <select
+              aria-label="JSON 记录路径"
+              value={rules.recordsPath || ""}
+              onChange={(e) =>
+                setRules({
+                  ...rules,
+                  recordsPath: e.target.value,
+                  types: {},
+                  roles: {},
+                })
+              }
+            >
+              <option value="">自动识别</option>
+              {preview?.record_paths?.filter(Boolean).map((path) => (
+                <option key={path} value={path}>
+                  {path}
+                </option>
+              ))}
+            </select>
+            <small>嵌套对象按点号展开；每行一个观测值。</small>
+          </label>
+        ) : (
+          <p>JSONL：每行一个对象，嵌套对象按点号展开。</p>
         )}
         <label>
           缺失符号（以逗号分隔）

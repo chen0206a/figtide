@@ -69,6 +69,7 @@ export type FieldRole = "none" | "x" | "y" | "group" | "error";
 export type ImportRules = {
   schema_version: 1;
   delimiter: string;
+  recordsPath?: string;
   sheet: number;
   missingValues: string[];
   types: Record<string, "number" | "string">;
@@ -87,6 +88,7 @@ export type ImportPreview = Pick<
   "filename" | "row_count" | "fields" | "rows" | "warnings"
 > & {
   sheets: string[];
+  record_paths?: string[];
   issues: { row: number; field: string; value: string; message: string }[];
   parse_rules: ImportRules;
 };

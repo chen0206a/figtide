@@ -1,5 +1,22 @@
 # 第一阶段验收记录
 
+## 最新增量：扩展导入与用户确认选图（2026-10-22）
+
+新增 CSV/TSV/TXT/XLSX/JSON/JSONL 统一 preview/commit、JSON 多数组显式选择、嵌套字段展开与长整数保护，以及“选择绘图方案”面板。推荐模式只读画像、返回经过字段校验的候选；用户选择后先 lint，再通过既有 charts API 保存初始版本并进入编辑器。协议/边界见 [DATA-TO-FIGURE.md](DATA-TO-FIGURE.md)。
+
+最终结果：
+
+- `mvn.cmd -B -f backend/pom.xml test`：**171 项运行，170 通过，1 项真实服务评测按开关跳过，0 失败/错误，30.022 秒**。新增解析边界、推荐只读隔离、真实 MySQL preview 不落库/commit 规则重放与原文件不变测试。
+- `npm.cmd test -- --maxWorkers=2`：**27 文件、162 项通过，28.98 秒**。选图组件覆盖同意、创建前 lint、失败拦截、关闭取消、按请求 ID 只读恢复；映射测试验证真实数据和不生成误差数据。
+- `npm.cmd run build`：**成功，18.40 秒**，含 TypeScript 检查。现有图表共享包仍触发大 chunk 提示；选图面板按需加载，未增加依赖。
+- `.\scripts\test-agent.ps1 -All`：**53/53 Chrome 流程通过，3.9 分钟**，随后新 JVM 审计恢复检查通过。新增 JSONL→真实 Java/HTTP 工具循环→选择散点→MySQL→刷新→SVG（含真实文字且无 raster image）与多数组 JSON→显式数组选择→手动绘图两条。初轮新增验收脚本的导出点击与 select 定位已修正，以上为最终全量结果。
+
+浏览器模型使用本地确定性协议夹具，不调用付费 API，不代表真实服务的选图质量已验证。主服务更新后原模型配置可用，但本轮没有向其发送推理请求。
+
+部署后真实接口 dry-run 检查：`samples/synthetic-training.jsonl` 解析 12 行、4 字段、0 问题；`synthetic-splits.json` 返回 `/train`、`/validation` 两个路径并要求用户选定。主库更新与预览前后均为 **projects 107 / charts 181 / dataset_versions 172 / experiments 13 / agent_runs 9 / agent_sessions 0**。Chrome 本轮清理47个测试项目；重启检查清理后 labflow_e2e 为 **projects 1 / agent_runs 0 / agent_sessions 0**。测试使用 labflow_test / labflow_e2e，未写入用户主库。
+
+![选图与真实数据预览](screenshots/chart-planner.png)
+
 ## 最新增量：会话累计预算、请求幂等与刷新恢复（2026-10-22）
 
 新增会话额度设置（默认180000、单轮最多60000），数据库跨轮预留/结算，取消或中断导致用量不明时保留整轮额度；余额不足在模型调用前拦截。请求ID在发送前生成，同ID同内容不重复调用，不同内容409。刷新/断线通过已有ID恢复运行、近期对话与可信提案基线，不自动重发模型。浏览器只留运行ID，不留密钥、提示词、完整配置或授权勾选。后端重启保留用量/审计，不复活内存提案。规则与限制见 [AGENT-SESSIONS.md](AGENT-SESSIONS.md)。

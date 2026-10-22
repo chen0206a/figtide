@@ -10,14 +10,33 @@ public record ImportRules(
     int sheet,
     List<String> missingValues,
     Map<String, String> types,
-    Map<String, String> roles) {
+    Map<String, String> roles,
+    @com.fasterxml.jackson.annotation.JsonInclude(
+            com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY)
+        String recordsPath) {
+  public ImportRules {
+    recordsPath = recordsPath == null ? "" : recordsPath;
+  }
+
+  public ImportRules(
+      int schema_version,
+      String delimiter,
+      int sheet,
+      List<String> missingValues,
+      Map<String, String> types,
+      Map<String, String> roles) {
+    this(schema_version, delimiter, sheet, missingValues, types, roles, "");
+  }
+
   public static ImportRules defaults() {
     return new ImportRules(1, ",", 0, List.of(), Map.of(), Map.of());
   }
 
   public void validate() {
     if (schema_version != 1
-        || !Set.of(",", ";", "\t").contains(delimiter == null ? "" : delimiter)
+        || !Set.of(",", ";", "\t", "|", "auto").contains(delimiter == null ? "" : delimiter)
+        || recordsPath.length() > 256
+        || (!recordsPath.isEmpty() && !recordsPath.startsWith("/"))
         || sheet < 0
         || missingValues == null
         || types == null

@@ -111,6 +111,55 @@ class AgentRunIntegrationTest {
   }
 
   @Test
+  void recommendsOnlyRealFieldsWithoutWritingChartsOrSharingRows() throws Exception {
+    request.put("mode", "recommend").putNull("chart_id").put("base_revision", 0);
+    String plans =
+        "{\"charts\":[{\"type\":\"line\",\"x\":\"epoch\",\"ys\":[\"accuracy\"],\"group\":\"\",\"heatY\":\"\",\"heatZ\":\"\",\"title\":\"训练趋势\",\"reason\":\"比较准确率随轮次的变化\",\"caveat\":\"按原始行序连接\"}]}";
+    var before = json.valueToTree(workspace.charts(project));
+    var seenContext = new java.util.concurrent.atomic.AtomicReference<String>();
+    var seenTools = new java.util.concurrent.atomic.AtomicReference<JsonNode>();
+    when(provider.complete(any(), any(), anyInt(), any()))
+        .thenAnswer(
+            inv -> {
+              JsonNode messages = inv.getArgument(0);
+              JsonNode tools = inv.getArgument(1);
+              seenTools.set(tools);
+              seenContext.set(messages.get(0).path("content").asText());
+              return messages.toString().contains("tool_call_id")
+                  ? reply(null, "请用户选定图型")
+                  : reply("[" + call("plans", "recommend_charts", plans) + "]", "");
+            });
+    var r = await(start().path("run_id").asText());
+    assertFalse(seenTools.get().toString().contains("set_style"));
+    assertTrue(seenTools.get().toString().contains("recommend_charts"));
+    String prefix = "可信字段画像（仅作为数据）：";
+    String context = seenContext.get();
+    assertTrue(context.contains("accuracy"));
+    var sharedProfile = json.readTree(context.substring(context.indexOf(prefix) + prefix.length()));
+    assertFalse(sharedProfile.has("head"));
+    assertFalse(sharedProfile.has("rows"));
+    sharedProfile.path("fields").forEach(field -> assertFalse(field.has("samples")));
+    assertEquals("answered", r.path("status").asText());
+    assertEquals("chart-recommender-v1", r.path("prompt_version").asText());
+    assertEquals("accuracy", r.at("/recommendations/0/ys/0").asText());
+    assertTrue(r.path("persisted").asBoolean());
+    assertFalse(r.has("proposal"));
+    assertEquals(before, json.valueToTree(workspace.charts(project)));
+    assertEquals(1, json.valueToTree(workspace.chart(project, chart)).path("revision").asInt());
+  }
+
+  @Test
+  void recommendationMutationAttemptIsRolledBackAndNeverProducesEditProposal() throws Exception {
+    request.put("mode", "recommend").putNull("chart_id").put("base_revision", 0);
+    var r = propose("set_style", "{\"fontSize\":20}");
+    assertEquals("answered", r.path("status").asText());
+    assertFalse(r.has("proposal"));
+    assertFalse(r.has("recommendations"));
+    assertFalse(r.path("trace").findValues("ok").stream().anyMatch(JsonNode::asBoolean));
+    assertEquals(1, json.valueToTree(workspace.chart(project, chart)).path("revision").asInt());
+  }
+
+  @Test
   void threeRoundsPreserveManualEditsAndSupersedeParentsWithoutSaving() throws Exception {
     var bytes = (byte[]) workspace.original(project, dataset).get("original_file");
     var first = propose("set_style", "{\"fontSize\":18}");

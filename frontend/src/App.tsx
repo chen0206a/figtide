@@ -50,6 +50,7 @@ import { SourceProvenance } from "./experiments/SourceProvenance";
 import { ProcessingDialog } from "./processing/ProcessingDialog";
 const loadEditor = () => import("./editor/Editor");
 const Editor = lazy(loadEditor);
+const ChartPlanner = lazy(() => import("./components/ChartPlanner"));
 export default function App() {
   const qc = useQueryClient();
   const location = useLocation();
@@ -339,7 +340,7 @@ export default function App() {
           ref={upload}
           data-testid="file-upload"
           type="file"
-          accept=".csv,.xlsx"
+          accept=".csv,.tsv,.txt,.xlsx,.json,.jsonl"
           hidden
           onChange={(e) => e.target.files?.[0] && importFile(e.target.files[0])}
         />
@@ -442,6 +443,10 @@ export default function App() {
                   onRetry={() => datasets.refetch()}
                   onUpload={chooseUpload}
                   busy={busy}
+                  onChartCreated={(id) => {
+                    refresh();
+                    void navigate("editor", id);
+                  }}
                   onPlot={() => {
                     void navigate("editor", 0);
                   }}
@@ -557,6 +562,7 @@ function DataPage({
   onUpload,
   busy,
   onPlot,
+  onChartCreated,
   onProcessed,
 }: {
   project: number;
@@ -569,9 +575,11 @@ function DataPage({
   onUpload: (id?: number | null) => void;
   busy: boolean;
   onPlot: () => void;
+  onChartCreated: (id: number) => void;
   onProcessed: (data: Dataset, plot: boolean) => void;
 }) {
   const [processing, setProcessing] = useState<Dataset | null>(null);
+  const [planning, setPlanning] = useState<Dataset | null>(null);
   const id = selected || datasets[0]?.id;
   const detail = useQuery({
     queryKey: ["data", project, id],
@@ -591,7 +599,7 @@ function DataPage({
         </div>
         <Button disabled={busy} onClick={() => onUpload()}>
           <Upload size={16} />
-          {busy ? "解析中…" : "上传 CSV / XLSX"}
+          {busy ? "解析中…" : "上传数据文件"}
         </Button>
       </div>
       {loading ? (
@@ -673,6 +681,28 @@ function DataPage({
                       </Button>
                     </div>
                   </div>
+                  <div
+                    className="planner-entry"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: 16,
+                      padding: 18,
+                      background: "#f6f6f7",
+                      borderRadius: 12,
+                      margin: "18px 0",
+                    }}
+                  >
+                    <div>
+                      <b>数据已就绪，下一步选择怎样表达。</b>
+                      <p style={{ margin: "6px 0 0", fontSize: 13 }}>
+                        让助手推荐图型，或自己选择字段，先预览再创建。
+                      </p>
+                    </div>
+                    <Button onClick={() => setPlanning(detail.data)}>
+                      选择绘图方案 <ArrowRight size={15} />
+                    </Button>
+                  </div>
                   <div className="field-pills">
                     {detail.data.fields.map((f) => (
                       <span key={f.name}>
@@ -704,7 +734,7 @@ function DataPage({
         <div className="empty-state bordered">
           <Database size={40} />
           <h2>将实验结果带入工作区</h2>
-          <p>支持 UTF-8 CSV 和无宏 XLSX · 最多 10 MB / 20,000 行</p>
+          <p>CSV / TSV / TXT / XLSX / JSON / JSONL · 最多 10 MB / 20,000 行</p>
           <Button disabled={busy} onClick={() => onUpload()}>
             <Upload size={16} />
             选择数据文件
@@ -721,6 +751,20 @@ function DataPage({
             onProcessed(d, plot);
           }}
         />
+      )}
+      {planning && (
+        <Suspense fallback={<p role="status">正在打开选图工作区…</p>}>
+          <ChartPlanner
+            key={`${project}:${planning.id}`}
+            project={project}
+            data={planning}
+            onClose={() => setPlanning(null)}
+            onCreated={(id) => {
+              setPlanning(null);
+              onChartCreated(id);
+            }}
+          />
+        </Suspense>
       )}
     </>
   );

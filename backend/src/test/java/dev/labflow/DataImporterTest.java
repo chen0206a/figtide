@@ -13,6 +13,72 @@ class DataImporterTest {
   final DataImporter parser = new DataImporter();
 
   @Test
+  void importsTabTextAndQuotedAutoDelimiterWithoutChangingCells() {
+    var tab =
+        parser.parse("实验.tsv", "epoch\t准确率\n1\t0.9\n2\t0.95".getBytes(StandardCharsets.UTF_8));
+    assertEquals(2, tab.rows().size());
+    assertEquals(0.9, tab.rows().getFirst().get("准确率"));
+    var rules =
+        new dev.labflow.importer.ImportRules(
+            1, "auto", 0, java.util.List.of(), java.util.Map.of(), java.util.Map.of());
+    var text = parser.parse("a.txt", "epoch|label|value\n1|\"a|b\"|0.9\n2|c|0.8".getBytes(), rules);
+    assertEquals("a|b", text.rows().getFirst().get("label"));
+    assertEquals(3, text.fields().size());
+  }
+
+  @Test
+  void jsonObjectsUnionNestedFieldsAndPreserveMissingValuesAndLargeIds() {
+    var d =
+        parser.parse(
+            "实验.json",
+            ("\uFEFF[{\"id\":9007199254740993,\"metrics\":{\"acc\":0.9},\"model\":\"甲\"},{\"id\":9007199254740994,\"loss\":0.2}]")
+                .getBytes(StandardCharsets.UTF_8));
+    assertEquals(4, d.fields().size());
+    assertEquals("9007199254740993", d.rows().getFirst().get("id"));
+    assertEquals(0.9, d.rows().getFirst().get("metrics.acc"));
+    assertNull(d.rows().get(1).get("metrics.acc"));
+    assertEquals("string", d.fields().getFirst().get("type"));
+    assertFalse(d.warnings().isEmpty());
+  }
+
+  @Test
+  void ambiguousJsonArraysRequireExplicitReplayablePath() {
+    byte[] raw =
+        "{\"train\":[{\"epoch\":1,\"acc\":0.9}],\"test\":[{\"epoch\":2,\"acc\":0.8}]}".getBytes();
+    assertThrows(ApiException.class, () -> parser.parse("a.json", raw));
+    assertEquals(java.util.List.of("/train", "/test"), parser.recordPaths("a.json", raw));
+    var rules =
+        new dev.labflow.importer.ImportRules(
+            1, ",", 0, java.util.List.of(), java.util.Map.of(), java.util.Map.of(), "/test");
+    var d = parser.parse("a.json", raw, rules);
+    assertEquals(2.0, d.rows().getFirst().get("epoch"));
+  }
+
+  @Test
+  void jsonlSupportsBlankLinesAndRejectsMalformedLineWithoutDroppingIt() {
+    var d =
+        parser.parse(
+            "run.jsonl", "{\"epoch\":1,\"acc\":0.8}\n\n{\"epoch\":2,\"acc\":null}".getBytes());
+    assertEquals(2, d.rows().size());
+    assertNull(d.rows().get(1).get("acc"));
+    var e =
+        assertThrows(
+            ApiException.class, () -> parser.parse("run.jsonl", "{\"epoch\":1}\nnope".getBytes()));
+    assertTrue(e.getMessage().contains("2"));
+  }
+
+  @Test
+  void rejectsDuplicateJsonKeysTrailingCodeArrayCellsAndFlattenCollisions() {
+    for (String raw :
+        java.util.List.of(
+            "[{\"a\":1,\"a\":2}]",
+            "[{\"a\":1}] alert(1)",
+            "[{\"a\":[1,2]}]",
+            "[{\"a.b\":1,\"a\":{\"b\":2}}]"))
+      assertThrows(ApiException.class, () -> parser.parse("a.json", raw.getBytes()), raw);
+  }
+
+  @Test
   void utf8BomChineseMissingAndNonFinite() {
     var d =
         parser.parse(

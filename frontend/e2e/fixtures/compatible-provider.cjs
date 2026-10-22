@@ -37,39 +37,86 @@ const server = http.createServer(async (req, res) => {
   const nonce = prompt.match(/[0-9a-f-]{36}/)?.[0];
   const connectionChat = prompt.startsWith("LabFlow connection check.");
   const connectionTool = prompt.startsWith("LabFlow tool check.");
-  const message = connectionChat
-    ? { role: "assistant", content: nonce }
-    : connectionTool
+  const recommending = payload.tools?.some(
+    (t) => t.function?.name === "recommend_charts",
+  );
+  const message = recommending
+    ? afterTools
       ? {
           role: "assistant",
-          content: null,
-          tool_calls: [tool("probe", "labflow_connection_check", { nonce })],
+          content: "建议用折线观察训练趋势，或用散点比较真实观测。请选择图型。",
         }
-      : question
-        ? { role: "assistant", content: "请问要调整 X 轴还是 Y 轴？" }
-        : afterTools
-          ? {
-              role: "assistant",
-              content:
-                "已将标题、字号与图例调整为更清晰的布局。请查看右侧预览后确认。",
-            }
-          : {
-              role: "assistant",
-              content: null,
-              tool_calls: refineFont
-                ? [tool("font", "set_style", { fontSize: 20 })]
-                : refineAxis
-                  ? [tool("grid", "set_axis", { axis: "y", grid: false })]
-                  : followup
-                    ? [tool("axis", "set_axis", { axis: "y", min: 0, max: 1 })]
-                    : [
-                        tool("title", "set_style", {
-                          title: "Agent proposal · synthetic",
-                          fontSize: 18,
-                        }),
-                        tool("legend", "set_legend", { position: "right" }),
-                      ],
-            };
+      : {
+          role: "assistant",
+          content: null,
+          tool_calls: [
+            tool("recommend", "recommend_charts", {
+              charts: [
+                {
+                  type: "line",
+                  x: "epoch",
+                  ys: ["accuracy"],
+                  group: "",
+                  heatY: "",
+                  heatZ: "",
+                  title: "训练准确率",
+                  reason: "观察准确率随训练轮次的变化",
+                  caveat: "按原始行顺序连接，不自动排序。",
+                },
+                {
+                  type: "scatter",
+                  x: "epoch",
+                  ys: ["accuracy"],
+                  group: "",
+                  heatY: "",
+                  heatZ: "",
+                  title: "轮次与准确率",
+                  reason: "比较每个轮次的真实观测点",
+                  caveat: "不拟合曲线，不生成误差棒。",
+                },
+              ],
+            }),
+          ],
+        }
+    : connectionChat
+      ? { role: "assistant", content: nonce }
+      : connectionTool
+        ? {
+            role: "assistant",
+            content: null,
+            tool_calls: [tool("probe", "labflow_connection_check", { nonce })],
+          }
+        : question
+          ? { role: "assistant", content: "请问要调整 X 轴还是 Y 轴？" }
+          : afterTools
+            ? {
+                role: "assistant",
+                content:
+                  "已将标题、字号与图例调整为更清晰的布局。请查看右侧预览后确认。",
+              }
+            : {
+                role: "assistant",
+                content: null,
+                tool_calls: refineFont
+                  ? [tool("font", "set_style", { fontSize: 20 })]
+                  : refineAxis
+                    ? [tool("grid", "set_axis", { axis: "y", grid: false })]
+                    : followup
+                      ? [
+                          tool("axis", "set_axis", {
+                            axis: "y",
+                            min: 0,
+                            max: 1,
+                          }),
+                        ]
+                      : [
+                          tool("title", "set_style", {
+                            title: "Agent proposal · synthetic",
+                            fontSize: 18,
+                          }),
+                          tool("legend", "set_legend", { position: "right" }),
+                        ],
+              };
   const respond = () => {
     if (res.destroyed) return;
     res.writeHead(200, { "Content-Type": "application/json" }).end(

@@ -156,7 +156,7 @@ export default function Editor(p: Props) {
         <p>导入实验结果，开始构建你的第一张科研图表。</p>
         <Button onClick={p.onUpload}>
           <Upload size={16} />
-          导入 CSV / XLSX
+          导入数据文件
         </Button>
         <small>折线 · 分组柱状 · 散点 · 热力图 · 箱线 · 小提琴</small>
       </div>

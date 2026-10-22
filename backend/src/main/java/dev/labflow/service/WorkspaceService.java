@@ -133,7 +133,8 @@ public class WorkspaceService {
       parsed = importer.parse(filename, bytes, rules);
     } catch (ApiException e) {
       var sheets = importer.sheetNames(filename, bytes);
-      if (sheets.isEmpty()) throw e;
+      var paths = importer.recordPaths(filename, bytes);
+      if (sheets.isEmpty() && paths.isEmpty()) throw e;
       return Map.of(
           "filename",
           filename,
@@ -147,15 +148,19 @@ public class WorkspaceService {
           List.of(),
           "sheets",
           sheets,
+          "record_paths",
+          paths,
           "issues",
           List.of(
               Map.of(
                   "row",
                   1,
                   "field",
-                  "工作表",
+                  sheets.isEmpty() ? "记录路径" : "工作表",
                   "value",
-                  sheets.get(Math.min(rules.sheet(), sheets.size() - 1)),
+                  sheets.isEmpty()
+                      ? rules.recordsPath()
+                      : sheets.get(Math.min(rules.sheet(), sheets.size() - 1)),
                   "message",
                   e.getMessage())),
           "parse_rules",
@@ -174,6 +179,8 @@ public class WorkspaceService {
         parsed.warnings(),
         "sheets",
         parsed.sheets(),
+        "record_paths",
+        parsed.recordPaths(),
         "issues",
         parsed.issues(),
         "parse_rules",

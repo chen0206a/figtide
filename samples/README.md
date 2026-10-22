@@ -16,3 +16,9 @@
 `synthetic-grouped-runs.csv` 为 17 行人工合成逐次观测（2 个模型 × 3 个 epoch）。按 model+epoch 分组，以 seed 校验重复标识，accuracy 为指标，X=epoch、类别=model，并明确按 model、epoch 升序排序。第一组含一条缺失值；Method A 的最后一组只有一次有效运行，均值可展示，SD/SEM 和区间必须缺失。计算出的 SD/SEM 只是合成数值的汇总，不能据此作模型结论。
 
 `synthetic-multiclass.csv` 为 12 条人工合成三类预测，truth 为真实标签，model_a/model_b 为两个模型预测，sample_id 唯一。类别 cat/dog/bird 只是演示标签；同时含缺失真实值与缺失预测，用于比较独立有效样本和共同有效样本的差异。不是已训练分类器的结果。选择混淆矩阵后明确读取并保存类别顺序，不自动将缺失判作某类。
+
+## 新格式演示
+
+`synthetic-training.jsonl`：合成训练日志，12 条记录，嵌套指标展开为 `metrics.accuracy` / `metrics.loss`。可选择 epoch 为 X、metrics.accuracy 为 Y、model 为分组，预览两条真实来源于样例行的学习曲线；没有误差数据，不配误差棒。
+
+`synthetic-splits.json`：合成训练/验证数组，预览时必须明确选择 `/train` 或 `/validation`，确认后才导入所选数组。两份文件均为界面验收样例，不是真实科研成果。

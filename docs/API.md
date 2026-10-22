@@ -1,5 +1,9 @@
 # API v1
 
+## 数据解析与选图（2026-10-22）
+
+导入扩展到 CSV/TSV/TXT/XLSX/JSON/JSONL，复用 datasets preview/commit。`POST /projects/{p}/agent/runs` 增加可选 `mode:"recommend"`，工具集仅提供读画像、读图型规范、提交字段方案；状态 answered 时可返回 recommendations。用户明确创建时才调用既有 lint 和 charts API。字段契约、请求示例、兼容性、隐私与限制见 [DATA-TO-FIGURE.md](DATA-TO-FIGURE.md)。
+
 ## Agent 2c：持久审计与决策
 
 `GET /projects/{p}/agent/history?chart_id=&outcome=&page=0&size=10` 返回 `{items,page,size,has_more}`（可省略chart/outcome）；`GET /projects/{p}/agent/runs/{id}/audit` 从MySQL返回脱敏trace、用量、版本与提案摘要。原 `GET runs/{id}` 在内存无此运行时回退审计详情（`historical:true`），不恢复完整config或自动应用。
@@ -302,7 +306,8 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 }
 ```
 
-- delimiter 允许逗号、分号、制表符；sheet 为从 0 开始的工作表索引。
+- delimiter 允许逗号、分号、制表符、竖线或 `auto`；TSV 固定制表符，TXT 前端默认 auto；sheet 为从 0 开始的工作表索引。支持 CSV/TSV/TXT/XLSX/JSON/JSONL。
+- JSON 可选 `recordsPath`（JSON Pointer，例如 `/history`），多记录数组需显式选择。空值默认省略，原有 schema_version=1 请求及响应保持兼容。预览新增 `record_paths` 供选择，失败时仍可返回候选路径与 issues。JSONL 不接受路径。
 - types 值为 `number|string`；没有覆盖的字段仍自动推断。
 - roles 值为 `none|x|y|group|error`。x/group/error 各最多一个，y 可多个；y/error 必须为数值字段。无角色不代表删除列。
 - missingValues 为区分大小写的显式标记，最多 30 个；原始文件完整保留。不自动解释 `<0.01` 或 `-999`。

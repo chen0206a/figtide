@@ -82,7 +82,7 @@ export function HomePage(p: Props) {
     {
       title: p.busy ? "正在导入…" : "导入数据",
       desc: "从一份实验结果开始。",
-      detail: "CSV / XLSX · 原始文件保留",
+      detail: "表格与 JSON 日志 · 原始文件保留",
       Icon: Upload,
       color: "violet",
       action: "选择数据文件",
