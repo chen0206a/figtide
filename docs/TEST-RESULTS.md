@@ -8,6 +8,7 @@
 | --- | --- | --- | --- | --- |
 | 1 · 公共控件 | `.\.runtime\check-refactor05.ps1 -Step controls`（执行 npm test / npm run build） | 190/190，20.22 秒 | 通过，20.81 秒 | 按任务要求在第 7 步及最终统一回归 |
 | 2 · 四个对话框 | 同脚本 `-Step dialogs` | 190/190，20.52 秒 | 通过，19.73 秒 | 同上 |
+| 3 · 面板布局 hook | 同脚本 `-Step layout` | 190/190，19.38 秒 | 通过，20.91 秒 | 同上 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 
