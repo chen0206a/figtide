@@ -55,7 +55,7 @@ test("stable desktop header and compact data/experiment pages remain usable at 3
   for (const width of [1280, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("/");
-    await expect(page.locator(".launch-home")).toBeVisible();
+    await expect(page.locator(".home")).toBeVisible();
     const read = async () => ({
       brand: await page.locator(".masthead .brand").boundingBox(),
       nav: await page.getByRole("navigation", { name: "主导航" }).boundingBox(),

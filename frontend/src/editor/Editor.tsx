@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   useState,
   useEffect,
@@ -181,6 +182,20 @@ export default function Editor(p: Props) {
 function Workbench(
   p: Props & { data: Dataset; original: any; onDataset: (id: number) => void },
 ) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [assistantPrompt] = useState(
+    () =>
+      (location.state as { assistantPrompt?: string } | null)
+        ?.assistantPrompt || "",
+  );
+  useEffect(() => {
+    if (assistantPrompt)
+      navigate(location.pathname + location.search, {
+        replace: true,
+        state: null,
+      });
+  }, []);
   const queryClient = useQueryClient();
   const { confirm, dialog: confirmDialog } = useConfirm();
   const [widths, setWidths] = useState(() => {
@@ -387,7 +402,7 @@ function Workbench(
   const [plotError, setPlotError] = useState("");
   const [reuseOpen, setReuseOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
-  const [agentOpen, setAgentOpen] = useState(false);
+  const [agentOpen, setAgentOpen] = useState(!!assistantPrompt);
   const [reuseTab, setReuseTab] = useState<"builtin" | "style">("style");
   const [previewPreset, setPreviewPreset] = useState("");
   const plotReady = useRef<Promise<any>>(Promise.resolve());
@@ -2101,6 +2116,7 @@ function Workbench(
           key={`${p.project}:${p.chartId || "draft"}:${p.data.id}`}
           docked
           open={agentOpen}
+          initialPrompt={assistantPrompt}
           project={p.project}
           chartId={id}
           revision={revision}

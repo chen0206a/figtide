@@ -31,7 +31,7 @@ import { api, send, type Project, type Dataset } from "./lib/api";
 import { Button } from "./components/ui/button";
 import { Dialog } from "./components/ui/dialog";
 import { DataPage } from "./data/DataPage";
-import { HomePage } from "./components/HomePage";
+import { HomePage } from "./components/home/HomePage";
 import { WorkbenchSkeleton } from "./components/WorkbenchSkeleton";
 import { LabFlowMark } from "./components/LabFlowMark";
 import { UploadDialog } from "./components/UploadDialog";
@@ -423,6 +423,12 @@ export default function App() {
                   onData={() => navigate("data")}
                   onChart={(id) => navigate("editor", id)}
                   onRetry={() => charts.refetch()}
+                  onModelConnection={() => setConnectionOpen(true)}
+                  onAssistant={(chartId, prompt) =>
+                    routerGo(workspaceUrl("editor", project, chartId), {
+                      state: { assistantPrompt: prompt },
+                    })
+                  }
                 />
               ) : page === "data" ? (
                 <DataPage

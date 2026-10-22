@@ -137,6 +137,7 @@ const statusNames: Record<AgentRun["status"], string> = {
   incomplete: "运行未完成",
 };
 export function AgentAssistant(p: {
+  initialPrompt?: string;
   project: number;
   chartId: number | null;
   revision: number;
@@ -168,7 +169,7 @@ export function AgentAssistant(p: {
   const cursor = useRef<string | null>(null);
   const failures = useRef(0);
   const storeKey = recoveryKey(p.project, p.chartId, p.data.id);
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState(p.initialPrompt ?? "");
   const [connectionOpen, setConnectionOpen] = useState(false);
   const [turns, setTurns] = useState<ConversationTurn[]>([]);
   const sentPrompt = useRef("");

@@ -9,8 +9,6 @@ import "./styles/tokens.css";
 import "./styles.css";
 import "./components/experience.css";
 import "./components/navigation.css";
-import "./components/showcase.css";
-import "./components/home-workspace.css";
 import "./styles/shell.css";
 const client = new QueryClient({
   defaultOptions: {

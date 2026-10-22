@@ -1,5 +1,24 @@
 # 第一阶段验收记录
 
+## 任务 04：真实研究工作区首页（2026-10-22）
+
+按 `refactor/tasks/04-home.md` 替换首页，参考实现按原组件边界分为 HomePage、ContinueCard、HomeSide、HomeTables，另有 homeData 与 token 化 home.css。继续编辑区域使用真实图表配置和不可变数据版本渲染；项目表只显示已有计数，最近图表使用图标，不虚构缩略图、备份时间或项目更新时间。保留搜索/分页/项目切换、空/错/加载状态与本机草稿标记。新增 FigurePreview 并由 StylePreview 共用，保留 style-preview 类名和可访问 busy 状态。
+
+首页助手仅通过路由 state 带入文字；AgentAssistant 只新增可选 initialPrompt 和初始 useState 值，其他状态机/请求/预算逻辑未改。Workbench 首次挂载消费后 replace 清除 state；刷新不重复展开。新单测与真实 E2E 均检查没有 POST agent/runs。未改后端、API、schema、Flyway、原始数据、草稿保存和提案确认机制。
+
+删除旧首页、FigureShowcase 及对应测试/CSS，移除 home-workspace.css 和 experience.css 中已无引用的首页规则，删除 showcase E2E、public/showcase/ 与 scripts/render-showcase.py。首页不再展示第三方示例图，因此不再附带这批 Matplotlib 素材及其许可证说明；未修改其他依赖的许可文件。
+
+实际验证：
+
+- `cd frontend; npm test`：最终 **28 文件、190/190 通过，21.53 秒**；包括新 HomePage 7 项、homeData 7 项及助手预填不启动运行测试。
+- `cd frontend; npm run build`：最终 **通过，18.55 秒**，既有大 chunk 提示保留。入口 index 约 565 kB，Plotly 位于独立 FigurePreview 分包约 1,473 kB，没有加入入口；首页使用 lazy 加载真实预览。
+- 隔离流程执行 `test e2e/home.spec.ts e2e/home-workspace.spec.ts e2e/navigation.spec.ts e2e/shell-pages.spec.ts e2e/design-tokens.spec.ts e2e/styles-library.spec.ts`：最终 **11/11 通过，46.1 秒**，新 JVM 审计恢复检查通过，清理本轮 21 个测试项目。最后一次托管 Vite 与 Playwright 自启有端口竞争提示，但测试均成功；后续测试辅助脚本已增加就绪等待，产品启动脚本未改。
+- 新 E2E 覆盖真实预览、继续编辑、未保存标记、项目搜索/分页与实验/图表联动、助手预填且未发送、history state 消费、刷新后关闭、390/1280/1440/1920 无页面级横向溢出。仅无项目空状态边界明确拦截 GET projects 为空，不对真实主流程、数据、图表、保存或助手接口使用 Mock；避免删除已有项目来构造空工作区。
+
+过程问题如实记录：第一次构建发现 initialPrompt 误加到内部 Surface 类型，已改到 AgentAssistant props；初次浏览器 **5/11 通过**：旧首页选择器与导航按钮断言需要更新，分页夹具搜索 “1” 同时匹配 10/11，另有 3 项暴露共享预览把 aria-busy 和 aria-label 放到不同节点。已分别按新页面等价更新断言、将测试项目编号补零、把 label/role/busy 放回同一预览外层，保留全部断言；随后 **11/11 通过，48.9 秒**，新 JVM 审计恢复检查通过。最后输入框 CSS 优先级修正后再次运行整组复验。最初测试启动时本地 MySQL 尚未运行，未执行浏览器；已使用现有 start.ps1 -SkipBuild 恢复本地服务。
+
+截图 `docs/screenshots/home.png`（1440px，全页，合成演示夹具）已更新。参考代码中的硬编码 UI 尺寸和中性色改用 token；共享预览保留真实 Plotly 尺寸计算。与任务文件偏差：额外按现有组件边界拆开首页，增加 aria-busy 兼容处理；无业务范围偏差。需要人决定的事：无。04 验收提交后按用户授权继续 05。
+
 ## 任务 03：统一外壳、拆出数据页与整理实验页（2026-10-22）
 
 按用户“做完 01d 进入 03”的授权执行 `refactor/tasks/03-shell-and-pages.md`。本轮仅调整前端布局、组件组织和对应断言，不修改后端、API、schema、Flyway、实验对比/数据处理/上传逻辑、编辑器历史与草稿，也不修改助手的状态机、预算、幂等或恢复逻辑。

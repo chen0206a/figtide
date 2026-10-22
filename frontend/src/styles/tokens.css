@@ -128,6 +128,18 @@
   --lf-selection-bar-h: 70px;
   --lf-selection-bar-mobile-h: 116px;
 
+  --lf-home-size-18: 18px;
+  --lf-home-size-620: 620px;
+  --lf-home-size-340: 340px;
+  --lf-home-size-300: 300px;
+  --lf-home-size-460: 460px;
+  --lf-home-size-420: 420px;
+  --lf-home-size-6: 6px;
+  --lf-home-size-14: 14px;
+  --lf-home-size-240: 240px;
+  --lf-home-size-38: 38px;
+  --lf-home-size-220: 220px;
+
   /* ---- motion ---- */
   --lf-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --lf-duration: 160ms;

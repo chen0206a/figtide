@@ -105,6 +105,7 @@ it("permits explicit appearance edits in a structural batch without allowing oth
 function setup(
   mock?: (url: string, init?: RequestInit) => unknown,
   docked = false,
+  initialPrompt = "",
 ) {
   const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
     const body =
@@ -134,6 +135,7 @@ function setup(
     onApply,
     onClose,
     docked,
+    initialPrompt,
     open: true,
   };
   const ui = (values = props) => (
@@ -144,6 +146,12 @@ function setup(
   const view = render(ui());
   return { fetcher, onApply, onClose, ...view, ui, props };
 }
+it("prefills a home prompt without starting a model run", async () => {
+  const s = setup(undefined, true, "把图例放到右侧");
+  expect(await screen.findByRole("textbox", { name: "希望怎样调整？" })).toHaveValue("把图例放到右侧");
+  await waitFor(() => expect(s.fetcher).toHaveBeenCalled());
+  expect(s.fetcher.mock.calls.some(([url, init]) => /\/agent\/runs$/.test(url) && init?.method === "POST")).toBe(false);
+});
 it("keeps a docked proposal and conversation visible after applying, and hides without losing context", async () => {
   const s = setup(undefined, true);
   await start();

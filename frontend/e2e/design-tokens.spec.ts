@@ -66,7 +66,7 @@ test("four real workspace pages keep their layout while adopting shared tokens",
   }, project.id);
   const measurements: Record<string, unknown> = {};
   const pages = [
-    { name: "home", path: "/", ready: ".launch-hero", frame: ".launch-home" },
+    { name: "home", path: "/", ready: ".home-intro", frame: ".home" },
     {
       name: "experiments",
       path: `/projects/${project.id}/experiments`,
@@ -115,7 +115,7 @@ test("four real workspace pages keep their layout while adopting shared tokens",
         height: sizing.header,
       });
       const inset =
-        entry.name === "experiments" || entry.name === "data"
+        entry.name === "home" || entry.name === "experiments" || entry.name === "data"
           ? (1440 - sizing.max) / 2 +
             (entry.name === "data" ? sizing.gutter : 0)
           : previous[entry.name].frame.x;
@@ -159,11 +159,11 @@ test("four real workspace pages keep their layout while adopting shared tokens",
               .trim(),
           );
         expect(inverseText).toBe("#b8c0cc");
-        await expect(page.locator(".featured-copy p")).toHaveCSS(
+        await expect(page.locator(".home-assistant-form label")).toHaveCSS(
           "color",
           "rgb(184, 192, 204)",
         );
-        await expect(page.locator(".featured-context")).toHaveCSS(
+        await expect(page.locator(".home-assistant-model")).toHaveCSS(
           "color",
           "rgb(184, 192, 204)",
         );
