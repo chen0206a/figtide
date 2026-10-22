@@ -13,6 +13,7 @@
 | 5 · 保存/导出 hooks | 同脚本 `-Step save-export-final` | 190/190，19.63 秒 | 通过，19.82 秒 | 同上 |
 | 6 · 绘图队列 hook | 同脚本 `-Step plot` | 190/190，19.20 秒 | 通过，19.77 秒 | 同上 |
 | 7 · 工具栏与保存菜单 | 同脚本 `-Step toolbar` | 192/192，19.54 秒 | 通过，19.52 秒 | 全量 52/58；修正旧首页定位后相关 9/9 补跑通过，58 个唯一用例均有成功记录 |
+| 8a · 数据图层左栏 | 同脚本 `-Step data-panel` | 192/192，22.94 秒 | 通过，19.65 秒 | 最终统一回归 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 
