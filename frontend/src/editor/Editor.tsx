@@ -31,6 +31,7 @@ import { ConflictDialog } from "./workbench/dialogs/ConflictDialog";
 import { ExportDialog } from "./workbench/dialogs/ExportDialog";
 import { RecoveryDialog } from "./workbench/dialogs/RecoveryDialog";
 import { VersionHistoryDialog } from "./workbench/dialogs/VersionHistoryDialog";
+import { EditorStatusBar } from "./workbench/EditorStatusBar";
 import { EditorToolbar } from "./workbench/EditorToolbar";
 import { FigureCanvas } from "./workbench/FigureCanvas";
 import { fittedZoom } from "./workbench/fitZoom";
@@ -591,17 +592,7 @@ function Workbench({
           }}
         />
       </div>
-      <div className="editor-statusbar">
-        <span>
-          LabFlow <span className="muted">/</span> 科研绘图工作台
-        </span>
-        <span>
-          {data.filename} · 数据版本 v{data.version}{" "}
-          <span className="status-separator">|</span>{" "}
-          <span className="green-dot" />
-          本地工作区
-        </span>
-      </div>
+      <EditorStatusBar {...{ data }} />
       {confirmDialog}
       <RecoveryDialog
         {...{
