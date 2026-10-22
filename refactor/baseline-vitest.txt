@@ -1,0 +1,25 @@
+Task 00 frontend baseline
+Date: 2026-10-22 13:34:09 +09:00
+Source commit: 1e4672d9c3282f044f1e3a1ed77ee2d5bbe7c0fb; snapshot: 0f0325c
+Command: npm test
+Prerequisite: npm ci succeeded (238 packages, 0 vulnerabilities). Initial EPERM file lock resolved by stopping and restoring the verified local Vite process; no source or lockfile edits.
+
+
+> labflow-ui@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 D:/RAG-agent项目/LabFlow/frontend
+
+
+ Test Files  27 passed (27)
+      Tests  162 passed (162)
+   Start at  13:34:10
+   Duration  12.65s (environment 56%, setup 28%, tests 9%, import 5%, transform 2%)
+
+Environment  jsdom was created 27 times · 114.71s total, 56% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+EXIT_CODE=0

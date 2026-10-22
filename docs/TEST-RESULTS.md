@@ -1,5 +1,23 @@
 # 第一阶段验收记录
 
+## 任务 00：前端重构基线（2026-10-22）
+
+按用户要求仅完成 `refactor/tasks/00-baseline.md`，未开始任务 01，也未修复业务代码。压缩包中的根 `AGENTS.md` 与 `refactor/` 共27个文件已放入仓库，并逐文件校验与压缩包字节一致；参考代码和补丁只保存，未应用。
+
+实际起点是干净的 `1e4672d`，不是计划内注明的 `77ee2ba + 未提交改动`；仓库不存在任务中提到的 `HANDOFF/工作区状态.txt`。因此快照提交 `0f0325c` 仅纳入新导入的文档包，随后创建 `refactor/frontend` 分支。
+
+实际执行与结果：
+
+- `cd frontend; npm ci`：首次因正在运行的本项目 Vite 占用 `lightningcss.win32-x64-msvc.node` 而 EPERM；验证进程归属后临时停止前端，再执行同一命令成功，安装238个包、审计239个包、0 vulnerabilities。已恢复前端5176，后端/MySQL未重启，锁文件未修改。
+- `cd frontend; npm test`：**27文件、162/162通过，0失败，12.65秒，退出码0**。原始输出在 `refactor/baseline-vitest.txt`。
+- `cd frontend; npm run build`：**TypeScript与Vite构建通过，10.60秒，退出码0**。既有大chunk提示仍存在，本任务不修复。完整输出在 `refactor/baseline-build.txt`。
+- 仓库根目录 `.\scripts\test-agent.ps1 -All`：使用完整Playwright套件、Chrome、本地协议夹具和 `labflow_e2e`，**53/53通过，0失败，3.0分钟**；新JVM审计恢复检查通过，脚本退出码0。初次日志采集因wrapper切换目录导致相对Tee路径失效，改用绝对日志路径重跑，未修改项目脚本；两次执行情况均保留在 `refactor/baseline-e2e.txt`。这属于日志采集错误，不计为应用断言失败。
+- CSS按任务相同正则及计数语义，使用PowerShell/rg等价命令复核：**15个CSS文件，7,820行，417种六位十六进制色值，26行包含 `!important`，22行衬线引用**。均与包内参考值一致。逐文件行数、引用位置、可复现命令在 `refactor/baseline-css.txt`。
+
+基线中已失败的应用测试：**无**。本次未执行Java单元/集成测试与真实模型评测（任务00只要求前端基线；后端仅为隔离浏览器测试打包运行）。未调用收费模型。没有修改前后端源码、API/schema、Flyway、依赖清单/锁文件或用户数据；测试生成的既有截图/导出附件已还原。
+
+与任务文件的偏差：使用当前实际提交作为起点；Windows使用等价CSS统计命令；E2E使用已有隔离脚本代替直接对用户服务执行 `npx playwright test`。主库前后均为 projects107 / charts181 / dataset_versions172 / experiments13 / agent_runs9 / agent_sessions0；测试清理47个项目后，隔离库恢复为 projects1 / agent_runs0 / agent_sessions0。需要人决定的事：无。任务00结束后停下。
+
 ## 最新增量：扩展导入与用户确认选图（2026-10-22）
 
 新增 CSV/TSV/TXT/XLSX/JSON/JSONL 统一 preview/commit、JSON 多数组显式选择、嵌套字段展开与长整数保护，以及“选择绘图方案”面板。推荐模式只读画像、返回经过字段校验的候选；用户选择后先 lint，再通过既有 charts API 保存初始版本并进入编辑器。协议/边界见 [DATA-TO-FIGURE.md](DATA-TO-FIGURE.md)。

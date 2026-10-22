@@ -1,0 +1,52 @@
+Task 00 build baseline
+Date: 2026-10-22 13:34:23 +09:00
+Source commit: 1e4672d9c3282f044f1e3a1ed77ee2d5bbe7c0fb; snapshot: 0f0325c
+Command: npm run build
+
+
+> labflow-ui@0.1.0 build
+> tsc -b && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 2045 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                       0.53 kB │ gzip:   0.34 kB
+dist/assets/jetbrains-mono-vietnamese-wght-normal-Bt-aOZkq.woff2      7.50 kB
+dist/assets/jetbrains-mono-greek-wght-normal-Bw9x6K1M.woff2           9.00 kB
+dist/assets/inter-vietnamese-wght-normal-CBcvBZtf.woff2              10.25 kB
+dist/assets/inter-greek-ext-wght-normal-DlzME5K_.woff2               11.23 kB
+dist/assets/newsreader-vietnamese-wght-normal-Czsa-EzN.woff2         11.93 kB
+dist/assets/jetbrains-mono-cyrillic-wght-normal-D73BlboJ.woff2       12.11 kB
+dist/assets/jetbrains-mono-latin-ext-wght-normal-DBQx-q_a.woff2      15.20 kB
+dist/assets/inter-cyrillic-wght-normal-DqGufNeO.woff2                18.75 kB
+dist/assets/inter-greek-wght-normal-CkhJZR-_.woff2                   19.00 kB
+dist/assets/inter-cyrillic-ext-wght-normal-BOeWTOD4.woff2            25.96 kB
+dist/assets/newsreader-latin-ext-wght-normal-C-3rgBeH.woff2          36.24 kB
+dist/assets/jetbrains-mono-latin-wght-normal-B9CIFXIH.woff2          40.40 kB
+dist/assets/inter-latin-wght-normal-Dx4kXJAl.woff2                   48.26 kB
+dist/assets/newsreader-latin-wght-normal-CCVVNp6i.woff2              58.08 kB
+dist/assets/inter-latin-ext-wght-normal-DO1Apj_S.woff2               85.07 kB
+dist/assets/ChartPlanner-CVZW6rAX.css                                 3.29 kB │ gzip:   1.01 kB
+dist/assets/styles-library-tkjaGZMr.css                               7.83 kB │ gzip:   2.23 kB
+dist/assets/Editor-DNEZMTaS.css                                      15.72 kB │ gzip:   3.78 kB
+dist/assets/index-DJQ9JtP2.css                                      108.44 kB │ gzip:  24.02 kB
+dist/assets/pdf-B4O7nais.js                                           4.17 kB │ gzip:   2.13 kB
+dist/assets/ChartPlanner-DJCiOQlh.js                                 10.53 kB │ gzip:   4.62 kB
+dist/assets/purify.es-18JuyMri.js                                    30.12 kB │ gzip:  11.51 kB
+dist/assets/svg2pdf.es.min-n1ojmvHS.js                               87.53 kB │ gzip:  25.77 kB
+dist/assets/Editor-CKJwACC3.js                                      129.62 kB │ gzip:  42.05 kB
+dist/assets/index.es-xQ8e9juv.js                                    158.97 kB │ gzip:  53.06 kB
+dist/assets/html2canvas.esm-DXEQVQnt.js                             201.04 kB │ gzip:  47.43 kB
+dist/assets/jspdf.es.min-BUi_u66q.js                                386.22 kB │ gzip: 126.41 kB
+dist/assets/index-BOK3M7xe.js                                       563.82 kB │ gzip: 176.98 kB
+dist/assets/styles-library-DF3_3qjc.js                            1,468.65 kB │ gzip: 492.20 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 10.60s
+
+EXIT_CODE=0
