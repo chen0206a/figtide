@@ -207,6 +207,16 @@ test("confusion subtitle clears the matrix and count colorbar has integer labels
   }));
   expect(appearance.showlegend).toBe(false);
   expect(appearance.firstStop).toBe("#f7fbff");
+  const colorbarGap = await plot.evaluate((el: any) => {
+    const cells = [...el.querySelectorAll(".shapelayer path")] as Element[];
+    const right = Math.max(
+      ...cells.map((cell) => cell.getBoundingClientRect().right),
+    );
+    const bar = el.querySelector(".cbfill").getBoundingClientRect();
+    return bar.left - right;
+  });
+  expect(colorbarGap).toBeGreaterThan(0);
+  expect(colorbarGap).toBeLessThan(60);
   expect(appearance.lines).toEqual(
     Array(9).fill({ width: 2, color: "#ffffff" }),
   );
@@ -243,6 +253,13 @@ test("new AUC/AP legend is persisted and exported while legacy missing option st
   await expect(plot.locator(".legendtext")).toHaveText([
     "Model A (AUC = 0.750)",
   ]);
+  const aspect = await plot.evaluate((el: any) => ({
+    width: el._fullLayout.xaxis._length,
+    height: el._fullLayout.yaxis._length,
+    canvas: [el.layout.width, el.layout.height],
+  }));
+  expect(Math.abs(aspect.width - aspect.height)).toBeLessThan(1);
+  expect(aspect.canvas).toEqual([760, 500]);
   await plot.screenshot({ path: "../docs/screenshots/refactor-01-roc.png" });
   await exports(page, "roc", ["AUC = 0.750"]);
   c.type = "pr";

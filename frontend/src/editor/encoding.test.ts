@@ -253,6 +253,20 @@ describe("confusion matrix layout", () => {
     c.classification!.normalization = "true";
     expect(buildPlot(c, data).traces[0].marker.colorbar.tickformat).toBe(".0%");
   });
+  it("positions the colorbar next to the square matrix inside a wide canvas", () => {
+    const c = confusion();
+    const before = structuredClone(c);
+    const p = buildPlot(c, data);
+    expect([p.layout.width, p.layout.height]).toEqual([760, 500]);
+    const bar = p.traces[0].marker.colorbar;
+    const w = 760 - p.layout.margin.l - p.layout.margin.r;
+    const h = 500 - p.layout.margin.t - p.layout.margin.b;
+    expect(bar.x).toBeLessThan(1);
+    expect(bar.x).toBeCloseTo(0.5 + Math.min(w, h) / (2 * w) + 0.03);
+    expect(bar.xanchor).toBe("left");
+    expect(bar.len).toBeCloseTo(Math.min(w, h) / h);
+    expect(c).toEqual(before);
+  });
 });
 
 describe("evaluation legend metric", () => {
@@ -288,6 +302,25 @@ describe("evaluation legend metric", () => {
       evaluation,
     };
   }
+  it("uses equal axis scales for ROC without changing the saved canvas size", () => {
+    const c = roc(true);
+    const before = structuredClone(c);
+    const p = buildPlot(c, data);
+    expect(p.layout.yaxis).toMatchObject({
+      scaleanchor: "x",
+      scaleratio: 1,
+      constrain: "domain",
+    });
+    expect(p.layout.xaxis.constrain).toBe("domain");
+    expect([p.layout.width, p.layout.height]).toEqual([760, 500]);
+    expect(c).toEqual(before);
+  });
+  it("leaves PR axis aspect unconstrained", () => {
+    const c = { ...roc(true), type: "pr" as const };
+    const p = buildPlot(c, data);
+    expect(p.layout.yaxis.scaleanchor).toBeUndefined();
+    expect(p.layout.xaxis.constrain).toBeUndefined();
+  });
   it("appends AUC for new charts and AP for PR curves", () => {
     expect(buildPlot(roc(true), data).traces[0].name).toBe(
       "Model A (AUC = 0.750)",

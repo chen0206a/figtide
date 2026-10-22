@@ -311,6 +311,28 @@ export function buildSinglePlot(
         title: { text: plain(title), standoff: 14 },
       });
     }
+    if (c.type === "roc") {
+      Object.assign(layout.yaxis, {
+        scaleanchor: "x",
+        scaleratio: 1,
+        constrain: "domain",
+      });
+      layout.xaxis.constrain = "domain";
+    }
+  }
+  if (layout.yaxis.scaleanchor === "x") {
+    const w = layout.width - layout.margin.l - layout.margin.r;
+    const h = layout.height - layout.margin.t - layout.margin.b;
+    const side = Math.min(w, h);
+    if (w > 0 && h > 0)
+      for (const trace of traces) {
+        if (trace.marker?.colorbar)
+          Object.assign(trace.marker.colorbar, {
+            x: 0.5 + side / (2 * w) + 0.03,
+            xanchor: "left",
+            len: side / h,
+          });
+      }
   }
   if (empirical) {
     const e = c.empirical || defaultEmpirical;

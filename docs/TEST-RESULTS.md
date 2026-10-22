@@ -1,5 +1,19 @@
 # 第一阶段验收记录
 
+## 任务 01d：ROC 等比例、矩阵色条贴近（2026-10-22）
+
+按用户追加要求完成并独立提交，然后继续已授权的任务 03。改动 `frontend/src/editor/plot-core.ts`、`encoding.test.ts`、`frontend/e2e/chart-corrections.spec.ts`，补记 `refactor/tasks/01d-chart-aspect.md`，另新增本轮图像、SVG/PDF 与导出证据。
+
+- 仅 ROC 在渲染时给 Y 轴 scaleanchor=x / scaleratio=1 / constrain=domain，X 轴 constrain=domain；PR 不变。配置与 760×500 画布尺寸不写回、不迁移。
+- 存在 scaleanchor=x 和 marker.colorbar 时，按用户指定 w/h/side 公式计算色条 x、xanchor、len；对无有效绘图区的情况跳过，避免除零。矩阵格子与计数不变。
+- 单测新增 3 项：ROC 等比例且配置不变、PR 未锁比例、760×500 矩阵色条 x<1 并符合公式。浏览器补充实际轴长度相等和色条与格子间隙小于 60px 检查。
+
+实际验证：`cd frontend; npm test` **28 文件、183/183 通过，14.53 秒**；`npm run build` **通过，16.80 秒**（既有大 chunk 提示保留）。使用既有隔离流程执行 `test e2e/chart-corrections.spec.ts e2e/evaluation.spec.ts e2e/classification.spec.ts`，**7/7 通过，28.8 秒**，脚本退出码 0，新 JVM 审计恢复检查通过；未调用收费模型，清理 7 个测试项目。
+
+重新导出混淆矩阵与 ROC PNG / SVG / PDF；两份 PDF 均 1 页、0 栅格图片，保留 Count / n=7 / AUC=0.750，使用 Poppler 渲染后逐张目视确认格子/ROC 正方形、色条贴近、标签无遮挡。证据在 `docs/test-evidence/refactor01d-exports.json`，截图为 `docs/screenshots/refactor-01d-confusion.png`、`refactor-01d-roc.png`。其他测试生成的既有附件已还原。
+
+与请求偏差：无；额外校验导出 PDF，未改数据、后端或 schema。需要人决定的事：无。按用户明确授权接着执行任务 03。
+
 ## 任务 02：统一设计 token、移除暖纸层与衬线字体（2026-10-22）
 
 完成 `refactor/tasks/02-design-tokens.md`。以参考实现建立 `frontend/src/styles/tokens.css`；Inter / JetBrains Mono 为 UI 字体，中文使用系统回退。旧变量只在 token 文件中作为别名定义，移除 styles.css 的暖纸 root 以及首页、工作台、弹窗、experience 中发现的额外覆盖。保留原有选择器与组件结构。移除 Newsreader 导入和依赖，锁文件只删除对应包；没有升级其他依赖。

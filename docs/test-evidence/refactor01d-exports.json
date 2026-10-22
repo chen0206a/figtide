@@ -1,0 +1,21 @@
+[
+  {
+    "raster_images": 0,
+    "figure": "confusion",
+    "labels": [
+      "Model A",
+      "n=7",
+      "Count"
+    ],
+    "pages": 1
+  },
+  {
+    "raster_images": 0,
+    "figure": "roc",
+    "labels": [
+      "Model A",
+      "AUC = 0.750"
+    ],
+    "pages": 1
+  }
+]
