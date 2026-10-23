@@ -1,5 +1,26 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-24 · 11-6 总验收：未通过，按要求停止
+
+- 固定清单 **80 条 / 35 文件**，`workers=1`，未设置 LABFLOW_CAPTURE；命令 `./scripts/test-agent.ps1 -All -FixturePort 18770`。隔离后端 8087、前端 5178、协议夹具 18770，数据库 labflow_e2e。
+- **passed 78 / failed 2 / skipped 0 / flaky 0**，耗时 271.076s（约 4.5 分钟）。JSON 报告 `docs/test-evidence/refactor11-acceptance.json`。
+- 失败一：`isolation.spec.ts:106` 上传目标项目计数。原文：`Error: expect(received).toBe(expected) // Object.is equality`、`Expected: 1`、`Received: 0`。原始错误 `docs/test-evidence/refactor11-failures/import-target.error.txt`；trace `import-target.trace.zip`（同目录）。
+- 失败二：`isolation.spec.ts:139` 的新增实验隔离步骤。原文：`Error: expect(received).not.toContain(expected) // indexOf`、`Expected substring: not "实验隔离 B 526"`，采样内容命中该名称。完整原文及收到的页面内容 `docs/test-evidence/refactor11-failures/experiment-isolation.error.txt`；trace `experiment-isolation.trace.zip`。根因尚未确认，不能归为截图环境错误。
+- 两项均保存错误现场截图、error-context、trace；整轮原始日志 `docs/test-evidence/refactor11-failures/full-run.txt`。前述专项通过不能替代本轮全量结果。没有再修代码、刷新基线、删除断言或重跑以消除失败；只整理证据并提交。
+- 本轮未出现 UNKNOWN 文件写入错误，日常验收没有改动 docs/screenshots、docs/exports，refactor09 布局基线与 0843ffd 完全相同。测试新建项目已清理，原有测试项目保留；未修改用户工作区数据库。
+- 总验收脚本因浏览器失败退出，本轮后续新 JVM 审计校验**未执行**；此前三次专项隔离脚本中的该校验均通过，已分别记录，不混作本轮执行。
+- 最终单测 `npm test -- --maxWorkers=4`：**48 文件 / 274 通过**；`npm run build`：通过（11.50s）。仍有既有 >500kB chunk 告警。除上述失败外，Firefox/Safari、真实模型、真实 PDF 阅读器检查未执行，不属于本轮通过结论。
+
+## 2026-10-24 · 11-6 / 提交 4：证据、R7 来源与审计记录
+
+- 对照 `450e74c`：删除 FigureCanvas 中 `.paper-caption` 两端角标及对应 CSS，`fittedZoom` 按 paper-group 与 paper-wrap 的高度差扣除未缩放的附属区域，因此删除角标释放空间，只改变渲染缩放，未改保存的 760×500。
+- 通过隔离浏览器控制变量验证：仅恢复该提交删除的静态角标与 CSS，点击「适合窗口」，paper-wrap 实测精确回到旧基线 `{x:338.609375,y:253.484375,width:706.796875,height:465}`；删除测试角标并再次适配，精确恢复 `{x:315.8125,y:222.890625,width:752.390625,height:495}`。证据 `docs/test-evidence/refactor11-caption-geometry.json`；旧/新基线均未刷新。
+- `LABFLOW_CAPTURE=1`、`reducedMotion:'reduce'` 下重拍 after 目录全部 6 张截图；等待字体、真实绘图和透明度 1，1440/390 空首页验证无横向溢出；逐张打开确认正文、按钮、图表与侧栏完整可见。
+- 截图/几何专项：`./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('cleanup-visual.spec.ts','sample-project.spec.ts')`：passed 2 / failed 0 / skipped 0（11.8s）。补拍首页/离线 390：`-Specs @('productize.spec.ts')`：passed 2 / failed 0 / skipped 0（7.5s）。两次新 JVM 审计恢复均通过。
+- 如实保留调试记录：首次重拍中新增等待误选了不持有 aria-busy 的 `[data-testid=plot]`，1 passed / 1 failed，错误原文 `Expected: "false", Received: ""`；改为检查实际持有属性的 `.canvas-stage` 后重跑通过，未移除断言。原始日志 `.runtime/task11-6-4-capture.log`、trace `.runtime/task11-6-capture-first-trace.zip`；最终重拍日志 `.runtime/task11-6-4-capture-fixed.log`。
+- 审计原表不动，第 7 节独立处理表逐行计数为 **33 已改 / 13 保留 / 1 不采纳 = 47**。B1 为保留（导入框说明恢复），D2 为不采纳（新数据集/新版本区分）。原汇总数字与原表逐行数量本就不一致，本次按行重新计数。
+- 最终单测 `npm test -- --maxWorkers=4`：48 文件 / 274 通过；`npm run build`：通过（11.50s，既有 chunk 大小告警）。全量 E2E 78/80，失败情况见上方总验收，按约定停止。
+
 ## 2026-10-24 · 11-6 / 提交 3：E2E 产物隔离
 
 - 所有 spec 的截图、下载导出、临时 PDF、生成的布局测量 JSON 改用公共 `artifactPath(test.info(), destination)`，实际路径由 `TestInfo.outputPath` 分配；文件内容、PDF 尺寸、SVG 标签等断言读取同一输出文件。只读配置样例与历史基线仍作为输入，不刷新基线、不删除断言。
@@ -12,7 +33,7 @@
 
 ```powershell
 $env:LABFLOW_CAPTURE = '1'
-./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('sample-project.spec.ts', 'cleanup-visual.spec.ts')
+./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('sample-project.spec.ts', 'cleanup-visual.spec.ts', 'productize.spec.ts')
 $env:LABFLOW_CAPTURE = ''
 # 日常全量验收不设 LABFLOW_CAPTURE，避免重复写文档图片。
 ./scripts/test-agent.ps1 -All -FixturePort 18770

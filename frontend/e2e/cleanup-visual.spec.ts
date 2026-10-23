@@ -190,6 +190,33 @@ test("cleanup preserves the four workspace surfaces and their controls", async (
       }
     }
   }
+  if (process.env.LABFLOW_CAPTURE === "1") {
+    await test.step("R7: restoring only the removed caption reproduces the old paper geometry", async () => {
+      const rect = async () => page.locator(".paper-wrap").evaluate((el) => {
+        const b = el.getBoundingClientRect();
+        return { x: b.x, y: b.y, width: b.width, height: b.height };
+      });
+      const withoutCaption = await rect();
+      // Exact static markup and CSS removed in 450e74c, only in this test DOM.
+      await page.locator(".paper-group").evaluate((group) => {
+        const caption = document.createElement("div");
+        caption.className = "paper-caption";
+        caption.style.cssText = "display:flex;justify-content:space-between;margin-bottom:var(--lf-space-3);font-family:var(--lf-font-mono);text-transform:uppercase;font-size:var(--lf-text-xs);letter-spacing:.04em;color:var(--lf-text-3)";
+        caption.innerHTML = '<span style="font-weight:500">FIGURE 01</span><span>CLEAN ACADEMIC · LINE</span>';
+        group.prepend(caption);
+      });
+      await page.getByRole("button", { name: "适合窗口", exact: true }).click();
+      await expect.poll(async () => (await rect()).height).toBe(465);
+      const withCaption = await rect();
+      const historical = { x: 338.609375, y: 253.484375, width: 706.796875, height: 465 };
+      expect(withCaption).toEqual(historical);
+      await page.locator(".paper-caption").evaluate((el) => el.remove());
+      await page.getByRole("button", { name: "适合窗口", exact: true }).click();
+      await expect.poll(rect).toEqual(withoutCaption);
+      fs.writeFileSync(artifactPath(test.info(), "../docs/test-evidence/refactor11-caption-geometry.json"),
+        JSON.stringify({ sourceCommit: "450e74c", withoutCaption, withCaption, historical, restored: await rect() }, null, 2) + "\n");
+    });
+  }
   const xTitle = page.getByTestId("plot").locator(".xtitle").first();
   await expect(xTitle).toHaveCSS("cursor", "pointer");
   await xTitle.click();

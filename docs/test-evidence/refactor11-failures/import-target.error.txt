@@ -1,0 +1,13 @@
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 1
+Received: 0
+
+  130 |     await request.get(`/api/projects/${b.project}/datasets`)
+  131 |   ).json();
+> 132 |   expect(stored.length).toBe(1);
+      |                         ^
+  133 |   const untouched = await (
+  134 |     await request.get(`/api/projects/${a.project}/datasets`)
+  135 |   ).json();
+    at D:\RAG-agent项目\LabFlow\frontend\e2e\isolation.spec.ts:132:25

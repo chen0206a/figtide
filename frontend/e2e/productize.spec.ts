@@ -1,4 +1,7 @@
 import { test, expect } from "./workspace-test";
+import { artifactPath } from "./artifacts";
+
+test.use({ reducedMotion: "reduce" });
 
 /** 11-2：不像表格的文件需要用户明确确认；本地服务断开时不出现英文报错。 */
 
@@ -39,6 +42,7 @@ test("the offline page speaks about the local service, not the fetch error", asy
   page,
   request,
 }) => {
+  await page.setViewportSize({ width: 390, height: 1000 });
   const project = await (
     await request.post("/api/projects", {
       data: { name: `离线验收 ${Date.now()}`, description: "合成演示" },
@@ -51,6 +55,10 @@ test("the offline page speaks about the local service, not the fetch error", asy
 
   await page.goto("/");
   await expect(page.locator(".home")).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator(".home h1")).toHaveCSS("opacity", "1");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-3-home-390.png"), fullPage: true, animations: "disabled" });
 
   await page.route("**/api/**", (route) => route.abort("connectionrefused"));
   await page.reload();
@@ -60,4 +68,6 @@ test("the offline page speaks about the local service, not the fetch error", asy
   const body = await page.locator("body").innerText();
   expect(body).not.toContain("Failed to fetch");
   expect(body).not.toContain("Java");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-3-offline-390.png"), fullPage: true, animations: "disabled" });
 });
