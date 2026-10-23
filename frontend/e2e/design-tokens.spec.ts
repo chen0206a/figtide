@@ -70,7 +70,7 @@ test("four real workspace pages keep their layout while adopting shared tokens",
     {
       name: "experiments",
       path: `/projects/${project.id}/experiments`,
-      ready: ".experiment-record",
+      ready: ".experiments-table",
       frame: ".page-content",
     },
     {

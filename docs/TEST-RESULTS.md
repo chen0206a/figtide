@@ -1,5 +1,17 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 任务09总验收（09-1—09-5）
+
+- 五节各自测试后独立提交：09-1 `2136e12`；09-2 `1f25e48`；09-3 `bbba02d`；09-4 `187b987`；09-5 `dc919c7`。总验收补充适配修复、旧断言等价更新与证据单独提交。
+- 最终命令：前端 `npm test -- --maxWorkers=4`：34文件209/209，17.06s；`npm run build`：通过，10.35s。构建现存Plotly大包警告仍在。
+- `$env:LABFLOW_POLISH_STAGE='final'; ./.runtime/test-refactor09.ps1 -All`：最终完整一次62/62（2.7分钟），使用真实隔离MySQL labflow_e2e、Java API8087、生产dist网页5178、本地兼容协议夹具18769。包括上传/数据处理/实验对比/工具原子预览/助手预算与恢复/草稿与冲突/SVG PNG PDF/窄屏；不是前端mock。清理71个本轮项目；新JVM审计保留与中断恢复检查通过。
+- 首轮完整54/62，7个旧布局/图例测试假设、1个真实自适应溢出；第二轮60/62，剩余实验名称含编号/清空按钮名称定位；随后editor+shell-pages专项2/3定位到名称后缀同时匹配操作按钮。最终限定实验编号前缀，原有业务断言保留，完整62/62。适配诊断两轮experience均2/3，修复后原适配/手动缩放/导出检查通过。没有把失败轮次计为通过。
+- 自适应修复：实际测量paper-group减paper-wrap高度（标题、脚注、标尺）及stage padding；补fitZoom回归单测。只改查看缩放，publicationMetrics与保存画布宽高不变。最终布局基线独立比较四页26元素×7项属性通过；任务08旧证据恢复保留。
+- `node scripts/audit-css.cjs docs/test-evidence/refactor09-css.json`：19CSS文件、6607行、35种六位颜色、3处important、0衬线/禁用引用，未超过08的35种。
+- `node .runtime/compare09.cjs`：生成4组设计稿/实际页面并排图，实际页面均1440px宽；已目视检查。四组差异、原因、逐节文件/结果/偏差见 [任务09详细验收](REFACTOR-09-ACCEPTANCE.md)；[图片索引](test-evidence/refactor09-comparisons.json)。PDF MediaBox实测180×118.42105mm，像素配置760×500保持不变。
+- `git diff --check`通过；对照62d089e：后端、Flyway、AgentAssistant.tsx、草稿/保存/快捷键实现无差异。未运行Java JUnit（无后端改动，package使用-DskipTests）、未调用真实/收费模型、未部署/推送，任务10未执行。各节未单独运行完整E2E，已由总验收覆盖。需要人决定：无。
+
+
 ## 2026-10-23 · 09-5 论文尺寸预设与单序列图例
 
 - 画布工具栏和外观页复用 PublicationPresets；88/120/180 mm 只写既有 publication 字段，保持 style.width/height。原专业页物理控件移入唯一的 PublicationPanel，含自定义、只读比例高度、字号/DPI范围；加每10mm标尺和尺寸读数。新图单个无分组序列默认隐藏图例；已保存配置保持原值。

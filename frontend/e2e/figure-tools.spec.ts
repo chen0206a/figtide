@@ -26,6 +26,7 @@ async function fixture(request: APIRequestContext) {
   ).json();
   const config = defaults(data);
   config.series = ["baseline", "ours"].map((y, i) => makeSeries(y, i));
+  config.legend.show = true;
   config.style.title = "Before adjustments";
   const chart = await (
     await request.post(`/api/projects/${project.id}/charts`, {

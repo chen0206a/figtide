@@ -243,6 +243,9 @@ test("new AUC/AP legend is persisted and exported while legacy missing option st
   );
   const c = defaults(data);
   c.type = "roc";
+  // Task09 hides new ungrouped single-series legends by default. This fixture
+  // explicitly tests visible AUC/AP legends, including legacy saved settings.
+  c.legend.show = true;
   c.series = [{ ...makeSeries("score"), name: "Model A" }];
   c.evaluation = { ...defaultEvaluation, label: "label", positive: "1" };
   c.style.title = "ROC evaluation (synthetic)";
@@ -290,5 +293,6 @@ test("new AUC/AP legend is persisted and exported while legacy missing option st
     await request.get(`/api/projects/${p}/charts/${old.id}`)
   ).json();
   expect(actual.config.evaluation.legendMetric).toBe(true);
+  expect(actual.config.legend.show).toBe(true);
   expect(actual.config.schema_version).toBe(1);
 });

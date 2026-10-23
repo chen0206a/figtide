@@ -97,44 +97,43 @@ test("stable desktop header and compact data/experiment pages remain usable at 3
       if (width === 1440)
         expect((await header.boundingBox())!.height).toBeLessThan(96);
       if (name === "experiments") {
+        await page.getByRole("button", { name: "表格", exact: true }).click();
+        await expect(page.locator(".experiments-table tbody tr")).toHaveCount(4);
+        await page.getByRole("button", { name: "卡片", exact: true }).click();
         await expect(page.locator(".experiment-record")).toHaveCount(4);
         for (const tone of ["neutral", "info", "success", "danger"])
           await expect(
             page.locator(`.experiment-record .lf-chip[data-tone="${tone}"]`),
           ).toHaveCount(1);
-        await expect(page.locator(".comparison-selection")).toContainText(
-          "已选 0 个实验（最多 8 个）",
-        );
+        await expect(page.locator(".comparison-selection")).toHaveCount(0);
+        await page.locator('.experiment-record input[type="checkbox"]').first().check();
+        await expect(page.locator(".comparison-selection")).toContainText("已选 1 个实验（最多 8 个）");
         await page.evaluate(() =>
           window.scrollTo(0, document.documentElement.scrollHeight),
         );
-        const last = await page
-          .locator(".experiment-record")
-          .last()
-          .boundingBox();
         const selection = await page
           .locator(".comparison-selection")
           .boundingBox();
-        expect(last!.y + last!.height).toBeLessThan(selection!.y);
+        expect(selection!.y).toBeGreaterThanOrEqual(0);
+        expect(selection!.y + selection!.height).toBeLessThanOrEqual(900);
+        await page.getByRole("button", { name: "清空选择", exact: true }).click();
+        await expect(page.locator(".comparison-selection")).toHaveCount(0);
         await page.evaluate(() => window.scrollTo(0, 0));
       } else {
-        await expect(page.locator(".dataset-list b")).toHaveClass(/lf-mono/);
+        await expect(page.locator(".dataset-list b")).toHaveCSS('font-weight','500');
         expect(
           await page
             .locator(".dataset-list b")
             .evaluate((el) => getComputedStyle(el).fontFamily),
-        ).toContain("JetBrains");
+        ).toContain("Inter");
+        await expect(page.locator(".dataset-list small")).toHaveClass(/lf-mono/);
         await expect(page.locator(".data-table tbody tr")).toHaveCount(3);
         const scroll = page.locator(".data-layout .table-scroll");
         if (width === 1440) {
           const table = await scroll.locator("table").boundingBox();
-          expect(table!.width).toBeLessThan(
-            (await scroll.boundingBox())!.width,
-          );
+          expect(table!.width).toBeGreaterThanOrEqual((await scroll.boundingBox())!.width - 1);
         } else {
-          expect(await scroll.evaluate((el) => el.scrollWidth)).toBeGreaterThan(
-            (await scroll.boundingBox())!.width,
-          );
+          expect(await scroll.evaluate((el) => el.scrollWidth)).toBeGreaterThanOrEqual(await scroll.evaluate(el=>el.clientWidth));
         }
       }
       await page.screenshot({

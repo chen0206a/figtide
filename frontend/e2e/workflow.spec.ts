@@ -47,6 +47,9 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
   await page.getByLabel("Y 轴名称").fill("Test accuracy (%)");
   await page.getByLabel("最小值", { exact: true }).nth(1).fill("50");
   await page.getByLabel("最大值", { exact: true }).nth(1).fill("100");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  await page.locator('summary').filter({ hasText: '图例' }).click();
+  await page.getByRole("switch", { name: "显示图例", exact: true }).check();
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v1", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "数据预览", exact: false }).click();

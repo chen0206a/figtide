@@ -23,5 +23,5 @@ export function useCanvasFit({
     observer.observe(el);
     fit();
     return () => observer.disconnect();
-  }, [autoFit, c.style.width, c.style.height]);
+  }, [autoFit, c.style.width, c.style.height, c.publication?.enabled]);
 }

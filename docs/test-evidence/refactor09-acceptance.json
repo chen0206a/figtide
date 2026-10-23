@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-23",
+  "baseline": "62d089e",
+  "section_commits": {
+    "09-1": "2136e12",
+    "09-2": "1f25e48",
+    "09-3": "bbba02d",
+    "09-4": "187b987",
+    "09-5": "dc919c7"
+  },
+  "unit": {"files": 34, "passed": 209, "failed": 0, "seconds": 17.06},
+  "build": {"ok": true, "seconds": 10.35, "warning": "Existing Plotly chunk exceeds 500 kB"},
+  "e2e": {
+    "first_full": {"passed": 54, "failed": 8},
+    "second_full": {"passed": 60, "failed": 2},
+    "final_full": {"passed": 62, "failed": 0, "minutes": 2.7},
+    "final_cleanup_projects": 71,
+    "real_java_mysql": true,
+    "frontend": "production dist served on loopback 5178",
+    "database": "labflow_e2e",
+    "provider": "local compatible HTTP fixture only",
+    "new_jvm_audit_and_interrupted_recovery": "passed"
+  },
+  "layout": {"surfaces": 4, "elements": 26, "properties_per_element": 7, "independent_baseline_comparison": "passed"},
+  "css": {"files": 19, "lines": 6607, "six_digit_colors": 35, "task08_colors": 35, "important": 3, "serif_reference_lines": 0, "forbidden_reference_lines": 0},
+  "exports": {"pdf_width_mm": 180, "pdf_height_mm": 118.42105263157893, "saved_pixel_canvas": [760, 500]},
+  "visual_comparison": {"count": 4, "actual_width_px": 1440, "manually_inspected": true, "pixel_identical_to_reference": false, "differences_documented": "docs/REFACTOR-09-ACCEPTANCE.md"},
+  "unexecuted": ["Java JUnit (no backend changes)", "real or paid model calls", "Pages deployment", "remote push", "task10"],
+  "protected_implementation_diff_from_baseline": []
+}

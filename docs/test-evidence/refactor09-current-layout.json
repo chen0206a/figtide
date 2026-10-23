@@ -185,7 +185,7 @@
         "x": 108,
         "y": 198.296875,
         "width": 1224,
-        "height": 626.546875
+        "height": 574.9375
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
@@ -194,45 +194,45 @@
       "padding": "0px",
       "display": "grid",
       "color": "rgb(14, 17, 22)",
-      "background": "rgb(255, 255, 255)"
+      "background": "rgba(0, 0, 0, 0)"
     },
     ".dataset-list": {
       "box": {
-        "x": 109,
-        "y": 199.296875,
-        "width": 268,
-        "height": 624.546875
+        "x": 108,
+        "y": 198.296875,
+        "width": 260,
+        "height": 574.9375
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
       "lineHeight": "24px",
-      "radius": "18px",
-      "padding": "18px 14px",
-      "display": "block",
-      "color": "rgb(14, 17, 22)",
-      "background": "rgb(255, 255, 255)"
-    },
-    ".data-detail": {
-      "box": {
-        "x": 377,
-        "y": 199.296875,
-        "width": 954,
-        "height": 624.546875
-      },
-      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
-      "fontSize": "15px",
-      "lineHeight": "24px",
-      "radius": "18px",
+      "radius": "0px",
       "padding": "0px",
       "display": "block",
       "color": "rgb(14, 17, 22)",
       "background": "rgba(0, 0, 0, 0)"
     },
+    ".data-detail": {
+      "box": {
+        "x": 392,
+        "y": 198.296875,
+        "width": 940,
+        "height": 574.9375
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "16px",
+      "padding": "0px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
     ".data-table th": {
       "box": {
-        "x": 377,
-        "y": 595.15625,
-        "width": 99.65625,
+        "x": 393,
+        "y": 543.546875,
+        "width": 98,
         "height": 43.796875
       },
       "font": "\"JetBrains Mono Variable\", \"JetBrains Mono\", ui-monospace, SFMono-Regular, Menlo, monospace",
@@ -329,9 +329,9 @@
     ".canvas-stage": {
       "box": {
         "x": 241,
-        "y": 168.578125,
+        "y": 192.96875,
         "width": 902,
-        "height": 769.421875
+        "height": 745.03125
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
@@ -345,7 +345,7 @@
     ".paper-wrap": {
       "box": {
         "x": 312,
-        "y": 303.28125,
+        "y": 315.484375,
         "width": 760,
         "height": 500
       },
