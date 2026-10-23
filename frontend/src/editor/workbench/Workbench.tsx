@@ -278,6 +278,7 @@ export function Workbench({
         <FigureCanvas
           {...{
             c,
+            patch,
             setAutoFit,
             setZoom,
             zoom,

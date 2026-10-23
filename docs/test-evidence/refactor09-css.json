@@ -1,6 +1,6 @@
 {
-  "files": 18,
-  "lines": 6505,
+  "files": 19,
+  "lines": 6607,
   "six_digit_colors": 35,
   "important": 3,
   "serif_reference_lines": 0,
@@ -38,7 +38,13 @@
     },
     {
       "file": "frontend/src/editor/professional.css",
-      "lines": 210,
+      "lines": 205,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/editor/publication-panel.css",
+      "lines": 106,
       "colors": [],
       "important": 0
     },
@@ -62,7 +68,7 @@
     },
     {
       "file": "frontend/src/editor/workbench/workbench.css",
-      "lines": 1064,
+      "lines": 1065,
       "colors": [],
       "important": 0
     },

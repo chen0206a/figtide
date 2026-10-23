@@ -61,9 +61,9 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   await page.getByLabel("图表标题", { exact: true }).fill("合成实验 · Model α");
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("字体", { exact: true }).selectOption("Noto Sans SC");
-  await page.getByRole("button", { name: "专业", exact: true }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByRole("switch", { name: "按论文物理尺寸输出" }).check();
-  await page.getByRole("button", { name: "单栏 89 mm" }).click();
+  await page.getByLabel("成品宽度 / mm").fill("89");
   await page.getByRole("button", { name: "保存", exact: true }).click();
   let original: any;
   await expect

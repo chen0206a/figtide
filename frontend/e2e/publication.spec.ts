@@ -55,10 +55,12 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
   await expect
     .poll(() => page.getByTestId("plot").evaluate((el: any) => el.data[0]?.y))
     .toEqual([0.4, 0.6]);
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByRole("switch", { name: "按论文物理尺寸输出", exact: true })
     .check();
-  await page.getByRole("button", { name: "单栏 89 mm", exact: true }).click();
+  // Keep exercising saved custom 89mm configurations; new presets are tested separately.
+  await page.getByLabel("成品宽度 / mm").fill("89");
   await page.getByLabel("成品基础字号 / pt").fill("7");
   await expect
     .poll(() =>
@@ -142,7 +144,7 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
         .evaluate((el: any) => el.layout.yaxis.title.text),
     )
     .toBe("Cumulative probability");
-  await page.getByRole("button", { name: "专业", exact: true }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("成品基础字号 / pt")).toHaveValue("7");
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.locator(".inspector-scroll").evaluate((el) => {

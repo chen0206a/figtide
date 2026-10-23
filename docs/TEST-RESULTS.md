@@ -1,5 +1,16 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 09-5 论文尺寸预设与单序列图例
+
+- 画布工具栏和外观页复用 PublicationPresets；88/120/180 mm 只写既有 publication 字段，保持 style.width/height。原专业页物理控件移入唯一的 PublicationPanel，含自定义、只读比例高度、字号/DPI范围；加每10mm标尺和尺寸读数。新图单个无分组序列默认隐藏图例；已保存配置保持原值。
+- 沿用 publicationMetrics/renderConfig：fontPx = fontPt × 25.4 / 72 × style.width / widthMm，没有另造换算。760×500画布、8pt时单栏88mm字体24.373737px，双栏180mm字体11.916049px；画布像素尺寸不变。
+- `npm test -- --maxWorkers=4`：最终208/208（33文件，16.92s）；`npm run build`通过。首次新增组件测试206/208，原因是分段按钮子元素拼接的可访问名称缺空格；补明确aria-label后全部通过。最终缩短高度可见标签以保持输入对齐，可访问名称仍说明按比例。
+- `./.runtime/test-refactor09.ps1 -Specs publication-presets.spec.ts,publication.spec.ts,delivery.spec.ts`：6/6（16.2s），真实MySQL保存/刷新、一步撤销、180mm PDF MediaBox、原始CSV字节一致、89mm自定义SVG/PNG/PDF兼容流程通过；新JVM审计和恢复通过。最终外观微调后同组再运行6/6（16.4s），新JVM检查再次通过。
+- 证据：screenshots/refactor-09-editor-single.png、refactor-09-editor-double.png；exports/refactor-09-double.pdf；test-evidence/refactor09-publication.json。
+- 未执行：Java单测、真实模型、完整E2E（留总验收）。与任务偏差：只读高度可见标签精简为“高度 / mm”，aria-label保留“高度（按比例） / mm”；既有89mm默认仍关闭，不改旧配置。需要人决定：无。
+
+
+
 ## 2026-10-23 · 09-4 数据页
 
 - 数据页样式从styles.css迁入data/data-page.css归属处；移除版本列表外框，选中项独立白底/边框/轻阴影。文件名使用正常字体500字重并完整换行，第二行等宽版本/行数/日期；已有source_meta派生数据添加“派生”标记。右侧单层卡片、24px对齐提示和字段区域、浅蓝提示边框及图标，共享lf-table铺满。

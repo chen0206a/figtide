@@ -134,11 +134,6 @@
 .publication-section {
   background: var(--lf-surface);
 }
-.publication-presets {
-  display: flex;
-  gap: var(--lf-space-2);
-  margin: var(--lf-space-3) 0;
-}
 .publication-readout {
   border: 1px solid var(--lf-border);
   background: white;

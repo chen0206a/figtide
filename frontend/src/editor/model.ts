@@ -373,7 +373,7 @@ export function defaults(d: Dataset): Config {
       right: 35,
       preset: "Clean Academic",
     },
-    legend: { show: true, position: "top", orientation: "h" },
+    legend: { show: !!group || ys.length > 1, position: "top", orientation: "h" },
     annotations: [],
     transforms: [],
   };

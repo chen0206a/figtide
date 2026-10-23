@@ -1,10 +1,4 @@
-import {
-  Layers,
-  Maximize2,
-  MousePointer2,
-  ZoomIn,
-  ZoomOut,
-} from "lucide-react";
+import { Layers, Maximize2, ZoomIn, ZoomOut } from "lucide-react";
 import type { RefObject } from "react";
 import { Button } from "../../components/ui/button";
 import { type Dataset } from "../../lib/api";
@@ -12,9 +6,12 @@ import { type Config } from "../model";
 import { BottomDrawer } from "./BottomDrawer";
 import { fittedZoom } from "./fitZoom";
 import { usePlotRenderer } from "./usePlotRenderer";
+import { PublicationPresets } from "../PublicationPanel";
+import { publicationMetrics } from "../publication";
 
 type FigureCanvasProps = {
   c: Config;
+  patch: (value: Partial<Config>) => void;
   setAutoFit: React.Dispatch<React.SetStateAction<boolean>>;
   setZoom: React.Dispatch<React.SetStateAction<number>>;
   zoom: number;
@@ -37,6 +34,7 @@ type FigureCanvasProps = {
 };
 export function FigureCanvas({
   c,
+  patch,
   setAutoFit,
   setZoom,
   zoom,
@@ -57,16 +55,21 @@ export function FigureCanvas({
   project,
   logs,
 }: FigureCanvasProps) {
+  const physical = publicationMetrics(c);
   return (
     <section className="canvas-column">
       <div className="canvas-toolbar">
-        <span>
-          <MousePointer2 size={13} />
-          选择工具
-        </span>
+        <PublicationPresets
+          config={c}
+          onChange={patch}
+          label="画布论文尺寸"
+          compact
+        />
         <div>
-          <span>
-            {c.style.width} × {c.style.height} px
+          <span className="lf-mono canvas-size-readout">
+            {physical.enabled
+              ? `${physical.widthMm} × ${physical.heightMm.toFixed(1)} mm · ${physical.fontPt} pt · ${physical.dpi} DPI`
+              : `${c.style.width} × ${c.style.height} px`}
           </span>
           <span className="toolbar-divider" />
           <Button
@@ -132,6 +135,26 @@ export function FigureCanvas({
               {c.style.preset} · {c.type.toUpperCase()}
             </span>
           </div>
+          {physical.enabled && (
+            <div
+              className="paper-ruler"
+              aria-hidden="true"
+              style={{ width: (c.style.width * zoom) / 100 }}
+            >
+              {Array.from(
+                { length: Math.floor(physical.widthMm / 10) + 1 },
+                (_, i) => (
+                  <span
+                    key={i}
+                    style={{ left: `${((i * 10) / physical.widthMm) * 100}%` }}
+                  >
+                    <i />
+                    {i * 10}
+                  </span>
+                ),
+              )}
+            </div>
+          )}
           <div
             className="paper-wrap"
             style={{

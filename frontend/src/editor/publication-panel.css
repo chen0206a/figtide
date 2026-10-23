@@ -1,0 +1,106 @@
+.publication-section h3 {
+  font-size: var(--lf-text-sm);
+  font-weight: 600;
+  margin-bottom: var(--lf-space-4);
+}
+.publication-presets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--lf-space-1);
+  margin-block: var(--lf-space-3);
+}
+.publication-presets button {
+  padding: var(--lf-space-2) var(--lf-space-1);
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius-sm);
+  color: var(--lf-text-3);
+  background: var(--lf-surface);
+  font-family: var(--lf-font-sans);
+  font-size: var(--lf-text-xs);
+  white-space: nowrap;
+}
+.publication-presets button span {
+  display: block;
+  font-family: var(--lf-font-mono);
+  font-size: var(--lf-text-caption);
+}
+.publication-presets button:hover {
+  border-color: var(--lf-border-strong);
+  color: var(--lf-text);
+}
+.publication-presets button[aria-pressed="true"] {
+  border-color: var(--lf-text);
+  color: var(--lf-text);
+  font-weight: 600;
+}
+.publication-custom {
+  color: var(--lf-link);
+  font-size: var(--lf-text-xs);
+  padding: 0;
+  margin-bottom: var(--lf-space-3);
+}
+.publication-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.publication-fields:disabled {
+  opacity: 0.6;
+}
+.publication-fields input {
+  font-family: var(--lf-font-mono);
+}
+.publication-fields input[readonly] {
+  background: var(--lf-surface-2);
+  color: var(--lf-text-3);
+}
+.canvas-toolbar .publication-presets {
+  display: flex;
+  gap: var(--lf-space-1);
+  padding: var(--lf-space-1);
+  margin: 0;
+  background: var(--lf-surface-sunken);
+  border-radius: var(--lf-radius-md);
+}
+.publication-presets.is-compact button {
+  border-color: transparent;
+  background: transparent;
+  padding: var(--lf-space-2);
+}
+.publication-presets.is-compact button span {
+  display: inline;
+  font-family: inherit;
+}
+.publication-presets.is-compact button[aria-pressed="true"] {
+  background: var(--lf-surface);
+  box-shadow: var(--lf-shadow-xs);
+}
+.canvas-size-readout {
+  color: var(--lf-text-3);
+  white-space: nowrap;
+  font-size: var(--lf-text-caption);
+}
+.paper-ruler {
+  position: relative;
+  height: var(--lf-space-6);
+  border-bottom: 1px solid var(--lf-border-strong);
+  margin-bottom: var(--lf-space-2);
+  font-family: var(--lf-font-mono);
+  font-size: var(--lf-text-2xs);
+  color: var(--lf-text-3);
+}
+.paper-ruler > span {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  height: 100%;
+}
+.paper-ruler i {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: var(--lf-space-2);
+  border-left: 1px solid var(--lf-border-strong);
+}

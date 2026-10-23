@@ -9,7 +9,7 @@ import {
   physicalSvg,
   pngDensity,
 } from "./publication";
-import { ScientificPanel } from "./ScientificPanel";
+import { PublicationPanel } from "./PublicationPanel";
 import type { Dataset } from "../lib/api";
 const data: Dataset = {
   id: 1,
@@ -199,7 +199,7 @@ describe("publication and empirical plots", () => {
       const [c, set] = useState(defaults(data));
       return (
         <>
-          <ScientificPanel
+          <PublicationPanel
             config={c}
             onChange={(v) => set((old) => ({ ...old, ...v }))}
           />
@@ -209,9 +209,9 @@ describe("publication and empirical plots", () => {
     }
     render(<Harness />);
     fireEvent.click(screen.getByRole("switch", { name: "按论文物理尺寸输出" }));
-    fireEvent.click(screen.getByRole("button", { name: "单栏 89 mm" }));
+    fireEvent.click(screen.getByRole("button", { name: "单栏 · 88 mm" }));
     expect(
       JSON.parse(screen.getByRole("status").textContent!).publication,
-    ).toMatchObject({ enabled: true, widthMm: 89 });
+    ).toMatchObject({ enabled: true, widthMm: 88 });
   });
 });

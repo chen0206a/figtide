@@ -328,8 +328,10 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
-  height: 38px;
-  padding: 0 var(--lf-space-4);
+  min-height: calc(var(--lf-space-1) * 13);
+  flex-wrap: wrap;
+  gap: var(--lf-space-2);
+  padding: var(--lf-space-2) var(--lf-space-4);
   font-family: var(--lf-font-mono);
   font-size: var(--lf-text-caption);
   border-bottom: 1px solid var(--lf-border);
@@ -788,8 +790,7 @@
 .canvas-stage {
   padding: var(--lf-space-7) var(--lf-space-8);
   min-height: 160px;
-  background-image: radial-gradient(var(--lf-border-strong) 0.55px, transparent 0.55px);
-  background-size: 20px 20px;
+  background: var(--lf-canvas);
 }
 .paper-caption {
   font-size: var(--lf-text-xs);

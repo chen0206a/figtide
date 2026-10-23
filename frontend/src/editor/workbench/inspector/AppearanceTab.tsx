@@ -1,6 +1,7 @@
 import { Maximize2, Type } from "lucide-react";
 import { type Config } from "../../model";
 import { NumberInput, Section, Select, Text, Toggle } from "../controls";
+import { PublicationPanel } from "../../PublicationPanel";
 
 type AppearanceTabProps = {
   panel: string;
@@ -13,6 +14,7 @@ export function AppearanceTab({ panel, c, style, patch }: AppearanceTabProps) {
     <>
       {panel === "appearance" && (
         <>
+          <PublicationPanel config={c} onChange={patch}/>
           <Section title="标题与字体" icon={<Type size={13} />}>
             <Text
               label="图表标题"

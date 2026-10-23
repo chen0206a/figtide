@@ -1,5 +1,21 @@
 import { defaultPublication, type Config } from "./model";
 
+export const publicationWidths = [88, 120, 180] as const;
+export const publicationWidthLabels = ["单栏", "1.5 栏", "双栏"] as const;
+/** One reducer patch, only existing schema-v1 publication fields. */
+export function publicationPreset(
+  c: Config,
+  widthMm: (typeof publicationWidths)[number],
+): Partial<Config> {
+  return {
+    publication: {
+      ...(c.publication || defaultPublication),
+      enabled: true,
+      widthMm,
+    },
+  };
+}
+
 export function publicationMetrics(c: Config, multiplier = 2) {
   const p = c.publication || defaultPublication;
   const heightMm = (p.widthMm * c.style.height) / c.style.width;
