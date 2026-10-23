@@ -123,7 +123,7 @@ export function UploadDialog({
         if (!v && !committing) onClose();
       }}
       title="确认数据导入"
-      description="预览 → 确认字段 → 保存版本。"
+      description="预览 → 确认字段 → 保存版本。调整解析不会修改原文件。"
     >
       <div className="import-file">
         <strong>{file.name}</strong>

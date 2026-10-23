@@ -43,7 +43,7 @@ export function SourceProvenance({
               {r.name} {r.id === source.baseline_id && <small>基线实验</small>}
             </h3>
             <p>
-              实验 #{r.id} · 修订 {r.revision}
+              修订 v{r.revision}
             </p>
             <details>
               <summary>参数、指标与备注</summary>

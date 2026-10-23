@@ -136,7 +136,7 @@ test("import dialog stores the file in the project that is currently selected", 
   expect(untouched.length).toBe(1);
 });
 
-test("home stops listing the previous project's charts after switching", async ({
+test("home charts and experiment lists stay isolated when switching projects", async ({
   page,
   request,
 }) => {
@@ -154,6 +154,27 @@ test("home stops listing the previous project's charts after switching", async (
   const sampled = await sampleBody(page);
 
   expect(sampled).not.toContain("隔离验收 A4 图表");
+
+  // A separate scenario in the same test keeps the fixed 80-test manifest,
+  // while retaining all existing home assertions and adding experiment coverage.
+  await test.step("experiment names never cross project boundaries (50ms × 20)", async () => {
+    const aName = `实验隔离 A ${a.project}`;
+    const bName = `实验隔离 B ${b.project}`;
+    for (const [id, name] of [[a.project, aName], [b.project, bName]] as const) {
+      const response = await request.post(`/api/projects/${id}/experiments`, {
+        data: { name, status: "completed", parameters: {}, metrics: {}, notes: "合成隔离验收", tags: [] },
+      });
+      expect(response.ok()).toBe(true);
+    }
+    await page.goto(`/projects/${a.project}/experiments`);
+    await expect(page.getByText(aName, { exact: true })).toBeVisible();
+    await page.getByLabel("当前项目").selectOption(String(b.project));
+    expect(await sampleBody(page, 20)).not.toContain(aName);
+    await expect(page.getByText(bName, { exact: true })).toBeVisible();
+    await page.getByLabel("当前项目").selectOption(String(a.project));
+    expect(await sampleBody(page, 20)).not.toContain(bName);
+    await expect(page.getByText(aName, { exact: true })).toBeVisible();
+  });
 });
 test("a dataset id carried over from another project never breaks the data page", async ({
   page,

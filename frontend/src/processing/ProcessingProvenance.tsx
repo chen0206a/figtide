@@ -32,7 +32,7 @@ export function ProcessingProvenance({
           <span>{new Date(source.created_at).toLocaleString()}</span>
         </div>
         <p>
-          源版本 #{s.datasetVersionId} · 内容指纹 {s.sha256}
+          内容指纹 {s.sha256}
         </p>
         <p>
           源数据 {source.counts.source_rows} 行 · 过滤后{" "}
