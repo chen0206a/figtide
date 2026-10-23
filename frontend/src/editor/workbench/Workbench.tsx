@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useConfirm } from "../../components/useConfirm";
 import { api } from "../../lib/api";
 import { historyReducer, type Config, type Series } from "../model";
+import { shouldToggleAssistant } from "./agentShortcut";
 import { publicationMetrics } from "../publication";
 import "../styles-library.css";
 import { DataLayersPanel } from "./DataLayersPanel";
@@ -119,7 +120,7 @@ export function Workbench({
   const [quickOpen, setQuickOpen] = useState(false);
   const [agentOpen, setAgentOpen] = useState(!!assistantPrompt);
   const [submission,setSubmission]=useState<AssistantSubmission>();
-  useEffect(()=>{const shortcut=(event:KeyboardEvent)=>{if(event.altKey&&!event.ctrlKey&&!event.metaKey&&event.key.toLowerCase()==='a'){event.preventDefault();setAgentOpen(v=>!v)}};window.addEventListener('keydown',shortcut);return()=>window.removeEventListener('keydown',shortcut)},[]);
+  useEffect(()=>{const shortcut=(event:KeyboardEvent)=>{if(shouldToggleAssistant(event)){event.preventDefault();setAgentOpen(v=>!v)}};window.addEventListener('keydown',shortcut);return()=>window.removeEventListener('keydown',shortcut)},[]);
   const [reuseTab, setReuseTab] = useState<"builtin" | "style">("style");
   const [previewPreset, setPreviewPreset] = useState("");
   const [format, setFormat] = useState<"svg" | "png" | "pdf">(initialPdf?"pdf":"svg"),

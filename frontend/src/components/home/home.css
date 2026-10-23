@@ -627,3 +627,21 @@
     min-height: 0;
   }
 }
+
+/* Persistent entry to the product intro, pinned to the bottom of the sidebar. */
+.home-side-intro {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--lf-space-2);
+  padding: var(--lf-space-3) var(--lf-space-4);
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius-md);
+  color: var(--lf-text-2);
+  font-size: var(--lf-text-sm);
+  text-decoration: none;
+  transition: border-color var(--lf-duration) var(--lf-ease), color var(--lf-duration) var(--lf-ease);
+}
+.home-side-intro span { flex: 1; }
+.home-side-intro:hover { border-color: var(--lf-border-strong); color: var(--lf-text); }
+.home-side-intro:focus-visible { outline: 2px solid var(--lf-text); outline-offset: 2px; }

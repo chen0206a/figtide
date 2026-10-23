@@ -1,5 +1,13 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 10-7a 导航与入口
+
+- `npx vitest run`：**235 通过**（新增 `agentShortcut.test.ts` 4 条、`ProductIntro.test.tsx` 2 条）；`npm run build` 通过（10.66s，`index-*.js` 578.93 kB）。
+- `intro.spec.ts` **4/4**、`refinements.spec.ts` **1/1**（主工作区栈，8086/5176）：首访 `/` 重定向到 `/welcome`（replace）→ 开始创作后 URL 为 `/` 且写入标记 → 后退回到介绍页且顶栏按钮显示「进入工作区」→ 前进回到工作区 → 刷新仍是工作区；侧栏「产品介绍」入口可点进介绍页；深链接与存储被禁两条用例保持通过。
+- `home.spec.ts` 2/2、`navigation.spec.ts` 2/2（主栈）。
+- `agent.spec.ts` **8/8**、`assistant-layout.spec.ts` **1/1**（隔离栈：夹具 18769 + 后端 8087 + dev 5178，清理 9 个测试项目）。主栈跑这两条会因 `provider.model !== "labflow-fixture"` 自动 skip。
+- `refinements.spec.ts` 在 `goto("/")` 后新增 `await expect(page.locator(".home")).toBeVisible()`，断言数不变。
+
 ## 2026-10-23 · 10-6 动效与验收
 
 - `npx vitest run`：42 文件 / **229 通过**；`npm run build` 通过（18.13s，`index-*.js` 578 kB，`ProductIntro-*.js` 18.8 kB 仍为独立懒加载 chunk）。

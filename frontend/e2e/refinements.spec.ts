@@ -16,6 +16,10 @@ test("import preview → explicit rules → mapping → draft recovery → confl
     project.id,
   );
   await page.goto("/");
+  // Wait for the shell before touching the hidden input: under parallel load the
+  // app mount can lag behind the document, and setInputFiles would sit on a
+  // detached node until the 90s timeout.
+  await expect(page.locator(".home")).toBeVisible();
   await page.getByTestId("file-upload").setInputFiles({
     name: "确认演示.csv",
     mimeType: "text/csv",

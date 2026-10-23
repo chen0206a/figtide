@@ -62,7 +62,10 @@ export default function App() {
   const dataset = route.dataset;
   const [seenIntro, setSeenIntro] = useState(introSeen);
   const reducedMotion = useReducedMotion();
-  const showIntro = route.valid && (page === "welcome" || (page === "home" && !seenIntro));
+  // The intro is address-driven: /welcome always renders it, and a first visit to / is
+  // redirected there once (replace) so the back button can return to it later.
+  const showIntro = route.valid && page === "welcome";
+  const needsIntroRedirect = route.valid && page === "home" && !seenIntro;
   const { confirm, dialog: confirmDialog } = useConfirm();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [manage, setManage] = useState(false);
@@ -119,6 +122,9 @@ export default function App() {
       );
     } catch {}
   }, [memory]);
+  useEffect(() => {
+    if (needsIntroRedirect) void routerGo("/welcome", { replace: true });
+  }, [needsIntroRedirect, routerGo]);
   const targets = workspaceTargets(memory, project);
   if (route.valid) targets[page] = location.pathname + location.search;
   const warmModule = (target: Page) => {
@@ -258,9 +264,13 @@ export default function App() {
     setUploadVersion(id);
     upload.current?.click();
   };
-  if (showIntro) return <Suspense fallback={<main aria-label="正在载入LabFlow介绍">正在载入…</main>}><ProductIntro onStart={(event) => {
+  if (needsIntroRedirect)
+    return (
+      <main aria-label="正在载入LabFlow介绍">正在载入…</main>
+    );
+  if (showIntro) return <Suspense fallback={<main aria-label="正在载入LabFlow介绍">正在载入…</main>}><ProductIntro seen={seenIntro} onStart={(event) => {
     markIntroSeen();
-    const update = () => flushSync(() => {setSeenIntro(true); void routerGo("/", {replace:page === "welcome"});});
+    const update = () => flushSync(() => {setSeenIntro(true); void routerGo("/");});
     if (reducedMotion || !document.startViewTransition) { update(); return; }
     const root=document.documentElement;
     root.style.setProperty("--lf-vt-x",`${event.clientX || innerWidth/2}px`);

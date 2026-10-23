@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  BookOpen,
   ChartColumn,
   ChartNoAxesCombined,
   FileSpreadsheet,
@@ -171,9 +172,13 @@ export function HomePage(p: HomePageProps) {
           />
         </div>
       </section>
-
-
         </div>
+
+        <Link className="home-side-intro" to="/welcome" aria-label="产品介绍">
+          <BookOpen size={16} aria-hidden="true" />
+          <span>产品介绍</span>
+          <ArrowRight size={14} aria-hidden="true" />
+        </Link>
       </div>
 
       <div className="home-bottom">
