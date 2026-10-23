@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-23T04:26:46.153Z",
+  "source": "direct file URL",
+  "viewports": [
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "imagesLoaded": true,
+      "anchorsValid": true,
+      "tokensResolved": true
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "imagesLoaded": true,
+      "anchorsValid": true,
+      "tokensResolved": true
+    },
+    {
+      "width": 1280,
+      "scrollWidth": 1280,
+      "imagesLoaded": true,
+      "anchorsValid": true,
+      "tokensResolved": true
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "imagesLoaded": true,
+      "anchorsValid": true,
+      "tokensResolved": true
+    }
+  ],
+  "externalRequests": [
+    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap",
+    "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+    "https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2"
+  ],
+  "requestFailures": [],
+  "pageErrors": [],
+  "paidRequests": 0
+}

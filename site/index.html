@@ -1,0 +1,364 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LabFlow · 从实验数据到论文插图</title>
+<meta name="description" content="面向 AI / ML 研究生的本地实验记录与科研绘图工作台。本地优先，无需账号，原始数据本地保存。">
+<meta property="og:title" content="LabFlow · 从实验数据到论文插图">
+<meta property="og:description" content="导入 CSV，生成 11 类论文图，导出嵌入字体的矢量 PDF。原始数据始终只读。">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>:root {
+  --lf-accent: #d55e00;
+  --lf-bg: #f5f6f8;
+  --lf-border: #e4e7ec;
+  --lf-border-strong: #d5dae1;
+  --lf-canvas: #f0f1f4;
+  --lf-divider: #eef0f3;
+  --lf-focus: #2b59c3;
+  --lf-font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular,
+    Menlo, monospace;
+  --lf-font-sans: "Inter Variable", Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans SC",
+    system-ui, sans-serif;
+  --lf-inverse-2: #1b2028;
+  --lf-inverse-border: #2b323c;
+  --lf-leading-relaxed: 1.6;
+  --lf-link: #1f4fb8;
+  --lf-link-hover: #163b8c;
+  --lf-radius-md: 11px;
+  --lf-radius-xl: 18px;
+  --lf-selected: #eef3fc;
+  --lf-shadow-paper: 0 1px 2px rgba(14, 17, 22, 0.08), 0 30px 60px -30px rgba(14, 17, 22, 0.25);
+  --lf-site-data-08306b: #08306B;
+  --lf-site-data-0d4a8c: #0D4A8C;
+  --lf-site-data-1e64a8: #1E64A8;
+  --lf-site-data-d6e4f2: #D6E4F2;
+  --lf-site-data-f1f5fa: #F1F5FA;
+  --lf-site-size-1: 1px;
+  --lf-site-size-10: 10px;
+  --lf-site-size-12: 12px;
+  --lf-site-size-120: 120px;
+  --lf-site-size-1200: 1200px;
+  --lf-site-size-136: 136px;
+  --lf-site-size-14: 14px;
+  --lf-site-size-140: 140px;
+  --lf-site-size-16: 16px;
+  --lf-site-size-18: 18px;
+  --lf-site-size-180: 180px;
+  --lf-site-size-2: 2px;
+  --lf-site-size-20: 20px;
+  --lf-site-size-200: 200px;
+  --lf-site-size-22: 22px;
+  --lf-site-size-230: 230px;
+  --lf-site-size-24: 24px;
+  --lf-site-size-28: 28px;
+  --lf-site-size-3: 3px;
+  --lf-site-size-300: 300px;
+  --lf-site-size-32: 32px;
+  --lf-site-size-38: 38px;
+  --lf-site-size-380: 380px;
+  --lf-site-size-4: 4px;
+  --lf-site-size-40: 40px;
+  --lf-site-size-420: 420px;
+  --lf-site-size-44: 44px;
+  --lf-site-size-440: 440px;
+  --lf-site-size-48: 48px;
+  --lf-site-size-50: 50px;
+  --lf-site-size-56: 56px;
+  --lf-site-size-6: 6px;
+  --lf-site-size-60: 60px;
+  --lf-site-size-620: 620px;
+  --lf-site-size-64: 64px;
+  --lf-site-size-640: 640px;
+  --lf-site-size-8: 8px;
+  --lf-site-size-80: 80px;
+  --lf-site-size-88: 88px;
+  --lf-site-size-9: 9px;
+  --lf-site-size-900: 900px;
+  --lf-site-size-96: 96px;
+  --lf-site-size-999: 999px;
+  --lf-space-1: 4px;
+  --lf-space-3: 12px;
+  --lf-space-4: 16px;
+  --lf-space-5: 20px;
+  --lf-space-8: 32px;
+  --lf-success: #146c45;
+  --lf-success-live: #3ccb8a;
+  --lf-surface: #ffffff;
+  --lf-surface-2: #f8f9fb;
+  --lf-text: #0e1116;
+  --lf-text-2: #4a5361;
+  --lf-text-2xl: 26px;
+  --lf-text-2xs: 11px;
+  --lf-text-3: #5f6773;
+  --lf-text-3xl: 34px;
+  --lf-text-base: 14px;
+  --lf-text-lg: 17px;
+  --lf-text-md: 15px;
+  --lf-text-on-inverse-2: #b8c0cc;
+  --lf-text-sm: 13px;
+  --lf-text-xs: 12px;
+}
+body { margin:0; background:var(--lf-surface); font-family:var(--lf-font-sans); }
+a { color:var(--lf-link); text-decoration:none; } a:hover { color:var(--lf-link-hover); }
+a:focus-visible { outline:2px solid var(--lf-focus); outline-offset:var(--lf-space-1); }
+* { box-sizing:border-box; } img,svg { max-width:100%; } img { display:block; height:auto; }
+section,header,footer { min-width:0; } p,li { overflow-wrap:anywhere; }
+.product-shot { margin:0; padding:var(--lf-space-3); border-radius:var(--lf-radius-xl); background:var(--lf-canvas); box-shadow:var(--lf-shadow-paper); }
+.product-shot img { width:100%; border:1px solid var(--lf-border); border-radius:var(--lf-radius-md); }
+.product-shot figcaption,.figure-note { color:var(--lf-text-3); font-size:var(--lf-text-xs); line-height:var(--lf-leading-relaxed); }
+.product-shot figcaption { padding:var(--lf-space-3) var(--lf-space-1) 0; }
+.figure-note { margin:0; }
+@media(max-width:640px) { h1 { font-size:var(--lf-text-3xl) !important; } h2 { font-size:var(--lf-text-2xl) !important; } section[id="start"] > div { padding:var(--lf-space-8) var(--lf-space-5) !important; } section, header > div { padding-left:var(--lf-space-4) !important; padding-right:var(--lf-space-4) !important; } }
+</style>
+</head>
+<body id="top">
+<!-- Repository URL is not configured. License remains an owner decision. -->
+<div style="background: var(--lf-surface); color: var(--lf-text); font-family:var(--lf-font-sans); font-size: var(--lf-text-md); line-height: 1.6">
+
+<header style="border-bottom: var(--lf-site-size-1) solid var(--lf-divider)">
+<div style="max-width: var(--lf-site-size-1200); margin: 0 auto; padding: var(--lf-site-size-14) var(--lf-site-size-28); display: flex; flex-wrap: wrap; align-items: center; gap: var(--lf-site-size-12) var(--lf-site-size-32)">
+<a href="#top" aria-label="LabFlow 首页" style="display: flex; align-items: center; gap: var(--lf-site-size-10); color: var(--lf-text)"><img src="./favicon.svg" alt="" width="30" height="30"><span style="font-weight:700;font-size:var(--lf-text-lg)">LabFlow</span></a>
+<nav aria-label="页面导航" style="display: flex; flex-wrap: wrap; gap: var(--lf-site-size-4) var(--lf-site-size-24); font-size: var(--lf-text-base)">
+<a href="#features" style="color: var(--lf-text-2)">功能</a>
+<a href="#charts" style="color: var(--lf-text-2)">图表</a>
+<a href="#assistant" style="color: var(--lf-text-2)">绘图助手</a>
+<a href="#start" style="color: var(--lf-text-2)">启动指南</a>
+</nav>
+<div style="flex: 1 1 var(--lf-site-size-20)"></div>
+
+<a href="#start" style="display: flex; align-items: center; height: var(--lf-site-size-40); padding: 0 var(--lf-site-size-16); border-radius: var(--lf-site-size-10); background: var(--lf-text); color: var(--lf-surface); font-size: var(--lf-text-base); font-weight: 600">快速开始</a>
+</div>
+</header>
+
+<section style="max-width: var(--lf-site-size-1200); margin: 0 auto; padding: var(--lf-site-size-88) var(--lf-site-size-28) 0; display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--lf-site-size-24)">
+<div style="display: flex; align-items: center; gap: var(--lf-site-size-10); padding: var(--lf-site-size-6) var(--lf-site-size-14) var(--lf-site-size-6) var(--lf-site-size-8); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-999); font-size: var(--lf-text-sm); color: var(--lf-text-2)">
+<span style="font-family:var(--lf-font-mono); font-size: var(--lf-text-2xs); padding: var(--lf-site-size-2) var(--lf-site-size-8); border-radius: var(--lf-site-size-999); background: var(--lf-text); color: var(--lf-surface)">LOCAL</span>
+本地优先 · 无需账号 · 原始数据本地保存
+</div>
+<h1 style="margin: 0; font-size: var(--lf-site-size-60); line-height: 1.15; font-weight: 800; letter-spacing: -0.03em; max-width: var(--lf-site-size-900)">从实验数据到论文插图，<br>每一步都<span style="color: var(--lf-accent)">可追溯</span>。</h1>
+<p style="margin: 0; max-width: var(--lf-site-size-640); font-size: var(--lf-site-size-18); color: var(--lf-text-2)">面向 AI / ML 研究生的实验记录与科研绘图工作台。导入 CSV，生成 11 类论文图，导出嵌入字体的矢量 PDF。原始数据始终只读。</p>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: var(--lf-site-size-12); margin-top: var(--lf-site-size-4)">
+<a href="#start" style="display: flex; align-items: center; gap: var(--lf-site-size-8); height: var(--lf-site-size-50); padding: 0 var(--lf-site-size-24); border-radius: var(--lf-site-size-12); background: var(--lf-text); color: var(--lf-surface); font-size: var(--lf-text-md); font-weight: 600">本地开始使用</a>
+<a href="#features" style="display: flex; align-items: center; gap: var(--lf-site-size-8); height: var(--lf-site-size-50); padding: 0 var(--lf-site-size-22); border-radius: var(--lf-site-size-12); border: var(--lf-site-size-1) solid var(--lf-border-strong); color: var(--lf-text); font-size: var(--lf-text-md); font-weight: 500">了解功能</a>
+</div>
+<div style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)">React 19 · TypeScript · Plotly · Java 21 · Spring Boot 3</div>
+</section>
+
+<section style="max-width: var(--lf-site-size-1200); margin: 0 auto; padding: var(--lf-site-size-56) var(--lf-site-size-28) 0" class="screenshot-section"><figure class="product-shot"><img src="./assets/editor.png" width="1440" height="900" alt="LabFlow 实际编辑器：数据图层、实时科研画布、样式属性与保存导出工具栏，使用合成演示数据"><figcaption>真实工作台截图 · 合成演示数据 · 本地运行</figcaption></figure></section>
+
+<section id="features" style="max-width: var(--lf-site-size-1200); margin: 0 auto; padding: var(--lf-site-size-136) var(--lf-site-size-28) 0; display: flex; flex-direction: column; gap: var(--lf-site-size-40)">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--lf-site-size-20)">
+<div style="display: flex; flex-direction: column; gap: var(--lf-site-size-12); max-width: var(--lf-site-size-620)">
+<div style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); letter-spacing: 0.08em; color: var(--lf-text-3)">01 · REPRODUCIBLE</div>
+<h2 style="margin: 0; font-size: var(--lf-site-size-40); line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">可复现，是默认值。</h2>
+</div>
+<p style="margin: 0; max-width: var(--lf-site-size-420); color: var(--lf-text-2)">每一张图都能回到它的数据版本和处理规则。审稿人问「这个数怎么来的」，你能直接打开给他看。</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--lf-site-size-230), 1fr)); gap: var(--lf-site-size-14)">
+<div style="padding: var(--lf-site-size-22); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); display: flex; flex-direction: column; gap: var(--lf-site-size-12)">
+<div style="display: flex; justify-content: space-between; font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)"><span>01</span><span>→</span></div>
+<div style="font-size: var(--lf-text-lg); font-weight: 700">原始数据</div>
+<div style="font-size: var(--lf-text-base); color: var(--lf-text-2)">CSV / TSV / TXT / XLSX / JSON / JSONL 导入后只读保存，追加新版本而不是覆盖。</div>
+<div style="margin-top: auto; padding: var(--lf-site-size-8) var(--lf-site-size-10); border-radius: var(--lf-site-size-8); background: var(--lf-bg); font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-inverse-border)">SHA-256 · 内容指纹</div>
+</div>
+<div style="padding: var(--lf-site-size-22); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); display: flex; flex-direction: column; gap: var(--lf-site-size-12)">
+<div style="display: flex; justify-content: space-between; font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)"><span>02</span><span>→</span></div>
+<div style="font-size: var(--lf-text-lg); font-weight: 700">处理规则</div>
+<div style="font-size: var(--lf-text-base); color: var(--lf-text-2)">过滤、排序、分组汇总都记为显式规则，派生数据保留来源。</div>
+<div style="margin-top: auto; padding: var(--lf-site-size-8) var(--lf-site-size-10); border-radius: var(--lf-site-size-8); background: var(--lf-bg); font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-inverse-border)">group_by model → mean ± SEM</div>
+</div>
+<div style="padding: var(--lf-site-size-22); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); display: flex; flex-direction: column; gap: var(--lf-site-size-12)">
+<div style="display: flex; justify-content: space-between; font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)"><span>03</span><span>→</span></div>
+<div style="font-size: var(--lf-text-lg); font-weight: 700">图表版本</div>
+<div style="font-size: var(--lf-text-base); color: var(--lf-text-2)">每次保存一个版本，可回看、可恢复，撤销重做不丢。</div>
+<div style="margin-top: auto; padding: var(--lf-site-size-8) var(--lf-site-size-10); border-radius: var(--lf-site-size-8); background: var(--lf-bg); font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-inverse-border)">schema v1 · 版本快照</div>
+</div>
+<div style="padding: var(--lf-site-size-22); border: var(--lf-site-size-1) solid var(--lf-text); border-radius: var(--lf-site-size-16); background: var(--lf-text); color: var(--lf-surface); display: flex; flex-direction: column; gap: var(--lf-site-size-12)">
+<div style="display: flex; justify-content: space-between; font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-on-inverse-2)"><span>04</span><span>✓</span></div>
+<div style="font-size: var(--lf-text-lg); font-weight: 700">论文级导出</div>
+<div style="font-size: var(--lf-text-base); color: var(--lf-text-on-inverse-2)">矢量 PDF 嵌入内置 Noto Sans SC；SVG 保留文本，按 mm 设尺寸，PNG 可选 DPI。</div>
+<div style="margin-top: auto; padding: var(--lf-site-size-8) var(--lf-site-size-10); border-radius: var(--lf-site-size-8); background: var(--lf-inverse-2); font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-on-inverse-2)">PDF / SVG · 88 mm · PNG 600 DPI</div>
+</div>
+</div>
+</section>
+
+<section id="charts" style="max-width: var(--lf-site-size-1200); margin: 0 auto; padding: var(--lf-site-size-120) var(--lf-site-size-28) 0; display: flex; flex-direction: column; gap: var(--lf-site-size-40)">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--lf-site-size-20)">
+<div style="display: flex; flex-direction: column; gap: var(--lf-site-size-12); max-width: var(--lf-site-size-620)">
+<div style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); letter-spacing: 0.08em; color: var(--lf-text-3)">02 · CHARTS</div>
+<h2 style="margin: 0; font-size: var(--lf-site-size-40); line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">11 类科研图，<br>覆盖实验论文的常见需求。</h2>
+</div>
+<p style="margin: 0; max-width: var(--lf-site-size-420); color: var(--lf-text-2)">支持多序列、真实误差列和区间带。模型评估图直接从标签和分数计算，不用先在 Python 里算好。</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--lf-site-size-300), 1fr)); gap: var(--lf-site-size-16)">
+
+<figure style="margin: 0; border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); overflow: hidden">
+<div style="height: var(--lf-site-size-180); background: var(--lf-surface-2); display: flex; align-items: center; justify-content: center; padding: var(--lf-site-size-20)">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="学习曲线与区间带示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="120" stroke="#2B323C"></line>
+<path d="M0.0,87.8 L20.0,56.4 L40.0,38.1 L60.0,27.5 L80.0,21.4 L100.0,17.9 L120.0,15.9 L140.0,14.8 L160.0,14.1 L180.0,13.8 L200.0,13.6 L220.0,13.5 L240.0,13.4 L240.0,21.4 L220.0,21.6 L200.0,21.8 L180.0,22.2 L160.0,22.9 L140.0,23.9 L120.0,25.6 L100.0,28.5 L80.0,33.1 L60.0,40.9 L40.0,53.7 L20.0,75.1 L0.0,110.9 Z" fill="var(--lf-accent)" fill-opacity="0.14"></path>
+<path d="M0.0,102.1 L20.0,71.9 L40.0,54.5 L60.0,44.6 L80.0,38.9 L100.0,35.6 L120.0,33.7 L140.0,32.7 L160.0,32.0 L180.0,31.7 L200.0,31.5 L220.0,31.4 L240.0,31.3" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path d="M0.0,99.4 L20.0,65.8 L40.0,45.9 L60.0,34.2 L80.0,27.3 L100.0,23.2 L120.0,20.8 L140.0,19.3 L160.0,18.5 L180.0,18.0 L200.0,17.7 L220.0,17.5 L240.0,17.4" fill="none" stroke="var(--lf-accent)" stroke-width="2.5"></path>
+</svg>
+</div>
+<figcaption style="padding: var(--lf-site-size-16) var(--lf-site-size-20); border-top: var(--lf-site-size-1) solid var(--lf-divider); display: flex; justify-content: space-between; gap: var(--lf-site-size-12)"><span style="font-weight: 600">折线 + 区间带</span><span style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)">mean ± SEM</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); overflow: hidden">
+<div style="height: var(--lf-site-size-180); background: var(--lf-surface-2); display: flex; align-items: center; justify-content: center; padding: var(--lf-site-size-20)">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="分组柱状图示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line>
+<rect x="18" y="15.5" width="18" height="104.5" fill="#0072B2"></rect><rect x="38" y="8.6" width="18" height="111.4" fill="var(--lf-accent)"></rect><rect x="58" y="18.5" width="18" height="101.5" fill="#009E73"></rect>
+<rect x="98" y="45" width="18" height="75" fill="#0072B2"></rect><rect x="118" y="35.5" width="18" height="84.5" fill="var(--lf-accent)"></rect><rect x="138" y="49" width="18" height="71" fill="#009E73"></rect>
+<rect x="178" y="57.5" width="18" height="62.5" fill="#0072B2"></rect><rect x="198" y="48.8" width="18" height="71.2" fill="var(--lf-accent)"></rect><rect x="218" y="61.6" width="18" height="58.4" fill="#009E73"></rect>
+</svg>
+</div>
+<figcaption style="padding: var(--lf-site-size-16) var(--lf-site-size-20); border-top: var(--lf-site-size-1) solid var(--lf-divider); display: flex; justify-content: space-between; gap: var(--lf-site-size-12)"><span style="font-weight: 600">分组柱状图</span><span style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)">3 datasets × 3 models</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); overflow: hidden">
+<div style="height: var(--lf-site-size-180); background: var(--lf-surface-2); display: flex; align-items: center; justify-content: center; padding: var(--lf-site-size-20)">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="ROC 曲线示例，图例标注 AUC">
+<g transform="translate(20,0)">
+<line x1="0" y1="120" x2="120" y2="120" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="120" stroke="#2B323C"></line>
+<path d="M0 120 L120 0" stroke="#C3C9D2" stroke-dasharray="3 3" fill="none"></path>
+<path d="M0.0,120.0 L0.0,54.0 L12.0,54.0 L12.0,43.2 L24.0,43.2 L24.0,32.4 L48.0,32.4 L48.0,21.6 L72.0,21.6 L72.0,0.0 L120.0,0.0" stroke="#0072B2" stroke-width="2" fill="none"></path>
+<path d="M0.0,120.0 L0.0,36.0 L12.0,36.0 L12.0,24.0 L24.0,24.0 L24.0,12.0 L48.0,12.0 L48.0,0.0 L120.0,0.0" stroke="var(--lf-accent)" stroke-width="2.5" fill="none"></path>
+</g>
+<g font-family="Inter, sans-serif" font-size="11" fill="#2B323C">
+<line x1="158" y1="50" x2="172" y2="50" stroke="var(--lf-accent)" stroke-width="2.5"></line><text x="177" y="54">A · AUC 0.93</text>
+<line x1="158" y1="70" x2="172" y2="70" stroke="#0072B2" stroke-width="2"></line><text x="177" y="74">B · AUC 0.83</text>
+</g>
+</svg>
+</div>
+<figcaption style="padding: var(--lf-site-size-16) var(--lf-site-size-20); border-top: var(--lf-site-size-1) solid var(--lf-divider); display: flex; justify-content: space-between; gap: var(--lf-site-size-12)"><span style="font-weight: 600">ROC / PR</span><span style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)">AUC · AP 自动标注</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); overflow: hidden">
+<div style="height: var(--lf-site-size-180); background: var(--lf-surface-2); display: flex; align-items: center; justify-content: center; padding: var(--lf-site-size-20)">
+<div role="img" aria-label="混淆矩阵示例" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--lf-site-size-3); width: var(--lf-site-size-140); height: var(--lf-site-size-140); font-family:var(--lf-font-mono); font-size: var(--lf-text-sm)">
+<span style="background: var(--lf-site-data-0d4a8c); color: var(--lf-surface); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-3)">8</span>
+<span style="background: var(--lf-site-data-d6e4f2); color: var(--lf-text); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-3)">1</span>
+<span style="background: var(--lf-site-data-f1f5fa); color: var(--lf-text); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-3)">0</span>
+<span style="background: var(--lf-site-data-d6e4f2); color: var(--lf-text); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-3)">1</span>
+<span style="background: var(--lf-site-data-1e64a8); color: var(--lf-surface); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-3)">7</span>
+<span style="background: var(--lf-site-data-d6e4f2); color: var(--lf-text); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-3)">1</span>
+<span style="background: var(--lf-site-data-f1f5fa); color: var(--lf-text); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-3)">0</span>
+<span style="background: var(--lf-site-data-d6e4f2); color: var(--lf-text); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-3)">1</span>
+<span style="background: var(--lf-site-data-08306b); color: var(--lf-surface); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-3)">9</span>
+</div>
+</div>
+<figcaption style="padding: var(--lf-site-size-16) var(--lf-site-size-20); border-top: var(--lf-site-size-1) solid var(--lf-divider); display: flex; justify-content: space-between; gap: var(--lf-site-size-12)"><span style="font-weight: 600">混淆矩阵</span><span style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)">P / R / F1 · macro</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); overflow: hidden">
+<div style="height: var(--lf-site-size-180); background: var(--lf-surface-2); display: flex; align-items: center; justify-content: center; padding: var(--lf-site-size-20)">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="箱线图示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line>
+<g stroke="#2B323C" stroke-width="1.5" fill="none">
+<line x1="50" y1="95" x2="50" y2="70"></line><line x1="50" y1="45" x2="50" y2="25"></line><line x1="42" y1="95" x2="58" y2="95"></line><line x1="42" y1="25" x2="58" y2="25"></line>
+<line x1="120" y1="80" x2="120" y2="55"></line><line x1="120" y1="28" x2="120" y2="12"></line><line x1="112" y1="80" x2="128" y2="80"></line><line x1="112" y1="12" x2="128" y2="12"></line>
+<line x1="190" y1="100" x2="190" y2="80"></line><line x1="190" y1="58" x2="190" y2="40"></line><line x1="182" y1="100" x2="198" y2="100"></line><line x1="182" y1="40" x2="198" y2="40"></line>
+</g>
+<rect x="32" y="45" width="36" height="25" fill="#0072B2" fill-opacity="0.2" stroke="#0072B2" stroke-width="1.5"></rect><line x1="32" y1="58" x2="68" y2="58" stroke="#0072B2" stroke-width="2.5"></line>
+<rect x="102" y="28" width="36" height="27" fill="var(--lf-accent)" fill-opacity="0.2" stroke="var(--lf-accent)" stroke-width="1.5"></rect><line x1="102" y1="40" x2="138" y2="40" stroke="var(--lf-accent)" stroke-width="2.5"></line>
+<rect x="172" y="58" width="36" height="22" fill="#009E73" fill-opacity="0.2" stroke="#009E73" stroke-width="1.5"></rect><line x1="172" y1="68" x2="208" y2="68" stroke="#009E73" stroke-width="2.5"></line>
+<circle cx="50" cy="108" r="2.5" fill="#0072B2"></circle><circle cx="190" cy="110" r="2.5" fill="#009E73"></circle>
+</svg>
+</div>
+<figcaption style="padding: var(--lf-site-size-16) var(--lf-site-size-20); border-top: var(--lf-site-size-1) solid var(--lf-divider); display: flex; justify-content: space-between; gap: var(--lf-site-size-12)"><span style="font-weight: 600">箱线图</span><span style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)">分布 · 离群点</span></figcaption>
+</figure>
+
+<figure style="margin: 0; border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); overflow: hidden">
+<div style="height: var(--lf-site-size-180); background: var(--lf-surface-2); display: flex; align-items: center; justify-content: center; padding: var(--lf-site-size-20)">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="ECDF 经验累积分布示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="120" stroke="#2B323C"></line>
+<path d="M0,120 L32.6,120 L32.6,114 L49.1,114 L49.1,105 L57.5,105 L57.5,96 L69.2,96 L69.2,87 L83.4,87 L83.4,75 L87,75 L87,66 L91,66 L91,57 L95.1,57 L95.1,48 L100.5,48 L100.5,39 L105.4,39 L105.4,30 L112.9,30 L112.9,21 L119,21 L119,12 L128.5,12 L128.5,3 L150.7,3 L150.7,0 L240,0" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path d="M0,120 L74.6,120 L74.6,114 L86.8,114 L86.8,105 L112.5,105 L112.5,96 L118.7,96 L118.7,87 L124.7,87 L124.7,78 L128.9,78 L128.9,69 L135.8,69 L135.8,60 L138.2,60 L138.2,51 L141.7,51 L141.7,42 L152.8,42 L152.8,30 L171.3,30 L171.3,21 L174.9,21 L174.9,12 L191.7,12 L191.7,3 L198.8,3 L198.8,0 L240,0" fill="none" stroke="var(--lf-accent)" stroke-width="2.5"></path>
+</svg>
+</div>
+<figcaption style="padding: var(--lf-site-size-16) var(--lf-site-size-20); border-top: var(--lf-site-size-1) solid var(--lf-divider); display: flex; justify-content: space-between; gap: var(--lf-site-size-12)"><span style="font-weight: 600">ECDF</span><span style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); color: var(--lf-text-3)">经验累积分布</span></figcaption>
+</figure>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--lf-site-size-8); font-size: var(--lf-text-base); color: var(--lf-text-2)">
+<span style="margin-right: var(--lf-site-size-4)">以及</span>
+<span style="padding: var(--lf-site-size-6) var(--lf-site-size-12); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-999)">散点图</span>
+<span style="padding: var(--lf-site-size-6) var(--lf-site-size-12); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-999)">热力图</span>
+<span style="padding: var(--lf-site-size-6) var(--lf-site-size-12); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-999)">小提琴图</span>
+<span style="padding: var(--lf-site-size-6) var(--lf-site-size-12); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-999)">直方图</span>
+<span style="padding: var(--lf-site-size-6) var(--lf-site-size-12); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-999)">PR 曲线</span>
+</div>
+<p class="figure-note">下方为图型示意，用于说明表现形式，不代表实验结果。完整支持折线、分组柱状、散点、热力图、箱线、小提琴、直方、ECDF、ROC、PR 与混淆矩阵。</p></section>
+
+<section id="assistant" style="max-width: var(--lf-site-size-1200); margin: 0 auto; padding: var(--lf-site-size-120) var(--lf-site-size-28) 0; display: flex; flex-wrap: wrap; gap: var(--lf-site-size-56); align-items: center">
+<div style="flex: 1 1 var(--lf-site-size-420); display: flex; flex-direction: column; gap: var(--lf-site-size-20)">
+<div style="font-family:var(--lf-font-mono); font-size: var(--lf-text-xs); letter-spacing: 0.08em; color: var(--lf-text-3)">03 · ASSISTANT</div>
+<h2 style="margin: 0; font-size: var(--lf-site-size-40); line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">说出想改的地方。<br>先预览，再应用。</h2>
+<p style="margin: 0; color: var(--lf-text-2)">绘图助手使用 13 个受校验的工具：3 个只读，10 个可预览修改。手动绘图无需模型；授权后会发送配置与字段摘要，模型服务可能计费。每次调整先成为提案，你确认后整组应用，一步就能撤销。</p>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--lf-site-size-12)">
+<li style="display: flex; gap: var(--lf-site-size-12); align-items: flex-start"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lf-accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: var(--lf-site-size-2)"><path d="M5 12 L10 17 L19 7"></path></svg><span>与你的手动编辑合并，有冲突时拦截</span></li>
+<li style="display: flex; gap: var(--lf-site-size-12); align-items: flex-start"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lf-accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: var(--lf-site-size-2)"><path d="M5 12 L10 17 L19 7"></path></svg><span>限制步数、预算与超时，随时可以取消</span></li>
+<li style="display: flex; gap: var(--lf-site-size-12); align-items: flex-start"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lf-accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: var(--lf-site-size-2)"><path d="M5 12 L10 17 L19 7"></path></svg><span>可选接入兼容 Chat Completions 且支持工具调用的模型；密钥仅保留在本机后端内存</span></li>
+</ul>
+</div>
+<div style="flex: 1 1 var(--lf-site-size-440); min-width: 0; background: var(--lf-bg); border-radius: var(--lf-site-size-22); padding: var(--lf-site-size-24); display: flex; flex-direction: column; gap: var(--lf-site-size-14)" role="img" aria-label="绘图助手提案确认流程示意">
+<div style="align-self: flex-end; max-width: 80%; padding: var(--lf-site-size-12) var(--lf-site-size-16); border-radius: var(--lf-site-size-16) var(--lf-site-size-16) var(--lf-site-size-4) var(--lf-site-size-16); background: var(--lf-text); color: var(--lf-surface); font-size: var(--lf-text-base)">把图例放到右侧，Proposed 加粗，字号改成 16。</div>
+<div style="background: var(--lf-surface); border: var(--lf-site-size-1) solid var(--lf-border); border-radius: var(--lf-site-size-16); padding: var(--lf-site-size-18); display: flex; flex-direction: column; gap: var(--lf-site-size-14)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: var(--lf-site-size-12); font-size: var(--lf-text-sm)">
+<span style="font-weight: 600">提案 · 3 处修改</span>
+<span style="padding: var(--lf-site-size-3) var(--lf-site-size-9); border-radius: var(--lf-site-size-999); background: var(--lf-selected); color: var(--lf-link); font-size: var(--lf-text-xs)">已通过校验 · 预览中</span>
+</div>
+<div style="display: flex; flex-direction: column; font-family:var(--lf-font-mono); font-size: var(--lf-text-sm); border: var(--lf-site-size-1) solid var(--lf-divider); border-radius: var(--lf-site-size-10); overflow: hidden">
+<div style="display: flex; justify-content: space-between; gap: var(--lf-site-size-12); padding: var(--lf-site-size-10) var(--lf-site-size-14); border-bottom: var(--lf-site-size-1) solid var(--lf-divider)"><span>set_legend · position</span><span><span style="color: var(--lf-text-3); text-decoration: line-through">top</span> → <span style="color: var(--lf-success); font-weight: 500">right</span></span></div>
+<div style="display: flex; justify-content: space-between; gap: var(--lf-site-size-12); padding: var(--lf-site-size-10) var(--lf-site-size-14); border-bottom: var(--lf-site-size-1) solid var(--lf-divider)"><span>set_series · Proposed.width</span><span><span style="color: var(--lf-text-3); text-decoration: line-through">2</span> → <span style="color: var(--lf-success); font-weight: 500">3</span></span></div>
+<div style="display: flex; justify-content: space-between; gap: var(--lf-site-size-12); padding: var(--lf-site-size-10) var(--lf-site-size-14)"><span>set_style · font.size</span><span><span style="color: var(--lf-text-3); text-decoration: line-through">12</span> → <span style="color: var(--lf-success); font-weight: 500">16</span></span></div>
+</div>
+<div style="display: flex; gap: var(--lf-site-size-10)">
+<span style="flex: 1; height: var(--lf-site-size-44); display: flex; align-items: center; justify-content: center; border-radius: var(--lf-site-size-10); background: var(--lf-text); color: var(--lf-surface); font-size: var(--lf-text-base); font-weight: 600">应用这组调整</span>
+<span style="flex: 1; height: var(--lf-site-size-44); display: flex; align-items: center; justify-content: center; border: var(--lf-site-size-1) solid var(--lf-border-strong); border-radius: var(--lf-site-size-10); background: var(--lf-surface); color: var(--lf-text); font-size: var(--lf-text-base)">继续修改</span>
+</div>
+</div>
+<div style="font-size: var(--lf-text-xs); color: var(--lf-text-3); text-align: center">确认后只更新草稿，正式保存仍由你决定。</div>
+<div class="figure-note">交互流程示意 · 实际提案以校验结果为准</div></div>
+</section>
+
+<section style="max-width: var(--lf-site-size-1200); margin: 0 auto; padding: var(--lf-site-size-96) var(--lf-site-size-28) 0">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--lf-site-size-200), 1fr)); border-top: var(--lf-site-size-1) solid var(--lf-border); border-bottom: var(--lf-site-size-1) solid var(--lf-border)">
+
+<div style="padding: var(--lf-site-size-28) var(--lf-site-size-8); display: flex; flex-direction: column; gap: var(--lf-site-size-4)"><span style="font-size: var(--lf-site-size-32); font-weight: 800; letter-spacing: -0.02em">192</span><span style="font-size: var(--lf-text-sm); color: var(--lf-text-3)">前端测试（Vitest）· 2026-10-23</span></div>
+<div style="padding: var(--lf-site-size-28) var(--lf-site-size-8); display: flex; flex-direction: column; gap: var(--lf-site-size-4)"><span style="font-size: var(--lf-site-size-32); font-weight: 800; letter-spacing: -0.02em">12</span><span style="font-size: var(--lf-text-sm); color: var(--lf-text-3)">最新专项浏览器流程（助手 / 连接 / 首页）</span></div>
+
+</div>
+</section>
+
+<section id="start" style="max-width: var(--lf-site-size-1200); margin: 0 auto; padding: var(--lf-site-size-96) var(--lf-site-size-28) var(--lf-site-size-80)">
+<div style="background: var(--lf-text); color: var(--lf-surface); border-radius: var(--lf-site-size-28); padding: var(--lf-site-size-64) var(--lf-site-size-48); display: flex; flex-wrap: wrap; gap: var(--lf-site-size-40); align-items: center; justify-content: space-between">
+<div style="flex: 1 1 var(--lf-site-size-380); display: flex; flex-direction: column; gap: var(--lf-site-size-16)">
+<h2 style="margin: 0; font-size: var(--lf-site-size-38); line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">在本机跑起来，<br>一个脚本完成。</h2>
+<p style="margin: 0; color: var(--lf-text-on-inverse-2)">需要 Node 22.12+、Maven 3.6.3+、MySQL 8 二进制；脚本准备项目私有 JDK 21。首次联网下载免费依赖，核心工作台无需模型服务。</p>
+<div style="display: flex; flex-wrap: wrap; gap: var(--lf-site-size-12); margin-top: var(--lf-site-size-8)">
+<a href="#features" style="display: flex; align-items: center; height: var(--lf-site-size-48); padding: 0 var(--lf-site-size-22); border-radius: var(--lf-site-size-12); background: var(--lf-surface); color: var(--lf-text); font-weight: 600">查看产品功能</a>
+<a href="#assistant" style="display: flex; align-items: center; height: var(--lf-site-size-48); padding: 0 var(--lf-site-size-22); border-radius: var(--lf-site-size-12); border: var(--lf-site-size-1) solid var(--lf-inverse-border); color: var(--lf-surface)">了解绘图助手</a>
+</div>
+</div>
+<div style="flex: 1 1 var(--lf-site-size-420); min-width: 0; background: var(--lf-inverse-2); border: var(--lf-site-size-1) solid var(--lf-inverse-border); border-radius: var(--lf-site-size-16); padding: var(--lf-site-size-22) var(--lf-site-size-24); font-family:var(--lf-font-mono); font-size: var(--lf-text-base); line-height: 2; overflow-x: auto">
+<div style="color: var(--lf-text-on-inverse-2)"># Windows · 首次运行会准备依赖</div>
+<div style="color:var(--lf-text-on-inverse-2)"># 在已下载的项目根目录运行</div>
+<div><span style="color: var(--lf-success-live)">&gt;</span> powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1</div>
+<div style="color: var(--lf-text-on-inverse-2)"># 打开 http://127.0.0.1:5176</div>
+</div>
+</div>
+</section>
+
+<footer style="border-top: var(--lf-site-size-1) solid var(--lf-divider)">
+<div style="max-width: var(--lf-site-size-1200); margin: 0 auto; padding: var(--lf-site-size-28); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--lf-site-size-12); font-size: var(--lf-text-sm); color: var(--lf-text-3)">
+<span>LabFlow · 许可证：[许可证]（待所有者选定）</span>
+<span>本地单用户模式 · 公开部署前需认证与用户隔离</span>
+</div>
+</footer>
+
+</div>
+
+
+</body></html>

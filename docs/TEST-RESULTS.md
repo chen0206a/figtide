@@ -1,5 +1,23 @@
 # 第一阶段验收记录
 
+## 任务 07：独立静态展示页（2026-10-23）
+
+从 refactor/reference/site 复制为根目录 site，保留独立单文件结构；用真实编辑器截图替换手绘工作台，其余图型/助手流程明确标注为示意。页面 UI 使用 --lf-* token、Inter/JetBrains Mono 与系统中文回退。新增 .github/workflows/pages.yml（main 的 site/workflow 变化或手动触发），没有部署 React 应用。
+
+事实核对：实际只读 Java catalog 返回 **3 read / 10 preview**，Config.type 为 **11** 类，证据 docs/test-evidence/refactor07-facts.json。补全六类导入格式；明确 PDF 内置嵌入字体、SVG 文本、PNG DPI 的区别；模型授权发送与潜在计费边界如实表述。删除未在本轮重跑的 Java/模型评测旧数字，保留最新的 192 项前端单测和 12 项助手/连接/首页专项。启动命令与 README 一致；更新 README 旧图廊描述及截图链接。
+
+实际验证：
+
+- npm test -- --maxWorkers=4：**29 文件、192/192，14.81 秒**。
+- npm run build：**通过，19.24 秒**；既有 chunk 大小提示仍在。
+- node scripts/test-site.cjs：直接 file URL + 系统 Chrome，**4/4 尺寸通过**，分别 390/768/1280/1440px；scrollWidth 与 clientWidth 相同。图片加载、样式 token、所有可操作锚点有效，无假按钮或在线 Demo；只请求 Google Fonts，0 网络失败、0 页面异常。四张截图 refactor-07-site-*.png；证据 docs/test-evidence/refactor07-site.json。
+- 视觉检查发现参考 SVG 仍引用旧 --accent，已统一为 --lf-accent，并新增回归检查后重新导出四张截图。没有用图片着色错误的首轮截图作为最终证据。
+- 本任务没有改 React 产品逻辑或后端，未调用模型、未重新执行 Java 测试或真实模型评测。
+
+与任务文件偏差：仓库无 remote、无 LICENSE，不能猜 GitHub 用户名/仓库地址；暂将源码/文档按钮改为真实页内启动与功能指南。许可证保留 [许可证]；未添加部署后的 README 主页链接。需要所有者提供远端与选定许可证，并在 GitHub Settings → Pages 设置 Source 为 GitHub Actions；本轮 **未推送、未执行 Actions、未公开部署**。说明见 docs/LANDING-SITE.md。
+
+01d 与 03–07 的本地验收至此完成，按用户授权停在 07，未执行 08。
+
 ## 任务 06：助手停靠面板（2026-10-23）
 
 仅移动 JSX 与调整 CSS：顶部模型/预算摘要，中间对话与提案滚动，底部固定输入、同意与发送，再接确认栏。欢迎区显示原三条建议，产生对话后隐藏；无提案时保留禁用的应用按钮，仅隐藏说明。地址只显示 host，title 保留完整地址；预算摘要增加 3px 进度，不改变计算或额度选择。停靠模式的上下文说明也移入中段，以适配 720px 高度；非停靠模式保留原有输入位置。

@@ -16,11 +16,11 @@
 
 Step 2d已增加[30条双模式评测与运行器](docs/AGENT-EVALUATION.md)：默认使用人工编写输出进行离线回放，可显式接入真实模型，以共用断言和版本指纹生成报告/对比表。真实模型的拒绝/追问保留人工复核；实际运行记录见验收文档。
 
-首页现已加入本地图表示例图廊，并提供独立工作台地址、刷新恢复和导航动效。见 [首页与路由说明](docs/HOME-AND-ROUTING.md)。
+首页为真实研究工作区，提供最近图表预览、项目与实验入口；公开介绍页独立放在 `site/`，可直接打开 `site/index.html`。预览与部署前置事项见 [静态展示页说明](docs/LANDING-SITE.md)。
 
-![产品首页](docs/screenshots/home-centered.png)
+![研究工作区首页](docs/screenshots/home.png)
 
-[查看绘图工作台截图](docs/screenshots/routed-workbench.png)
+[查看绘图工作台截图](docs/screenshots/refactor-05-editor.png)
 
 ## 启动（本机 Windows）
 
