@@ -1,5 +1,14 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 10-2 产品介绍页
+
+- 按所提供静态稿移植首屏CSV→彩色论文图、可追溯步骤、7秒助手示意和6张SVG图表；三处CTA均调用同一真实入口，GitHub/锚点有效。固定仓库SVG字符串不插入用户内容，样式限定product-intro范围；颜色、字体和尺寸改用token，新增59个设计尺寸token，无新依赖。
+- 用useReveal/IntersectionObserver渐进增强，离开视口暂停助手示意；无observer/减少动效直接可见。首屏与助手均标“示意数据”，准确说明13工具=3只读+10修改提案，以及发送元数据前同意/可能计费。390px隐藏CSV/连线/浮动标签，保留图纸，标题40px。
+- `npm test -- --maxWorkers=4`：218/218（37文件，18.26s）；最终 `npm run build` 通过10.91s。新增observer测试首次build类型断言不足，补完整IntersectionObserverEntry后通过；未删除测试。临时移植脚本首次遍历自生成节点未终止，已停止，仅修正离线生成脚本，无运行时逻辑影响。
+- `./.runtime/test-refactor09.ps1 -Specs intro.spec.ts,product-intro.spec.ts`：4/4（6.6s），真实隔离服务，新JVM检查通过；1440/390全页截图已目视检查。
+- 偏差：静态稿原本动画化stroke-width/box-shadow，按10-0改为叠加粗线的opacity动画/即时阴影，保留视觉含义；不用animation-timeline。未执行Java单测/真实模型/完整E2E（10-6）。需要人决定：无。
+
+
 ## 2026-10-23 · 10-1 首次访问与介绍页路由
 
 - 根路径首次访问显示懒加载ProductIntro骨架，进入后标记labflow-intro-seen；/welcome始终可打开，工作区页脚入口；深链接不拦截，存储异常直接进入工作区。圆形View Transition按点击位置展开，支持结束清理/无API/减少动效降级；介绍页不请求工作区API。

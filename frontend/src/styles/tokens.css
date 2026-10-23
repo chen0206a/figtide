@@ -266,3 +266,66 @@
     transition-duration: 0s !important;
   }
 }
+
+/* Product introduction dimensions from the supplied design. */
+:root{
+  --lf-intro-size-15: 15px;
+  --lf-intro-size-12: 12px;
+  --lf-intro-size-1: 1px;
+  --lf-intro-size-1200: 1200px;
+  --lf-intro-size-14: 14px;
+  --lf-intro-size-28: 28px;
+  --lf-intro-size-32: 32px;
+  --lf-intro-size-10: 10px;
+  --lf-intro-size-30: 30px;
+  --lf-intro-size-8: 8px;
+  --lf-intro-size-17: 17px;
+  --lf-intro-size-4: 4px;
+  --lf-intro-size-26: 26px;
+  --lf-intro-size-20: 20px;
+  --lf-intro-size-40: 40px;
+  --lf-intro-size-16: 16px;
+  --lf-intro-size-11: 11px;
+  --lf-intro-size-84: 84px;
+  --lf-intro-size-44: 44px;
+  --lf-intro-size-5: 5px;
+  --lf-intro-size-6: 6px;
+  --lf-intro-size-999: 999px;
+  --lf-intro-size-13: 13px;
+  --lf-intro-size-2: 2px;
+  --lf-intro-size-76: 76px;
+  --lf-intro-size-640: 640px;
+  --lf-intro-size-19: 19px;
+  --lf-intro-size-58: 58px;
+  --lf-intro-size-18: 18px;
+  --lf-intro-size-1120: 1120px;
+  --lf-intro-size-3: 3px;
+  --lf-intro-size-7: 7px;
+  --lf-intro-size-110: 110px;
+  --lf-intro-size-600: 600px;
+  --lf-intro-size-420: 420px;
+  --lf-intro-size-34: 34px;
+  --lf-intro-size-220: 220px;
+  --lf-intro-size-24: 24px;
+  --lf-intro-size-120: 120px;
+  --lf-intro-size-56: 56px;
+  --lf-intro-size-380: 380px;
+  --lf-intro-size-520: 520px;
+  --lf-intro-size-22: 22px;
+  --lf-intro-size-180: 180px;
+  --lf-intro-size-9: 9px;
+  --lf-intro-size-300: 300px;
+  --lf-intro-size-140: 140px;
+  --lf-intro-size-72: 72px;
+  --lf-intro-size-48: 48px;
+  --lf-intro-size-52: 52px;
+  --lf-intro-size-560: 560px;
+  --lf-intro-size-36: 36px;
+  --lf-intro-size-150: 150px;
+  --lf-intro-size-334: 334px;
+  --lf-intro-size-206: 206px;
+  --lf-intro-size-200: 200px;
+  --lf-intro-size-226: 226px;
+  --lf-intro-size-352: 352px;
+  --lf-intro-size-246: 246px;
+}
