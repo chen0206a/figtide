@@ -185,7 +185,7 @@
         "x": 108,
         "y": 198.296875,
         "width": 1224,
-        "height": 574.9375
+        "height": 578.046875
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
@@ -201,7 +201,7 @@
         "x": 108,
         "y": 198.296875,
         "width": 260,
-        "height": 574.9375
+        "height": 578.046875
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
@@ -217,7 +217,7 @@
         "x": 392,
         "y": 198.296875,
         "width": 940,
-        "height": 574.9375
+        "height": 578.046875
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
@@ -344,10 +344,10 @@
     },
     ".paper-wrap": {
       "box": {
-        "x": 338.609375,
-        "y": 253.484375,
-        "width": 706.796875,
-        "height": 465
+        "x": 315.8125,
+        "y": 222.890625,
+        "width": 752.390625,
+        "height": 495
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",

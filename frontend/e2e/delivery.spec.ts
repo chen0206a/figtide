@@ -111,7 +111,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   await page
     .getByRole("tab", { name: "复用到其他数据集", exact: true })
     .click();
-  await page.getByLabel("复用目标数据版本").selectOption(String(target.id));
+  await page.getByLabel("复用目标版本").selectOption(String(target.id));
   await expect(
     page.getByRole("button", { name: "确认映射并保存新图" }),
   ).toBeDisabled();

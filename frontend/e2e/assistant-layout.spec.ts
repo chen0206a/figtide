@@ -72,9 +72,12 @@ test("docked assistant keeps composer and confirmation visible at both desktop h
     await check(".agent-suggestions");
   }
   await expect(panel.getByRole("checkbox")).not.toBeChecked();
-  const endpoint = panel.locator(".agent-provider span[title]");
-  await expect(endpoint).toHaveText(new URL(provider.endpoint).host);
-  await expect(endpoint).toHaveAttribute("title", provider.endpoint);
+  const model = panel.locator(".agent-provider .agent-model-name");
+  await expect(model).toHaveText(provider.model);
+  // 连接地址已移到「模型设置」对话框，面板头部不再显示。
+  await expect(panel.locator(".agent-provider")).not.toContainText(
+    new URL(provider.endpoint).host,
+  );
   await expect(panel.getByLabel("会话预算使用情况")).toHaveAttribute(
     "value",
     "0",

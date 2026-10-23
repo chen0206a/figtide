@@ -137,7 +137,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await row.getByRole("button", { name: "归档", exact: true }).click();
   await expect(row.getByText("已归档", { exact: true })).toBeVisible();
   await row.getByRole("button", { name: "恢复", exact: true }).click();
-  await expect(row.getByText("工作区项目", { exact: true })).toBeVisible();
+  await expect(row.getByText("研究项目", { exact: true })).toBeVisible();
   expect(
     await (await request.get(`/api/projects/${project.id}/charts`)).json(),
   ).toHaveLength(2);

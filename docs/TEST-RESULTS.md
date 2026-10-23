@@ -1,5 +1,14 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-24 · 11 总验收
+
+- 审计闭环：`docs/PRODUCT-AUDIT.md` 新增第 7 节，47 条逐条给出「已改 / 保留 / 不采纳」与提交号，统计 **34 已改 / 13 保留 / 0 不采纳**；第 5 节附注（切项目后数据页短暂显示上一个项目的数据）标注由 `fceb652` + `520b790` 修复，并保留 `frontend/e2e/isolation.spec.ts` 的 5 条回归。
+- 首次使用：在隔离库把全部项目临时归档后重走「空首页 → 载入示例项目 → 编辑器」，截图 `docs/product-audit/after/11-5-empty-home-1440.png`、`11-5-empty-home-390.png`、`11-5-sample-editor.png`、`11-5-sample-home.png`；390px 下 `document.documentElement.scrollWidth` = 390（1440px 下 = 1440，无横向溢出）。归档状态与示例项目在脚本结束时已还原/清理。
+- 界面文字 grep（`frontend/src` 的 ts/tsx/css，排除 *.test.*）：`Java 服务` 0、`图版` 0、`FIGURE ` 0、`127.0.0.1` 0、`CLEAN ACADEMIC` 0、`原始数据只读` 0、`工作区项目` 0、`模型连接` 0、`数据版本` 0、`图层` 0；`Failed to fetch` 仅剩 `frontend/src/lib/api.ts:26` 的注释 1 处，界面不再出现。
+- 单测：`npx vitest run --maxWorkers=4` **47 文件 / 268 通过**；`npm run build` 通过。
+- E2E（隔离栈：后端 8089 + 库 `labflow_e2e` + dev 5179，`LABFLOW_API`/`LABFLOW_WEB_URL` 指向该栈）：全量 `npx playwright test` 连跑三次分别 **74/79、71/78、71/80** 通过；失败项分两类——①Windows 上写 `docs/screenshots/*.png`、`docs/exports/*` 时随机出现 `UNKNOWN: unknown error, open/copyfile`（每次失败文件不同，机器空闲时单独重跑全部通过）；②一条动效/处理页时序断言在满载时偶发超时。所有失败 spec 均已单独重跑通过（`agent`、`assistant-layout`、`chart-corrections`、`cleanup-visual`、`delivery`、`editor-compat`、`experiments`、`isolation`、`motion`、`processing`、`refinements`、`styles-library`、`visual-polish`、`workflow`）。因此全量 E2E 未能在本机稳定一绿，原因记录在此，不当作通过。
+- 验收中修正的断言/基线（只改文案或结构，未删断言）：`frontend/e2e/assistant-layout.spec.ts:75` 由「头部显示 endpoint」改为「显示模型名 + 头部不出现 endpoint」（地址已移入模型设置对话框）；`frontend/e2e/delivery.spec.ts:114` `复用目标数据版本` → `复用目标版本`；`frontend/e2e/refinements.spec.ts:140` `工作区项目` → `研究项目`；`docs/test-evidence/refactor09-layout-baseline.json` 因数据表脚注多一行而刷新（`.data-layout` 高度 574.9 → 578.0）；`frontend/src/components/UploadDialog.tsx` 删除与数据页重复的「原始文件完整保留…」半句。
+
 ## 2026-10-23 · 11-5 第一次使用体验
 
 - 空首页：标题改为「{问候}，从一个研究项目开始。」，说明「项目里放数据、图表和实验记录。」；主按钮「创建研究项目」，次按钮「载入示例项目」（已有同名项目时为「打开示例项目」）；没有项目时不再显示「导入数据」入口与快捷导入块。
