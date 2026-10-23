@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 
 test("import preview → explicit rules → mapping → draft recovery → conflict copy → archive", async ({
   page,

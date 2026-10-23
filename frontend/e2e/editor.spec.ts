@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import path from "node:path";
 import fs from "node:fs";
 test("dataset switch, undo, styles, annotations, heatmap and history", async ({

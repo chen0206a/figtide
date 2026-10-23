@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { Project } from "../../lib/api";
 import { HomePage, type HomePageProps } from "./HomePage";
+import { MemoryRouter } from "react-router-dom";
 
 // Plotly is not needed to verify the home page wiring.
 vi.mock("../../editor/FigurePreview", () => ({
@@ -87,7 +88,7 @@ function fixture(overrides: Partial<HomePageProps> = {}) {
   };
   render(
     <QueryClientProvider client={new QueryClient()}>
-      <HomePage {...props} />
+      <MemoryRouter><HomePage {...props} /></MemoryRouter>
     </QueryClientProvider>,
   );
   return props;

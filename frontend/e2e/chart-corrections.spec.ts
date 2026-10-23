@@ -3,7 +3,7 @@ import {
   expect,
   type Page,
   type APIRequestContext,
-} from "@playwright/test";
+} from "./workspace-test";
 import fs from "node:fs";
 import {
   defaults,

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 
 test("real preview → continue → unsaved draft → assistant prefill without a model run", async ({

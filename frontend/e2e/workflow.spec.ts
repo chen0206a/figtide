@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import path from "node:path";
 import fs from "node:fs";
 test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG", async ({

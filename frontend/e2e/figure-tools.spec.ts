@@ -1,4 +1,4 @@
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import { test, expect, type APIRequestContext } from "./workspace-test";
 import { defaults, makeSeries } from "../src/editor/model";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });

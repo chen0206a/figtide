@@ -1,5 +1,13 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 10-1 首次访问与介绍页路由
+
+- 根路径首次访问显示懒加载ProductIntro骨架，进入后标记labflow-intro-seen；/welcome始终可打开，工作区页脚入口；深链接不拦截，存储异常直接进入工作区。圆形View Transition按点击位置展开，支持结束清理/无API/减少动效降级；介绍页不请求工作区API。
+- 统一e2e/workspace-test.ts为已有用例预置已看介绍标记；intro.spec.ts独立验证真实首次访问、刷新、welcome回访、保存图表深链接和存储受限。新增路由单测；首页组件测试补MemoryRouter上下文，保留全部断言。
+- `npm test -- --maxWorkers=4`最终214/214（35文件，17.08s）；build通过10.73s。首轮206/214：7项因新增Link缺测试Router、1项既有助手等待偶发超时；补Router后未改助手实现或断言，重跑全过。
+- `./.runtime/test-refactor09.ps1 -Specs intro.spec.ts,home.spec.ts,navigation.spec.ts`：7/7（11.5s），独立Java/MySQL，新JVM检查通过。未执行Java单测/真实模型/全量E2E（留10-6）。偏差：ProductIntro本节只建立真实可点击骨架，完整视觉按10-2完成。需要人决定：无。
+
+
 ## 2026-10-23 · 10-0 动效基础
 
 - AGENTS追加动效规范；motion.css提供缓动/时长、四组关键帧及默认可见的渐进增强类；useMotion提供动态减少动效监听和会话内首次/快速入场。Playwright默认减少动效，无新增依赖。

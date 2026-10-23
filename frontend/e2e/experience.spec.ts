@@ -3,7 +3,7 @@ import {
   expect,
   type Page,
   type APIRequestContext,
-} from "@playwright/test";
+} from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
 async function fixture(page: Page, request: APIRequestContext) {

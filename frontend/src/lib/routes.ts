@@ -1,4 +1,4 @@
-export type WorkspacePage = "home" | "experiments" | "data" | "editor";
+export type WorkspacePage = "home" | "experiments" | "data" | "editor" | "welcome";
 export type WorkspaceRoute = {
   page: WorkspacePage;
   project: number;
@@ -23,6 +23,7 @@ export function readWorkspaceRoute(
     valid: true,
   };
   if (pathname === "/") return base;
+  if (pathname === "/welcome" || pathname === "/welcome/") return { ...base, page: "welcome" };
   const workspace = pathname.match(
     /^\/workspace\/(experiments|data|figures\/new)\/?$/,
   );
@@ -66,6 +67,7 @@ export function workspaceUrl(
   dataset = 0,
 ) {
   if (page === "home") return "/";
+  if (page === "welcome") return "/welcome";
   if (!Number.isSafeInteger(project) || project <= 0)
     return `/workspace/${page === "editor" ? "figures/new" : page}`;
   const path = `/projects/${project}/${page === "editor" ? `figures/${chart || "new"}` : page}`;

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 import { classificationReports } from "../src/editor/classification";
 test.use({ reducedMotion: "reduce" });

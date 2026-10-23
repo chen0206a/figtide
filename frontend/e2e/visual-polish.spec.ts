@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import { defaults } from "../src/editor/model";
 
 test.use({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });

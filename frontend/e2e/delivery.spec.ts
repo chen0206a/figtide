@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 import { defaults } from "../src/editor/model";
 import { openHomeChart } from "./fixtures/home-navigation";

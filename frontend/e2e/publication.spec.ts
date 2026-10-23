@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
 test("histogram and ECDF → physical typography → real MySQL reopen → mm SVG and DPI PNG", async ({

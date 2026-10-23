@@ -10,6 +10,9 @@
 @keyframes lf-pop { from { opacity:0; transform:scale(.4); } to { opacity:1; transform:scale(1); } }
 .lf-motion-on .lf-enter { animation:lf-up var(--lf-dur-enter) var(--lf-ease-out) both; animation-delay:var(--d,0ms); }
 .lf-motion-on[data-entrance="quick"] .lf-enter { animation:lf-fade var(--lf-dur-fast) var(--lf-ease-out) both; }
+:root[data-vt="reveal"]::view-transition-old(root) { animation:none; }
+:root[data-vt="reveal"]::view-transition-new(root) { animation:lf-reveal .8s var(--lf-ease-in-out) both; }
+@keyframes lf-reveal { from {clip-path:circle(0 at var(--lf-vt-x) var(--lf-vt-y));} to {clip-path:circle(150vmax at var(--lf-vt-x) var(--lf-vt-y));} }
 @media (prefers-reduced-motion:reduce) {
   .lf-motion-on *, .lf-motion-on *::before, .lf-motion-on *::after { animation:none !important; transition:none !important; }
 }

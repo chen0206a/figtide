@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 
 test("storage failure is the exception: cancel safely, retry, then explicitly resolve a newer server version", async ({

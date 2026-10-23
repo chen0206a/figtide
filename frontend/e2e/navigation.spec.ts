@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test("module navigation resumes the exact chart without save prompts or silent database writes", async ({
   page,

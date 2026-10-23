@@ -7,6 +7,9 @@ import {
   lazy,
   Suspense,
 } from "react";
+import { flushSync } from "react-dom";
+import { introSeen, markIntroSeen } from "./lib/intro";
+import { useReducedMotion } from "./lib/useMotion";
 import { Link, useLocation, useNavigate, useBlocker } from "react-router-dom";
 import {
   readWorkspaceMemory,
@@ -41,6 +44,7 @@ import { useConfirm } from "./components/useConfirm";
 import { Experiments } from "./experiments/Experiments";
 const loadEditor = () => import("./editor/Editor");
 const Editor = lazy(loadEditor);
+const ProductIntro = lazy(() => import("./welcome/ProductIntro"));
 export default function App() {
   const qc = useQueryClient();
   const location = useLocation();
@@ -49,19 +53,22 @@ export default function App() {
     (to: string, options: { replace?: boolean } = {}) => routerGo(to, options),
     [routerGo],
   );
-  const [memory, setMemory] = useState(() =>
-    readWorkspaceMemory(sessionStorage),
-  );
+  const [memory, setMemory] = useState(() => {
+    try { return readWorkspaceMemory(sessionStorage); } catch { return {}; }
+  });
   const route = readWorkspaceRoute(location.pathname, location.search);
   const page = route.page;
   const chart = route.chart;
   const dataset = route.dataset;
+  const [seenIntro, setSeenIntro] = useState(introSeen);
+  const reducedMotion = useReducedMotion();
+  const showIntro = route.valid && (page === "welcome" || (page === "home" && !seenIntro));
   const { confirm, dialog: confirmDialog } = useConfirm();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [manage, setManage] = useState(false);
   const [connectionOpen, setConnectionOpen] = useState(false);
   const [workspaceProject, setProject] = useState(
-    () => Number(localStorage.getItem("labflow-project")) || 0,
+    () => { try { return Number(localStorage.getItem("labflow-project")) || 0; } catch { return 0; } },
   );
   const project = route.project || workspaceProject;
   const lastDataset = useRef(0);
@@ -157,6 +164,7 @@ export default function App() {
       experiments: "实验记录",
       data: "数据管理",
       editor: "绘图工作台",
+      welcome: "欢迎",
     };
     document.title = `${names[page]} · LabFlow`;
     routeFocus.current?.focus({ preventScroll: true });
@@ -169,16 +177,17 @@ export default function App() {
   const projects = useQuery({
     queryKey: ["projects"],
     queryFn: () => api<Project[]>("/projects"),
+    enabled: !showIntro,
   });
   const datasets = useQuery({
     queryKey: ["datasets", project],
     queryFn: () => api<Dataset[]>(`/projects/${project}/datasets`),
-    enabled: !!project,
+    enabled: !!project && !showIntro,
   });
   const charts = useQuery({
     queryKey: ["charts", project],
     queryFn: () => api<any[]>(`/projects/${project}/charts`),
-    enabled: !!project,
+    enabled: !!project && !showIntro,
   });
   useEffect(() => {
     if (
@@ -191,7 +200,7 @@ export default function App() {
     }
   }, [projects.data, project, route.project]);
   useEffect(() => {
-    localStorage.setItem("labflow-project", String(project));
+    try { localStorage.setItem("labflow-project", String(project)); } catch { /* optional preference */ }
   }, [project]);
   const current = projects.data?.find((p) => p.id === project);
   const navigate = (p: Page, id?: number, dataId?: number) =>
@@ -249,6 +258,17 @@ export default function App() {
     setUploadVersion(id);
     upload.current?.click();
   };
+  if (showIntro) return <Suspense fallback={<main aria-label="正在载入LabFlow介绍">正在载入…</main>}><ProductIntro onStart={(event) => {
+    markIntroSeen();
+    const update = () => flushSync(() => {setSeenIntro(true); void routerGo("/", {replace:page === "welcome"});});
+    if (reducedMotion || !document.startViewTransition) { update(); return; }
+    const root=document.documentElement;
+    root.style.setProperty("--lf-vt-x",`${event.clientX || innerWidth/2}px`);
+    root.style.setProperty("--lf-vt-y",`${event.clientY || innerHeight/2}px`);
+    root.dataset.vt="reveal";
+    const transition=document.startViewTransition(update);
+    void transition.finished.catch(()=>{}).finally(()=>{delete root.dataset.vt;root.style.removeProperty("--lf-vt-x");root.style.removeProperty("--lf-vt-y");});
+  }}/></Suspense>;
   return (
     <div
       className={`app-shell ${page === "home" ? "home-shell" : "workbench-shell"}`}

@@ -8,6 +8,7 @@ import {
   Upload,
 } from "lucide-react";
 import { type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { type Project } from "../../lib/api";
 import "./home.css";
 import { dateLabel, greeting, type ChartSummary } from "./homeData";
@@ -187,7 +188,7 @@ export function HomePage(p: HomePageProps) {
 
       <footer className="home-footer lf-mono">
         <span>数据保存在本机 · 原始文件只读</span>
-        <span>LabFlow · 本地单用户模式</span>
+        <Link to="/welcome">关于 LabFlow</Link>
       </footer>
     </div>
   );

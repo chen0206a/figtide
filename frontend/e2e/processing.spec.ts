@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
 const csv = Buffer.from(

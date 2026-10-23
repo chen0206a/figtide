@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 test.use({ reducedMotion: "reduce" });
 test("three experiments → linked versions → comparison → immutable chart → source trace", async ({
   page,

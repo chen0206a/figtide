@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test.use({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
 test("new figure presets undo once, survive MySQL reopen and export 180mm vector PDF", async ({

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
 import { defaults } from "../src/editor/model";
 
 test("docked assistant keeps composer and confirmation visible at both desktop heights", async ({
