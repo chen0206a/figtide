@@ -8,6 +8,7 @@ export default defineConfig({
     baseURL: webUrl,
     viewport: { width: 1560, height: 1000 },
     headless: true,
+    reducedMotion: "reduce",
     acceptDownloads: true,
     // 本机没有下载 Playwright 自带 Chromium 时，复用系统 Chrome，
     // 避免测试依赖浏览器二进制下载（沙箱/离线环境可重复执行）。

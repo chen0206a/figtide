@@ -6,6 +6,7 @@ import "@fontsource-variable/jetbrains-mono";
 import App from "./App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./styles/tokens.css";
+import "./styles/motion.css";
 import "./styles.css";
 import "./editor/workbench/workbench.css";
 import "./styles/dialogs.css";
