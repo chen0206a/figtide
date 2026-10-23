@@ -10,6 +10,7 @@ import {
 import { flushSync } from "react-dom";
 import { introSeen, markIntroSeen } from "./lib/intro";
 import { useReducedMotion } from "./lib/useMotion";
+import { loadEditor } from "./lib/loadEditor";
 import { Link, useLocation, useNavigate, useBlocker } from "react-router-dom";
 import {
   readWorkspaceMemory,
@@ -42,7 +43,6 @@ import { ProjectManager } from "./components/ProjectManager";
 import { ModelConnectionDialog } from "./components/ModelConnectionDialog";
 import { useConfirm } from "./components/useConfirm";
 import { Experiments } from "./experiments/Experiments";
-const loadEditor = () => import("./editor/Editor");
 const Editor = lazy(loadEditor);
 const ProductIntro = lazy(() => import("./welcome/ProductIntro"));
 export default function App() {
@@ -441,6 +441,7 @@ export default function App() {
                   onExperiments={() => navigate("experiments")}
                   onData={() => navigate("data")}
                   onChart={(id) => navigate("editor", id)}
+                  onContinue={(id, pdf) => routerGo(workspaceUrl("editor",project,id), {viewTransition: !reducedMotion && !!document.startViewTransition,state:{fromHome:true,exportFormat:pdf?"pdf":undefined}})}
                   onRetry={() => charts.refetch()}
                   onModelConnection={() => setConnectionOpen(true)}
                   onAssistant={(chartId, prompt) =>

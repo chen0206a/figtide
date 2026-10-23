@@ -1,0 +1,20 @@
+import {test,expect} from './workspace-test';
+import {defaults} from '../src/editor/model';
+test.use({viewport:{width:1440,height:1000}});
+test('home v2 loads actual versions, fits Plotly and preloads the exact figure into PDF export',async({page,request})=>{
+ const p=await(await request.post('/api/projects',{data:{name:'首页v2验收 · 合成演示',description:'Task10'}})).json();
+ const d=await(await request.post(`/api/projects/${p.id}/datasets`,{multipart:{file:{name:'synthetic-curves.csv',mimeType:'text/csv',buffer:Buffer.from('epoch,accuracy,loss\n1,0.7,0.8\n2,0.8,0.5\n3,0.9,0.2')}}})).json();
+ const config=defaults(d);config.style.title='Training dynamics · synthetic';
+ const chart=await(await request.post(`/api/projects/${p.id}/charts`,{data:{name:'学习曲线 · 合成演示',config}})).json();
+ const update=await request.put(`/api/projects/${p.id}/charts/${chart.id}`,{data:{name:'学习曲线 · 合成演示',config,revision:1}});expect(update.ok()).toBe(true);
+ await page.addInitScript(id=>localStorage.setItem('labflow-project',String(id)),p.id);
+ await page.goto('/');await expect(page.locator('.figure-preview')).toHaveAttribute('aria-busy','false');
+ await expect(page.locator('.home-timeline')).toContainText('已保存 v2');await expect(page.locator('.home-timeline')).toContainText('已保存 v1');
+ const fit=await page.getByTestId('figure-preview-plot').evaluate((el:any)=>({width:el.layout.width,height:el.layout.height,container:el.parentElement.getBoundingClientRect().width,transform:getComputedStyle(el).transform}));
+ expect(fit.width).toBeLessThanOrEqual(fit.container);expect(fit.height/fit.width).toBeCloseTo(500/760);expect(fit.transform).toBe('none');
+ await page.keyboard.press('Control+k');await expect(page.locator('#home-assistant-input')).toBeFocused();
+ await page.locator('#home-assistant-input').blur();
+ await page.screenshot({path:'../docs/screenshots/refactor-10-home.png',fullPage:true});
+ await page.getByRole('button',{name:'导出 PDF',exact:true}).click();await expect(page).toHaveURL(new RegExp(`/figures/${chart.id}$`));await expect(page.getByLabel('文件格式')).toHaveValue('pdf');
+ const saved=await(await request.get(`/api/projects/${p.id}/charts/${chart.id}`)).json();expect(saved.config).toEqual(config);expect(saved.revision).toBe(2);
+});

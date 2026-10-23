@@ -163,11 +163,11 @@ test("four real workspace pages keep their layout while adopting shared tokens",
         expect(inverseText).toBe("#b8c0cc");
         await expect(page.locator(".home-assistant-form label")).toHaveCSS(
           "color",
-          "rgb(184, 192, 204)",
+          "rgb(95, 103, 115)",
         );
         await expect(page.locator(".home-assistant-model")).toHaveCSS(
           "color",
-          "rgb(184, 192, 204)",
+          "rgb(95, 103, 115)",
         );
       }
       if (entry.name === "data")

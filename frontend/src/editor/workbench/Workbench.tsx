@@ -22,6 +22,7 @@ import { useFigureExport } from "./useFigureExport";
 import { usePanelLayout } from "./usePanelLayout";
 import { usePlotRenderer } from "./usePlotRenderer";
 import { WorkbenchOverlays } from "./WorkbenchOverlays";
+import {useReducedMotion} from "../../lib/useMotion";
 export function Workbench({
   project,
   projectName,
@@ -38,13 +39,17 @@ export function Workbench({
 }: WorkbenchProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const reducedMotion=useReducedMotion();
+  const [entering,setEntering]=useState(!!(location.state as {fromHome?:boolean}|null)?.fromHome);
+  const [initialPdf]=useState((location.state as {exportFormat?:string}|null)?.exportFormat==='pdf');
+  useEffect(()=>{if(!entering)return;const timer=setTimeout(()=>setEntering(false),750);return()=>clearTimeout(timer)},[entering]);
   const [assistantPrompt] = useState(
     () =>
       (location.state as { assistantPrompt?: string } | null)
         ?.assistantPrompt || "",
   );
   useEffect(() => {
-    if (assistantPrompt)
+    if (assistantPrompt || entering || initialPdf)
       navigate(location.pathname + location.search, {
         replace: true,
         state: null,
@@ -99,7 +104,7 @@ export function Workbench({
     [zoom, setZoom] = useState(85),
     [bottom, setBottom] = useState(""),
     [preview, setPreview] = useState(false),
-    [exportOpen, setExportOpen] = useState(false),
+    [exportOpen, setExportOpen] = useState(initialPdf),
     [historyOpen, setHistoryOpen] = useState(false),
     [logs, setLogs] = useState<string[]>(["工作台已就绪"]);
   useCanvasFit({ stage, autoFit, setZoom, c });
@@ -113,7 +118,7 @@ export function Workbench({
   const [agentOpen, setAgentOpen] = useState(!!assistantPrompt);
   const [reuseTab, setReuseTab] = useState<"builtin" | "style">("style");
   const [previewPreset, setPreviewPreset] = useState("");
-  const [format, setFormat] = useState<"svg" | "png" | "pdf">("svg"),
+  const [format, setFormat] = useState<"svg" | "png" | "pdf">(initialPdf?"pdf":"svg"),
     [scale, setScale] = useState(2);
   const versions = useQuery({
     queryKey: ["versions", project, id, revision],
@@ -218,7 +223,7 @@ export function Workbench({
   return (
     <div
       aria-busy={saving}
-      className={`editor ${preview ? "preview-mode" : ""} ${!panels.left ? "hide-left" : ""} ${!panels.right ? "hide-right" : ""} ${agentOpen ? "assistant-open" : ""}`}
+      className={`editor ${entering&&!reducedMotion?'ed-enter':''} ${preview ? "preview-mode" : ""} ${!panels.left ? "hide-left" : ""} ${!panels.right ? "hide-right" : ""} ${agentOpen ? "assistant-open" : ""}`}
     >
       <EditorToolbar
         {...{

@@ -1,5 +1,14 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 10-3 工作区首页v2
+
+- 保留HomePage/ContinueCard/HomeSide/HomeTables边界，改为问候/命令栏/2:1深色展台与最近图表+2×2入口/实验与项目表。展台显示真实图表、最近两个版本和可选本机草稿（最多3行）；明确当前预览为已保存版本。
+- FigurePreview新增fit模式：实际容器宽度与原宽高比直接渲染Plotly，字号不做CSS缩放；默认exact保留样式库原行为。线条用临时dash+Web Animation绘制，结束/取消清理。首页按会话full/quick/none入场，最后一项1.18s结束；草稿点只用opacity闪动，不动画化阴影。
+- 命令栏轮换示例、焦点/减少动效停轮换、挂载期间Ctrl/⌘K聚焦；只把文字送到编辑器，首页不发起模型请求。ContinueCard悬停/聚焦预载，点击等编辑器模块与同key图表/数据查询完成后再共享图纸转场；PDF按钮打开真实编辑器PDF导出窗口，入口状态用后清理。
+- `npm test -- --maxWorkers=4`：220/220（38文件，18.66s）；最终build通过10.40s。`./.runtime/test-refactor09.ps1 -Specs home.spec.ts,home-v2.spec.ts,home-workspace.spec.ts,styles-library.spec.ts,navigation.spec.ts`：10/10（21.1s）；补1440px快照与新命令栏色彩等价断言，home-v2+design-tokens再2/2（5.3s）。各轮新JVM审计/恢复通过。
+- 未执行Java单测/真实模型/完整E2E（10-6）。偏差：超过6条线时绘制延迟封顶600ms，避免超出工作区1.2s入场上限；演示图/版本数量由真实夹具决定，未填充虚构记录。需要人决定：无。
+
+
 ## 2026-10-23 · 10-2 产品介绍页
 
 - 按所提供静态稿移植首屏CSV→彩色论文图、可追溯步骤、7秒助手示意和6张SVG图表；三处CTA均调用同一真实入口，GitHub/锚点有效。固定仓库SVG字符串不插入用户内容，样式限定product-intro范围；颜色、字体和尺寸改用token，新增59个设计尺寸token，无新依赖。

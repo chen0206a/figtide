@@ -11,6 +11,7 @@ vi.mock("../../editor/FigurePreview", () => ({
     <div role="img" aria-label={label} />
   ),
 }));
+vi.mock("../../lib/loadEditor",()=>({loadEditor:vi.fn(async()=>({}))}));
 
 const projects = Array.from(
   { length: 30 },
@@ -101,7 +102,7 @@ it("puts the latest chart first with a real preview and opens it", async () => {
   ).toBeVisible();
   expect(screen.getByText(/FIGURE 01 · LINE · CLEAN ACADEMIC/)).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: /继续编辑/ }));
-  expect(p.onChart).toHaveBeenCalledWith(1);
+  await waitFor(()=>expect(p.onChart).toHaveBeenCalledWith(1));
 });
 
 it("lists the remaining charts and reveals more on demand", () => {
@@ -162,7 +163,7 @@ it("routes every entry to project creation when no project is selected", () => {
 
 it("hands the assistant prompt to the editor without sending it", async () => {
   const p = fixture();
-  const input = await screen.findByLabelText(/对最近的图说出想改的地方/);
+  const input = await screen.findByLabelText(/让绘图助手修改最近的图/);
   await waitFor(() => expect(input).toBeEnabled());
   fireEvent.click(screen.getByRole("button", { name: "隐藏网格线" }));
   fireEvent.click(screen.getByRole("button", { name: "在编辑器中打开助手" }));

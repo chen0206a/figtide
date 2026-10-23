@@ -11,6 +11,8 @@ import { type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { type Project } from "../../lib/api";
 import "./home.css";
+import "./home-motion.css";
+import {useEntrance} from "../../lib/useMotion";
 import { dateLabel, greeting, type ChartSummary } from "./homeData";
 
 import { ContinueCard } from "./ContinueCard";
@@ -30,6 +32,7 @@ export type HomePageProps = {
   onExperiments: () => void;
   onData: () => void;
   onChart: (id: number) => void;
+  onContinue?: (id:number,pdf?:boolean)=>void;
   onRetry: () => void;
   /** Open the editor for `chartId` with the assistant open and `prompt` prefilled. */
   onAssistant?: (chartId: number, prompt: string) => void;
@@ -41,8 +44,9 @@ export function HomePage(p: HomePageProps) {
   const latest = p.charts[0];
   const act = (callback: () => void) => (current ? callback() : p.onCreate());
   const now = new Date();
+  const entrance=useEntrance("home");
   return (
-    <div className="home">
+    <div className={`home home-v2 ${entrance=== "none" ? "" : "lf-motion-on"}`} data-entrance={entrance}>
       <section className="home-intro" aria-label="欢迎">
         <div className="home-intro-text">
           <span className="lf-kicker">{dateLabel(now)} · 本地工作区</span>
@@ -72,6 +76,7 @@ export function HomePage(p: HomePageProps) {
         </div>
       </section>
 
+      <AssistantCard chartId={latest?.id} onAssistant={p.onAssistant} onModelConnection={p.onModelConnection}/>
       <div className="home-top">
         {!current ? (
           <section className="home-card home-continue home-empty-hero">
@@ -105,7 +110,9 @@ export function HomePage(p: HomePageProps) {
             project={p.currentId}
             projectName={current.name}
             chart={latest}
-            onOpen={() => p.onChart(latest.id)}
+            onOpen={() => (p.onContinue || p.onChart)(latest.id)}
+            onExport={()=> (p.onContinue || p.onChart)(latest.id,true)}
+            animateLines={entrance==="full"}
           />
         ) : (
           <section className="home-card home-continue home-empty-hero">
@@ -134,14 +141,6 @@ export function HomePage(p: HomePageProps) {
             enabled={!!current && !p.chartsLoading && !p.chartsError}
             onChart={p.onChart}
           />
-          <AssistantCard
-            chartId={latest?.id}
-            onAssistant={p.onAssistant}
-            onModelConnection={p.onModelConnection}
-          />
-        </div>
-      </div>
-
       <section className="home-section" aria-label="快速开始">
         <h2 className="home-section-title">快速开始</h2>
         <div className="home-quick">
@@ -173,17 +172,22 @@ export function HomePage(p: HomePageProps) {
         </div>
       </section>
 
+
+        </div>
+      </div>
+
       <div className="home-bottom">
+        <ExperimentsPanel
+          project={current}
+          onExperiments={() => act(p.onExperiments)}
+        />
         <ProjectsPanel
           projects={p.projects}
           currentId={p.currentId}
           onProject={p.onProject}
           onCreate={p.onCreate}
         />
-        <ExperimentsPanel
-          project={current}
-          onExperiments={() => act(p.onExperiments)}
-        />
+
       </div>
 
       <footer className="home-footer lf-mono">
