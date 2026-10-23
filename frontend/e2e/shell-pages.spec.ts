@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 
@@ -137,13 +138,13 @@ test("stable desktop header and compact data/experiment pages remain usable at 3
         }
       }
       await page.screenshot({
-        path: `../docs/screenshots/refactor-03-${name}-${width}.png`,
+        path: artifactPath(test.info(), `../docs/screenshots/refactor-03-${name}-${width}.png`),
         fullPage: true,
       });
     }
   }
   fs.writeFileSync(
-    "../docs/test-evidence/refactor03-shell.json",
+    artifactPath(test.info(), "../docs/test-evidence/refactor03-shell.json"),
     JSON.stringify(geometry, null, 2) + "\n",
   );
 });

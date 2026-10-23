@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import {test,expect} from './workspace-test';
 import {defaults} from '../src/editor/model';
 test.use({viewport:{width:1440,height:1000}});
@@ -14,7 +15,7 @@ test('home v2 loads actual versions, fits Plotly and preloads the exact figure i
  expect(fit.width).toBeLessThanOrEqual(fit.container);expect(fit.height/fit.width).toBeCloseTo(500/760);expect(fit.transform).toBe('none');
  await page.keyboard.press('Control+k');await expect(page.locator('#home-assistant-input')).toBeFocused();
  await page.locator('#home-assistant-input').blur();
- await page.screenshot({path:'../docs/screenshots/refactor-10-home.png',fullPage:true});
+ await page.screenshot({path:artifactPath(test.info(), '../docs/screenshots/refactor-10-home.png'),fullPage:true});
  await page.getByRole('button',{name:'导出 PDF',exact:true}).click();await expect(page).toHaveURL(new RegExp(`/figures/${chart.id}$`));await expect(page.getByLabel('文件格式')).toHaveValue('pdf');
  const saved=await(await request.get(`/api/projects/${p.id}/charts/${chart.id}`)).json();expect(saved.config).toEqual(config);expect(saved.revision).toBe(2);
 });

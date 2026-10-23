@@ -1,5 +1,23 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-24 · 11-6 / 提交 3：E2E 产物隔离
+
+- 所有 spec 的截图、下载导出、临时 PDF、生成的布局测量 JSON 改用公共 `artifactPath(test.info(), destination)`，实际路径由 `TestInfo.outputPath` 分配；文件内容、PDF 尺寸、SVG 标签等断言读取同一输出文件。只读配置样例与历史基线仍作为输入，不刷新基线、不删除断言。
+- 自动 fixture 仅在 `LABFLOW_CAPTURE=1` 时将实际生成的文档产物额外复制到 docs；默认运行不写 docs/screenshots、docs/exports、docs/test-evidence。产品介绍测试使用仅捕获 fixture，保持首次访问行为。增加 Playwright JSON 结果，方便报告 passed / failed / skipped。
+- 隔离脚本新增可选 `-Specs` 与 `-FixturePort`；已有 8089/18769 服务不动，本轮自建 8087/5178/18770，模型设置测试继续只允许对应本地协议夹具。
+- `npm test -- --maxWorkers=4`：48 文件 / 274 通过；`npm run build`：通过（13.02s）；`npx playwright test --list`：80 条 / 35 文件。
+- `./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('isolation.spec.ts', 'chart-corrections.spec.ts')`：**passed 8 / failed 0 / skipped 0**（29.1s），含新增实验隔离步骤、SEM/混淆矩阵/ROC 的 SVG/PDF 内容校验；新 JVM 审计恢复校验通过，测试项目清理完成，docs 无改动。日志 `.runtime/task11-6-3-e2e.log`。
+
+拍验收图（仓库根目录 PowerShell，MySQL 需已运行；示例项目截图步骤在提交 4 补入）：
+
+```powershell
+$env:LABFLOW_CAPTURE = '1'
+./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('sample-project.spec.ts', 'cleanup-visual.spec.ts')
+$env:LABFLOW_CAPTURE = ''
+# 日常全量验收不设 LABFLOW_CAPTURE，避免重复写文档图片。
+./scripts/test-agent.ps1 -All -FixturePort 18770
+```
+
 ## 2026-10-24 · 11-6 / 提交 2：R3 / R4 / R5
 
 - 导入确认恢复「调整解析不会修改原文件」。处理来源删除源版本数据库 ID，保留真实 v{version}；describeFigure 只在元数据属于当前数据集且版本号有效时显示真实版本，否则省略。

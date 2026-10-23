@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect, type Page } from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
@@ -73,7 +74,7 @@ test("raw repeated observations → exact SEM preview → MySQL → auto mapped 
   ).toBe(1);
   await page.getByLabel("处理结果预览").scrollIntoViewIfNeeded();
   await page.screenshot({
-    path: "../docs/screenshots/processing-preview.png",
+    path: artifactPath(test.info(), "../docs/screenshots/processing-preview.png"),
     fullPage: true,
   });
   const savedResponse = page.waitForResponse(
@@ -124,7 +125,7 @@ test("raw repeated observations → exact SEM preview → MySQL → auto mapped 
   await page.getByRole("button", { name: "关闭", exact: true }).click();
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/processing-sem.png",
+    path: artifactPath(test.info(), "../docs/screenshots/processing-sem.png"),
     fullPage: true,
   });
   for (const format of ["svg", "png"]) {
@@ -132,14 +133,14 @@ test("raw repeated observations → exact SEM preview → MySQL → auto mapped 
     await page.getByLabel("文件格式").selectOption(format);
     const waiting = page.waitForEvent("download");
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
-    await (await waiting).saveAs(`../docs/exports/processing-sem.${format}`);
+    await (await waiting).saveAs(artifactPath(test.info(), `../docs/exports/processing-sem.${format}`));
   }
-  const svg = fs.readFileSync("../docs/exports/processing-sem.svg", "utf8");
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/processing-sem.svg"), "utf8");
   expect(svg).toContain("errorbar");
   expect(svg).toContain("SEM");
   expect(svg).not.toContain("<image");
   expect(
-    fs.readFileSync("../docs/exports/processing-sem.png").readUInt32BE(16),
+    fs.readFileSync(artifactPath(test.info(), "../docs/exports/processing-sem.png")).readUInt32BE(16),
   ).toBe(1520);
   expect(
     await (
@@ -230,7 +231,7 @@ test("duplicate run guard → repair groups → interval preview invalidation �
   await expect(page.getByText("已保存 v1", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/processing-band.png",
+    path: artifactPath(test.info(), "../docs/screenshots/processing-band.png"),
     fullPage: true,
   });
 });

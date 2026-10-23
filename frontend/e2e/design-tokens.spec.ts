@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 import { defaults } from "../src/editor/model";
@@ -185,7 +186,7 @@ test("four real workspace pages keep their layout while adopting shared tokens",
         );
     }
     await page.screenshot({
-      path: `../docs/screenshots/refactor-02-${phase}-${entry.name}.png`,
+      path: artifactPath(test.info(), `../docs/screenshots/refactor-02-${phase}-${entry.name}.png`),
       fullPage: true,
       animations: "disabled",
     });
@@ -197,7 +198,7 @@ test("four real workspace pages keep their layout while adopting shared tokens",
   expect(reopened.revision).toBe(1);
   expect(errors).toEqual([]);
   fs.writeFileSync(
-    `../docs/test-evidence/refactor02-${phase}.json`,
+    artifactPath(test.info(), `../docs/test-evidence/refactor02-${phase}.json`),
     JSON.stringify(measurements, null, 2) + "\n",
   );
 });

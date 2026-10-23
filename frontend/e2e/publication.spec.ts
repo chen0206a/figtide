@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
@@ -76,7 +77,7 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
   });
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/publication-histogram.png",
+    path: artifactPath(test.info(), "../docs/screenshots/publication-histogram.png"),
     fullPage: true,
   });
   for (const format of ["svg", "png"]) {
@@ -89,17 +90,17 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
     await (
       await waiting
-    ).saveAs(`../docs/exports/publication-histogram.${format}`);
+    ).saveAs(artifactPath(test.info(), `../docs/exports/publication-histogram.${format}`));
   }
   const svg = fs.readFileSync(
-    "../docs/exports/publication-histogram.svg",
+    artifactPath(test.info(), "../docs/exports/publication-histogram.svg"),
     "utf8",
   );
   expect(svg).toContain('width="89mm"');
   expect(svg).toContain('viewBox="0 0 760 500"');
   expect(svg).toContain("<text");
   expect(svg).not.toContain("<image");
-  const png = fs.readFileSync("../docs/exports/publication-histogram.png");
+  const png = fs.readFileSync(artifactPath(test.info(), "../docs/exports/publication-histogram.png"));
   expect(png.readUInt32BE(16)).toBe(1051);
   expect(png.readUInt32BE(20)).toBe(691);
   const phys = png.indexOf(Buffer.from("pHYs"));
@@ -151,7 +152,7 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
     el.scrollTop = 0;
   });
   await page.screenshot({
-    path: "../docs/screenshots/publication-ecdf.png",
+    path: artifactPath(test.info(), "../docs/screenshots/publication-ecdf.png"),
     fullPage: true,
   });
   expect(
@@ -237,7 +238,7 @@ test("scientific heatmap scale, contrasting numeric labels, and rejected invalid
   await page.getByLabel("色阶中心值").scrollIntoViewIfNeeded();
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/scientific-heatmap.png",
+    path: artifactPath(test.info(), "../docs/screenshots/scientific-heatmap.png"),
     fullPage: true,
   });
   await page.getByLabel("色阶最小值").fill("10");

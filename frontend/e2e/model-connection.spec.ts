@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect, type APIRequestContext } from "./workspace-test";
 import { defaults } from "../src/editor/model";
 test.use({ reducedMotion: "reduce" });
@@ -5,7 +6,7 @@ async function setup(request: APIRequestContext) {
   const original = await (await request.get("/api/agent/connection")).json();
   test.skip(
     original.model !== "labflow-fixture" ||
-      !original.base_url.includes("127.0.0.1:18769"),
+      !original.base_url.includes(`127.0.0.1:${process.env.LABFLOW_FIXTURE_PORT || "18769"}`),
     "Only the isolated local fixture may receive these requests",
   );
   return original;
@@ -67,7 +68,7 @@ test("web connection settings → two real HTTP probes → verified apply → se
       dialog.getByRole("button", { name: "应用连接", exact: true }),
     ).toBeInViewport();
     await page.screenshot({
-      path: "../docs/screenshots/model-connection.png",
+      path: artifactPath(test.info(), "../docs/screenshots/model-connection.png"),
       fullPage: false,
     });
     await page.setViewportSize({ width: 390, height: 844 });
@@ -139,7 +140,7 @@ test("editor settings expose real authentication failure without replacing the w
     (await (await request.get("/api/agent/connection")).json()).revision,
   ).toBe(original.revision);
   await page.screenshot({
-    path: "../docs/screenshots/model-connection-error.png",
+    path: artifactPath(test.info(), "../docs/screenshots/model-connection-error.png"),
     fullPage: false,
   });
   await dialog.getByRole("button", { name: "关闭", exact: true }).click();

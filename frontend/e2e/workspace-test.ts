@@ -1,4 +1,4 @@
-import { test as base } from "@playwright/test";
+import { test as base } from "./capture-test";
 export * from "@playwright/test";
 /** Existing workbench scenarios opt out of the first-visit tour in one place. */
 export const test = base.extend({

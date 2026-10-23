@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import {
   test,
   expect,
@@ -257,12 +258,12 @@ test("focused inspector keeps data and appearance separate without changing the 
     await page.setViewportSize({ width, height: 900 });
     await paperFits(page);
     await page.screenshot({
-      path: `../docs/screenshots/focused-editor-${width}.png`,
+      path: artifactPath(test.info(), `../docs/screenshots/focused-editor-${width}.png`),
     });
   }
   await page.getByRole("button", { name: "图表", exact: true }).click();
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.screenshot({ path: "../docs/screenshots/focused-mapping.png" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/focused-mapping.png") });
   const saved = await (
     await request.get(`/api/projects/${project.id}/charts/${chart.id}`)
   ).json();

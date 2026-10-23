@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 
@@ -85,9 +86,9 @@ test("storage failure is the exception: cancel safely, retry, then explicitly re
     "New server version",
   );
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.screenshot({ path: "../docs/screenshots/seamless-editor.png" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/seamless-editor.png") });
   await page.getByRole("link", { name: "数据管理", exact: true }).click();
-  await page.screenshot({ path: "../docs/screenshots/seamless-data.png" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/seamless-data.png") });
 });
 
 test("new dataset drafts stay isolated and saving preserves the inspector context and other drafts", async ({

@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 
@@ -59,7 +60,7 @@ test("real preview → continue → unsaved draft → assistant prefill without 
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.screenshot({
-    path: "../docs/screenshots/home.png",
+    path: artifactPath(test.info(), "../docs/screenshots/home.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "继续编辑", exact: true }).click();

@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect, type APIRequestContext } from "./workspace-test";
 import fs from "node:fs";
 import { defaults, makeSeries } from "../src/editor/model";
@@ -109,7 +110,7 @@ test("builtin preview is isolated, applies through undo, persists and exports us
     .click();
   await expect(preview).toHaveAttribute("aria-busy", "false");
   await page.screenshot({
-    path: "../docs/screenshots/styles-builtin.png",
+    path: artifactPath(test.info(), "../docs/screenshots/styles-builtin.png"),
     fullPage: true,
   });
   for (const viewport of [
@@ -254,7 +255,7 @@ test("personal templates support project search, preview, rename, delete protect
       .first(),
   ).toHaveAttribute("style", /rgb\(222, 116, 61\)/);
   await page.screenshot({
-    path: "../docs/screenshots/styles-personal.png",
+    path: artifactPath(test.info(), "../docs/screenshots/styles-personal.png"),
     fullPage: true,
   });
   await page
@@ -349,7 +350,7 @@ test("preview renders grouped bars, scatter points and vector heatmap cells with
     if (type === "heatmap") {
       await expect(preview.locator("image")).toHaveCount(0);
       await page.screenshot({
-        path: "../docs/screenshots/styles-heatmap.png",
+        path: artifactPath(test.info(), "../docs/screenshots/styles-heatmap.png"),
         fullPage: true,
       });
     }
@@ -439,7 +440,7 @@ test("180 sparse violin diagnostics stay collapsed and never overlap the apply f
     expect(geometry.previewHeight).toBeLessThanOrEqual(245);
   }
   await page.screenshot({
-    path: "../docs/screenshots/styles-warning-summary.png",
+    path: artifactPath(test.info(), "../docs/screenshots/styles-warning-summary.png"),
     fullPage: true,
   });
   await diagnostics.locator("summary").click();

@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 import { defaults } from "../src/editor/model";
@@ -122,7 +123,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   }))
     await page.getByLabel(`映射 ${old}`, { exact: true }).selectOption(next);
   await page.screenshot({
-    path: "../docs/screenshots/figure-reuse.png",
+    path: artifactPath(test.info(), "../docs/screenshots/figure-reuse.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "确认映射并保存新图" }).click();
@@ -157,15 +158,15 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
     await page.getByLabel("文件格式").selectOption(format);
     const download = page.waitForEvent("download", { timeout: 60000 });
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
-    await (await download).saveAs(`../docs/exports/reusable-figure.${format}`);
+    await (await download).saveAs(artifactPath(test.info(), `../docs/exports/reusable-figure.${format}`));
   }
   expect(
     fs
-      .readFileSync("../docs/exports/reusable-figure.pdf")
+      .readFileSync(artifactPath(test.info(), "../docs/exports/reusable-figure.pdf"))
       .subarray(0, 5)
       .toString(),
   ).toBe("%PDF-");
-  const svg = fs.readFileSync("../docs/exports/reusable-figure.svg", "utf8");
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/reusable-figure.svg"), "utf8");
   expect(svg).toContain('width="89mm"');
   expect(svg).toContain("合成实验");
   expect(svg).not.toContain("<image");
@@ -180,7 +181,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   const recoveredName = `成果恢复验收 ${p.id}`;
   await page.getByLabel("恢复项目名称").fill(recoveredName);
   await page.screenshot({
-    path: "../docs/screenshots/project-delivery.png",
+    path: artifactPath(test.info(), "../docs/screenshots/project-delivery.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "恢复为新项目" }).click();
@@ -289,7 +290,7 @@ test("vector PDF retains bold CJK multiline labels and heatmap cells", async ({
   await page.getByLabel("文件格式").selectOption("pdf");
   const waiting = page.waitForEvent("download");
   await page.getByRole("button", { name: "下载图表", exact: true }).click();
-  await (await waiting).saveAs("../.runtime/heatmap-vector.pdf");
+  await (await waiting).saveAs(artifactPath(test.info(), "../.runtime/heatmap-vector.pdf"));
   // Converter contract check, separate from the editor's deliberately plain-text inputs.
   const bytes = await page.evaluate(async (config) => {
     const moduleUrl = performance.getEntriesByType("resource")
@@ -305,5 +306,5 @@ test("vector PDF retains bold CJK multiline labels and heatmap cells", async ({
     );
     return [...new Uint8Array(await blob.arrayBuffer())];
   }, c);
-  fs.writeFileSync("../.runtime/multiline-vector.pdf", Buffer.from(bytes));
+  fs.writeFileSync(artifactPath(test.info(), "../.runtime/multiline-vector.pdf"), Buffer.from(bytes));
 });

@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import { defaults } from "../src/editor/model";
 
@@ -42,7 +43,7 @@ test("polish surfaces use neutral metadata and preserve saved source", async ({ 
       const widths = await page.locator('.table-scroll').evaluate(el=>({viewport:el.clientWidth,table:el.querySelector('table')!.getBoundingClientRect().width}));
       expect(widths.table).toBeGreaterThanOrEqual(widths.viewport-1);
     }
-    await page.screenshot({path:`../docs/screenshots/refactor-09-${stage}-${surface.name}.png`,fullPage:true,animations:'disabled'});
+    await page.screenshot({path:artifactPath(test.info(), `../docs/screenshots/refactor-09-${stage}-${surface.name}.png`),fullPage:true,animations:'disabled'});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBe(1440);
   }
   const saved = await (await request.get(`/api/projects/${project.id}/charts/${chart.id}`)).json();

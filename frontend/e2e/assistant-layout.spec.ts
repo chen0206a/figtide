@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import { defaults } from "../src/editor/model";
 
@@ -117,7 +118,7 @@ test("docked assistant keeps composer and confirmation visible at both desktop h
     expect(scroll.height).toBeGreaterThan(0);
     expect(scroll.content).toBeGreaterThan(scroll.height);
     await page.screenshot({
-      path: `../docs/screenshots/refactor-06-agent-${size.width}.png`,
+      path: artifactPath(test.info(), `../docs/screenshots/refactor-06-agent-${size.width}.png`),
     });
   }
   await page.setViewportSize({ width: 1440, height: 900 });

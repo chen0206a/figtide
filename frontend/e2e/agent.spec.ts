@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect, type APIRequestContext } from "./workspace-test";
 import { defaults } from "../src/editor/model";
 import fs from "node:fs";
@@ -85,7 +86,7 @@ async function fixture(request: APIRequestContext, canvasPreview=false) {
 test("canvas consent → one real run → isolated marked preview → original → apply → undo",async({page,request})=>{
   const f=await fixture(request,true);await page.setViewportSize({width:1440,height:1000});await page.goto(f.url);
   await expect(page.getByTestId('plot').locator('.main-svg').first()).toBeVisible();
-  await page.screenshot({path:'../docs/screenshots/refactor-10-assistant-idle.png',fullPage:true});
+  await page.screenshot({path:artifactPath(test.info(), '../docs/screenshots/refactor-10-assistant-idle.png'),fullPage:true});
   const posts:any[]=[];page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/agent/runs'))posts.push(r.postDataJSON())});
   const form=page.getByRole('form',{name:'画布绘图助手'});
   await form.getByLabel('描述绘图调整').fill('画布预览测试：图例右侧、第一条曲线加粗、隐藏Y网格');
@@ -100,7 +101,7 @@ test("canvas consent → one real run → isolated marked preview → original �
   expect(await page.evaluate(key=>localStorage.getItem(key),draftKey)).toBe(beforeDraft);
   const overlay=page.getByTestId('canvas-proposal');await expect(overlay.locator('.gtitle')).toHaveText('Canvas proposal · synthetic');
   for(const kind of ['legend','series','axis'])await expect(page.locator(`[data-marker-kind="${kind}"]`).first()).toBeAttached();
-  await page.screenshot({path:'../docs/screenshots/refactor-10-assistant-preview.png',fullPage:true});
+  await page.screenshot({path:artifactPath(test.info(), '../docs/screenshots/refactor-10-assistant-preview.png'),fullPage:true});
   await panel.getByRole('button',{name:'查看原图',exact:true}).click();await expect(overlay).not.toHaveClass(/is-visible/);
   await panel.getByRole('button',{name:'预览修改',exact:true}).click();await expect(overlay).toHaveClass(/is-visible/);
   await panel.getByRole('button',{name:'收起绘图助手'}).click();await expect(page.getByTestId('canvas-proposal')).toHaveCount(0);expect(posts).toHaveLength(1);
@@ -148,7 +149,7 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   );
   await dialog.getByText("运行记录", { exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/agent-conversation.png",
+    path: artifactPath(test.info(), "../docs/screenshots/agent-conversation.png"),
     fullPage: true,
   });
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -216,7 +217,7 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   ).toContainText('"fontSize": 18');
   await page.setViewportSize({ width: 1560, height: 1000 });
   await page.screenshot({
-    path: "../docs/screenshots/agent-conversation-history.png",
+    path: artifactPath(test.info(), "../docs/screenshots/agent-conversation-history.png"),
     fullPage: true,
   });
 });
@@ -384,7 +385,7 @@ test("three proposal rounds preserve a manual edit, confirm once, undo once and 
     "Before agent",
   );
   await page.screenshot({
-    path: "../docs/screenshots/agent-refinement.png",
+    path: artifactPath(test.info(), "../docs/screenshots/agent-refinement.png"),
     fullPage: true,
   });
   await panel.getByRole("button", { name: "应用这组调整" }).click();
@@ -536,7 +537,7 @@ test("lost HTTP start response recovers the original run; explicit new conversat
     panel.getByRole("combobox", { name: "本次对话额度" }),
   ).toBeEnabled();
   await page.screenshot({
-    path: "../docs/screenshots/agent-session-budget.png",
+    path: artifactPath(test.info(), "../docs/screenshots/agent-session-budget.png"),
     fullPage: true,
   });
 });

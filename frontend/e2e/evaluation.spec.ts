@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
@@ -65,9 +66,9 @@ test("raw labels/scores → ROC/AP → MySQL reopen → PR and vector export", a
   await page
     .getByRole("button", { name: "导出评估 JSON", exact: true })
     .click();
-  await (await reportWaiting).saveAs("../docs/exports/binary-evaluation.json");
+  await (await reportWaiting).saveAs(artifactPath(test.info(), "../docs/exports/binary-evaluation.json"));
   const report = JSON.parse(
-    fs.readFileSync("../docs/exports/binary-evaluation.json", "utf8"),
+    fs.readFileSync(artifactPath(test.info(), "../docs/exports/binary-evaluation.json"), "utf8"),
   );
   expect(report.metrics[0]).toMatchObject({
     n: 4,
@@ -106,14 +107,14 @@ test("raw labels/scores → ROC/AP → MySQL reopen → PR and vector export", a
   );
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/binary-pr.png",
+    path: artifactPath(test.info(), "../docs/screenshots/binary-pr.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "导出", exact: true }).click();
   const waiting = page.waitForEvent("download");
   await page.getByRole("button", { name: "下载图表", exact: true }).click();
-  await (await waiting).saveAs("../docs/exports/binary-pr.svg");
-  const svg = fs.readFileSync("../docs/exports/binary-pr.svg", "utf8");
+  await (await waiting).saveAs(artifactPath(test.info(), "../docs/exports/binary-pr.svg"));
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/binary-pr.svg"), "utf8");
   expect(svg).toContain("Precision");
   expect(svg).toContain("Recall");
   expect(svg).toContain("<path");
@@ -198,7 +199,7 @@ test("actual bound columns → gap-safe interval → save reopen → SVG/PNG", a
   );
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/actual-bands.png",
+    path: artifactPath(test.info(), "../docs/screenshots/actual-bands.png"),
     fullPage: true,
   });
   for (const format of ["svg", "png"]) {
@@ -206,13 +207,13 @@ test("actual bound columns → gap-safe interval → save reopen → SVG/PNG", a
     await page.getByLabel("文件格式").selectOption(format);
     const waiting = page.waitForEvent("download");
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
-    await (await waiting).saveAs(`../docs/exports/actual-bands.${format}`);
+    await (await waiting).saveAs(artifactPath(test.info(), `../docs/exports/actual-bands.${format}`));
   }
-  const svg = fs.readFileSync("../docs/exports/actual-bands.svg", "utf8");
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/actual-bands.svg"), "utf8");
   expect(svg.match(/class="js-fill"/g)).toHaveLength(2);
   expect(svg).not.toContain("<image");
   expect(
-    fs.readFileSync("../docs/exports/actual-bands.png").readUInt32BE(16),
+    fs.readFileSync(artifactPath(test.info(), "../docs/exports/actual-bands.png")).readUInt32BE(16),
   ).toBe(1520);
   await page.getByLabel("区间下界列").selectOption("upper");
   await expect

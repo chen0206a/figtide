@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import path from "node:path";
 import fs from "node:fs";
@@ -125,8 +126,8 @@ test("dataset switch, undo, styles, annotations, heatmap and history", async ({
   await page.getByLabel("文件格式").selectOption("svg");
   const pending = page.waitForEvent("download");
   await page.getByRole("button", { name: "下载图表", exact: true }).click();
-  await (await pending).saveAs("../docs/exports/heatmap.svg");
-  const svg = fs.readFileSync("../docs/exports/heatmap.svg", "utf8");
+  await (await pending).saveAs(artifactPath(test.info(), "../docs/exports/heatmap.svg"));
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/heatmap.svg"), "utf8");
   expect(svg).not.toContain("<image");
   expect(svg).toContain("shape-group");
 });

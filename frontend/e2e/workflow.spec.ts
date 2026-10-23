@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import path from "node:path";
 import fs from "node:fs";
@@ -62,7 +63,7 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
     })
     .toBe(true);
   await page.screenshot({
-    path: "../docs/screenshots/editor.png",
+    path: artifactPath(test.info(), "../docs/screenshots/editor.png"),
     fullPage: true,
   });
   const configBefore = await page.getByTestId("plot").evaluate((el: any) => ({
@@ -99,12 +100,12 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
     const waiting = page.waitForEvent("download");
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
     const download = await waiting;
-    await download.saveAs(`../docs/exports/learning-dynamics.${format}`);
+    await download.saveAs(artifactPath(test.info(), `../docs/exports/learning-dynamics.${format}`));
     expect(
-      fs.statSync(`../docs/exports/learning-dynamics.${format}`).size,
+      fs.statSync(artifactPath(test.info(), `../docs/exports/learning-dynamics.${format}`)).size,
     ).toBeGreaterThan(1000);
   }
-  const svg = fs.readFileSync("../docs/exports/learning-dynamics.svg", "utf8");
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/learning-dynamics.svg"), "utf8");
   expect(svg).toContain("<svg");
   expect(svg).toContain("Learning dynamics on CIFAR-10");
   expect(svg).toContain("<text");

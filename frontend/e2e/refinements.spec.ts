@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 
 test("import preview → explicit rules → mapping → draft recovery → conflict copy → archive", async ({
@@ -42,7 +43,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
     page.getByRole("button", { name: "确认导入", exact: true }),
   ).toBeEnabled();
   await page.screenshot({
-    path: "../docs/screenshots/import-confirm.png",
+    path: artifactPath(test.info(), "../docs/screenshots/import-confirm.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "确认导入", exact: true }).click();
@@ -123,7 +124,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await page.getByRole("button", { name: "关闭消息", exact: true }).click();
   await page.getByLabel("图表名称").blur();
   await page.screenshot({
-    path: "../docs/screenshots/editor-refined.png",
+    path: artifactPath(test.info(), "../docs/screenshots/editor-refined.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "管理项目", exact: true }).click();

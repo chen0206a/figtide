@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test("module navigation resumes the exact chart without save prompts or silent database writes", async ({
@@ -125,7 +126,7 @@ test("module navigation resumes the exact chart without save prompts or silent d
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.screenshot({ path: "../docs/screenshots/routed-workbench.png" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/routed-workbench.png") });
   await page.getByRole("link", { name: "项目概览", exact: true }).click();
   await expect(page.locator(".home")).toBeVisible();
   await page.evaluate(() =>
@@ -136,7 +137,7 @@ test("module navigation resumes the exact chart without save prompts or silent d
         .map((a) => a.finished.catch(() => {})),
     ),
   );
-  await page.screenshot({ path: "../docs/screenshots/routed-home.png" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/routed-home.png") });
   await page.getByRole("link", { name: "实验记录", exact: true }).click();
   await expect(page).toHaveURL(`/projects/${project.id}/experiments`);
   await page.reload();

@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect, type APIRequestContext } from "./workspace-test";
 import { defaults, makeSeries } from "../src/editor/model";
 import fs from "node:fs";
@@ -139,7 +140,7 @@ test("five real tools → isolated preview → one undo step → MySQL reopen an
     .locator(".quick-actions-builder")
     .evaluate((el) => el.scrollTo(0, 0));
   await page.screenshot({
-    path: "../docs/screenshots/quick-actions.png",
+    path: artifactPath(test.info(), "../docs/screenshots/quick-actions.png"),
     fullPage: true,
   });
   await page.setViewportSize({ width: 1280, height: 800 });

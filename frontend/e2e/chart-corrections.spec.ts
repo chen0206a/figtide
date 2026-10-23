@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import {
   test,
   expect,
@@ -51,17 +52,17 @@ async function exports(page: Page, stem: string, expected: string[]) {
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
     await (
       await download
-    ).saveAs(`../docs/exports/refactor-01-${stem}.${format}`);
+    ).saveAs(artifactPath(test.info(), `../docs/exports/refactor-01-${stem}.${format}`));
   }
   const svg = fs.readFileSync(
-    `../docs/exports/refactor-01-${stem}.svg`,
+    artifactPath(test.info(), `../docs/exports/refactor-01-${stem}.svg`),
     "utf8",
   );
   for (const label of expected) expect(svg).toContain(label);
   expect(svg).not.toContain("<image");
   expect(
     fs
-      .readFileSync(`../docs/exports/refactor-01-${stem}.pdf`)
+      .readFileSync(artifactPath(test.info(), `../docs/exports/refactor-01-${stem}.pdf`))
       .subarray(0, 5)
       .toString(),
   ).toBe("%PDF-");
@@ -137,7 +138,7 @@ test("grouped SEM keeps distinct colors, short legend and integer ticks in brows
     [1, 2, 3, 3, 2, 1],
     [1, 2, 3, 3, 2, 1],
   ]);
-  await plot.screenshot({ path: "../docs/screenshots/refactor-01-sem.png" });
+  await plot.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/refactor-01-sem.png") });
   await exports(page, "sem", ["Baseline", "Method A", "Accuracy", "SEM"]);
   expect(
     Buffer.compare(
@@ -226,7 +227,7 @@ test("confusion subtitle clears the matrix and count colorbar has integer labels
   expect(ticks).toEqual(["0", "1", "2", "3"]);
   await expect(plot.locator('[class*="colorbar"]')).toContainText("Count");
   await plot.screenshot({
-    path: "../docs/screenshots/refactor-01-confusion.png",
+    path: artifactPath(test.info(), "../docs/screenshots/refactor-01-confusion.png"),
   });
   await exports(page, "confusion", ["Count", "Model A", "n=7"]);
 });
@@ -263,7 +264,7 @@ test("new AUC/AP legend is persisted and exported while legacy missing option st
   }));
   expect(Math.abs(aspect.width - aspect.height)).toBeLessThan(1);
   expect(aspect.canvas).toEqual([760, 500]);
-  await plot.screenshot({ path: "../docs/screenshots/refactor-01-roc.png" });
+  await plot.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/refactor-01-roc.png") });
   await exports(page, "roc", ["AUC = 0.750"]);
   c.type = "pr";
   c.style.title = "PR evaluation (synthetic)";

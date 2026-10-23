@@ -1,4 +1,5 @@
-import {test,expect} from '@playwright/test';
+import { artifactPath } from "./artifacts";
+import {test,expect} from "./capture-test";
 test('product intro shows six diagrams, real destinations and no overflow at 1440 and 390',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   for(const width of [1440,390]){
@@ -6,7 +7,7 @@ test('product intro shows six diagrams, real destinations and no overflow at 144
     await expect(page.getByText('示意数据',{exact:true})).toHaveCount(2);await expect(page.locator('#charts figure')).toHaveCount(6);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBe(width);
     await expect(page.locator('a[href="#"]')).toHaveCount(0);
-    await page.screenshot({path:`../docs/screenshots/refactor-10-intro-${width}.png`,fullPage:true,animations:'disabled'});
+    await page.screenshot({path:artifactPath(test.info(), `../docs/screenshots/refactor-10-intro-${width}.png`),fullPage:true,animations:'disabled'});
   }
   expect(errors).toEqual([]);
   await page.locator('[data-start]').last().click();await expect(page.locator('.home')).toBeVisible();

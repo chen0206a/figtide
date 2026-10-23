@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
@@ -94,7 +95,7 @@ test("real repeated samples → box/violin → facets → save/reopen → vector
   });
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/professional-box.png",
+    path: artifactPath(test.info(), "../docs/screenshots/professional-box.png"),
     fullPage: true,
   });
   await expect(page.locator(".chart-picker > summary")).toBeVisible();
@@ -166,7 +167,7 @@ test("real repeated samples → box/violin → facets → save/reopen → vector
   await page.getByRole("button", { name: "关闭消息", exact: true }).click();
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/professional-facets.png",
+    path: artifactPath(test.info(), "../docs/screenshots/professional-facets.png"),
     fullPage: true,
   });
   const charts = await (
@@ -205,10 +206,10 @@ test("real repeated samples → box/violin → facets → save/reopen → vector
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
     await (
       await waiting
-    ).saveAs(`../docs/exports/professional-facets.${format}`);
+    ).saveAs(artifactPath(test.info(), `../docs/exports/professional-facets.${format}`));
   }
   const svg = fs.readFileSync(
-    "../docs/exports/professional-facets.svg",
+    artifactPath(test.info(), "../docs/exports/professional-facets.svg"),
     "utf8",
   );
   expect(svg).toContain("<text");
@@ -216,7 +217,7 @@ test("real repeated samples → box/violin → facets → save/reopen → vector
   expect(svg).toContain("CIFAR-10 · 12 synthetic seeds");
   expect(svg).toContain("CIFAR-100 · 12 synthetic seeds");
   expect(svg.match(/class="violin"/g)).toHaveLength(6);
-  const png = fs.readFileSync("../docs/exports/professional-facets.png");
+  const png = fs.readFileSync(artifactPath(test.info(), "../docs/exports/professional-facets.png"));
   expect(png.readUInt32BE(16)).toBe(saved.config.style.width * 2);
   expect(png.readUInt32BE(20)).toBe(saved.config.style.height * 2);
   // Switching types retains distribution and facet settings and can be undone.

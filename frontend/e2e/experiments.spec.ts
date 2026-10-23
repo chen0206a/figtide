@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 test.use({ reducedMotion: "reduce" });
 test("three experiments → linked versions → comparison → immutable chart → source trace", async ({
@@ -63,7 +64,7 @@ test("three experiments → linked versions → comparison → immutable chart �
         el.scrollTop = 0;
       });
       await page.screenshot({
-        path: "../docs/screenshots/experiment-form.png",
+        path: artifactPath(test.info(), "../docs/screenshots/experiment-form.png"),
         animations: "disabled",
         fullPage: true,
       });
@@ -107,7 +108,7 @@ test("three experiments → linked versions → comparison → immutable chart �
     page.getByText("实验记录已保存", { exact: true }),
   ).not.toBeVisible();
   await page.screenshot({
-    path: "../docs/screenshots/experiment-compare.png",
+    path: artifactPath(test.info(), "../docs/screenshots/experiment-compare.png"),
     animations: "disabled",
     fullPage: true,
   });
@@ -150,7 +151,7 @@ test("three experiments → linked versions → comparison → immutable chart �
   await expect(page.getByRole("dialog")).toContainText("Baseline · 合成演示");
   await expect(page.getByRole("dialog").locator("a")).toHaveCount(3);
   await page.screenshot({
-    path: "../docs/screenshots/experiment-source.png",
+    path: artifactPath(test.info(), "../docs/screenshots/experiment-source.png"),
     animations: "disabled",
     fullPage: true,
   });

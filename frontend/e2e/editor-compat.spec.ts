@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect, type APIRequestContext } from "./workspace-test";
 import { defaults } from "../src/editor/model";
 
@@ -37,7 +38,7 @@ test("save menu keyboard/outside dismissal, curve selection and pointer resizing
   await expect(separator).toHaveAttribute("aria-valuenow",String(Math.min(340,before+20)));
   await menu.click();await page.getByRole("menuitem",{name:"另存副本"}).click();
   await expect(page.getByLabel("图表名称",{exact:true})).toHaveValue("可重复编辑 · 合成 · 副本");
-  await page.screenshot({path:"../docs/screenshots/refactor-05-editor.png"});
+  await page.screenshot({path:artifactPath(test.info(), "../docs/screenshots/refactor-05-editor.png")});
 });
 
 test("two open tabs preserve the losing draft and show the real revision conflict",async({page,context,request})=>{

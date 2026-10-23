@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 import { defaults } from "../src/editor/model";
@@ -142,7 +143,7 @@ test("cleanup preserves the four workspace surfaces and their controls", async (
     }
     records[surface.name] = measured;
     await page.screenshot({
-      path: `../docs/screenshots/refactor-09-regression-${surface.name}.png`,
+      path: artifactPath(test.info(), `../docs/screenshots/refactor-09-regression-${surface.name}.png`),
       fullPage: true,
       animations: "disabled",
     });
@@ -151,7 +152,7 @@ test("cleanup preserves the four workspace surfaces and their controls", async (
     ).toBe(1440);
   }
   fs.writeFileSync(
-    `../docs/test-evidence/refactor09-current-layout.json`,
+    artifactPath(test.info(), `../docs/test-evidence/refactor09-current-layout.json`),
     JSON.stringify(records, null, 2) + "\n",
   );
 

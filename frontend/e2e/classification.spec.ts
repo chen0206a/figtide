@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 import { classificationReports } from "../src/editor/classification";
@@ -114,7 +115,7 @@ test("true/predicted labels → multiclass counts → common normalized matrix �
   await page
     .getByRole("button", { name: "导出分类报告 JSON", exact: true })
     .click();
-  await (await waitingReport).saveAs("../docs/exports/multiclass-report.json");
+  await (await waitingReport).saveAs(artifactPath(test.info(), "../docs/exports/multiclass-report.json"));
   const charts = await (
     await request.get(`/api/projects/${p.id}/charts`)
   ).json();
@@ -122,7 +123,7 @@ test("true/predicted labels → multiclass counts → common normalized matrix �
     await request.get(`/api/projects/${p.id}/charts/${charts[0].id}`)
   ).json();
   const report = JSON.parse(
-    fs.readFileSync("../docs/exports/multiclass-report.json", "utf8"),
+    fs.readFileSync(artifactPath(test.info(), "../docs/exports/multiclass-report.json"), "utf8"),
   );
   expect(report.reports).toEqual(
     classificationReports(chart.config, data.rows).reports,
@@ -135,7 +136,7 @@ test("true/predicted labels → multiclass counts → common normalized matrix �
   await page.locator(".inspector-scroll").evaluate((el) => (el.scrollTop = 0));
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/multiclass-matrix.png",
+    path: artifactPath(test.info(), "../docs/screenshots/multiclass-matrix.png"),
     fullPage: true,
   });
   for (const format of ["svg", "png"]) {
@@ -143,15 +144,15 @@ test("true/predicted labels → multiclass counts → common normalized matrix �
     await page.getByLabel("文件格式").selectOption(format);
     const waiting = page.waitForEvent("download");
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
-    await (await waiting).saveAs(`../docs/exports/multiclass-matrix.${format}`);
+    await (await waiting).saveAs(artifactPath(test.info(), `../docs/exports/multiclass-matrix.${format}`));
   }
-  const svg = fs.readFileSync("../docs/exports/multiclass-matrix.svg", "utf8");
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/multiclass-matrix.svg"), "utf8");
   expect(svg).toContain("Predicted class");
   expect(svg).toContain("True class");
   expect(svg).toContain("100.0%");
   expect(svg).not.toContain("<image");
   expect(
-    fs.readFileSync("../docs/exports/multiclass-matrix.png").readUInt32BE(16),
+    fs.readFileSync(artifactPath(test.info(), "../docs/exports/multiclass-matrix.png")).readUInt32BE(16),
   ).toBe(1520);
   expect(
     await (

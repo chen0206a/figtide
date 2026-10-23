@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test.use({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
@@ -50,7 +51,7 @@ test("new figure presets undo once, survive MySQL reopen and export 180mm vector
     .getByTestId("plot")
     .evaluate((el: any) => el.layout.font.size);
   await page.screenshot({
-    path: "../docs/screenshots/refactor-09-editor-single.png",
+    path: artifactPath(test.info(), "../docs/screenshots/refactor-09-editor-single.png"),
     fullPage: true,
     animations: "disabled",
   });
@@ -78,7 +79,7 @@ test("new figure presets undo once, survive MySQL reopen and export 180mm vector
   await expect(page.getByLabel("成品宽度 / mm")).toHaveValue("180");
   await expect(page.locator(".paper-ruler > span")).toHaveCount(19);
   await page.screenshot({
-    path: "../docs/screenshots/refactor-09-editor-double.png",
+    path: artifactPath(test.info(), "../docs/screenshots/refactor-09-editor-double.png"),
     fullPage: true,
     animations: "disabled",
   });
@@ -86,7 +87,7 @@ test("new figure presets undo once, survive MySQL reopen and export 180mm vector
   await page.getByLabel("文件格式").selectOption("pdf");
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "下载图表", exact: true }).click();
-  const path = "../docs/exports/refactor-09-double.pdf";
+  const path = artifactPath(test.info(), "../docs/exports/refactor-09-double.pdf");
   await (await download).saveAs(path);
   const pdf = fs.readFileSync(path).toString("latin1");
   expect(pdf.startsWith("%PDF-")).toBe(true);
@@ -111,7 +112,7 @@ test("new figure presets undo once, survive MySQL reopen and export 180mm vector
     ).body(),
   ).toEqual(csv);
   fs.writeFileSync(
-    "../docs/test-evidence/refactor09-publication.json",
+    artifactPath(test.info(), "../docs/test-evidence/refactor09-publication.json"),
     JSON.stringify(
       {
         width_mm: (Number(box![1]) / 72) * 25.4,

@@ -1,3 +1,4 @@
+import { artifactPath } from "./artifacts";
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
@@ -52,7 +53,7 @@ test("JSONL import → actual agent recommendation → user selection → save/r
     planner.locator(".js-plotly-plot .scatterlayer .point"),
   ).toHaveCount(3);
   await page.screenshot({
-    path: "../docs/screenshots/chart-planner.png",
+    path: artifactPath(test.info(), "../docs/screenshots/chart-planner.png"),
     fullPage: true,
   });
   await planner
