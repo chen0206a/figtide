@@ -10,7 +10,7 @@ export function EditorStatusBar({ data }: EditorStatusBarProps) {
         LabFlow <span className="muted">/</span> 科研绘图工作台
       </span>
       <span>
-        {data.filename} · 数据版本 v{data.version}{" "}
+        {data.filename} · v{data.version}{" "}
         <span className="status-separator">|</span>{" "}
         <span className="green-dot" />
         本地工作区

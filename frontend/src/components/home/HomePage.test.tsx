@@ -122,12 +122,12 @@ it("pins the current project, searches and shows more projects", () => {
   expect(rows()[0]).toHaveAttribute("aria-pressed", "true");
   fireEvent.click(screen.getByRole("button", { name: /显示更多项目/ }));
   expect(rows()).toHaveLength(12);
-  fireEvent.change(screen.getByLabelText("搜索工作区项目"), {
+  fireEvent.change(screen.getByLabelText("搜索研究项目"), {
     target: { value: "Research 24" },
   });
   fireEvent.click(screen.getByRole("button", { name: /Research 24/ }));
   expect(p.onProject).toHaveBeenCalledWith(24);
-  fireEvent.change(screen.getByLabelText("搜索工作区项目"), {
+  fireEvent.change(screen.getByLabelText("搜索研究项目"), {
     target: { value: "missing" },
   });
   expect(screen.getByText(/没有匹配的项目/)).toBeVisible();

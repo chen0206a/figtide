@@ -61,7 +61,7 @@ export function DataLayersPanel({
     <aside className="editor-left" style={{ width: widths.left }}>
       <div className="panel-title">
         <Database size={14} />
-        数据与图层
+        数据与序列
       </div>
       <section className="left-section">
         <div className="section-label">
@@ -187,7 +187,7 @@ export function DataLayersPanel({
       </details>
       <section className="left-section">
         <div className="section-label">
-          图层 / 序列{" "}
+          序列{" "}
           <button
             aria-label="添加序列"
             title="添加序列"

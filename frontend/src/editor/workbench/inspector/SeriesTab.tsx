@@ -158,7 +158,7 @@ export function SeriesTab({
               </p>
             </Section>
           )}
-          <Section title="图层操作">
+          <Section title="序列操作">
             <Button
               variant="outline"
               size="sm"

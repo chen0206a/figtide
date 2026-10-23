@@ -74,7 +74,7 @@ export function ExportDialog({
       )}
       <div className="export-summary">
         {format === "pdf"
-          ? "PDF 矢量 · 字体嵌入 · 单页图版"
+          ? "PDF 矢量 · 字体嵌入 · 单页图表"
           : format === "svg"
             ? "SVG 矢量 · 可编辑文本"
             : `PNG · ${publicationMetrics(c, scale).pixelWidth} × ${publicationMetrics(c, scale).pixelHeight} px`}

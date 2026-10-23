@@ -54,7 +54,7 @@ export function ProjectsPanel({
         <div className="home-search">
           <Search size={15} aria-hidden="true" />
           <input
-            aria-label="搜索工作区项目"
+            aria-label="搜索研究项目"
             placeholder="查找研究项目…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

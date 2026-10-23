@@ -111,7 +111,7 @@ export function Experiments({
         <>
           <PageHeader
             title="实验记录"
-            description="参数、指标和数据版本关联在一起，可以选择 2–8 个实验进行对比。"
+            description="参数、指标和版本关联在一起，可以选择 2–8 个实验进行对比。"
             actions={
               <>
                 <Button variant="outline" onClick={() => onData()}>
@@ -327,7 +327,7 @@ export function Experiments({
                           <ArrowUpRight size={12} />
                         </button>
                       ))}
-                      {!r.datasets.length && <small>尚未关联数据版本</small>}
+                      {!r.datasets.length && <small>尚未关联版本</small>}
                     </div>
                   </div>
                 </article>

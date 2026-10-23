@@ -193,13 +193,13 @@ export function FigureCanvas({
               {c.type === "heatmap"
                 ? 1
                 : c.series.filter((s) => s.visible).length}{" "}
-              个图层
+              个序列
             </span>
             <span>点击曲线选择序列 · 样式即时更新</span>
           </div>
         </div>
         {(c.datasetVersionId !== data.id || !rendered) && !plotError && (
-          <div className="canvas-loading">正在读取所选数据版本…</div>
+          <div className="canvas-loading">正在读取所选版本…</div>
         )}
         {plotError && (
           <div className="canvas-error" role="alert">

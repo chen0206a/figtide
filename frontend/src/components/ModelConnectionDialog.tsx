@@ -127,7 +127,7 @@ export function ModelConnectionDialog({ onClose }: { onClose: () => void }) {
         if (!open && !busy) onClose();
       }}
       closeDisabled={!!busy}
-      title="模型连接"
+      title="模型设置"
       description="接入你选择的兼容模型服务。"
       className="model-connection-dialog"
     >

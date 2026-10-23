@@ -269,7 +269,7 @@ describe("figure tool preparation", () => {
 describe("figure description", () => {
   it("summarises a configuration in one bounded line", () => {
     const text = describeFigure(config);
-    expect(text).toContain(`数据版本 #${config.datasetVersionId}`);
+    expect(text).toContain(`版本 #${config.datasetVersionId}`);
     expect(text).toContain(`X=${config.x}`);
     expect(text).toContain(config.series[0].y);
     expect(text.length).toBeLessThanOrEqual(1024);

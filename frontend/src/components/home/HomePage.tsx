@@ -82,7 +82,7 @@ export function HomePage(p: HomePageProps) {
           <section className="home-card home-continue home-empty-hero">
             <FileSpreadsheet size={32} aria-hidden="true" />
             <h2>给下一项研究，一个自己的空间。</h2>
-            <p>项目会把实验、数据版本和图表放在一起。数据只保存在本机。</p>
+            <p>项目会把实验、数据集和图表放在一起。数据只保存在本机。</p>
             <button
               type="button"
               className="home-btn home-btn-primary"

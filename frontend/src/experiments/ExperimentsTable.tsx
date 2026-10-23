@@ -126,7 +126,7 @@ export function ExperimentsTable({
               {heading("状态", "status")}
               {columns.parameters.map((k) => heading(k, "parameters", k, true))}
               {columns.metrics.map((k) => heading(k, "metrics", k, true))}
-              <th scope="col">数据版本</th>
+              <th scope="col">版本</th>
               {heading("更新", "updated_at")}
               <th scope="col">
                 <span className="sr-only">操作</span>

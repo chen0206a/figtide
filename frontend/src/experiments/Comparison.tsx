@@ -142,7 +142,7 @@ export function Comparison({
           </thead>
           <tbody>
             <tr>
-              <th>关联数据版本</th>
+              <th>关联版本</th>
               {records.map((r) => (
                 <td key={r.id}>
                   {r.datasets.length

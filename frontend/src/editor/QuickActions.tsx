@@ -137,7 +137,7 @@ export function QuickActions(p: {
         if (!open && !busy) p.onClose();
       }}
       title="快捷操作"
-      description="把多项调整一起预览、一起应用。数据版本与实验记录不会被改写。"
+      description="把多项调整一起预览、一起应用。数据与实验记录不会被改写。"
       wide
       className="quick-actions-dialog"
     >

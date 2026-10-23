@@ -339,11 +339,11 @@ export default function App() {
               <Button
                 variant="ghost"
                 className="model-connection-trigger"
-                aria-label="模型连接"
+                aria-label="模型设置"
                 onClick={() => setConnectionOpen(true)}
               >
                 <PlugZap size={15} />
-                <span>模型连接</span>
+                <span>模型设置</span>
               </Button>
               <Button
                 variant="ghost"

@@ -194,7 +194,7 @@ export function AgentHistory(p: {
                 <dd title={detail.data.catalog_hash}>
                   {detail.data.catalog_hash.slice(0, 16)}
                 </dd>
-                <dt>数据版本</dt>
+                <dt>版本</dt>
                 <dd>
                   <span title={detail.data.source_sha256}>
                     {detail.data.source_sha256.slice(0, 12)}

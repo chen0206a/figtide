@@ -61,7 +61,7 @@ test("search and pagination switch real recent charts and experiments", async ({
   await expect(page.locator(".home-project")).toHaveCount(4);
   await page.getByRole("button", { name: /显示更多项目/ }).click();
   await expect(page.locator(".home-project")).toHaveCount(12);
-  const search = page.getByRole("textbox", { name: "搜索工作区项目" });
+  const search = page.getByRole("textbox", { name: "搜索研究项目" });
   await search.fill(projects[1].name);
   await expect(page.locator(".home-project")).toHaveCount(1);
   await page.locator(".home-project").click();

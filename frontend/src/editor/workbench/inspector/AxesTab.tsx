@@ -156,8 +156,8 @@ export function AxesTab({
             {evaluation && (
               <p className="tiny-note">
                 {c.type === "confusion"
-                  ? "混淆矩阵使用离散类别轴；普通图的范围和对数设置已保留。"
-                  : "评估曲线使用线性 0–1 坐标；普通图的范围和对数设置已保留。"}
+                  ? "混淆矩阵使用离散类别轴；普通图表的范围和对数设置已保留。"
+                  : "评估曲线使用线性 0–1 坐标；普通图表的范围和对数设置已保留。"}
               </p>
             )}
             {axis === "x" && (c.type === "box" || c.type === "violin") && (

@@ -129,7 +129,7 @@ export function UploadDialog({
         <strong>{file.name}</strong>
         <span>
           {formatBytes(file.size)} ·{" "}
-          {version ? "追加数据版本" : "新数据集"}
+          {version ? "新版本" : "新数据集"}
         </span>
       </div>
       <fieldset disabled={committing} className="import-options">

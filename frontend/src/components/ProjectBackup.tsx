@@ -119,9 +119,9 @@ export function ProjectBackup({
           <b>{preview.name}</b>
           <p>
             {preview.counts.experiments} 条实验 ·{" "}
-            {preview.counts.dataset_versions} 个数据版本 ·{" "}
-            {preview.counts.charts} 张图 / {preview.counts.chart_versions}{" "}
-            个快照 · {preview.counts.style_templates} 个样式
+            {preview.counts.dataset_versions} 个版本 ·{" "}
+            {preview.counts.charts} 张图表 / {preview.counts.chart_versions}{" "}
+            个版本 · {preview.counts.style_templates} 个样式
           </p>
           <small>
             原文件合计 {(preview.original_bytes / 1024).toFixed(1)}{" "}

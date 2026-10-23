@@ -12,7 +12,7 @@ export function Section({
     <details
       className="property-section property-disclosure"
       open={
-        !["画布设置", "图例", "数据过滤 · 可复现", "图层操作"].includes(title)
+        !["画布设置", "图例", "数据过滤 · 可复现", "序列操作"].includes(title)
       }
     >
       <summary>

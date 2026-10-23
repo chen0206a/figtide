@@ -81,7 +81,7 @@ export function DataPage({
         <div className="data-layout">
           <aside className="dataset-list">
             <h3>
-              数据版本 <span>{datasets.length}</span>
+              数据集 <span>{datasets.length}</span>
             </h3>
             {datasets.map((d) => (
               <button

@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AgentAssistant, type AgentRun } from "./AgentAssistant";
@@ -314,7 +315,12 @@ it("shows honest setup guidance when no provider is configured", async () => {
   }));
   await screen.findByText("连接模型后即可通过对话调整图表。");
   expect(screen.getByRole("button", { name: "生成调整提案" })).toBeDisabled();
-  expect(screen.getByRole("button", { name: "配置模型" })).toBeVisible();
+  expect(
+    within(screen.getByText("连接模型后即可通过对话调整图表。").closest(".agent-setup")!).getByRole(
+      "button",
+      { name: "模型设置" },
+    ),
+  ).toBeVisible();
   expect(screen.queryByText(/LABFLOW_AGENT_MODEL/)).not.toBeInTheDocument();
 });
 it("does not apply a draft if persisting the acceptance decision fails", async () => {

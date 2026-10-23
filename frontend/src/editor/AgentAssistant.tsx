@@ -294,7 +294,7 @@ export function AgentAssistant(p: {
         (restored.session.dataset_version_id !== now.data.id ||
           restored.session.chart_id !== now.chartId)
       )
-        throw new Error("恢复记录不属于当前图表或数据版本");
+        throw new Error("恢复记录不属于当前图表或版本");
       const capture = (baseline: NonNullable<typeof restored.baseline>) => ({
         config: baseline.config,
         token:
@@ -521,7 +521,7 @@ export function AgentAssistant(p: {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="模型连接"
+        aria-label="模型设置"
         disabled={busy}
         onClick={() => setConnectionOpen(true)}
       >
@@ -877,7 +877,7 @@ export function AgentAssistant(p: {
                       variant="outline"
                       onClick={() => setConnectionOpen(true)}
                     >
-                      配置模型
+                      模型设置
                     </Button>
                   </div>
                 )

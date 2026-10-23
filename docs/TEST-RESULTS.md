@@ -1,5 +1,27 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 11-4 术语统一
+
+- 先单独提交 `docs/GLOSSARY.md`（`5b8ff4c`），再按术语表全站替换。
+- 替换统计（`frontend/src` 内 ts/tsx/css，替换前 → 替换后）：图版 2 → 0；FIGURE 1 → 0；图层 5 → 0；工作区项目 2 → 0；配置模型连接 1 → 0；模型连接 6 → 0；数据版本 22 → 1（仅 `frontend/src/welcome/introMarkup.ts` 的营销长文「实验记录、数据版本和科研绘图…」，指概念而非某个版本号，保留）。
+- 版本统一写 `v1`：`ChartPlanner` 的「数据版本 v{version}」、`EditorStatusBar` 的「{文件} · 数据版本 v{version}」改为直接显示 `v{version}`；`AgentHistory`/`ReuseDialog`/`Comparison`/`ExperimentForm`/`Experiments`/`ExperimentsTable`/`ProcessingProvenance`/`FigureSourceStrip`/`FigureCanvas` 的「数据版本」标签改为「版本」；`DataPage` 侧栏标题由「数据版本 N」改为「数据集 N」（那里数的是数据集）；`UploadDialog` 追加时写「新版本」。
+- 序列替代图层：`DataLayersPanel`「数据与序列」「序列」、`SeriesTab` 与 `controls` 的「序列操作」、`FigureCanvas`「N 个序列」。
+- 图表替代图版/FIGURE/对象名的「图」：`ProfessionalPanel` 眉题「图表编排」、标题「从单张图表，到完整成稿。」；`ExportDialog`「单页图表」；`ProjectBackup`「N 张图表」；`ChartPlanner`「创建哪种图表」；`ReuseDialog`「适合这张图表的表达」「调整好一张图表后」；`AxesTab`「普通图表」；`FigureSourceStrip`「此图表」。
+- 研究项目替代工作区项目：`ProjectManager` 状态标签、`HomeTables` 搜索框 aria-label（`搜索研究项目`）。
+- 模型设置替代入口名「模型连接 / 配置模型连接」：顶栏按钮（文字与 aria-label）、`ModelConnectionDialog` 标题、`AgentAssistant` 头部按钮 aria-label 与未配置时的入口、`HomeSide` 卡片链接、`ChartPlanner` 入口与提示、`ChartPlanner` 读取失败提示「无法读取模型设置状态。」。对话框内部「测试连接」「应用连接」「断开」等动作不变。
+- `FigureSourceStrip`「不会影响此图表」。
+
+### 改过的断言/选择器（只改文案或结构，未删除断言）
+
+- `frontend/e2e/model-connection.spec.ts:33`、`:79`：入口按钮由页面级 `getByRole("button",{name:"模型连接"})` 改为 `.masthead` 内同名 `模型设置` 按钮（首页卡片此时也有同名入口，需要限定范围）。
+- `frontend/e2e/model-connection.spec.ts:34/:126`：对话框名 `模型连接` → `模型设置`；`:33/:79/:124` 的按钮名同步改名。
+- `frontend/e2e/home-workspace.spec.ts:64`：搜索框 `aria-label` 由「搜索工作区项目」改为「搜索研究项目」。
+- `frontend/src/components/home/HomePage.test.tsx:125/:130`：`getByLabelText("搜索工作区项目")` → `"搜索研究项目"`。
+- `frontend/src/editor/figureTools.test.tsx:272`：期望文本 `数据版本 #${id}` → `版本 #${id}`。
+- `frontend/src/editor/AgentAssistant.test.tsx:317`：未配置模型时的入口按钮由 `getByRole("button",{name:"配置模型"})` 改为在 `.agent-setup` 内查找 `模型设置`（头部也有同名按钮，限定范围，仍断言可见）。
+
+- 验证：`npm test` **46 文件 / 261 通过**；`npm run build` 通过；隔离栈（后端 8089 + `labflow_e2e` + dev 5179）`npx playwright test e2e/model-connection.spec.ts` **2 passed (6.2s)**、`e2e/home-workspace.spec.ts` **1 passed**。
+
 ## 2026-10-23 · 11-3 产品化文案清理
 
 - 助手：头部只显示「已连接 · {模型名}」（等宽灰字），地址与端口留在「模型连接」对话框；预算行改为「本次会话已用 N%」+ 带底色轨道的进度条（轨道 `--lf-surface-3`、进度 `--lf-text-1`、≥80% 改为 `--lf-warning`，含 Firefox `::-moz-progress-bar`），summary 与 progress 均带 title「已用 X / 上限 Y token」；删除「本轮附带最近 N 轮对话…」「原提案会保留…」，提案脚注合并为「确认后只修改草稿，可一步撤销；是否保存正式版本由你决定。」；继续修改的占位文字改为「还有哪里不满意？例如：线再粗一点」；「不采用这份提案」去掉 `<details>` 改为文字按钮，旁边「填写原因」展开原因输入框，拒绝与审计逻辑不变。

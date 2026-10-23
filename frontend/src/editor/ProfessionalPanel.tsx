@@ -44,8 +44,8 @@ export function ProfessionalPanel({
   return (
     <>
       <section className="property-section professional-intro">
-        <span className="professional-kicker">FIGURE COMPOSITION</span>
-        <h3>从单张图，到完整图版。</h3>
+        <span className="professional-kicker">图表编排</span>
+        <h3>从单张图表，到完整成稿。</h3>
         <p>样本分布、指标分面与统一排版，全部随图表保存。</p>
       </section>
       <EvaluationPanel config={c} data={data} onChange={onChange} />

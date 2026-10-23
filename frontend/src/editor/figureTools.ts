@@ -119,7 +119,7 @@ export function describeFigure(c: Config): string {
   const parts = [
     `图表「${c.style.title || "未命名"}」`,
     `类型 ${toolValueNames[c.type] || c.type}`,
-    `数据版本 #${c.datasetVersionId}`,
+    `版本 #${c.datasetVersionId}`,
     `X=${c.x || "自动"}`,
     c.group ? `分组=${c.group}` : "未分组",
   ];

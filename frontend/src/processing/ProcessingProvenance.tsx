@@ -22,7 +22,7 @@ export function ProcessingProvenance({
         open={open}
         onOpenChange={setOpen}
         title="数据处理来源"
-        description="以下来源与规则随派生数据版本保存，源文件不会被处理操作覆盖。"
+        description="以下来源与规则随派生版本保存，源文件不会被处理操作覆盖。"
       >
         <div className="source-summary">
           <strong>
