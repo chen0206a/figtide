@@ -47,15 +47,17 @@ export function DataPage({
 }) {
   const [processing, setProcessing] = useState<Dataset | null>(null);
   const [planning, setPlanning] = useState<Dataset | null>(null);
-  const id = selected || datasets[0]?.id;
+  // 地址里的版本号可能属于别的项目（切换项目后残留的链接），只认当前项目里的版本。
+  const chosen = datasets.some((d) => d.id === selected) ? selected : 0;
+  const id = chosen || datasets[0]?.id;
   const detail = useQuery({
     queryKey: ["data", project, id],
     queryFn: () => api<Dataset>(`/projects/${project}/data/${id}`),
     enabled: !!id,
   });
   useEffect(() => {
-    if (!selected && id) onSelect(id);
-  }, [id, selected, onSelect]);
+    if (!chosen && id) onSelect(id);
+  }, [id, chosen, onSelect]);
   return (
     <>
       <PageHeader

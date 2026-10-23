@@ -1,5 +1,19 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 11-1 项目切换的数据隔离
+
+- 复现结论：11-0 审计里「切到空项目后数据页仍显示上一个项目的数据」**未能复现**。四路探针（切换下拉、首页建项目、建项目后点导航、直接深链）在 50ms 采样下均未出现旧文件名；当时看到的「空项目验收 | 迁移学习复现」是 `<select>` 的 `innerText` 把所有 `<option>` 串在一起，被误当成当前选中值（`createProject` 在 `page==="home"` 时确实 `setProject(p.id)`，探针 2/3 已验证）。
+- 但沿着同一条线索找到一处真问题：切换项目后工作区记忆里可能留着上一个项目的版本号，打开 `/projects/{b}/data?dataset={a 的版本}` 时 `id = selected || datasets[0]?.id` 直接采用它 → 请求 404 → 数据页显示「重试」错误块而不是 B 自己的数据。修复在 `frontend/src/data/DataPage.tsx:50-57`：先按当前项目的 `datasets` 校验地址里的版本号（`const chosen = datasets.some(d => d.id === selected) ? selected : 0`），不匹配就回落到本项目第一个版本，`useEffect` 同步改用 `chosen`。未使用 setTimeout 兜底，查询 key 本来就带 `project`。
+- 回归：新增 `frontend/e2e/isolation.spec.ts` 5 条，全部在隔离栈（后端 8089 + `labflow_e2e` + 前端 5179）实跑 **5 passed (13.9s)**：
+  1. 数据页从有数据的 A 切到空的 B，50ms×20 采样内不出现 A 的文件名，最终显示 B 的空状态；
+  2. 编辑器从 A 的图表切到 B（B 的接口延迟 800ms），采样内不出现 A 的文件名且最终渲染出 B 的图；
+  3. 切到 B 后上传文件，落到 B（`GET /projects/{b}/datasets` 由 0 变 1，A 仍为 1）；
+  4. 首页在切到 B 后不再列出 A 的图表名；
+  5. 带着 A 的版本号打开 B 的数据页，不出现 A 的文件名、不出现「重试」，渲染 B 自己的文件。
+  - 第 5 条在去掉 `DataPage` 守卫时确实失败（`expect(body).not.toContain("重试")` 命中），加回守卫后通过——先失败再修。
+- 已检查无需改动：实验页用 `key={project}` 重挂载 + `queryKey: ["experiments", project]`；首页「最近图表」来自 `[charts, project]`；导入对话框的目标项目取自当前 `project`（上述第 3 条即其回归）；`main.tsx` 的 `QueryClient` 没有全局 keepPreviousData；`Editor.tsx:30` 的 `placeholderData` 只在同一 `project` 的 `["data", project, id]` 之间复用，第 2 条实测未泄漏。
+- 验证：`npx tsc -b --force` 0 错；`npx vitest run` **43 文件 / 238 通过**；`npm run build` 通过（无新增分包告警）。
+
 ## 2026-10-23 · 10-7b 助手面板、编号标记与视觉一致性
 
 - `npx tsc -b --force` 0 错（新增 `agentShortcut`、`proposalMarkers` 的类型收窄）；`npx vitest run` **43 文件 / 238 通过**（`AgentAssistant.test.tsx` 28 条含 5 条续改用例、`proposalMarkers.test.ts` 5 条）；`npm run build` 通过（13.31s，`index-*.js` 仍 >500 kB，属既有分包提示）。
