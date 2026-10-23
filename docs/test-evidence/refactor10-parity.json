@@ -1,0 +1,155 @@
+{
+  "capturedAt": "2026-10-23T11:38:43.096Z",
+  "viewport": "1440x900",
+  "project": {
+    "id": 1,
+    "chartId": 2142
+  },
+  "home": {
+    "live": {
+      "h1": {
+        "selector": "h1",
+        "box": [
+          433,
+          41,
+          108,
+          131
+        ],
+        "font-size": "34px",
+        "font-weight": "700",
+        "letter-spacing": "-0.68px",
+        "line-height": "40.8px",
+        "font-family": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif"
+      },
+      "kicker": {
+        "selector": ".lf-kicker",
+        "box": [
+          433,
+          19,
+          108,
+          104
+        ],
+        "font-size": "12px",
+        "letter-spacing": "0.48px",
+        "text-transform": "none",
+        "color": "rgb(95, 103, 115)"
+      },
+      "primary": {
+        "selector": ".home-btn-primary, .cta",
+        "box": [
+          118,
+          44,
+          1214,
+          128
+        ],
+        "background-color": "rgb(14, 17, 22)",
+        "color": "rgb(255, 255, 255)",
+        "border-radius": "11px",
+        "height": "44px",
+        "font-size": "14px",
+        "padding-left": "18px"
+      },
+      "stage": {
+        "selector": ".home-stage",
+        "box": [
+          828,
+          411,
+          108,
+          417
+        ],
+        "background-color": "rgb(14, 17, 22)",
+        "border-radius": "18px",
+        "padding": "24px",
+        "min-height": "340px"
+      },
+      "dock": null,
+      "paper": null
+    },
+    "mock": {
+      "h1": {
+        "selector": "h1",
+        "box": [
+          454,
+          41,
+          80,
+          125
+        ],
+        "font-size": "36px",
+        "font-weight": "800",
+        "letter-spacing": "-1.08px",
+        "line-height": "41.4px",
+        "font-family": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif"
+      },
+      "kicker": null,
+      "primary": {
+        "selector": ".home-btn-primary, .cta",
+        "box": [
+          116,
+          42,
+          108,
+          553
+        ],
+        "background-color": "rgb(255, 255, 255)",
+        "color": "rgb(14, 17, 22)",
+        "border-radius": "11px",
+        "height": "42px",
+        "font-size": "14px",
+        "padding-left": "18px"
+      },
+      "stage": null,
+      "dock": null,
+      "paper": {
+        "selector": ".paper",
+        "box": [
+          564,
+          291,
+          392,
+          309
+        ],
+        "background-color": "rgb(255, 255, 255)",
+        "border-radius": "4px",
+        "box-shadow": "rgba(0, 0, 0, 0.7) 0px 30px 70px -34px"
+      }
+    }
+  },
+  "editor": {
+    "live": {
+      "h1": null,
+      "kicker": null,
+      "primary": null,
+      "stage": null,
+      "dock": {
+        "selector": ".agent-dock",
+        "box": [
+          432,
+          743,
+          1008,
+          131
+        ],
+        "width": "432px",
+        "background-color": "rgb(255, 255, 255)",
+        "border-left-color": "rgb(228, 231, 236)"
+      },
+      "paper": {
+        "selector": ".paper",
+        "box": [
+          699,
+          460,
+          275,
+          285
+        ],
+        "background-color": "rgb(255, 255, 255)",
+        "border-radius": "0px",
+        "box-shadow": "none"
+      }
+    },
+    "mock": {
+      "h1": null,
+      "kicker": null,
+      "primary": null,
+      "stage": null,
+      "dock": null,
+      "paper": null
+    }
+  }
+}

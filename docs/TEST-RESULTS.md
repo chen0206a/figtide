@@ -1,5 +1,30 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 10-6 动效与验收
+
+- `npx vitest run`：42 文件 / **229 通过**；`npm run build` 通过（18.13s，`index-*.js` 578 kB，`ProductIntro-*.js` 18.8 kB 仍为独立懒加载 chunk）。
+- 新增 `frontend/e2e/motion.spec.ts`（3 条，全过）：① 默认动效下首页 `data-entrance="full"`、`h1` 用的是 `lf-up` 入场、入场过程中 `.home-intro-actions` 按钮 `click({trial:true})` 可点、结束后 h1/按钮/展台/底栏 `opacity` 全为 1；② 点「继续编辑」进入 `/projects/:id/figures/:chart`、`[data-testid=plot]` 可见、全程无 console error / pageerror；③ `reducedMotion:"reduce"` 下 `data-entrance="none"`、无 `lf-motion-on`、h1 与展台 `animation-name=none`、`opacity=1`（无需等待入场）。
+- 完整隔离 E2E **70 passed / 1 failed（5.9 分钟，71 条）**：唯一失败是 `e2e/refinements.spec.ts:3` 在满载并行时等 `getByTestId("file-upload")` 90s 超时；单独重跑该 spec **1 passed (9.2s)**，本次任务未改导入链路，判为既有的并行争用抖动（建议后续在 goto 后先等首页外壳再上传）。
+- 性能证据 `docs/test-evidence/refactor10-perf.json`（Chrome CDP trace，1440×900，已选好一个项目）：
+  - dev（5178）：FCP 288ms，入场起点 296ms；全程 2 个 >50ms 任务（114ms/59ms、175ms/87ms），**入场窗口内 0 个**。
+  - 生产构建（`vite preview`，4399）：FCP 140ms，入场起点 143ms；1 个 >50ms 任务（67ms/60ms），**入场窗口内 0 个**。
+  - 注：在 Playwright 打开 trace 录制时，首帧渲染会多出约 250ms 的主线程任务（录制开销），无录制时不存在；因此该断言不放进 E2E，作为 trace 证据单独记录。
+- 截图：本次新增 `docs/screenshots/refactor-10-editor-assistant.png`（1440×900，按 `Alt+A` 打开助手并显示画布提案）；首页沿用 10-3 的 `refactor-10-home.png`（重拍字节一致，未产生 diff）；站点两张见 10-5。
+- 与设计稿逐项对照（`docs/test-evidence/refactor10-parity.json`，设计片段 `refactor/design/09-10/static/*.html` 仅含局部片段，故比对可测量的排印与组件规格）：
+
+| 项目 | 设计片段 | 实现 | 说明 |
+| --- | --- | --- | --- |
+| 首页 h1 字号/字重/字距 | 36px / 800 / -1.08px | 34px / 700 / -0.68px | 实现只用令牌 `--lf-text-3xl`（34px）+ `--lf-tracking-tight`；要 36/800 需改令牌，会影响全站标题 |
+| kicker | 片段无 | 12px / 0.48px 字距 / `--lf-ink-3` | 片段未包含该元素 |
+| 主按钮高度/圆角/内边距 | 42px / 11px / 18px | 44px / 11px / 18px | 高度差来自 `--lf-control-h`（44px）令牌 |
+| 深色展台 | 片段用 `.paper` 示意 | 828×411，`#0e1116`，圆角 18px，内边距 24px | 与 10-3 说明一致 |
+| 画布纸面 | 片段 `border-radius:4px` + 重投影 | `border-radius:0`、无阴影 | 编辑器画布改为整幅铺满（白纸满铺），不再做卡片化纸面 |
+| 助手停靠宽度 | 片段无 dock 类 | 432px，白底，左侧 1px `#e4e7ec` | 设计片段用 `.pill/.msg-in` 等局部类，未定义整栏宽度 |
+
+- Firefox：**未执行** —— 本机没有 Firefox，`%LOCALAPPDATA%\ms-playwright` 也没有安装浏览器（Playwright CDN 在该网络不可达），只用系统 Chrome 跑。
+- 偏差：任务允许「用 Firefox 再跑一遍」是可选分支，此处无法执行；其余无偏差。
+
+
 ## 2026-10-23 · 10-5 公开展示页
 
 - `site/index.html` 换成 10-2 介绍页的静态导出：正文复用 10-2 已 token 化的标记与 `welcome.css`，96 个 `--lf-*` 令牌内联解析，无内联十六进制颜色；三处「开始创作」按钮改为指向 README 安装说明的链接，文案「本地运行」；滚动浮现用原生 IntersectionObserver，无 JS 或 `prefers-reduced-motion: reduce` 时直接显示最终状态。
