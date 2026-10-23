@@ -2,19 +2,19 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useConfirm } from "../../components/useConfirm";
-import { SourceProvenance } from "../../experiments/SourceProvenance";
-import { api, type Dataset } from "../../lib/api";
-import { AgentAssistant } from "../AgentAssistant";
+import { api } from "../../lib/api";
 import { historyReducer, type Config, type Series } from "../model";
 import { publicationMetrics } from "../publication";
 import "../styles-library.css";
 import { DataLayersPanel } from "./DataLayersPanel";
 import { EditorStatusBar } from "./EditorStatusBar";
 import { EditorToolbar } from "./EditorToolbar";
+import { FigureAssistantDock } from "./FigureAssistantDock";
 import { FigureCanvas } from "./FigureCanvas";
-import { fittedZoom } from "./fitZoom";
+import { FigureSourceStrip } from "./FigureSourceStrip";
 import { Inspector } from "./Inspector";
-import type { ChartVersion, EditorProps, StoredChart } from "./types";
+import type { ChartVersion, WorkbenchProps } from "./types";
+import { useCanvasFit } from "./useCanvasFit";
 import { useChartSave } from "./useChartSave";
 import { useDraftPersistence, useEditorDraft } from "./useEditorDraft";
 import { useEditorShortcuts } from "./useEditorShortcuts";
@@ -35,11 +35,7 @@ export function Workbench({
   data,
   original,
   onDataset,
-}: EditorProps & {
-  data: Dataset;
-  original?: StoredChart;
-  onDataset: (id: number) => void;
-}) {
+}: WorkbenchProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [assistantPrompt] = useState(
@@ -89,15 +85,7 @@ export function Workbench({
     c.type === "confusion" &&
     (c.classification?.input || "labels") === "labels";
   const output = publicationMetrics(c);
-  useEffect(() => {
-    const el = stage.current;
-    if (!el || !autoFit) return;
-    const fit = () => setZoom(fittedZoom(el, c.style.width, c.style.height));
-    const observer = new ResizeObserver(fit);
-    observer.observe(el);
-    fit();
-    return () => observer.disconnect();
-  }, [autoFit, c.style.width, c.style.height]);
+
   const [name, setName] = useState(
       initialDraft && !recovery ? initialDraft.name : seed.name,
     ),
@@ -114,6 +102,7 @@ export function Workbench({
     [exportOpen, setExportOpen] = useState(false),
     [historyOpen, setHistoryOpen] = useState(false),
     [logs, setLogs] = useState<string[]>(["工作台已就绪"]);
+  useCanvasFit({ stage, autoFit, setZoom, c });
   useEffect(() => {
     try {
       sessionStorage.setItem(viewKey, JSON.stringify({ panel, seriesId }));
@@ -262,16 +251,7 @@ export function Workbench({
           setExportOpen,
         }}
       />
-      {data.source_meta && (
-        <div className="provenance-strip">
-          <SourceProvenance source={data.source_meta} project={project} />
-          <span>
-            {data.source_meta.kind === "data_processing"
-              ? "基于固定数据版本和显式处理规则 · 原始数据保持不变"
-              : "指标来自固定实验快照 · 后续修改实验不会影响此图"}
-          </span>
-        </div>
-      )}
+      {data.source_meta && <FigureSourceStrip {...{ data, project }} />}
       <div className="editor-body" inert={saving}>
         <DataLayersPanel
           {...{
@@ -343,28 +323,22 @@ export function Workbench({
             change,
           }}
         />
-        <AgentAssistant
-          key={`${project}:${chartId || "draft"}:${data.id}`}
-          docked
-          open={agentOpen}
-          initialPrompt={assistantPrompt}
-          project={project}
-          chartId={id}
-          revision={revision}
-          config={c}
-          data={data}
-          token={JSON.stringify({ serialized, id, revision })}
-          onClose={() => setAgentOpen(false)}
-          onApply={(token, config, count) => {
-            if (
-              token !== JSON.stringify({ serialized, id, revision }) ||
-              saving
-            )
-              return false;
-            change(config);
-            setLogs((l) => [`已确认助手提案 · ${count} 项`, ...l].slice(0, 30));
-            notify(`已应用 ${count} 项调整，可撤销`);
-            return true;
+        <FigureAssistantDock
+          {...{
+            project,
+            chartId,
+            data,
+            agentOpen,
+            assistantPrompt,
+            id,
+            revision,
+            c,
+            serialized,
+            setAgentOpen,
+            saving,
+            change,
+            setLogs,
+            notify,
           }}
         />
       </div>

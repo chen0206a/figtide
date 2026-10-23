@@ -292,7 +292,11 @@ test("vector PDF retains bold CJK multiline labels and heatmap cells", async ({
   await (await waiting).saveAs("../.runtime/heatmap-vector.pdf");
   // Converter contract check, separate from the editor's deliberately plain-text inputs.
   const bytes = await page.evaluate(async (config) => {
-    const { vectorPdf } = await import("/src/editor/pdf.ts");
+    const moduleUrl = performance.getEntriesByType("resource")
+      .map(entry => entry.name)
+      .find(url => /\/src\/editor\/pdf\.ts(?:\?|$)|\/assets\/pdf-[^/]+\.js(?:\?|$)/.test(url));
+    if (!moduleUrl) throw new Error("PDF module was not loaded by the real export action");
+    const { vectorPdf } = await import(moduleUrl);
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="250"><text x="200" y="45" text-anchor="middle" style="font-family:Noto Sans SC;font-size:24px;font-weight:700;white-space:pre"><tspan x="200" dy="0">第一行 ±</tspan><tspan x="200" dy="35">Second line</tspan></text></svg>';
     const blob = await vectorPdf(

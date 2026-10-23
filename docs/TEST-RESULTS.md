@@ -25,6 +25,7 @@
 | 9g · 状态栏 | 同脚本 -Step statusbar | 192/192，14.17s | 通过，20.25s | 最终统一回归 |
 | 10a · 草稿 hooks 与组合外壳 | 同脚本 `-Step draft-final` | 192/192，14.53 秒 | 通过，21.04 秒 | 最终统一回归 |
 | 10b · 对话框纯组合 | 同脚本 `-Step composition-final` | 192/192，14.66 秒 | 通过，20.51 秒 | 最终统一回归 |
+| 10c · 最终组合边界与画布适配 | 同脚本 `-Step boundary-verified` | 192/192，14.29 秒 | 通过，20.37 秒 | 完整生产构建 E2E 58/58，3.2 分钟；新 JVM 审计恢复通过 |
 
 本步仅把 Section/Text/NumberInput/Select/Toggle 原样移到 `editor/workbench/controls.tsx`，没有改动行为。后续步骤逐项追加结果。
 
@@ -41,6 +42,12 @@
 任务文件提到 refinements 的“另存副本”需要改成菜单，但实际该调用位于冲突 Dialog 内，必须保留其按钮与流程；因此该断言不变，另外新增菜单 E2E。无后端或助手业务修改。
 
 步骤 10a：Editor.tsx 只留查询和加载外壳（77 行），状态组合移到 workbench/Workbench.tsx。草稿采用同文件中 useEditorDraft（种子与恢复状态）和 useDraftPersistence（写入/离开保护）两个阶段，避免在 history/name 初始化前读取它们；不是改为新的草稿协议。对照 04 基线，离开保护、DraftWriter 生命周期、自动保存调度三段 effect 转译后的 JavaScript 完全相同，证据见 `docs/test-evidence/refactor05-draft.json`。不改 DraftWriter 或 historyReducer。共享类型收在 types.ts；移除新拆组件重复的样式副作用导入，CSS 仍由编辑器根模块加载。Workbench 此时 459 行，继续抽出纯对话框组合以达到最终 400 行上限。
+
+最终结构：额外提取无状态的覆盖层组合、助手接线、来源条及画布自适配 hook；助手自身请求/状态机代码不变，画布 ResizeObserver effect 仍处于视图持久化 effect 之前。Editor.tsx **77 行**、Workbench.tsx **397 行**；33 个拆分范围文件全部满足上限。完整逐文件行数见 [REFACTOR-05-FILES.md](REFACTOR-05-FILES.md) / `docs/test-evidence/refactor05-files.json`。重复执行草稿三段 effect 与保存/导出函数的转译代码比对，均与 04 基线一致。
+
+最终浏览器首轮真实输出：开发服务器流程 **26/58 通过、32 失败，3.1 分钟**。第 27 条开始测试前端 5178 退出，后续均连接拒绝；Java 8087 仍正常，Vite stdout/stderr 无退出原因。没有把这轮算作成功，也没有放宽断言。改用同一隔离脚本、同一端口/库/夹具和 Playwright 全部用例，仅把托管前端改为 `vite preview`（已有最终构建，proxy 沿用 server.proxy），同时验证生产构建；没有修改产品代码或用户服务。
+
+最终复验：生产预览首轮 **57/58、3.5 分钟**，仅 PDF 底层测试硬编码开发模块路径失败，实际 PDF 导出已通过；测试改为导入页面实际加载的 PDF 模块，保留原有断言。随后预览服务器再次提前退出（10/58、1.9 分钟，余项连接拒绝）。最终用标准 Node HTTP 静态服务器托管同一 dist，原样转发 /api 到隔离 Java，执行 `CI=true; .\.runtime\test-refactor05-static.ps1 -All`：**58/58 通过，3.2 分钟**；新 JVM 审计持久化、运行恢复通过，清理 67 个测试项目。静态服务器没有业务 Mock 或数据转换。Vite 退出原因未确认；没有把此前失败记作通过。最终单测 **192/192**，构建通过，所有拆分检查通过。未调用收费模型，未修改后端，未重新执行 Java 单测。任务 05 完成。
 
 ## 任务 04：真实研究工作区首页（2026-10-22）
 

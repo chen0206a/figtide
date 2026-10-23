@@ -22,3 +22,8 @@ export type EditorProps = {
   onLeaveGuard: (guard: (() => boolean) | null) => void;
   notify: (s: string) => void;
 };
+export type WorkbenchProps = EditorProps & {
+  data: Dataset;
+  original?: StoredChart;
+  onDataset: (id: number) => void;
+};

@@ -1,0 +1,137 @@
+{
+  "checks_passed": true,
+  "files": [
+    {
+      "path": "frontend/src/editor/Editor.tsx",
+      "lines": 77
+    },
+    {
+      "path": "frontend/src/editor/workbench/BottomDrawer.tsx",
+      "lines": 179
+    },
+    {
+      "path": "frontend/src/editor/workbench/DataLayersPanel.tsx",
+      "lines": 279
+    },
+    {
+      "path": "frontend/src/editor/workbench/EditorStatusBar.tsx",
+      "lines": 20
+    },
+    {
+      "path": "frontend/src/editor/workbench/EditorToolbar.tsx",
+      "lines": 235
+    },
+    {
+      "path": "frontend/src/editor/workbench/FigureAssistantDock.tsx",
+      "lines": 61
+    },
+    {
+      "path": "frontend/src/editor/workbench/FigureCanvas.tsx",
+      "lines": 206
+    },
+    {
+      "path": "frontend/src/editor/workbench/FigureSourceStrip.tsx",
+      "lines": 21
+    },
+    {
+      "path": "frontend/src/editor/workbench/Inspector.tsx",
+      "lines": 142
+    },
+    {
+      "path": "frontend/src/editor/workbench/SaveMenu.test.tsx",
+      "lines": 31
+    },
+    {
+      "path": "frontend/src/editor/workbench/SaveMenu.tsx",
+      "lines": 77
+    },
+    {
+      "path": "frontend/src/editor/workbench/Workbench.tsx",
+      "lines": 397
+    },
+    {
+      "path": "frontend/src/editor/workbench/WorkbenchOverlays.tsx",
+      "lines": 200
+    },
+    {
+      "path": "frontend/src/editor/workbench/controls.tsx",
+      "lines": 141
+    },
+    {
+      "path": "frontend/src/editor/workbench/dialogs/ConflictDialog.tsx",
+      "lines": 33
+    },
+    {
+      "path": "frontend/src/editor/workbench/dialogs/ExportDialog.tsx",
+      "lines": 126
+    },
+    {
+      "path": "frontend/src/editor/workbench/dialogs/RecoveryDialog.tsx",
+      "lines": 60
+    },
+    {
+      "path": "frontend/src/editor/workbench/dialogs/VersionHistoryDialog.tsx",
+      "lines": 58
+    },
+    {
+      "path": "frontend/src/editor/workbench/fitZoom.ts",
+      "lines": 13
+    },
+    {
+      "path": "frontend/src/editor/workbench/inspector/AnnotationsTab.tsx",
+      "lines": 100
+    },
+    {
+      "path": "frontend/src/editor/workbench/inspector/AppearanceTab.tsx",
+      "lines": 145
+    },
+    {
+      "path": "frontend/src/editor/workbench/inspector/AxesTab.tsx",
+      "lines": 172
+    },
+    {
+      "path": "frontend/src/editor/workbench/inspector/ChartTab.tsx",
+      "lines": 172
+    },
+    {
+      "path": "frontend/src/editor/workbench/inspector/SeriesTab.tsx",
+      "lines": 181
+    },
+    {
+      "path": "frontend/src/editor/workbench/toolbar.css",
+      "lines": 50
+    },
+    {
+      "path": "frontend/src/editor/workbench/types.ts",
+      "lines": 29
+    },
+    {
+      "path": "frontend/src/editor/workbench/useCanvasFit.tsx",
+      "lines": 27
+    },
+    {
+      "path": "frontend/src/editor/workbench/useChartSave.tsx",
+      "lines": 107
+    },
+    {
+      "path": "frontend/src/editor/workbench/useEditorDraft.tsx",
+      "lines": 204
+    },
+    {
+      "path": "frontend/src/editor/workbench/useEditorShortcuts.tsx",
+      "lines": 66
+    },
+    {
+      "path": "frontend/src/editor/workbench/useFigureExport.tsx",
+      "lines": 85
+    },
+    {
+      "path": "frontend/src/editor/workbench/usePanelLayout.tsx",
+      "lines": 98
+    },
+    {
+      "path": "frontend/src/editor/workbench/usePlotRenderer.tsx",
+      "lines": 131
+    }
+  ]
+}
