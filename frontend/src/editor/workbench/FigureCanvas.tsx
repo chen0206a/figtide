@@ -8,6 +8,10 @@ import { fittedZoom } from "./fitZoom";
 import { usePlotRenderer } from "./usePlotRenderer";
 import { PublicationPresets } from "../PublicationPanel";
 import { publicationMetrics } from "../publication";
+import {CanvasAsk} from './CanvasAsk';
+import {ProposalPaper} from './ProposalPaper';
+import type {AssistantSubmission} from '../agentPresentation';
+import type {CanvasProposal} from './useProposalCanvas';
 
 type FigureCanvasProps = {
   c: Config;
@@ -31,6 +35,11 @@ type FigureCanvasProps = {
   renderConfig: Config;
   project: number;
   logs: string[];
+  canvasProposal:CanvasProposal|null;
+  proposalVisible:boolean;
+  onToggleProposal:()=>void;
+  assistantClosed:boolean;
+  onAssistantSend:(submission:AssistantSubmission)=>void;
 };
 export function FigureCanvas({
   c,
@@ -54,8 +63,14 @@ export function FigureCanvas({
   renderConfig,
   project,
   logs,
+  canvasProposal,
+  proposalVisible,
+  onToggleProposal,
+  assistantClosed,
+  onAssistantSend,
 }: FigureCanvasProps) {
-  const physical = publicationMetrics(c);
+  const display=canvasProposal&&proposalVisible?canvasProposal.preview.config:c;
+  const physical = publicationMetrics(display);
   return (
     <section className="canvas-column">
       <div className="canvas-toolbar">
@@ -119,6 +134,7 @@ export function FigureCanvas({
           </Button>
         </div>
       </div>
+      {canvasProposal&&<div className="canvas-proposal-status"><span>预览中 · 尚未应用</span><button onClick={onToggleProposal}>{proposalVisible?'查看原图':'预览修改'}</button><small>确认应用后才参与保存和导出</small></div>}
       <div ref={stage} className="canvas-stage" aria-busy={plotPending}>
         <div
           className="paper-group"
@@ -139,7 +155,7 @@ export function FigureCanvas({
             <div
               className="paper-ruler"
               aria-hidden="true"
-              style={{ width: (c.style.width * zoom) / 100 }}
+              style={{ width: (display.style.width * zoom) / 100 }}
             >
               {Array.from(
                 { length: Math.floor(physical.widthMm / 10) + 1 },
@@ -158,15 +174,15 @@ export function FigureCanvas({
           <div
             className="paper-wrap"
             style={{
-              width: (c.style.width * zoom) / 100,
-              height: (c.style.height * zoom) / 100,
+              width: (display.style.width * zoom) / 100,
+              height: (display.style.height * zoom) / 100,
             }}
           >
             <div
               className="paper"
               style={{
-                width: c.style.width,
-                height: c.style.height,
+                width: display.style.width,
+                height: display.style.height,
                 transform: `scale(${zoom / 100})`,
               }}
               onClick={(e) => {
@@ -175,7 +191,8 @@ export function FigureCanvas({
                 if (cls.includes("gtitle")) setPanel("chart");
               }}
             >
-              <div data-testid="plot" ref={graph} />
+              <div className="canvas-original-layer"><div data-testid="plot" ref={graph} /></div>
+              {canvasProposal&&<ProposalPaper key={canvasProposal.token+JSON.stringify(canvasProposal.preview.config)} proposal={canvasProposal} data={data} visible={proposalVisible}/>}
             </div>
           </div>
           <div className="paper-footnote">
@@ -209,6 +226,7 @@ export function FigureCanvas({
             </div>
           )}
       </div>
+      {assistantClosed&&<CanvasAsk onSend={onAssistantSend}/>}
       <BottomDrawer
         {...{
           evaluation,

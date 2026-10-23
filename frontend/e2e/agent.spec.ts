@@ -44,7 +44,7 @@ test("clarification carries into a follow-up and collapsing the panel preserves 
   expect(saved.config.axes.y.max).toBe("1");
   expect(saved.config.axes.x).toEqual(f.config.axes.x);
 });
-async function fixture(request: APIRequestContext) {
+async function fixture(request: APIRequestContext, canvasPreview=false) {
   const provider = await (await request.get("/api/agent/provider")).json();
   test.skip(
     provider.model !== "labflow-fixture",
@@ -68,6 +68,7 @@ async function fixture(request: APIRequestContext) {
   ).json();
   const config = defaults(data);
   config.style.title = "Before agent";
+  if(canvasPreview)config.legend.show=true;
   const chart = await (
     await request.post(`/api/projects/${project.id}/charts`, {
       data: { name: "Assistant test", config },
@@ -81,6 +82,35 @@ async function fixture(request: APIRequestContext) {
     url: `/projects/${project.id}/figures/${chart.id}`,
   };
 }
+test("canvas consent → one real run → isolated marked preview → original → apply → undo",async({page,request})=>{
+  const f=await fixture(request,true);await page.setViewportSize({width:1440,height:1000});await page.goto(f.url);
+  await expect(page.getByTestId('plot').locator('.main-svg').first()).toBeVisible();
+  await page.screenshot({path:'../docs/screenshots/refactor-10-assistant-idle.png',fullPage:true});
+  const posts:any[]=[];page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/agent/runs'))posts.push(r.postDataJSON())});
+  const form=page.getByRole('form',{name:'画布绘图助手'});
+  await form.getByLabel('描述绘图调整').fill('画布预览测试：图例右侧、第一条曲线加粗、隐藏Y网格');
+  await expect(form.getByRole('button',{name:'发送给绘图助手'})).toBeDisabled();await expect(form.getByRole('checkbox')).not.toBeChecked();expect(posts).toHaveLength(0);
+  const draftKey=`labflow-draft-v1:${f.project.id}:${f.chart.id}`;
+  const beforeDraft=await page.evaluate(key=>localStorage.getItem(key),draftKey);
+  await form.getByRole('checkbox').check();await form.getByRole('button',{name:'发送给绘图助手'}).click();
+  const panel=page.getByRole('complementary',{name:'绘图助手',exact:true});await expect(panel.getByRole('button',{name:'应用这组调整'})).toBeEnabled();
+  await expect(page.locator('.canvas-proposal-layer')).toHaveClass(/is-visible/);expect(posts).toHaveLength(1);
+  await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText(f.config.style.title);
+  await expect(page.getByRole('button',{name:'撤销',exact:true})).toBeDisabled();
+  expect(await page.evaluate(key=>localStorage.getItem(key),draftKey)).toBe(beforeDraft);
+  const overlay=page.getByTestId('canvas-proposal');await expect(overlay.locator('.gtitle')).toHaveText('Canvas proposal · synthetic');
+  for(const kind of ['legend','series','axis'])await expect(page.locator(`[data-marker-kind="${kind}"]`).first()).toBeAttached();
+  await page.screenshot({path:'../docs/screenshots/refactor-10-assistant-preview.png',fullPage:true});
+  await panel.getByRole('button',{name:'查看原图',exact:true}).click();await expect(overlay).not.toHaveClass(/is-visible/);
+  await panel.getByRole('button',{name:'预览修改',exact:true}).click();await expect(overlay).toHaveClass(/is-visible/);
+  await panel.getByRole('button',{name:'收起绘图助手'}).click();await expect(page.getByTestId('canvas-proposal')).toHaveCount(0);expect(posts).toHaveLength(1);
+  await page.getByRole('button',{name:'绘图助手',exact:true}).click();await expect(overlay).toHaveClass(/is-visible/);expect(posts).toHaveLength(1);
+  await page.getByRole('button',{name:'导出',exact:true}).click();await page.getByLabel('文件格式').selectOption('svg');const download=page.waitForEvent('download');await page.getByRole('button',{name:'下载图表',exact:true}).click();const file=await(await download).path();const svg=fs.readFileSync(file!,'utf8');expect(svg).toContain(f.config.style.title);expect(svg).not.toContain('Canvas proposal');expect(svg).not.toContain('proposal-marker');
+  await panel.getByRole('button',{name:'应用这组调整'}).click();await expect(page.getByTestId('canvas-proposal')).toHaveCount(0);await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText('Canvas proposal · synthetic');
+  await page.getByRole('button',{name:'撤销',exact:true}).click();await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText(f.config.style.title);
+  const saved=await(await request.get(f.api)).json();expect(saved.config).toEqual(f.config);expect(saved.revision).toBe(1);
+});
+
 test("real Java/HTTP harness → diff confirmation → undo → save/reopen → vector export", async ({
   page,
   request,
@@ -104,11 +134,11 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   await dialog.getByRole("checkbox").check();
   await dialog.getByRole("button", { name: "生成调整提案" }).click();
   await expect(dialog.getByText("提案已就绪", { exact: true })).toBeVisible();
-  await expect(dialog.getByLabel("当前数据样式预览")).toHaveAttribute(
+  await expect(page.getByLabel("待确认的画布预览")).toHaveAttribute(
     "aria-busy",
     "false",
   );
-  await expect(dialog.locator(".gtitle")).toHaveText(
+  await expect(page.getByTestId('canvas-proposal').locator(".gtitle")).toHaveText(
     "Agent proposal · synthetic",
   );
   expect((await (await request.get(f.api)).json()).revision).toBe(1);

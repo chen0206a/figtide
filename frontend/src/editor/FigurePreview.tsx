@@ -22,6 +22,7 @@ export default function FigurePreview({
   mode="exact",
   animateLines=false,
   onRendered,
+  onError,
 }: {
   config: Config;
   data: Dataset;
@@ -31,6 +32,7 @@ export default function FigurePreview({
   mode?: "exact" | "fit";
   animateLines?: boolean;
   onRendered?: (element: HTMLDivElement) => void;
+  onError?: (message:string)=>void;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const graph = useRef<HTMLDivElement>(null);
@@ -39,6 +41,7 @@ export default function FigurePreview({
   const [state, setState] = useState("正在渲染预览…");
   const reduced=useReducedMotion();
   const callback=useRef(onRendered);callback.current=onRendered;
+  const errorCallback=useRef(onError);errorCallback.current=onError;
   const fitWidth=mode==='fit'?Math.min(width||config.style.width,maxHeight*config.style.width/config.style.height,540):config.style.width;
   const fitHeight=fitWidth*config.style.height/config.style.width;
   const result = useMemo(() => {
@@ -50,6 +53,7 @@ export default function FigurePreview({
   }, [config, data]);
   useEffect(() => {
     onWarnings?.(result.plot?.warnings || []);
+    if(result.error)errorCallback.current?.(result.error);
   }, [result, onWarnings]);
   useEffect(() => {
     if (!host.current) return;
@@ -94,7 +98,7 @@ export default function FigurePreview({
         }
       })
       .catch((e) => {
-        if (active) setState(`预览失败：${e.message}`);
+        if (active) {setState(`预览失败：${e.message}`);errorCallback.current?.(e.message);}
       });
     return () => {
       active = false;

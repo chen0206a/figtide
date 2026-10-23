@@ -23,6 +23,9 @@ import { usePanelLayout } from "./usePanelLayout";
 import { usePlotRenderer } from "./usePlotRenderer";
 import { WorkbenchOverlays } from "./WorkbenchOverlays";
 import {useReducedMotion} from "../../lib/useMotion";
+import {useProposalCanvas} from "./useProposalCanvas";
+import type {AssistantSubmission} from "../agentPresentation";
+import './agent-canvas.css';
 export function Workbench({
   project,
   projectName,
@@ -107,7 +110,6 @@ export function Workbench({
     [exportOpen, setExportOpen] = useState(initialPdf),
     [historyOpen, setHistoryOpen] = useState(false),
     [logs, setLogs] = useState<string[]>(["工作台已就绪"]);
-  useCanvasFit({ stage, autoFit, setZoom, c });
   useEffect(() => {
     try {
       sessionStorage.setItem(viewKey, JSON.stringify({ panel, seriesId }));
@@ -116,6 +118,8 @@ export function Workbench({
   const [reuseOpen, setReuseOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
   const [agentOpen, setAgentOpen] = useState(!!assistantPrompt);
+  const [submission,setSubmission]=useState<AssistantSubmission>();
+  useEffect(()=>{const shortcut=(event:KeyboardEvent)=>{if(event.altKey&&!event.ctrlKey&&!event.metaKey&&event.key.toLowerCase()==='a'){event.preventDefault();setAgentOpen(v=>!v)}};window.addEventListener('keydown',shortcut);return()=>window.removeEventListener('keydown',shortcut)},[]);
   const [reuseTab, setReuseTab] = useState<"builtin" | "style">("style");
   const [previewPreset, setPreviewPreset] = useState("");
   const [format, setFormat] = useState<"svg" | "png" | "pdf">(initialPdf?"pdf":"svg"),
@@ -131,6 +135,8 @@ export function Workbench({
     [c, name],
   );
   const dirty = baseline !== serialized;
+  const canvasProposal=useProposalCanvas(JSON.stringify({serialized,id,revision}),agentOpen);
+  useCanvasFit({stage,autoFit,setZoom,c:canvasProposal.proposal&&canvasProposal.visible?canvasProposal.proposal.preview.config:c});
   const { draftStatus, draftWriter, mounted } = useDraftPersistence({
     dirty,
     draftKey,
@@ -281,6 +287,11 @@ export function Workbench({
         />
         {resizer("left")}
         <FigureCanvas
+          canvasProposal={canvasProposal.proposal}
+          proposalVisible={canvasProposal.visible}
+          onToggleProposal={canvasProposal.toggle}
+          assistantClosed={!agentOpen}
+          onAssistantSend={value=>{setSubmission(value);setAgentOpen(true)}}
           {...{
             c,
             patch,
@@ -330,6 +341,10 @@ export function Workbench({
           }}
         />
         <FigureAssistantDock
+          submission={submission}
+          onPreview={canvasProposal.receive}
+          previewVisible={canvasProposal.visible}
+          onTogglePreview={canvasProposal.toggle}
           {...{
             project,
             chartId,

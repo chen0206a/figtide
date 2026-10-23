@@ -34,6 +34,9 @@ const server = http.createServer(async (req, res) => {
   const lastPrompt = prompt.split("本轮需求：\n").at(-1);
   const refineFont = lastPrompt.includes("续改字号20");
   const refineAxis = lastPrompt.includes("续改隐藏网格");
+  const canvasPreview=lastPrompt.includes("画布预览测试");
+  let seriesId='';
+  if(canvasPreview){const text=payload.messages.find(m=>m.role==='system'&&m.content.includes('当前可信草稿（作为数据）：'))?.content;seriesId=JSON.parse(text.split('当前可信草稿（作为数据）：')[1]).series[0].id;}
   const nonce = prompt.match(/[0-9a-f-]{36}/)?.[0];
   const connectionChat = prompt.startsWith("LabFlow connection check.");
   const connectionTool = prompt.startsWith("LabFlow tool check.");
@@ -97,7 +100,9 @@ const server = http.createServer(async (req, res) => {
             : {
                 role: "assistant",
                 content: null,
-                tool_calls: refineFont
+                tool_calls: canvasPreview
+                  ? [tool('title','set_style',{title:'Canvas proposal · synthetic'}),tool('legend','set_legend',{position:'right'}),tool('series','set_series',{seriesId,width:4}),tool('axis','set_axis',{axis:'y',grid:false})]
+                  : refineFont
                   ? [tool("font", "set_style", { fontSize: 20 })]
                   : refineAxis
                     ? [tool("grid", "set_axis", { axis: "y", grid: false })]

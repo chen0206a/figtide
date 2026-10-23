@@ -10,6 +10,7 @@ import {
   Redo2,
   Save,
   Undo2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { type Dataset } from "../../lib/api";
@@ -151,10 +152,13 @@ export function EditorToolbar({
           size="sm"
           disabled={saving || c.datasetVersionId !== data.id}
           aria-expanded={agentOpen}
+          aria-label="绘图助手"
           aria-controls="figure-assistant"
+          className="agent-trigger"
+          title="绘图助手 Alt+A"
           onClick={() => setAgentOpen((value) => !value)}
         >
-          绘图助手
+          <Sparkles size={15}/>绘图助手 <kbd>Alt A</kbd>
         </Button>
         <Button
           variant="ghost"

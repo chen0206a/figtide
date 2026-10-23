@@ -1,6 +1,8 @@
 import { type Dataset } from "../../lib/api";
 import { AgentAssistant } from "../AgentAssistant";
 import { type Config } from "../model";
+import type {AssistantSubmission} from '../agentPresentation';
+import type {CanvasProposal} from './useProposalCanvas';
 import "../styles-library.css";
 
 type FigureAssistantDockProps = {
@@ -9,6 +11,10 @@ type FigureAssistantDockProps = {
   data: Dataset;
   agentOpen: boolean;
   assistantPrompt: string;
+  submission?:AssistantSubmission;
+  onPreview?:(proposal:CanvasProposal|null)=>void;
+  previewVisible?:boolean;
+  onTogglePreview?:()=>void;
   id: number | null;
   revision: number;
   c: Config;
@@ -25,6 +31,10 @@ export function FigureAssistantDock({
   data,
   agentOpen,
   assistantPrompt,
+  submission,
+  onPreview,
+  previewVisible,
+  onTogglePreview,
   id,
   revision,
   c,
@@ -40,7 +50,13 @@ export function FigureAssistantDock({
       key={`${project}:${chartId || "draft"}:${data.id}`}
       docked
       open={agentOpen}
-      initialPrompt={assistantPrompt}
+      initialPrompt={submission?.prompt||assistantPrompt}
+      initialConsent={submission?.consent}
+      autoStart={!!submission}
+      submission={submission}
+      onPreview={onPreview}
+      previewVisible={previewVisible}
+      onTogglePreview={onTogglePreview}
       project={project}
       chartId={id}
       revision={revision}

@@ -1,5 +1,15 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 10-4 助手画布预览
+
+- 画布底部新增输入条（CanvasAsk：默认不勾同意，未勾不可发送）；提案直接画在画布上：FigureCanvas 的 proposal 层、`预览中 · 尚未应用` 胶囊、原图/预览切换。proposalMarkers 把 JSON Pointer 映射到图例/坐标轴/序列的边界框，序列直接复用 `js-line` 的 `d` 描边，编号与右侧 diff 一一对应。
+- 预览只影响呈现：useProposalCanvas 不写草稿、不进撤销历史、不保存；切回原图、关闭面板或手动改画布时撤下预览，只有「应用这组调整」进入既有的校验 + 一次撤销链路。useAssistantAutoStart 每次提交只自动发起一次；agentPresentation 集中管理文案；顶栏胶囊按钮与 Alt+A（任务文档允许的备选，见下）。
+- 修两处：关闭后重开面板时父层清理 effect 会清掉子层刚恢复的预览；720px 高度下新增底部按钮挤压对话区。均补回归测试。
+- `npm test -- --maxWorkers=4`：229/229（42文件）；`npm run build`通过18.68s（index 578.36 kB；ProductIntro 独立 chunk 18.8 kB，入口不含介绍页文案）。隔离栈（Java 8087 / Vite 5178 / 协议夹具 18769）：`agent.spec.ts` 8/8 + `assistant-layout.spec.ts` 1/1（49.1s）；完整隔离 E2E 68/68（4.4分钟）。
+- 首页改版后任务09的 `refactor09-layout-baseline.json` 未同步，`cleanup-visual.spec.ts` 首次失败；按新首页几何刷新基线（仅 home 面 18 行变化，experiments/data/editor 三面未变），随后 68/68。
+- 偏差：快捷键采用 Alt+A；无头测试只能证明 Ctrl+J 事件被取消，无法验证 Chrome 原生下载页，故不声明原生快捷键已验证。未执行 Java 单测（本节无后端改动）。需要人决定：无。
+
+
 ## 2026-10-23 · 10-3 工作区首页v2
 
 - 保留HomePage/ContinueCard/HomeSide/HomeTables边界，改为问候/命令栏/2:1深色展台与最近图表+2×2入口/实验与项目表。展台显示真实图表、最近两个版本和可选本机草稿（最多3行）；明确当前预览为已保存版本。

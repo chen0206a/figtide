@@ -1,0 +1,22 @@
+[
+  {
+    "channel": "chrome",
+    "baseline": [
+      "about:blank"
+    ],
+    "intercept": "true",
+    "urls": [
+      "about:blank"
+    ]
+  },
+  {
+    "channel": "msedge",
+    "baseline": [
+      "about:blank"
+    ],
+    "intercept": "true",
+    "urls": [
+      "about:blank"
+    ]
+  }
+]

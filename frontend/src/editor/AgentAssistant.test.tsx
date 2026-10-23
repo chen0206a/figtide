@@ -15,6 +15,7 @@ import {
   type ToolOperation,
 } from "./figureTools";
 import type { Dataset } from "../lib/api";
+import type {ComponentProps} from 'react';
 vi.mock("./StylePreview", () => ({
   StylePreview: ({ config }: any) => (
     <div aria-label="预览字号">{config.style.fontSize}</div>
@@ -138,7 +139,7 @@ function setup(
     initialPrompt,
     open: true,
   };
-  const ui = (values = props) => (
+  const ui = (values:ComponentProps<typeof AgentAssistant> = props) => (
     <QueryClientProvider client={client}>
       <AgentAssistant {...values} />
     </QueryClientProvider>
@@ -146,6 +147,15 @@ function setup(
   const view = render(ui());
   return { fetcher, onApply, onClose, ...view, ui, props };
 }
+it('explicit input handoff starts once and only exposes a proposal while the apply guard is enabled',async()=>{
+ const s=setup(undefined,true),onPreview=vi.fn();
+ s.rerender(s.ui({...s.props,initialPrompt:'字号改为18',initialConsent:true,autoStart:true,onPreview}));
+ await waitFor(()=>expect(onPreview.mock.calls.at(-1)?.[0]?.preview.config.style.fontSize).toBe(18));
+ const posts=()=>s.fetcher.mock.calls.filter(([url,init])=>url.endsWith('/runs')&&init?.method==='POST');expect(posts()).toHaveLength(1);expect(JSON.parse(posts()[0][1]!.body as string).share_metadata).toBe(true);
+ expect(screen.getByRole('button',{name:'应用这组调整'})).toBeEnabled();
+ s.rerender(s.ui({...s.props,initialPrompt:'字号改为18',initialConsent:true,autoStart:true,onPreview,token:'manual-edit'}));
+ await waitFor(()=>expect(onPreview).toHaveBeenLastCalledWith(null));expect(screen.getByRole('button',{name:'应用这组调整'})).toBeDisabled();expect(posts()).toHaveLength(1);expect(s.onApply).not.toHaveBeenCalled();
+});
 it("prefills a home prompt without starting a model run", async () => {
   const s = setup(undefined, true, "把图例放到右侧");
   expect(await screen.findByRole("textbox", { name: "希望怎样调整？" })).toHaveValue("把图例放到右侧");

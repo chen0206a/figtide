@@ -8,6 +8,7 @@ import {
   X,
   Plus,
   Settings2,
+  Sparkles,
 } from "lucide-react";
 import { ApiError, api, send, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
@@ -26,6 +27,9 @@ import {
 import "./quick-actions.css";
 import "./agent-assistant.css";
 import { conversationPrompt, type ConversationTurn } from "./agentConversation";
+import {agentConsent,agentSuggestions,type AssistantSubmission} from "./agentPresentation";
+import {useAssistantAutoStart} from "./useAssistantAutoStart";
+import type {CanvasProposal} from "./workbench/useProposalCanvas";
 
 import {
   recoveryKey,
@@ -67,7 +71,7 @@ function AssistantSurface(p: {
       <header className="agent-dock-heading">
         <div>
           <h2>
-            <MessageSquare size={17} />
+            <Sparkles size={17} />
             绘图助手
           </h2>
         </div>
@@ -138,6 +142,12 @@ const statusNames: Record<AgentRun["status"], string> = {
 };
 export function AgentAssistant(p: {
   initialPrompt?: string;
+  initialConsent?: boolean;
+  autoStart?: boolean;
+  submission?: AssistantSubmission;
+  onPreview?: (proposal:CanvasProposal|null)=>void;
+  previewVisible?: boolean;
+  onTogglePreview?: ()=>void;
   project: number;
   chartId: number | null;
   revision: number;
@@ -459,6 +469,14 @@ export function AgentAssistant(p: {
     );
   const busy = submitting || active(run) || applying || recovering;
   const context = conversationPrompt(turns, prompt);
+  useAssistantAutoStart({submission:p.submission,autoStart:p.autoStart,initialConsent:p.initialConsent,initialPrompt:p.initialPrompt,prompt,consent,
+    ready:p.open!==false&&!busy&&!disconnected&&!!provider.data?.available&&!(session&&session.remaining_budget<2000)&&!(result&&!trusted)&&p.config.datasetVersionId===p.data.id,
+    recoveringExisting:!!cursor.current,setPrompt,setConsent,start});
+  const canPreview=p.open!==false&&!busy&&!disconnected&&trusted&&!!result?.changes.length&&snapshot?.token===p.token;
+  useEffect(()=>{
+    p.onPreview?.(canPreview?{preview:result!,token:snapshot!.token}:null);
+    return()=>p.onPreview?.(null);
+  },[canPreview,result,snapshot?.token,p.onPreview]);
   useEffect(() => {
     if (!p.docked || p.open === false) return;
     const target = result ? proposalPreview.current : thread.current;
@@ -574,7 +592,7 @@ export function AgentAssistant(p: {
           onChange={(e) => setConsent(e.target.checked)}
         />
         <span>
-          允许发送图表配置和字段摘要。不发送原始数据行，模型服务可能计费。
+          {agentConsent}
         </span>
       </label>
       <div className="agent-controls">
@@ -615,6 +633,7 @@ export function AgentAssistant(p: {
       <p>确认后只更新草稿，可一步撤销。保存正式版本仍由你决定。</p>
       {!!result && (
         <Button
+          className="agent-refine"
           variant="outline"
           disabled={busy}
           onClick={() => {
@@ -629,6 +648,7 @@ export function AgentAssistant(p: {
         </Button>
       )}
       <Button
+        className="agent-apply"
         disabled={
           busy ||
           disconnected ||
@@ -702,6 +722,7 @@ export function AgentAssistant(p: {
         应用这组调整
         <ArrowRight size={15} />
       </Button>
+      {canPreview&&p.onTogglePreview&&<Button variant="outline" className="agent-preview-toggle" onClick={p.onTogglePreview}>{p.previewVisible?'查看原图':'预览修改'}</Button>}
       {!!result && (
         <details className="agent-reject">
           <summary>不采用这份提案</summary>
@@ -871,7 +892,7 @@ export function AgentAssistant(p: {
                     <strong>从一个具体的调整开始。</strong>
                     <p>说出想调整的地方，预览后再应用。</p>
                     <div className="agent-suggestions">
-                      {["图例放到右侧", "隐藏网格线", "整体字号改为 18"].map(
+                      {agentSuggestions.map(
                         (text) => (
                           <button
                             key={text}
@@ -903,6 +924,7 @@ export function AgentAssistant(p: {
                   </p>
                 )}
                 <div ref={thread} />
+                {busy&&<div className="agent-wait-skeleton" aria-hidden="true"><i/><i/><i/></div>}
               </div>
               {(!!turns.length || !!session || disconnected) && (
                 <Button
@@ -992,6 +1014,8 @@ export function AgentAssistant(p: {
             <aside className="quick-result" ref={proposalPreview}>
               {(!p.docked || !!result) && (
                 <ProposalPreview
+                  numbered
+                  showPlot={!p.docked}
                   config={snapshot?.config || p.config}
                   data={p.data}
                   preview={trusted ? result : undefined}
