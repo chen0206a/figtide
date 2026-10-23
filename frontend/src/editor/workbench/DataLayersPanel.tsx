@@ -270,10 +270,6 @@ export function DataLayersPanel({
           管理个人模板
         </Button>
       </details>
-      <div className="left-foot">
-        <span className="green-dot" />
-        原始实验数据始终保持不变
-      </div>
-    </aside>
+      </aside>
   );
 }

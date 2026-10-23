@@ -421,6 +421,6 @@ describe("structural tools", () => {
     const add = screen.getByRole("button", { name: "加入调整清单" });
     expect(add).toBeEnabled();
     fireEvent.click(add);
-    expect(screen.getByRole("heading", { name: /待调整 · 1\/30/ })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "已选 1 项" })).toBeInTheDocument();
   });
 });

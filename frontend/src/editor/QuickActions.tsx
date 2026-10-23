@@ -403,7 +403,8 @@ export function QuickActions(p: {
               <div className="quick-queue-heading">
                 <h3>
                   <ListChecks size={14} />
-                  待调整 · {operations.length}/30
+                  已选 {operations.length} 项
+                  {operations.length >= 25 ? "（最多 30 项）" : ""}
                 </h3>
                 <Button
                   variant="ghost"

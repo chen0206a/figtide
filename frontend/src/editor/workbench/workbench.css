@@ -303,18 +303,7 @@
   line-height: 1.7;
   color: var(--lf-text-3);
 }
-.left-foot {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--lf-space-1) * 1.5);
-  margin-top: auto;
-  padding: var(--lf-space-3) var(--lf-space-4);
-  font-family: var(--lf-font-mono);
-  font-size: var(--lf-text-2xs);
-  letter-spacing: 0.06em;
-  color: var(--lf-text-3);
-  border-top: 1px solid var(--lf-border);
-}
+
 
 /* ---------- canvas & paper ---------- */
 .canvas-column {
@@ -384,16 +373,6 @@
 .paper-group {
   flex-shrink: 0;
   margin: auto;
-}
-.paper-caption {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--lf-space-3);
-  font-family: var(--lf-font-mono);
-  text-transform: uppercase;
-}
-.paper-caption span:first-child {
-  font-weight: 500;
 }
 .paper-wrap {
   background: var(--lf-surface);
@@ -792,14 +771,6 @@
   min-height: 160px;
   background: var(--lf-canvas);
 }
-.paper-caption {
-  font-size: var(--lf-text-xs);
-  letter-spacing: 0.04em;
-  color: var(--lf-text-3);
-}
-.paper-caption span:first-child {
-  color: var(--lf-text-3);
-}
 .paper-wrap {
   outline-color: var(--lf-border);
 }
@@ -950,10 +921,7 @@
   outline-offset: -3px;
   border-radius: var(--lf-radius-xs);
 }
-.editor .left-foot {
-  padding: var(--lf-space-3) var(--lf-space-4);
-  font-size: var(--lf-text-caption);
-}
+
 .editor .canvas-stage {
   background-color: var(--lf-surface-sunken);
   background-image: none;

@@ -15,6 +15,7 @@
   --lf-surface: #ffffff; /* cards, panels, header */
   --lf-surface-2: #f8f9fb; /* inputs, subtle fills */
   --lf-surface-sunken: #f1f3f6; /* segmented controls, wells */
+  --lf-surface-3: var(--lf-surface-sunken); /* progress track */
   --lf-canvas: #f0f1f4; /* editor canvas backdrop */
   --lf-inverse: #0e1116; /* dark cards, primary button */
   --lf-inverse-2: #1b2028; /* fields on dark */
@@ -27,6 +28,7 @@
 
   /* ---- text ---- */
   --lf-text: #0e1116;
+  --lf-text-1: var(--lf-text); /* progress fill */
   --lf-text-2: #4a5361; /* secondary, 7.8:1 on white */
   --lf-text-3: #5f6773; /* muted / meta, 5.7:1 on white */
   --lf-text-on-inverse: #ffffff;

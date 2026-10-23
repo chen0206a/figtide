@@ -3,6 +3,8 @@ import { ArrowRight, Download } from "lucide-react";
 import { Suspense,lazy,useEffect,useState } from "react";
 import type { Config } from "../../editor/model";
 import { api,type Dataset } from "../../lib/api";
+import { toolValueNames } from "../../editor/figureTools";
+import { stylePresets } from "../../editor/stylePresets";
 import {loadEditor} from "../../lib/loadEditor";
 import {localDraftInfo,relativeTime,type ChartSummary} from "./homeData";
 const FigurePreview=lazy(()=>import('../../editor/FigurePreview'));
@@ -21,7 +23,7 @@ export function ContinueCard({project,projectName,chart,onOpen,onExport,animateL
   useEffect(()=>setDraft(readDraft()),[project,chart.id,chart.revision]);
   const prepare=async()=>{const loaded=await qc.ensureQueryData(query);await Promise.all([loadEditor(),qc.ensureQueryData({queryKey:['data',project,loaded.config.datasetVersionId],queryFn:()=>api<Dataset>(`/projects/${project}/data/${loaded.config.datasetVersionId}`)})]);};
   const open=async(pdf=false)=>{if(opening)return;setOpening(true);setError('');try{await prepare();(pdf?(onExport||onOpen):onOpen)()}catch(e){setError((e as Error).message)}finally{setOpening(false)}};
-  const spec=c?`FIGURE ${String(chart.id).padStart(2,'0')} · ${c.type.toUpperCase()} · ${c.style.preset.toUpperCase()}`:`FIGURE ${chart.id}`;
+  const spec=c?`${toolValueNames[c.type]||c.type} · ${stylePresets.find(p=>p.key===c.style.preset)?.name||c.style.preset}`:'图表预览';
   return <article className="home-card home-continue home-stage" aria-label="继续上次的图表">
     <div className="home-stage-copy"><header className="home-continue-head"><span className="lf-kicker">{spec}</span></header>
       <div className="home-continue-meta"><h2 title={chart.name}>{chart.name}</h2><p>{projectName}</p>{data.data&&<p className="lf-mono">{data.data.filename} · v{data.data.version}</p>}</div>

@@ -67,6 +67,7 @@ type WorkbenchOverlaysProps = {
   setHistoryOpen: React.Dispatch<React.SetStateAction<boolean>>;
   versions: UseQueryResult<ChartVersion[], Error>;
   onDataset: (id: number) => void;
+  onPaperSize: () => void;
 };
 export function WorkbenchOverlays({
   recovery,
@@ -113,6 +114,7 @@ export function WorkbenchOverlays({
   setHistoryOpen,
   versions,
   onDataset,
+  onPaperSize,
 }: WorkbenchOverlaysProps) {
   return (
     <>
@@ -183,6 +185,7 @@ export function WorkbenchOverlays({
           exporting,
           plotPending,
           download,
+          onPaperSize,
         }}
       />
       <VersionHistoryDialog

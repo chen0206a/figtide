@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  BookOpen,
   ChartColumn,
   ChartNoAxesCombined,
   FileSpreadsheet,
@@ -174,11 +173,6 @@ export function HomePage(p: HomePageProps) {
       </section>
         </div>
 
-        <Link className="home-side-intro" to="/welcome" aria-label="产品介绍">
-          <BookOpen size={16} aria-hidden="true" />
-          <span>产品介绍</span>
-          <ArrowRight size={14} aria-hidden="true" />
-        </Link>
       </div>
 
       <div className="home-bottom">
@@ -196,7 +190,7 @@ export function HomePage(p: HomePageProps) {
       </div>
 
       <footer className="home-footer lf-mono">
-        <span>数据保存在本机 · 原始文件只读</span>
+        <span>数据保存在本机</span>
         <Link to="/welcome">关于 LabFlow</Link>
       </footer>
     </div>

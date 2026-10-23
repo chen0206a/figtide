@@ -100,7 +100,7 @@ it("puts the latest chart first with a real preview and opens it", async () => {
   expect(
     await screen.findByRole("img", { name: "Figure 1 的预览" }),
   ).toBeVisible();
-  expect(screen.getByText(/FIGURE 01 · LINE · CLEAN ACADEMIC/)).toBeVisible();
+  expect(screen.getByText(/折线图 · 清晰学术/)).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: /继续编辑/ }));
   await waitFor(()=>expect(p.onChart).toHaveBeenCalledWith(1));
 });

@@ -7,6 +7,7 @@ import {
   type ImportPreview,
   type ImportRules,
 } from "../lib/api";
+import { formatBytes } from "../lib/format";
 import { checkImportShape, shapeWarning } from "../lib/importChecks";
 import { Dialog } from "./ui/dialog";
 import { Button } from "./ui/button";
@@ -127,7 +128,7 @@ export function UploadDialog({
       <div className="import-file">
         <strong>{file.name}</strong>
         <span>
-          {(file.size / 1024).toFixed(1)} KB ·{" "}
+          {formatBytes(file.size)} ·{" "}
           {version ? "追加数据版本" : "新数据集"}
         </span>
       </div>

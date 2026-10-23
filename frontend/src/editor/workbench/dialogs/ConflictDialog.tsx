@@ -18,7 +18,7 @@ export function ConflictDialog({
       open={conflict}
       onOpenChange={setConflict}
       title="图表已有更新版本"
-      description="当前修改仍保留在本机草稿中。可以另存为新图表，避免覆盖另一个窗口保存的版本。"
+      description="你的修改仍保存在本机草稿中，可以另存为新图表。"
     >
       <div className="dialog-actions">
         <Button variant="outline" onClick={() => setConflict(false)}>

@@ -23,7 +23,6 @@ type FigureCanvasProps = {
   plotPending: boolean;
   data: Dataset;
   rendered: { config: Config; data: Dataset } | null;
-  id: number | null;
   setPanel: React.Dispatch<React.SetStateAction<string>>;
   graph: RefObject<HTMLDivElement | null>;
   plotError: string;
@@ -51,7 +50,6 @@ export function FigureCanvas({
   plotPending,
   data,
   rendered,
-  id,
   setPanel,
   graph,
   plotError,
@@ -145,12 +143,6 @@ export function FigureCanvas({
                 : "hidden",
           }}
         >
-          <div className="paper-caption">
-            <span>FIGURE {id ? String(id).padStart(2, "0") : "01"}</span>
-            <span>
-              {c.style.preset} · {c.type.toUpperCase()}
-            </span>
-          </div>
           {physical.enabled && (
             <div
               className="paper-ruler"

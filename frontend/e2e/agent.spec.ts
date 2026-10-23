@@ -267,7 +267,10 @@ test("explicit rejection is persisted, redacted, immutable and readable after re
   await dialog.getByRole("checkbox").check();
   await dialog.getByRole("button", { name: "生成调整提案" }).click();
   await expect(dialog.getByText("提案已就绪", { exact: true })).toBeVisible();
-  await dialog.getByText("不采用这份提案", { exact: true }).click();
+  await expect(
+    dialog.getByRole("button", { name: "不采用这份提案", exact: true }),
+  ).toBeVisible();
+  await dialog.getByRole("button", { name: "填写原因", exact: true }).click();
   await dialog
     .getByRole("textbox", { name: "拒绝原因（可选）" })
     .fill("图例位置不合适 api_key=do-not-store");
@@ -494,8 +497,9 @@ test("lost HTTP start response recovers the original run; explicit new conversat
     panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeEnabled();
   expect(posts).toBe(1);
-  await panel.getByText("不采用这份提案").click();
-  await panel.getByRole("button", { name: "拒绝提案", exact: true }).click();
+  await panel
+    .getByRole("button", { name: "不采用这份提案", exact: true })
+    .click();
   await panel.getByRole("button", { name: "开始新对话" }).click();
   await page.unroute("**/api/projects/*/agent/runs");
   await panel.locator(".agent-budget summary").click();

@@ -15,6 +15,7 @@ import {
   type ToolOperation,
 } from "./figureTools";
 import type { Dataset } from "../lib/api";
+import { ApiError } from "../lib/api";
 import type {ComponentProps} from 'react';
 vi.mock("./StylePreview", () => ({
   StylePreview: ({ config }: any) => (
@@ -347,7 +348,7 @@ it("persists explicit rejection without changing the canvas", async () => {
   const s = setup();
   await start();
   await screen.findByText("提案已就绪");
-  fireEvent.click(screen.getByText("不采用这份提案"));
+  fireEvent.click(screen.getByRole("button", { name: "填写原因" }));
   fireEvent.change(screen.getByRole("textbox", { name: "拒绝原因（可选）" }), {
     target: { value: "字号过大" },
   });
@@ -610,6 +611,24 @@ it("a lost start response reconnects by the preassigned identifier and never pos
   const baseline = { chart_id: 1, base_revision: 1, config };
   const s = setup((url) => {
     if (url.endsWith("/runs")) throw new Error("network interrupted");
+    if (url.endsWith("/resume"))
+      return { run, baseline, candidate: { run, baseline }, turns: [] };
+  }, true);
+  await start();
+  fireEvent.click(await screen.findByRole("button", { name: "重新连接" }));
+  await screen.findByText("已恢复本次对话；尚未应用的提案仍需确认。");
+  expect(
+    s.fetcher.mock.calls.filter(
+      ([url, init]) => url.endsWith("/runs") && init?.method === "POST",
+    ),
+  ).toHaveLength(1);
+  expect(screen.getByRole("button", { name: "应用这组调整" })).toBeEnabled();
+});
+
+it("keeps the reconnect entry when the start failure is an offline ApiError", async () => {
+  const baseline = { chart_id: 1, base_revision: 1, config };
+  const s = setup((url) => {
+    if (url.endsWith("/runs")) throw new ApiError("本地服务没有响应", 0, "offline");
     if (url.endsWith("/resume"))
       return { run, baseline, candidate: { run, baseline }, turns: [] };
   }, true);

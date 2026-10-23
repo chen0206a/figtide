@@ -96,6 +96,25 @@
   color: var(--lf-text);
   font-size: var(--lf-text-sm);
 }
+.app-shell .masthead-intro {
+  display: inline-flex;
+  align-items: center;
+  height: var(--lf-control-h);
+  padding: 0 var(--lf-space-3);
+  border-radius: var(--lf-radius-md);
+  color: var(--lf-text-2);
+  font-size: var(--lf-text-sm);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.app-shell .masthead-intro:hover {
+  background: var(--lf-surface-2);
+  color: var(--lf-text);
+}
+.app-shell .masthead-intro:focus-visible {
+  outline: 2px solid var(--lf-focus);
+  outline-offset: 2px;
+}
 .app-shell .local-badge {
   display: inline-flex;
   align-items: center;

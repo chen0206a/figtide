@@ -153,8 +153,8 @@ export const DataTable = memo(function DataTable({ data }: { data: Dataset }) {
       <div className="table-footer">
         <span>
           {filter !== search ? "正在筛选… · " : ""}
-          查看 {table.getFilteredRowModel().rows.length} / {data.row_count} 行 ·{" "}
-          {data.fields.length} 个字段 · 原始数据只读 · 空值保留为空，不当作 0
+          {data.row_count} 行 · {data.fields.length} 个字段
+          <small className="table-footer-note">空值按缺失显示，不当作 0</small>
         </span>
         <div>
           <Button

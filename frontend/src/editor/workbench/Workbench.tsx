@@ -303,7 +303,6 @@ export function Workbench({
             plotPending,
             data,
             rendered,
-            id,
             setPanel,
             graph,
             plotError,
@@ -412,6 +411,7 @@ export function Workbench({
           setHistoryOpen,
           versions,
           onDataset,
+          onPaperSize: () => setPanel("appearance"),
         }}
       />
     </div>

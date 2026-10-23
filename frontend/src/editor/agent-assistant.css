@@ -375,12 +375,19 @@
   border-top: 0;
 }
 .agent-reject {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lf-space-2);
   margin-top: var(--lf-space-3);
   font-size: var(--lf-text-xs);
   color: var(--lf-text-3);
 }
-.agent-reject summary {
-  cursor: pointer;
+.agent-reject-reason-toggle {
+  font-size: var(--lf-text-2xs);
+}
+.agent-reject-reason {
+  flex-basis: 100%;
 }
 .agent-reject label,
 .agent-history-decision label {
@@ -388,9 +395,6 @@
   gap: var(--lf-space-2);
   margin: var(--lf-space-3) 0;
   font-size: var(--lf-text-xs);
-}
-.agent-reject .btn {
-  margin-top: var(--lf-space-2);
 }
 .agent-history-body {
   display: grid;
@@ -637,17 +641,27 @@
   appearance: none;
   border-radius: var(--lf-radius-pill);
   overflow: hidden;
-  background: var(--lf-surface-sunken);
+  background: var(--lf-surface-3);
   color: var(--lf-text-3);
 }
 .agent-budget progress::-webkit-progress-bar {
-  background: var(--lf-surface-sunken);
+  background: var(--lf-surface-3);
 }
 .agent-budget progress::-webkit-progress-value {
-  background: var(--lf-text);
+  background: var(--lf-text-1);
 }
 .agent-budget progress::-moz-progress-bar {
-  background: var(--lf-text);
+  background: var(--lf-text-1);
+}
+.agent-budget progress[data-high="true"]::-webkit-progress-value {
+  background: var(--lf-warning);
+}
+.agent-budget progress[data-high="true"]::-moz-progress-bar {
+  background: var(--lf-warning);
+}
+.agent-model-name {
+  color: var(--lf-text-3);
+  font-weight: 500;
 }
 .agent-dock .quick-actions-builder {
   padding: var(--lf-space-3) var(--lf-space-4);

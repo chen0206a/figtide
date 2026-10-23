@@ -498,6 +498,11 @@ label textarea {
   background: var(--lf-surface-2);
   border-top: 1px solid var(--lf-border);
 }
+.table-footer-note {
+  display: block;
+  margin-top: 2px;
+  color: var(--lf-text-3);
+}
 .table-footer > div {
   display: flex;
   align-items: center;

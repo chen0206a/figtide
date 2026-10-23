@@ -49,7 +49,7 @@ export function ProjectBackup({
     <section className="project-backup" aria-label="项目备份与恢复">
       <h3>项目备份与恢复</h3>
       <p className="tiny-note">
-        包含原始文件、数据与图表的全部版本、实验关联及本项目创建的样式模板。保存在本机的未提交草稿不包含在备份内。
+        备份包含原始文件、所有版本、实验关联和样式模板，不含未保存的草稿。
       </p>
       <label>
         备份项目

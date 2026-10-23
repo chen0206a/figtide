@@ -29,6 +29,7 @@ type ExportDialogProps = {
   exporting: boolean;
   plotPending: boolean;
   download: () => Promise<void>;
+  onPaperSize?: () => void;
 };
 export function ExportDialog({
   exportOpen,
@@ -43,6 +44,7 @@ export function ExportDialog({
   exporting,
   plotPending,
   download,
+  onPaperSize,
 }: ExportDialogProps) {
   return (
     <Dialog
@@ -54,7 +56,11 @@ export function ExportDialog({
       <Select
         label="文件格式"
         value={format}
-        options={["svg", "png", "pdf"]}
+        options={[
+          { value: "svg", label: "SVG 矢量" },
+          { value: "png", label: "PNG 图片" },
+          { value: "pdf", label: "PDF 文档" },
+        ]}
         onChange={(v) => setFormat(v as "svg" | "png" | "pdf")}
       />
       {format === "png" && !c.publication?.enabled && (
@@ -106,6 +112,18 @@ export function ExportDialog({
             SVG 物理尺寸：{output.widthMm} × {output.heightMm.toFixed(1)} mm ·
             基础字号 {output.fontPt} pt
           </p>
+        )}
+        {!c.publication?.enabled && onPaperSize && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setExportOpen(false);
+              onPaperSize();
+            }}
+          >
+            设置论文尺寸
+          </Button>
         )}
       </div>
       <div className="dialog-actions">

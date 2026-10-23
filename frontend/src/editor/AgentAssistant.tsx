@@ -191,6 +191,7 @@ export function AgentAssistant(p: {
   const [composerExpanded, setComposerExpanded] = useState(false);
   const [tab, setTab] = useState<"edit" | "history">("edit");
   const [rejectionReason, setRejectionReason] = useState("");
+  const [reasonOpen, setReasonOpen] = useState(false);
   const [consent, setConsent] = useState(false);
   const [run, setRun] = useState<AgentRun | null>(null);
   const [candidate, setCandidate] = useState<{
@@ -428,7 +429,9 @@ export function AgentAssistant(p: {
       remember(result.run_id);
       setRun(result);
     } catch (e) {
-      if (e instanceof ApiError) remember(previousCursor);
+      // 网络中断时保留原请求游标，页面重启后仍能找回这次运行；
+      // api.ts 会把 TypeError 统一转成 offline 的 ApiError，不能只按类型判断。
+      if (e instanceof ApiError && e.kind !== "offline") remember(previousCursor);
       else setDisconnected(true);
       setError((e as Error).message);
     } finally {
@@ -488,20 +491,33 @@ export function AgentAssistant(p: {
       behavior: "auto",
     });
   }, [turns.length, p.open, run?.status, run?.outcome]);
+  const usedBudget = session
+    ? session.used_budget + session.reserved_budget
+    : 0;
+  const budgetMax = session?.max_budget || sessionLimit;
+  const budgetPercent = budgetMax > 0 ? Math.round((usedBudget / budgetMax) * 100) : 0;
+  const budgetTitle = `已用 ${usedBudget.toLocaleString()} / 上限 ${budgetMax.toLocaleString()} token`;
   const providerRow = (
     <div className="agent-provider">
       <MessageSquare size={17} />
       <div>
-        <strong>{provider.data?.model || "连接模型服务"}</strong>
-        <span title={provider.data?.endpoint}>
-          {endpointHost(provider.data?.endpoint) || "选择模型，开始调整"}
-        </span>
+        {provider.data?.available ? (
+          <strong>
+            已连接 ·{" "}
+            <span className="agent-model-name lf-mono">
+              {provider.data.model}
+            </span>
+          </strong>
+        ) : (
+          <>
+            <strong>连接模型服务</strong>
+            <span>选择模型，开始调整</span>
+          </>
+        )}
       </div>
-      <span
-        className={`agent-connection-indicator ${provider.data?.available ? "connected" : ""}`}
-      >
-        {provider.data?.available ? "已配置" : "未连接"}
-      </span>
+      {!provider.data?.available && (
+        <span className="agent-connection-indicator">未连接</span>
+      )}
       <Button
         variant="ghost"
         size="icon"
@@ -515,14 +531,16 @@ export function AgentAssistant(p: {
   );
   const budgetView = (
     <details className="agent-budget">
-      <summary>
+      <summary title={budgetTitle}>
         {session
-          ? `本次会话 · 已用 ${(session.used_budget + session.reserved_budget).toLocaleString()} / 上限 ${session.max_budget.toLocaleString()}`
+          ? `本次会话已用 ${budgetPercent}%`
           : `本次会话上限 ${sessionLimit.toLocaleString()}`}
         <progress
           aria-label="会话预算使用情况"
-          value={session ? session.used_budget + session.reserved_budget : 0}
-          max={session?.max_budget || sessionLimit}
+          title={budgetTitle}
+          data-high={budgetPercent >= 80}
+          value={usedBudget}
+          max={budgetMax}
         />
       </summary>
       {!session && (
@@ -556,24 +574,29 @@ export function AgentAssistant(p: {
       )}
     </details>
   );
-  const composerNotes = (
-    <div className="agent-composer-notes">
-      {!!turns.length && (
-        <p className="agent-context-note">
-          {context.included
-            ? `本轮附带最近 ${context.included} 轮对话`
-            : "本轮按独立需求发送"}
-          {context.omitted > 0 ? " · 较早对话未附带" : ""}
-          。刷新后可恢复仍存活的会话。
-        </p>
-      )}
-      {!!result && (
-        <p className="agent-context-note">
-          继续描述修改，原提案会保留到新提案就绪；最后一次确认即可。
-        </p>
-      )}
-    </div>
-  );
+  const rejectProposal = async (reason: string) => {
+    if (!pendingRun) return;
+    setApplying(true);
+    setError("");
+    try {
+      const decision = await api<AgentRun>(
+        `${path}/${pendingRun.run_id}/decision`,
+        send("POST", {
+          outcome: "rejected",
+          reason,
+          proposal_hash: pendingRun.proposal_hash,
+        }),
+      );
+      if (decision.outcome !== "rejected")
+        throw new Error("拒绝记录未写入，请重试");
+      setCandidate(null);
+      setRun({ ...pendingRun, outcome: "rejected", proposal: undefined });
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setApplying(false);
+    }
+  };
   const composerVisible = !result || composerExpanded;
   const composerView = (
     <div className="agent-composer">
@@ -586,10 +609,13 @@ export function AgentAssistant(p: {
           rows={4}
           disabled={busy}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="例如：把图例放到右侧，字号改为 16，并将第一条曲线设为蓝色。"
+          placeholder={
+            result
+              ? "还有哪里不满意？例如：线再粗一点"
+              : "例如：把图例放到右侧，字号改为 16，并将第一条曲线设为蓝色。"
+          }
         />
       </label>
-      {!p.docked && composerNotes}
 
       <label className="agent-consent">
         <input
@@ -637,7 +663,7 @@ export function AgentAssistant(p: {
       className={`quick-result-footer${!result ? " is-idle" : ""}`}
       ref={proposalFooter}
     >
-      <p>确认后只更新草稿，可一步撤销。保存正式版本仍由你决定。</p>
+      <p>确认后只修改草稿，可一步撤销；是否保存正式版本由你决定。</p>
       {!!result && !composerExpanded && (
         <button
           type="button"
@@ -730,51 +756,49 @@ export function AgentAssistant(p: {
       )}
       {canPreview&&p.onTogglePreview&&<Button variant="outline" className="agent-preview-toggle" onClick={p.onTogglePreview}>{p.previewVisible?'查看原图':'预览修改'}</Button>}
       {!!result && (
-        <details className="agent-reject">
-          <summary>不采用这份提案</summary>
-          <label>
-            拒绝原因（可选）
-            <input
-              value={rejectionReason}
-              maxLength={500}
-              disabled={busy}
-              onChange={(e) => setRejectionReason(e.target.value)}
-            />
-          </label>
+        <div className="agent-reject">
           <Button
-            variant="outline"
+            variant="ghost"
+            size="sm"
+            className="agent-reject-action"
             disabled={busy}
-            onClick={async () => {
-              if (!pendingRun) return;
-              setApplying(true);
-              setError("");
-              try {
-                const decision = await api<AgentRun>(
-                  `${path}/${pendingRun.run_id}/decision`,
-                  send("POST", {
-                    outcome: "rejected",
-                    reason: rejectionReason,
-                    proposal_hash: pendingRun.proposal_hash,
-                  }),
-                );
-                if (decision.outcome !== "rejected")
-                  throw new Error("拒绝记录未写入，请重试");
-                setCandidate(null);
-                setRun({
-                  ...pendingRun,
-                  outcome: "rejected",
-                  proposal: undefined,
-                });
-              } catch (e) {
-                setError((e as Error).message);
-              } finally {
-                setApplying(false);
-              }
-            }}
+            onClick={() => void rejectProposal("")}
           >
-            拒绝提案
+            不采用这份提案
           </Button>
-        </details>
+          {!reasonOpen && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="agent-reject-reason-toggle"
+              disabled={busy}
+              onClick={() => setReasonOpen(true)}
+            >
+              填写原因
+            </Button>
+          )}
+          {reasonOpen && (
+            <div className="agent-reject-reason">
+              <label>
+                拒绝原因（可选）
+                <input
+                  value={rejectionReason}
+                  maxLength={500}
+                  disabled={busy}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                />
+              </label>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={busy}
+                onClick={() => void rejectProposal(rejectionReason)}
+              >
+                拒绝提案
+              </Button>
+            </div>
+          )}
+        </div>
       )}
       {result && snapshot && snapshot.token !== p.token && (
         <p role="alert">画布已变化，请继续修改以合并手动编辑，再确认应用。</p>
@@ -961,7 +985,7 @@ export function AgentAssistant(p: {
                     上一份提案仍保留，可继续修改或确认应用。
                   </p>
                 )}
-              {p.docked ? composerNotes : composerView}
+              {!p.docked && composerView}
               {error && (
                 <p role="alert" className="inline-error">
                   {error}

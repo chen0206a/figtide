@@ -330,6 +330,9 @@ export default function App() {
                     </option>
                   ))}
               </select>
+              <Link className="masthead-intro" to="/welcome">
+                产品介绍
+              </Link>
               <Button variant="ghost" onClick={() => setManage(true)}>
                 管理项目
               </Button>

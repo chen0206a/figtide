@@ -14,10 +14,10 @@ test("first visit redirects to /welcome, start pushes the workspace, and back re
   await page.reload();await expect(page.locator('.home')).toBeVisible();
   await page.getByRole('link',{name:'关于 LabFlow'}).click();await expect(page.locator('.product-intro')).toBeVisible();
 });
-test("the home sidebar keeps a product intro entry",async({page})=>{
+test("the global header keeps a product intro entry",async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('labflow-intro-seen','1'));
   await page.goto('/');await expect(page.locator('.home')).toBeVisible();
-  const entry=page.getByRole('link',{name:'产品介绍'});
+  const entry=page.locator('.masthead').getByRole('link',{name:'产品介绍'});
   await expect(entry).toBeVisible();
   await entry.click();await expect(page).toHaveURL(/\/welcome$/);
   await expect(page.locator('.product-intro')).toBeVisible();

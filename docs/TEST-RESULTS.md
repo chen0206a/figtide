@@ -1,5 +1,26 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 11-3 产品化文案清理
+
+- 助手：头部只显示「已连接 · {模型名}」（等宽灰字），地址与端口留在「模型连接」对话框；预算行改为「本次会话已用 N%」+ 带底色轨道的进度条（轨道 `--lf-surface-3`、进度 `--lf-text-1`、≥80% 改为 `--lf-warning`，含 Firefox `::-moz-progress-bar`），summary 与 progress 均带 title「已用 X / 上限 Y token」；删除「本轮附带最近 N 轮对话…」「原提案会保留…」，提案脚注合并为「确认后只修改草稿，可一步撤销；是否保存正式版本由你决定。」；继续修改的占位文字改为「还有哪里不满意？例如：线再粗一点」；「不采用这份提案」去掉 `<details>` 改为文字按钮，旁边「填写原因」展开原因输入框，拒绝与审计逻辑不变。
+- 数据表脚注改为「N 行 · M 个字段」+「空值按缺失显示，不当作 0」；导入文件卡改用 `formatBytes`（新增 `frontend/src/lib/format.ts` 与 3 条单测）；快捷操作计数「已选 N 项」、≥25 项补「（最多 30 项）」；画布删除 FIGURE 与样式枚举角标；首页展台改「折线图 · 清晰学术」；编辑器面包屑改「{项目名} › v{版本}」/「未保存」；导出格式改「SVG 矢量 / PNG 图片 / PDF 文档」；备份说明、模型状态「已填写，尚未验证」、保存冲突第三句、运行历史文案按表替换。
+- 导出框在「尚未选择论文尺寸，导出将按当前画布像素生成。」后加「设置论文尺寸」文字按钮，点击切到外观页。
+- 删除编辑器左下角「原始实验数据始终保持不变」与首页页脚「原始文件只读」；「产品介绍」入口从首页侧栏移到全局顶栏「管理项目」左侧，所有工作区页面可见。
+- A9：读 `backend/src/main/java/dev/labflow/agent/ModelConnections.java` 确认密钥只存在进程内存（`current`），`fingerprint()` 只写哈希、不落盘，提示改为「密钥只保存在本机 LabFlow 服务的内存中，不写入磁盘；重启 LabFlow 后需要重新填写。」
+- 顺带修复并行发现的问题：11-2 把网络失败统一包成 `ApiError(kind="offline")` 后，`AgentAssistant.start()` 的 catch 只按 `instanceof ApiError` 判断，导致断线恢复入口「重新连接」不再出现；改为 offline 也进入断线分支，并补 1 条单测（离线 ApiError → 重新连接可恢复原运行）。
+
+### 改过的断言（只改文案/结构，未删除断言）
+
+- `frontend/e2e/agent.spec.ts:267`：「不采用这份提案」由 `<details>` 摘要改为按钮；先断言该按钮可见，再点「填写原因」→ 填原因 →「拒绝提案」，原因与审计断言不变。
+- `frontend/e2e/agent.spec.ts:497`：无原因拒绝改为直接点「不采用这份提案」按钮（不再点展开后的「拒绝提案」）；恢复与预算断言不变。
+- `frontend/e2e/intro.spec.ts:17`：用例名改为 `the global header keeps a product intro entry`，入口定位改为 `.masthead` 内的同名链接；断言未删。
+- `frontend/src/editor/figureTools.test.tsx:424`：标题断言 `/待调整 · 1\/30/` → `已选 1 项`。
+- `frontend/src/components/home/HomePage.test.tsx:103`：`/FIGURE 01 · LINE · CLEAN ACADEMIC/` → `/折线图 · 清晰学术/`。
+- `frontend/src/editor/AgentAssistant.test.tsx:350`：拒绝流程由 `getByText("不采用这份提案")` 改为 `getByRole("button",{ name: "填写原因" })`。
+
+- 验证：`npm test` **46 文件 / 261 通过**；`npm run build` 通过；隔离栈（后端 8087 + `labflow_e2e` + dev 5178 + 本地协议夹具 18769）`npx playwright test e2e/agent.spec.ts` **8 passed (43.2s)**、`e2e/intro.spec.ts` **4 passed (8.1s)**。
+- 390px 检查：`docs/product-audit/after/11-3-home-390.png`、`11-3-offline-390.png`；实测 `scrollWidth - innerWidth = 0`（首页与断网离线页），离线页标题/说明/按钮 bounding box 均在 390 内，顶栏「产品介绍 / 管理项目 / 模型连接 / 新建」均未溢出。
+
 ## 2026-10-23 · 11-2 补充修复（按项目记忆数据集、单列形态体检）
 
 - 工作区记忆：`frontend/src/lib/workspaceMemory.ts` 新增 `rememberDataset()` / `workspaceDataset()`；`rememberWorkspace()` 记录数据页时不再原样保存地址里的 `?dataset=`，数据集只能通过 `rememberDataset()` 写入；`readWorkspaceMemory()` 把旧记忆里的数据集迁移进来。`App.tsx` 的 `lastDataset` 由全局 number 改为 `{project,id}`，新增 effect 只在 `datasets` 里确实存在该 id 时才写入记忆；`navigate()` 的数据集回退按当前项目读取；删除对地址里任意 `?dataset=` 的信任赋值。`DataPage.tsx:50-57` 的守卫保留。

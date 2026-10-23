@@ -94,8 +94,7 @@ export function EditorToolbar({
           />
           <small>
             {projectName}
-            <ChevronRight size={10} /> 图版{" "}
-            {id ? String(id).padStart(2, "0") : "草稿"}
+            <ChevronRight size={10} /> {id ? `v${revision}` : "未保存"}
           </small>
         </div>
         <span className={`save-state ${dirty ? "unsaved" : ""}`}>
