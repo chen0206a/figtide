@@ -3,6 +3,7 @@ import { ApiError, api, send, type Dataset } from "../../lib/api";
 import type { ChartDraft } from "../../lib/chartDraft";
 import { chartDraftKey } from "../../lib/chartDraft";
 import { DraftWriter } from "../../lib/draftWriter";
+import { readableError, saveFailureMessage } from "../../lib/saveFeedback";
 import { type Config } from "../model";
 
 type useChartSaveProps = {
@@ -97,7 +98,13 @@ export function useChartSave({
       onSaved(result.id);
     } catch (e) {
       if (e instanceof ApiError && e.status === 409) setConflict(true);
-      notify((e as Error).message);
+      if (e instanceof ApiError && e.kind === "offline") {
+        let kept = false;
+        try {
+          kept = draftWriter.current?.has(draftKey) ?? false;
+        } catch {}
+        notify(saveFailureMessage(kept));
+      } else notify(readableError(e));
     } finally {
       setSaving(false);
     }

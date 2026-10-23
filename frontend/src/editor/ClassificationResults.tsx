@@ -45,7 +45,7 @@ export function ClassificationResults({
       <div className="evaluation-results-head">
         <p className="sample-summary-note">
           行=真实类别，列=预测类别。指标始终基于原始计数；— 为未定义。JSON
-          报告由 Java 服务按同一配置重新计算。macro 传播未定义值，weighted
+          报告由本地服务按同一配置重新计算。macro 传播未定义值，weighted
           按真实 support 计权；micro 在完整单标签分类中等于 accuracy。
         </p>
         <Button

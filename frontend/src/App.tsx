@@ -386,8 +386,8 @@ export default function App() {
           ) : projects.isError ? (
             <div className="empty-state">
               <AlertCircle />
-              <h2>无法连接 Java 服务</h2>
-              <p>{projects.error.message}</p>
+              <h2>无法连接本地服务</h2>
+              <p>请确认 LabFlow 已经启动。你的数据保存在本机，没有丢失。</p>
               <Button onClick={() => projects.refetch()}>重新连接</Button>
             </div>
           ) : route.project && (!current || current.archived) ? (

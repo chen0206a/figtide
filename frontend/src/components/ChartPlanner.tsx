@@ -133,7 +133,8 @@ export default function ChartPlanner(p: {
         : null;
       setRun(next);
     } catch (e) {
-      if (e instanceof ApiError && e.status < 500) ownedRun.current = null;
+      if (e instanceof ApiError && e.kind === "http" && e.status < 500)
+        ownedRun.current = null;
       else if (mounted.current) setPendingId(requestId);
       if (mounted.current) setError((e as Error).message);
     } finally {

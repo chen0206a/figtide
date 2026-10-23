@@ -2,25 +2,43 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public status: number,
+    /** offline：请求根本没有到达本地服务，与后端返回的业务错误区分开。 */
+    public kind: "http" | "offline" = "http",
   ) {
     super(message);
   }
 }
+export const OFFLINE_MESSAGE = "本地服务没有响应";
 export async function api<T = any>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const res = await fetch("/api" + path, {
-    ...options,
-    headers:
-      options.body instanceof FormData
-        ? options.headers
-        : { "Content-Type": "application/json", ...options.headers },
-  });
+  let res: Response;
+  try {
+    res = await fetch("/api" + path, {
+      ...options,
+      headers:
+        options.body instanceof FormData
+          ? options.headers
+          : { "Content-Type": "application/json", ...options.headers },
+    });
+  } catch (e) {
+    // fetch 只在网络层失败时抛 TypeError（Failed to fetch），不要把英文原文送到界面；
+    // 其它异常（例如测试里模拟的模拟服务错误）保持原样。
+    if (
+      e instanceof TypeError ||
+      (e instanceof Error && /failed to fetch|networkerror|load failed/i.test(e.message))
+    )
+      throw new ApiError(OFFLINE_MESSAGE, 0, "offline");
+    throw e;
+  }
   if (!res.ok) {
-    let message = "请求失败，请检查本地服务";
+    let message =
+      res.status >= 500 ? "本地服务处理请求时出错，请稍后重试" : "请求失败，请稍后再试";
     try {
-      message = (await res.json()).message || message;
+      const body = await res.json();
+      if (body && typeof body.message === "string" && body.message)
+        message = body.message;
     } catch {}
     throw new ApiError(message, res.status);
   }

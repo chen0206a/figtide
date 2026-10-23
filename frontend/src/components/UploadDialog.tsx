@@ -7,6 +7,7 @@ import {
   type ImportPreview,
   type ImportRules,
 } from "../lib/api";
+import { checkImportShape, shapeWarning } from "../lib/importChecks";
 import { Dialog } from "./ui/dialog";
 import { Button } from "./ui/button";
 const roles: Record<FieldRole, string> = {
@@ -38,6 +39,7 @@ export function UploadDialog({
         : ",",
   }));
   const [preview, setPreview] = useState<ImportPreview | null>(null);
+  const [acceptShape, setAcceptShape] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -232,8 +234,26 @@ export function UploadDialog({
           </Button>
         </p>
       )}
-      {preview && (
+      {preview && (() => {
+        const shape = checkImportShape({
+          fieldNames: preview.fields.map((f) => f.name),
+          rowCount: preview.row_count,
+        });
+        return (
         <div aria-busy={busy}>
+          {!shape.looksLikeTable && (
+            <div className="import-warning" role="alert">
+              <p>{shapeWarning(shape)}</p>
+              <label className="import-acknowledge">
+                <input
+                  type="checkbox"
+                  checked={acceptShape}
+                  onChange={(e) => setAcceptShape(e.target.checked)}
+                />
+                我确认这是一份单列数据，仍要导入
+              </label>
+            </div>
+          )}
           <div className="section-caption">
             {preview.row_count} 行 · {preview.fields.length} 个字段 · 预览前 20
             行
@@ -292,10 +312,12 @@ export function UploadDialog({
                       {f.constant && <small>常量列</small>}
                     </td>
                     <td>
-                      <small>
-                        建议：{roles[f.suggestedRole || "none"]}（列名 / 类型 /
-                        唯一值）
-                      </small>
+                      {shape.looksLikeTable && (
+                        <small>
+                          建议：{roles[f.suggestedRole || "none"]}（列名 / 类型 /
+                          唯一值）
+                        </small>
+                      )}
                       <select
                         disabled={committing}
                         aria-label={`${f.name} 角色`}
@@ -355,7 +377,8 @@ export function UploadDialog({
             </div>
           </details>
         </div>
-      )}
+        );
+      })()}
       <div className="dialog-actions">
         <Button variant="outline" disabled={committing} onClick={onClose}>
           取消
@@ -367,7 +390,12 @@ export function UploadDialog({
             !!error ||
             !preview ||
             preview.issues.length > 0 ||
-            confirmedRules !== rulesKey
+            confirmedRules !== rulesKey ||
+            (!checkImportShape({
+              fieldNames: preview.fields.map((f) => f.name),
+              rowCount: preview.row_count,
+            }).looksLikeTable &&
+              !acceptShape)
           }
           onClick={commit}
         >

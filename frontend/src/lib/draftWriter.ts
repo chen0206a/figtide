@@ -3,7 +3,7 @@ export class DraftWriter {
   private pending: { key: string; value: string } | null = null;
   private timer: ReturnType<typeof setTimeout> | undefined;
   constructor(
-    private storage: Pick<Storage, "setItem" | "removeItem">,
+    private storage: Pick<Storage, "setItem" | "removeItem" | "getItem">,
     private onSaved: () => void,
     private onError: () => void,
     private delay = 250,
@@ -31,6 +31,15 @@ export class DraftWriter {
   writeNow(key: string, value: string) {
     this.schedule(key, value);
     return this.flush();
+  }
+  /** 草稿是否已经落到本机存储（用于失败提示里告诉用户"改动没丢"）。 */
+  has(key: string) {
+    if (this.pending?.key === key) return true;
+    try {
+      return this.storage.getItem(key) !== null;
+    } catch {
+      return false;
+    }
   }
   clear(key: string) {
     if (this.pending?.key === key) {

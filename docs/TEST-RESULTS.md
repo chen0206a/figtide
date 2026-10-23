@@ -1,5 +1,16 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 11-2 上传形态体检与本地服务报错
+
+- 新增 `frontend/src/lib/importChecks.ts`：`checkImportShape({fieldNames,rowCount})` 把「散文被读成一列」（只有 1 个字段且字段名 >30 字或含 `。，、；？！`）与「只有一行数据」判为不像表格，返回 `{looksLikeTable, reason}`；`shapeWarning()` 给出对应文案。6 条单测覆盖散文、纯长列名、单行、正常单列（20 行）、正常多列、长列名不带标点。
+- 上传确认页（`frontend/src/components/UploadDialog.tsx`）：不像表格时顶部显示 aria-alert 警告「这份文件看起来不是表格：只识别出 1 列，也没有找到分隔符。请检查文件格式或分隔符设置。」，`确认导入` 默认禁用，勾选「我确认这是一份单列数据，仍要导入」后才可用；同时隐藏该页的字段建议列。
+- `frontend/src/lib/api.ts`：`ApiError` 增加 `kind: "http" | "offline"`；`fetch` 抛 `TypeError`/`Failed to fetch` 时统一转成 `ApiError("本地服务没有响应", 0, "offline")`，5xx 无正文时用「本地服务处理请求时出错，请稍后重试」，其余保持后端中文原话。其它异常原样抛出（不吞测试里模拟的服务错误）。
+- 新增 `frontend/src/lib/saveFeedback.ts`：`saveFailureMessage(kept)` 与 `readableError(e)`；`useChartSave` 失败时若 `DraftWriter.has(draftKey)` 为真，提示「保存失败：本地服务没有响应。修改仍保存在本机草稿中，服务恢复后可以再次保存。」，否则只报前半句。`DraftWriter` 增加 `has()` 并补 1 条单测。
+- 整页错误页（`App.tsx`）：标题「无法连接本地服务」、说明「请确认 LabFlow 已经启动。你的数据保存在本机，没有丢失。」、按钮「重新连接」；`ClassificationResults.tsx` 的「Java 服务」改为「本地服务」（全站 `grep "Java 服务"` 为 0）。
+- `ChartPlanner` 的「响应丢失」分支改为只看 `kind === "http" && status < 500`，离线时保留「恢复分析状态」入口（否则一断网就丢掉可恢复的运行 ID）。
+- 验证：`npx tsc -b --force` 0 错；`npx vitest run` **45 文件 / 252 通过**；`npm run build` 通过（相比 11-1 增加 2 个文件）。
+- 新增 `frontend/e2e/productize.spec.ts` 2 条，隔离栈 **2 passed (7.1s)**：散文 .txt 出现警告且 `确认导入` 禁用 → 勾选后可用；断开全部 `/api` 后刷新，页面显示「无法连接本地服务」，正文不含 `Failed to fetch` 与 `Java`。
+
 ## 2026-10-23 · 11-1 项目切换的数据隔离
 
 - 复现结论：11-0 审计里「切到空项目后数据页仍显示上一个项目的数据」**未能复现**。四路探针（切换下拉、首页建项目、建项目后点导航、直接深链）在 50ms 采样下均未出现旧文件名；当时看到的「空项目验收 | 迁移学习复现」是 `<select>` 的 `innerText` 把所有 `<option>` 串在一起，被误当成当前选中值（`createProject` 在 `page==="home"` 时确实 `setProject(p.id)`，探针 2/3 已验证）。
