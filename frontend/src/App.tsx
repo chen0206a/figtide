@@ -34,6 +34,10 @@ import {
   PlugZap,
 } from "lucide-react";
 import { api, send, type Project, type Dataset } from "./lib/api";
+import {
+  createSampleProject,
+  SAMPLE_PROJECT_NAME,
+} from "./lib/sampleProject";
 import { Button } from "./components/ui/button";
 import { Dialog } from "./components/ui/dialog";
 import { DataPage } from "./data/DataPage";
@@ -81,6 +85,7 @@ export default function App() {
     [name, setName] = useState(""),
     [description, setDescription] = useState(""),
     [busy, setBusy] = useState(false),
+    [sampleBusy, setSampleBusy] = useState(false),
     [message, setMessage] = useState(""),
     [uploadVersion, setUploadVersion] = useState<number | null>(null);
   const upload = useRef<HTMLInputElement>(null);
@@ -253,6 +258,36 @@ export default function App() {
       setMessage((e as Error).message);
     } finally {
       setBusy(false);
+    }
+  }
+  const sampleProject = projects.data?.find(
+    (p) => !p.archived && p.name === SAMPLE_PROJECT_NAME,
+  );
+  const openChart = (projectId: number, chartId: number) =>
+    routerGo(workspaceUrl("editor", projectId, chartId), {
+      state: { fromHome: true },
+    });
+  async function sampleAction() {
+    if (sampleBusy) return;
+    setSampleBusy(true);
+    try {
+      if (sampleProject) {
+        const charts = await api<{ id: number }[]>(
+          `/projects/${sampleProject.id}/charts`,
+        );
+        setProject(sampleProject.id);
+        if (charts[0]) openChart(sampleProject.id, charts[0].id);
+        else void go(workspaceUrl("data", sampleProject.id));
+        return;
+      }
+      const { project: created, chart } = await createSampleProject();
+      refresh();
+      setProject(created.id);
+      openChart(created.id, chart.id);
+    } catch (e) {
+      setMessage((e as Error).message);
+    } finally {
+      setSampleBusy(false);
     }
   }
   function importFile(file: File) {
@@ -462,6 +497,9 @@ export default function App() {
                   onContinue={(id, pdf) => routerGo(workspaceUrl("editor",project,id), {viewTransition: !reducedMotion && !!document.startViewTransition,state:{fromHome:true,exportFormat:pdf?"pdf":undefined}})}
                   onRetry={() => charts.refetch()}
                   onModelConnection={() => setConnectionOpen(true)}
+                  onSample={sampleAction}
+                  sampleExists={!!sampleProject}
+                  sampleBusy={sampleBusy}
                   onAssistant={(chartId, prompt) =>
                     routerGo(workspaceUrl("editor", project, chartId), {
                       state: { assistantPrompt: prompt },

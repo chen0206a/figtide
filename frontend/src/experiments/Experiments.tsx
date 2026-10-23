@@ -186,8 +186,9 @@ export function Experiments({
             <div className="empty-state bordered">
               <FlaskConical size={36} />
               <h2>开始记录你的第一个实验</h2>
-              <p>保存参数、指标和研究笔记，随时回来继续。</p>
-              <Button onClick={create}>创建实验记录</Button>
+              <p>
+                保存参数、指标和研究笔记，随时回来继续。点击右上角「记录实验」开始。
+              </p>
             </div>
           ) : view === "table" ? (
             <ExperimentsTable

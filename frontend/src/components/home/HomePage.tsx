@@ -37,12 +37,17 @@ export type HomePageProps = {
   /** Open the editor for `chartId` with the assistant open and `prompt` prefilled. */
   onAssistant?: (chartId: number, prompt: string) => void;
   onModelConnection?: () => void;
+  /** Create the sample project, or open it when it already exists. */
+  onSample?: () => void;
+  sampleExists?: boolean;
+  sampleBusy?: boolean;
 };
 
 export function HomePage(p: HomePageProps) {
   const current = p.projects.find((project) => project.id === p.currentId);
   const latest = p.charts[0];
   const act = (callback: () => void) => (current ? callback() : p.onCreate());
+  const firstRun = p.projects.length === 0;
   const now = new Date();
   const entrance=useEntrance("home");
   return (
@@ -50,47 +55,86 @@ export function HomePage(p: HomePageProps) {
       <section className="home-intro" aria-label="欢迎">
         <div className="home-intro-text">
           <span className="lf-kicker">{dateLabel(now)} · 本地工作区</span>
-          <h1>
-            {greeting(now)}，
-            {latest ? "接着上次的图继续。" : "从一份数据开始。"}
-          </h1>
+          {firstRun ? (
+            <>
+              <h1>{greeting(now)}，从一个研究项目开始。</h1>
+              <p className="home-intro-note">项目里放数据、图表和实验记录。</p>
+            </>
+          ) : (
+            <h1>
+              {greeting(now)}，
+              {latest ? "接着上次的图继续。" : "从一份数据开始。"}
+            </h1>
+          )}
         </div>
         <div className="home-intro-actions">
-          <button
-            type="button"
-            className="home-btn"
-            disabled={p.busy}
-            onClick={() => act(p.onUpload)}
-          >
-            <Upload size={16} aria-hidden="true" />
-            {p.busy ? "正在导入…" : "导入数据"}
-          </button>
+          {!firstRun && (
+            <button
+              type="button"
+              className="home-btn"
+              disabled={p.busy}
+              onClick={() => act(p.onUpload)}
+            >
+              <Upload size={16} aria-hidden="true" />
+              {p.busy ? "正在导入…" : "导入数据"}
+            </button>
+          )}
           <button
             type="button"
             className="home-btn home-btn-primary"
             onClick={() => act(p.onPlot)}
           >
             <Plus size={16} aria-hidden="true" />
-            {current ? "新建图表" : "创建第一个项目"}
+            {firstRun
+              ? "创建研究项目"
+              : current
+                ? "新建图表"
+                : "创建第一个项目"}
           </button>
+          {(firstRun || p.sampleExists) && (
+            <button
+              type="button"
+              className="home-btn"
+              disabled={p.busy || p.sampleBusy}
+              onClick={p.onSample || p.onCreate}
+            >
+              {p.sampleBusy
+                ? p.sampleExists
+                  ? "正在打开…"
+                  : "正在载入…"
+                : p.sampleExists
+                  ? "打开示例项目"
+                  : "载入示例项目"}
+            </button>
+          )}
         </div>
       </section>
 
       <AssistantCard chartId={latest?.id} onAssistant={p.onAssistant} onModelConnection={p.onModelConnection}/>
       <div className="home-top">
         {!current ? (
-          <section className="home-card home-continue home-empty-hero">
-            <FileSpreadsheet size={32} aria-hidden="true" />
-            <h2>给下一项研究，一个自己的空间。</h2>
-            <p>项目会把实验、数据集和图表放在一起。数据只保存在本机。</p>
-            <button
-              type="button"
-              className="home-btn home-btn-primary"
-              onClick={p.onCreate}
-            >
-              创建研究项目 <ArrowRight size={16} aria-hidden="true" />
-            </button>
-          </section>
+          firstRun ? (
+            <section className="home-card home-continue home-empty-hero home-sample">
+              <FileSpreadsheet size={32} aria-hidden="true" />
+              <h2>先用示例数据走一遍。</h2>
+              <p>
+                3 个模型、3 个种子、12 个 epoch 的合成学习曲线，创建后可随时归档。
+              </p>
+            </section>
+          ) : (
+            <section className="home-card home-continue home-empty-hero">
+              <FileSpreadsheet size={32} aria-hidden="true" />
+              <h2>给下一项研究，一个自己的空间。</h2>
+              <p>项目会把实验、数据集和图表放在一起。数据只保存在本机。</p>
+              <button
+                type="button"
+                className="home-btn home-btn-primary"
+                onClick={p.onCreate}
+              >
+                创建研究项目 <ArrowRight size={16} aria-hidden="true" />
+              </button>
+            </section>
+          )
         ) : p.chartsLoading ? (
           <section
             className="home-card home-continue home-skeleton"
@@ -144,13 +188,15 @@ export function HomePage(p: HomePageProps) {
       <section className="home-section" aria-label="快速开始">
         <h2 className="home-section-title">快速开始</h2>
         <div className="home-quick">
-          <QuickTile
-            icon={<Upload size={20} aria-hidden="true" />}
-            title="导入数据"
-            text="CSV / TSV / XLSX / JSON，自动识别字段类型与缺失值"
-            disabled={p.busy}
-            onClick={() => act(p.onUpload)}
-          />
+          {!firstRun && (
+            <QuickTile
+              icon={<Upload size={20} aria-hidden="true" />}
+              title="导入数据"
+              text="CSV / TSV / XLSX / JSON，自动识别字段类型与缺失值"
+              disabled={p.busy}
+              onClick={() => act(p.onUpload)}
+            />
+          )}
           <QuickTile
             icon={<ChartNoAxesCombined size={20} aria-hidden="true" />}
             title="新建图表"

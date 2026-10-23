@@ -96,8 +96,7 @@ test("empty workspace entries create a project and keyboard actions work with re
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   for (const name of [
-    /^创建第一个项目/,
-    /^导入数据.*自动识别/,
+    /^创建研究项目/,
     /^新建图表.*11 类/,
     /^对比实验/,
     /^处理与汇总/,
@@ -112,5 +111,8 @@ test("empty workspace entries create a project and keyboard actions work with re
       .getByRole("button", { name: "关闭", exact: true })
       .click();
   }
+  await expect(
+    page.getByRole("button", { name: /导入数据/ }),
+  ).toHaveCount(0);
   await expect(page.locator(".intro-play, .figure-showcase")).toHaveCount(0);
 });

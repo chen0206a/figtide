@@ -95,6 +95,37 @@ function fixture(overrides: Partial<HomePageProps> = {}) {
   return props;
 }
 
+it("starts first-time users from a project or the sample", () => {
+  const p = fixture({
+    projects: [],
+    currentId: 0,
+    charts: [],
+    onSample: vi.fn(),
+  });
+  expect(
+    screen.getByRole("heading", { name: /从一个研究项目开始/ }),
+  ).toBeVisible();
+  expect(screen.getByText("项目里放数据、图表和实验记录。")).toBeVisible();
+  expect(
+    screen.queryByRole("button", { name: /导入数据/ }),
+  ).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "载入示例项目" }));
+  expect(p.onSample).toHaveBeenCalledOnce();
+});
+
+it("opens the existing sample project instead of creating another", () => {
+  const p = fixture({
+    projects: [],
+    currentId: 0,
+    charts: [],
+    onSample: vi.fn(),
+    sampleExists: true,
+  });
+  fireEvent.click(screen.getByRole("button", { name: "打开示例项目" }));
+  expect(p.onSample).toHaveBeenCalledOnce();
+  expect(screen.queryByRole("button", { name: "载入示例项目" })).toBeNull();
+});
+
 it("puts the latest chart first with a real preview and opens it", async () => {
   const p = fixture();
   expect(

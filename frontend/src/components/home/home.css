@@ -66,6 +66,11 @@
   flex-wrap: wrap;
   gap: var(--lf-space-2);
 }
+.home-intro-note {
+  margin: 0;
+  color: var(--lf-text-2);
+  font-size: var(--lf-text-md);
+}
 
 /* ---------- buttons ---------- */
 .home-btn {

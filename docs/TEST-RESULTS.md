@@ -1,5 +1,20 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 11-5 第一次使用体验
+
+- 空首页：标题改为「{问候}，从一个研究项目开始。」，说明「项目里放数据、图表和实验记录。」；主按钮「创建研究项目」，次按钮「载入示例项目」（已有同名项目时为「打开示例项目」）；没有项目时不再显示「导入数据」入口与快捷导入块。
+- 示例项目：新增 `frontend/src/lib/sampleProject.ts` 与 `frontend/src/assets/sample/示例-学习曲线.csv`（3 个模型 × 3 个种子 × 12 个 epoch，共 108 行；文件头注释行在导入前去掉，项目描述写明合成数据）。只用现有接口：`POST /projects` → 上传 CSV → 读回源数据集 → 3 条实验记录（参数与指标取自同一份 CSV）→ 按 `model,epoch` 汇总 `accuracy` 的 mean ± SEM（band）→ 用 `defaults()` 建一张折线图并打开编辑器。中途失败提示「示例项目创建到一半失败了，可以在管理项目中归档它」，不删除不重试；成功后首页出现「打开示例项目」。
+- 实验页空状态删除「创建实验记录」按钮，说明改为「保存参数、指标和研究笔记，随时回来继续。点击右上角「记录实验」开始。」。
+- 单测：`frontend/src/lib/sampleProject.test.ts`（5 条：步骤顺序与公开接口、实验指标来自 CSV、汇总规则与 band 配置、失败提示、示例文件行数）与 `frontend/src/components/home/HomePage.test.tsx` 新增 2 条（首屏两个入口、已有示例时不重复创建）。
+
+### 改过的断言/选择器（只改文案或结构，未删除断言）
+
+- `frontend/e2e/home.spec.ts:98`：空工作区循环里的 `^创建第一个项目` 改为 `^创建研究项目`（首屏主按钮改名）。
+- `frontend/e2e/home.spec.ts:98`：移除「导入数据」块后，原 `^导入数据.*自动识别` 不再可点，改为显式断言 `getByRole("button",{name:/导入数据/})` 数量为 0（等价且更严格）。
+- `frontend/src/components/home/HomePage.test.tsx`、`frontend/e2e/sample-project.spec.ts`：空首页标题断言改为匹配 `/从一个研究项目开始/`（标题带问候前缀）。
+
+- 验证：`npm test` **47 文件 / 268 通过**；`npm run build` 通过；隔离栈（后端 8089 + `labflow_e2e` + dev 5179）`npx playwright test e2e/sample-project.spec.ts e2e/home.spec.ts` **3 passed (8.2s)**（含从空工作区点击到进入编辑器、图表渲染、3 条实验与 1 张图的接口核对、清理新建示例项目）。
+
 ## 2026-10-23 · 11-4 术语统一
 
 - 先单独提交 `docs/GLOSSARY.md`（`5b8ff4c`），再按术语表全站替换。
