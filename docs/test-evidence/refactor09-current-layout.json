@@ -51,33 +51,33 @@
     ".home-continue": {
       "box": {
         "x": 108,
-        "y": 199.984375,
-        "width": 863.75,
-        "height": 529.796875
+        "y": 416.78125,
+        "width": 827.75,
+        "height": 410.765625
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
       "lineHeight": "24px",
       "radius": "18px",
-      "padding": "0px",
-      "display": "flex",
-      "color": "rgb(14, 17, 22)",
-      "background": "rgb(255, 255, 255)"
+      "padding": "24px",
+      "display": "grid",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(14, 17, 22)"
     },
     ".home-assistant-form": {
       "box": {
-        "x": 991.75,
-        "y": 382.78125,
-        "width": 340.25,
-        "height": 197.59375
+        "x": 129,
+        "y": 248.984375,
+        "width": 1182,
+        "height": 122.796875
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
       "lineHeight": "24px",
       "radius": "0px",
-      "padding": "8px 20px 0px",
+      "padding": "0px",
       "display": "flex",
-      "color": "rgb(255, 255, 255)",
+      "color": "rgb(14, 17, 22)",
       "background": "rgba(0, 0, 0, 0)"
     }
   },
@@ -331,7 +331,7 @@
         "x": 241,
         "y": 192.96875,
         "width": 902,
-        "height": 745.03125
+        "height": 586.046875
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
@@ -344,10 +344,10 @@
     },
     ".paper-wrap": {
       "box": {
-        "x": 312,
-        "y": 315.484375,
-        "width": 760,
-        "height": 500
+        "x": 338.609375,
+        "y": 253.484375,
+        "width": 706.796875,
+        "height": 465
       },
       "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
       "fontSize": "15px",
