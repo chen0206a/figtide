@@ -82,15 +82,11 @@
 }
 .sample-summary th,
 .sample-summary td {
-  text-align: left;
-  padding: calc(var(--lf-space-1) * 2.25) calc(var(--lf-space-1) * 3.25);
   border-bottom: 1px solid var(--lf-border);
   white-space: nowrap;
 }
 .sample-summary th {
   color: var(--lf-text-3);
-  font-weight: 500;
-  background: var(--lf-surface-2);
 }
 .sample-summary td {
   color: var(--lf-text-3);

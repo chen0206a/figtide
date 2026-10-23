@@ -1,5 +1,12 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 09-2 统一表格样式
+
+- 新增 styles/table.css；首页项目列表改为语义表格，两张首页表、导入预览、DataTable、Comparison和评估/分类/样本结果表统一lf-table。移除全局th背景/大写；数据表100%宽，56px行号、数字右对齐等宽、空值“空”及aria-label，底栏明确不当作0。版本历史本来是快照列表（无table），保留其操作结构。
+- `npm test -- --maxWorkers=4` 最终192/192（15.68s）；`npm run build` 通过。DataTable补空值和num断言。首轮新增测试误用getByText断言不存在，改用queryByText；另两轮原有助手测试在1s轮询边界超时，测试环境asyncUtilTimeout调至3s，全部断言和生产逻辑保留。
+- `$env:LABFLOW_POLISH_STAGE='09-2'; ./.runtime/test-refactor09.ps1 -Specs visual-polish.spec.ts,home-workspace.spec.ts,refinements.spec.ts`：3/3（12.3s），独立真实数据库，首页表头一致、空值/数字、表格铺满及原流程通过；新JVM审计/恢复通过。首次2/3，新增num断言使用精确类字符串遇尾空格，改为类词匹配后通过。
+- 未执行：Java单测、真实模型、完整E2E（留总验收）。与任务偏差：增加测试等待窗口以消除已定位的时间竞争；未改助手逻辑。需要人决定：无。
+
 ## 2026-10-23 · 09-1 收敛蓝色
 
 - 合并任务包，仅执行09。85条辅助信息/装饰声明改为中性色，数字、版本与时间补等宽类。保留链接、选中、焦点、进行中状态。

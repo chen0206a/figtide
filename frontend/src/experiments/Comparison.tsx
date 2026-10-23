@@ -125,7 +125,7 @@ export function Comparison({
         </div>
       )}
       <div className="comparison-scroll">
-        <table className="comparison-table">
+        <table className="lf-table comparison-table">
           <thead>
             <tr>
               <th>实验与来源</th>
@@ -180,7 +180,7 @@ export function Comparison({
                     {different(k) && <small>有差异</small>}
                   </th>
                   {records.map((r) => (
-                    <td key={r.id} title={display(r.parameters[k])}>
+                    <td key={r.id} className={numeric(r.parameters[k]) !== null ? "num" : ""} title={display(r.parameters[k])}>
                       {display(r.parameters[k])}
                     </td>
                   ))}
@@ -213,7 +213,7 @@ export function Comparison({
                     change !== null &&
                     (directions[k] === "lower" ? change < 0 : change > 0);
                   return (
-                    <td key={r.id}>
+                    <td key={r.id} className="num">
                       <strong>{display(r.metrics[k])}</strong>
                       {r.id === base.id ? (
                         <small>基线</small>

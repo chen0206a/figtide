@@ -117,7 +117,7 @@ export function BottomDrawer({
               <p className="sample-summary-note">
                 按当前过滤、分箱范围与对数轴统计；缺失与排除分开列出，均不作为零。汇总数据不能替代逐次观测。
               </p>
-              <table className="sample-summary">
+              <table className="lf-table sample-summary">
                 <thead>
                   <tr>
                     {[
@@ -129,8 +129,8 @@ export function BottomDrawer({
                       "排除",
                       "最小值",
                       "最大值",
-                    ].map((title) => (
-                      <th key={title}>{title}</th>
+                    ].map((title, i) => (
+                      <th key={title} className={i >= 3 ? "num" : ""}>{title}</th>
                     ))}
                   </tr>
                 </thead>
@@ -140,11 +140,11 @@ export function BottomDrawer({
                       <td>{row.panel || "单图"}</td>
                       <td>{row.series}</td>
                       <td>{row.category}</td>
-                      <td>{row.n}</td>
-                      <td>{row.missing}</td>
-                      <td>{row.excluded}</td>
-                      <td>{row.min ?? "—"}</td>
-                      <td>{row.max ?? "—"}</td>
+                      <td className="num">{row.n}</td>
+                      <td className="num">{row.missing}</td>
+                      <td className="num">{row.excluded}</td>
+                      <td className="num">{row.min ?? "—"}</td>
+                      <td className="num">{row.max ?? "—"}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -20,6 +20,7 @@ test("polish surfaces use neutral metadata and preserve saved source", async ({ 
   await page.addInitScript(id => localStorage.setItem('labflow-project',String(id)), project.id);
   const stage = process.env.LABFLOW_POLISH_STAGE || 'final';
   for (const surface of [
+    { name:'home', url:'/', ready:'.home-intro', meta:'.home-meta' },
     { name:'experiments', url:`/projects/${project.id}/experiments`, ready:'.experiment-filters', meta:'.experiment-filters > span' },
     { name:'data', url:`/projects/${project.id}/data`, ready:'.data-title h2', meta:'.dataset-list small' },
     { name:'editor', url:`/projects/${project.id}/figures/${chart.id}`, ready:'[data-testid="plot"] .main-svg', meta:'.dataset-meta' }
@@ -28,6 +29,19 @@ test("polish surfaces use neutral metadata and preserve saved source", async ({ 
     await expect(page.locator(surface.ready).first()).toBeVisible();
     await page.evaluate(()=>document.fonts.ready);
     await expect(page.locator(surface.meta).first()).toHaveCSS('color','rgb(95, 103, 115)');
+    if (surface.name === 'home') {
+      const projectHead = page.locator('.home-project-table th').first();
+      const experimentHead = page.locator('.home-table th').first();
+      await expect(projectHead).toHaveCSS('background-color','rgb(248, 249, 251)');
+      await expect(experimentHead).toHaveCSS('background-color','rgb(248, 249, 251)');
+      await expect(experimentHead).toHaveCSS('text-transform','none');
+    }
+    if (surface.name === 'data') {
+      await expect(page.getByLabel('空值')).toHaveText('空');
+      await expect(page.getByText('0.71',{exact:true})).toHaveClass(/\bnum\b/);
+      const widths = await page.locator('.table-scroll').evaluate(el=>({viewport:el.clientWidth,table:el.querySelector('table')!.getBoundingClientRect().width}));
+      expect(widths.table).toBeGreaterThanOrEqual(widths.viewport-1);
+    }
     await page.screenshot({path:`../docs/screenshots/refactor-09-${stage}-${surface.name}.png`,fullPage:true,animations:'disabled'});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBe(1440);
   }

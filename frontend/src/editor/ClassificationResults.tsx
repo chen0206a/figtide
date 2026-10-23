@@ -70,7 +70,7 @@ export function ClassificationResults({
             自身缺失 {r.ownMissing} 行 · 共同样本额外排除 {r.excludedByOthers}{" "}
             行 · 总排除 {r.excluded}
           </p>
-          <table className="sample-summary" aria-label={`${r.series} 分类指标`}>
+          <table className="lf-table sample-summary" aria-label={`${r.series} 分类指标`}>
             <thead>
               <tr>
                 {[
@@ -80,30 +80,30 @@ export function ClassificationResults({
                   "Precision",
                   "Recall",
                   "F1",
-                ].map((v) => (
-                  <th key={v}>{v}</th>
+                ].map((v, i) => (
+                  <th key={v} className={i ? "num" : ""}>{v}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {r.perClass.map((m) => (
                 <tr key={m.label}>
-                  <td>{m.label}</td>
-                  <td>{m.support}</td>
-                  <td>{m.predicted}</td>
-                  <td>{f(m.precision)}</td>
-                  <td>{f(m.recall)}</td>
-                  <td>{f(m.f1)}</td>
+                  <td className="num">{m.label}</td>
+                  <td className="num">{m.support}</td>
+                  <td className="num">{m.predicted}</td>
+                  <td className="num">{f(m.precision)}</td>
+                  <td className="num">{f(m.recall)}</td>
+                  <td className="num">{f(m.f1)}</td>
                 </tr>
               ))}
               {(["macro", "micro", "weighted"] as const).map((a) => (
                 <tr key={a}>
                   <td>{a}</td>
-                  <td>{r.n}</td>
-                  <td>—</td>
-                  <td>{f(r[a].precision)}</td>
-                  <td>{f(r[a].recall)}</td>
-                  <td>{f(r[a].f1)}</td>
+                  <td className="num">{r.n}</td>
+                  <td className="num">—</td>
+                  <td className="num">{f(r[a].precision)}</td>
+                  <td className="num">{f(r[a].recall)}</td>
+                  <td className="num">{f(r[a].f1)}</td>
                 </tr>
               ))}
             </tbody>
@@ -113,3 +113,4 @@ export function ClassificationResults({
     </div>
   );
 }
+

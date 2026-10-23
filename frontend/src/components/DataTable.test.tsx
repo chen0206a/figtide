@@ -19,7 +19,9 @@ it("paginates real rows and displays missing cells explicitly", () => {
       }}
     />,
   );
-  expect(screen.getByText("缺失")).toBeVisible();
+  expect(screen.getByLabelText("空值")).toHaveTextContent("空");
+  expect(screen.queryByText("100", { exact: true })).not.toBeInTheDocument();
+  expect(screen.getByText("101", { exact: true }).closest("td")).toHaveClass("num");
   expect(screen.queryByText("113")).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "下一页" }));
   expect(screen.getByText("113")).toBeVisible();

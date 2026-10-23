@@ -38,8 +38,9 @@ export const DataTable = memo(function DataTable({ data }: { data: Dataset }) {
             {f.name}
           </>
         ),
+        meta: { numeric: f.type === "number" },
         cell: (info: any) =>
-          info.getValue() ?? <span className="null-cell">缺失</span>,
+          info.getValue() ?? <span className="null-cell" aria-label="空值">空</span>,
       })),
     [data.fields],
   );
@@ -99,7 +100,7 @@ export const DataTable = memo(function DataTable({ data }: { data: Dataset }) {
         <span>仅影响表格查看，不改变图表或原数据</span>
       </div>
       <div className="table-scroll" aria-busy={filter !== search}>
-        <table>
+        <table className="lf-table lf-table">
           <thead>
             {table.getHeaderGroups().map((g) => (
               <tr key={g.id}>
@@ -107,6 +108,7 @@ export const DataTable = memo(function DataTable({ data }: { data: Dataset }) {
                 {g.headers.map((h) => (
                   <th
                     key={h.id}
+                    className={data.fields.find(f => f.name === h.id)?.type === "number" ? "num" : ""}
                     style={{
                       width: h.getSize(),
                       minWidth: h.getSize(),
@@ -152,7 +154,7 @@ export const DataTable = memo(function DataTable({ data }: { data: Dataset }) {
         <span>
           {filter !== search ? "正在筛选… · " : ""}
           查看 {table.getFilteredRowModel().rows.length} / {data.row_count} 行 ·{" "}
-          {data.fields.length} 个字段 · 原始数据只读
+          {data.fields.length} 个字段 · 原始数据只读 · 空值保留为空，不当作 0
         </span>
         <div>
           <Button
@@ -194,7 +196,7 @@ const TableRows = memo(function TableRows({
           {r.getVisibleCells().map((c) => (
             <td
               key={c.id}
-              className={c.getValue() === null ? "missing-cell" : ""}
+              className={`${(c.column.columnDef.meta as { numeric?: boolean })?.numeric ? "num" : ""} ${c.getValue() == null ? "missing-cell" : ""}`}
             >
               {flexRender(c.column.columnDef.cell, c.getContext())}
             </td>

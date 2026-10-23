@@ -596,52 +596,10 @@ label textarea {
   max-height: 480px;
   overflow: auto;
 }
-table {
-  width: 100%;
-  text-align: left;
-  white-space: nowrap;
-  border-collapse: collapse;
-}
-th,
-td {
-  padding: calc(var(--lf-space-1) * 2.5) var(--lf-space-4);
-  font-weight: 400;
-  border-bottom: 1px solid var(--lf-border);
-}
-th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  font-family: var(--lf-font-mono);
-  font-size: var(--lf-text-caption);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--lf-text-3);
-  background: var(--lf-surface-sunken);
-  border-bottom: 1px solid var(--lf-border-strong);
-}
-td {
-  font-variant-numeric: tabular-nums;
-  color: var(--lf-text-2);
-}
-tbody tr:hover {
-  background: var(--lf-surface-2);
-}
 .field-type {
   margin-right: calc(var(--lf-space-1) * 1.5);
   font-family: var(--lf-font-mono);
   font-size: var(--lf-text-caption);
-  color: var(--lf-text-3);
-}
-.row-number {
-  width: 44px;
-  font-family: var(--lf-font-mono);
-  font-size: var(--lf-text-caption);
-  color: var(--lf-text-3);
-  text-align: center;
-}
-.null-cell {
-  font-style: italic;
   color: var(--lf-text-3);
 }
 .table-footer {

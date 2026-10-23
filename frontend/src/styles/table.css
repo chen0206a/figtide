@@ -1,0 +1,58 @@
+/* Shared workspace tables. No page-level th rules. */
+.lf-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--lf-text-sm);
+  white-space: nowrap;
+}
+.lf-table :is(th, td) {
+  padding: calc(var(--lf-space-3) - var(--lf-space-1) / 4) var(--lf-space-3);
+  border-bottom: 1px solid var(--lf-divider);
+  font-weight: 400;
+  color: var(--lf-text-2);
+  text-align: left;
+}
+.lf-table :is(th, td):first-child { padding-left: var(--lf-space-6); }
+.lf-table :is(th, td):last-child { padding-right: var(--lf-space-6); }
+.lf-table th {
+  background: var(--lf-surface-2);
+  color: var(--lf-text-3);
+  font-family: var(--lf-font-sans);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  border-block: 1px solid var(--lf-divider);
+}
+.lf-table tbody tr:hover { background: var(--lf-surface-2); }
+.lf-table .num {
+  text-align: right;
+  font-family: var(--lf-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.lf-table .num button { text-align: right; }
+.lf-table .row-number {
+  width: var(--lf-space-14);
+  min-width: var(--lf-space-14);
+  max-width: var(--lf-space-14);
+  color: var(--lf-text-3);
+  font-family: var(--lf-font-mono);
+}
+.lf-table td.missing-cell { background: var(--lf-warning-soft); }
+.lf-table .null-cell {
+  color: var(--lf-warning);
+  background: var(--lf-warning-soft);
+  font-style: normal;
+}
+.data-table .lf-table thead th { position: sticky; top: 0; z-index: 1; }
+.home-grid-head { background: var(--lf-surface-2); }
+.home-project-table .home-project {
+  display: block;
+  padding: 0;
+  border: 0;
+  min-height: 0;
+  text-align: left;
+  background: transparent;
+}
+.home-project-table .is-current { background: var(--lf-surface-2); }
+.home-table .is-best { color: var(--lf-accent); font-weight: 600; }

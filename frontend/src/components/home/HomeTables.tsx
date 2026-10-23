@@ -74,18 +74,21 @@ export function ProjectsPanel({
           </button>
         </div>
       ) : (
-        <div className="home-grid-table" role="list">
-          <div className="home-grid-row home-grid-head" aria-hidden="true">
-            <span>项目</span>
-            <span>实验</span>
-            <span>数据</span>
-            <span>图表</span>
-          </div>
+        <div className="home-table-scroll">
+        <table className="lf-table home-project-table">
+          <thead><tr>
+            <th scope="col">项目</th>
+            <th scope="col" className="num">实验</th>
+            <th scope="col" className="num">数据</th>
+            <th scope="col" className="num">图表</th>
+          </tr></thead>
+          <tbody>
           {filtered.slice(0, limit).map((project) => (
-            <div role="listitem" key={project.id}>
+            <tr key={project.id} className={project.id === currentId ? "is-current" : ""}>
+              <td>
               <button
                 type="button"
-                className={`home-grid-row home-project ${project.id === currentId ? "is-current" : ""}`}
+                className={`home-project ${project.id === currentId ? "is-current" : ""}`}
                 aria-pressed={project.id === currentId}
                 onClick={() => onProject(project.id)}
               >
@@ -93,13 +96,15 @@ export function ProjectsPanel({
                   {project.id === currentId && <span className="lf-dot" />}
                   {project.name}
                 </span>
-                <span className="lf-mono">{project.experiment_count}</span>
-                <span className="lf-mono">{project.dataset_count}</span>
-                <span className="lf-mono">{project.chart_count}</span>
               </button>
-            </div>
+              </td>
+              <td className="num">{project.experiment_count}</td>
+              <td className="num">{project.dataset_count}</td>
+              <td className="num">{project.chart_count}</td>
+            </tr>
           ))}
-        </div>
+          </tbody>
+        </table></div>
       )}
       {filtered.length > limit && (
         <button
@@ -170,7 +175,7 @@ export function ExperimentsPanel({
         </div>
       ) : (
         <div className="home-table-scroll">
-          <table className="home-table">
+          <table className="lf-table home-table">
             <thead>
               <tr>
                 <th scope="col">实验</th>

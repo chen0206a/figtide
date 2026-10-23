@@ -9,6 +9,7 @@ import "./styles/tokens.css";
 import "./styles.css";
 import "./editor/workbench/workbench.css";
 import "./styles/dialogs.css";
+import "./styles/table.css";
 import "./styles/shell.css";
 const client = new QueryClient({
   defaultOptions: {

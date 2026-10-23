@@ -279,25 +279,20 @@
 }
 .comparison-table th,
 .comparison-table td {
-  padding: calc(var(--lf-space-1) * 3.75) calc(var(--lf-space-1) * 4.5);
   min-width: 180px;
   max-width: 280px;
   overflow-wrap: anywhere;
   vertical-align: top;
   border-right: 1px solid var(--lf-selected);
   border-bottom: 1px solid var(--lf-selected);
-  text-align: left;
 }
 .comparison-table th {
-  font-weight: 500;
 }
 .comparison-table thead th {
-  background: var(--lf-surface-2);
 }
 .comparison-table th:first-child {
   position: sticky;
   left: 0;
-  background: var(--lf-surface-2);
   z-index: 1;
   min-width: 170px;
 }
@@ -311,7 +306,6 @@
 .comparison-table th select {
   font-size: var(--lf-text-caption);
   margin-top: var(--lf-space-2);
-  padding: var(--lf-space-1) calc(var(--lf-space-1) * 1.5);
   min-height: 28px;
   width: 125px;
 }

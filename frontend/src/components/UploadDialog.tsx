@@ -247,7 +247,7 @@ export function UploadDialog({
               </p>
             )}
           <div className="import-fields">
-            <table>
+            <table className="lf-table">
               <thead>
                 <tr>
                   <th>原始字段</th>
@@ -334,7 +334,7 @@ export function UploadDialog({
           <details>
             <summary>查看数据预览</summary>
             <div className="table-scroll">
-              <table>
+              <table className="lf-table">
                 <thead>
                   <tr>
                     {preview.fields.map((f) => (

@@ -21,11 +21,11 @@
   letter-spacing: var(--lf-tracking-mono);
 }
 .data-layout .data-table {
-  width: auto;
+  width: 100%;
   min-width: 100%;
 }
 .data-layout .table-scroll table {
-  width: auto;
+  width: 100%;
   min-width: 0;
   table-layout: auto;
 }

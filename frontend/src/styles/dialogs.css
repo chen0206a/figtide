@@ -13,14 +13,11 @@
 }
 .dialog-content th,
 .dialog-content td {
-  padding: calc(var(--lf-space-1) * 2.5) var(--lf-space-3);
-  text-align: left;
   border-bottom: 1px solid var(--lf-border);
   max-width: 260px;
   overflow-wrap: anywhere;
 }
 .dialog-content th {
-  background: var(--lf-surface-2);
 }
 .dialog-content small {
   display: block;
@@ -156,9 +153,6 @@
 }
 .column-resize:hover {
   background: var(--lf-text);
-}
-.data-table .missing-cell {
-  background: var(--lf-surface-2);
 }
 .manage-list {
   margin: var(--lf-space-4) 0;
