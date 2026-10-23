@@ -1,5 +1,13 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-24 · Codex 对任务 11 的独立检查（非验收通过）
+
+- 基准 `0843ffd`，检查开始工作区干净；本轮仅增加检查记录，不修改产品代码和历史基线。
+- 独立运行 `npm test -- --maxWorkers=4`：**47 文件 / 268 通过**；`npm run build`：通过（16.82s，保留既有 chunk 大小告警）。`npx playwright test --list`：35 文件 / 80 条，仅枚举。
+- 独立执行真实 `DraftWriter` 的存储失败探针：`writeNow=false`、持久化 `null`、`has=true`，证明保存失败提示存在将内存 pending 误判为本机已保存的路径。
+- 本轮未运行 E2E、未调用真实模型、未修改用户数据库；不将 DS 的单项重跑或 `.last-run.json` 通过标记当成全量通过。
+- 其余任务符合性、截图质量、基线变化和接续步骤见 `docs/TASK11-REVIEW-HANDOFF.md`，供 Claude 验收与后续修复。
+
 ## 2026-10-24 · 11 总验收
 
 - 审计闭环：`docs/PRODUCT-AUDIT.md` 新增第 7 节，47 条逐条给出「已改 / 保留 / 不采纳」与提交号，统计 **34 已改 / 13 保留 / 0 不采纳**；第 5 节附注（切项目后数据页短暂显示上一个项目的数据）标注由 `fceb652` + `520b790` 修复，并保留 `frontend/e2e/isolation.spec.ts` 的 5 条回归。
