@@ -48,6 +48,8 @@ export type Dataset = {
   dataset_id: number;
   version: number;
   filename: string;
+  /** Already returned by the dataset endpoints; absent in older local fixtures. */
+  created_at?: string;
   row_count: number;
   sha256: string;
   fields: Field[];

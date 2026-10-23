@@ -1,5 +1,13 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 09-4 数据页
+
+- 数据页样式从styles.css迁入data/data-page.css归属处；移除版本列表外框，选中项独立白底/边框/轻阴影。文件名使用正常字体500字重并完整换行，第二行等宽版本/行数/日期；已有source_meta派生数据添加“派生”标记。右侧单层卡片、24px对齐提示和字段区域、浅蓝提示边框及图标，共享lf-table铺满。
+- 仅在Dataset前端类型补已有API实际返回的可选created_at（已检查WorkspaceService查询），没有改变API字段或后端。新增DataPage两项组件测试，检查长文件名、日期、派生标记、切版本和原文件/绘图动作。
+- `npm test -- --maxWorkers=4` 204/204（32文件，16.62s）；`npm run build` 通过。
+- `$env:LABFLOW_POLISH_STAGE='09-4'; ./.runtime/test-refactor09.ps1 -Specs visual-polish.spec.ts,processing.spec.ts`：4/4（9.1s），真实上传/过滤排序/统计派生/重新打开与导出通过，新JVM审计和恢复通过；1440px截图已检查。`node scripts/audit-css.cjs docs/test-evidence/refactor09-css.json`：35颜色、3 important、0衬线/禁用引用。
+- 未执行：Java单测、真实模型、完整E2E（留总验收）。与任务偏差：无。需要人决定：无。
+
 ## 2026-10-23 · 09-3 实验表格视图
 
 - 新增 ExperimentsTable、tableModel、lib/metrics、lib/format 和10项单测。默认表格/卡片持久化；全项目字段频率推断、4参数/3指标默认、按项目列设置、双向排序且空值始终最后；已知方向最优值高亮；数据版本按钮、编辑/复制菜单。展示数字取6位有效数字，title保留完整值，排序/数据不变。

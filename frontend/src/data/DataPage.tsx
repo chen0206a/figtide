@@ -7,6 +7,7 @@ import {
   Upload,
   FileSpreadsheet,
   Layers,
+  ChartNoAxesCombined,
 } from "lucide-react";
 import { api, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
@@ -15,6 +16,7 @@ import { PageHeader } from "../components/PageHeader";
 import { SourceProvenance } from "../experiments/SourceProvenance";
 import { ProcessingDialog } from "../processing/ProcessingDialog";
 import "./data-page.css";
+import { formatDate } from "../lib/format";
 const ChartPlanner = lazy(() => import("../components/ChartPlanner"));
 export function DataPage({
   project,
@@ -83,13 +85,21 @@ export function DataPage({
               <button
                 key={d.id}
                 className={id === d.id ? "active" : ""}
+                aria-pressed={id === d.id}
                 onClick={() => onSelect(d.id)}
               >
                 <FileSpreadsheet size={18} />
                 <span>
-                  <b className="lf-mono">{d.filename}</b>
+                  <b>{d.filename}</b>
                   <small className="lf-mono">
                     v{d.version} · {d.row_count} 行
+                    {d.created_at ? ` · ${formatDate(d.created_at)}` : ""}
+                    {(d.source_meta?.kind === "data_processing" ||
+                      d.source_meta?.kind === "experiment_comparison") && (
+                      <span className="lf-chip" data-tone="neutral">
+                        派生
+                      </span>
+                    )}
                   </small>
                 </span>
               </button>
@@ -146,6 +156,9 @@ export function DataPage({
                     </div>
                   </div>
                   <div className="planner-entry">
+                    <span className="planner-entry-icon" aria-hidden="true">
+                      <ChartNoAxesCombined size={19} />
+                    </span>
                     <div>
                       <b>数据已就绪，下一步选择怎样表达。</b>
                       <p>让助手推荐图型，或自己选择字段，先预览再创建。</p>

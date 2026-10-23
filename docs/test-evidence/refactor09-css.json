@@ -1,0 +1,154 @@
+{
+  "files": 18,
+  "lines": 6505,
+  "six_digit_colors": 35,
+  "important": 3,
+  "serif_reference_lines": 0,
+  "forbidden_reference_lines": [],
+  "details": [
+    {
+      "file": "frontend/src/components/chart-planner.css",
+      "lines": 216,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/components/home/home.css",
+      "lines": 629,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/components/model-connection.css",
+      "lines": 232,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/data/data-page.css",
+      "lines": 216,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "lines": 755,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/editor/professional.css",
+      "lines": 210,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/editor/quick-actions.css",
+      "lines": 245,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/editor/styles-library.css",
+      "lines": 529,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/editor/workbench/toolbar.css",
+      "lines": 50,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "lines": 1064,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/experiments/experiments-table.css",
+      "lines": 194,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/experiments/experiments.css",
+      "lines": 442,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/processing/processing.css",
+      "lines": 117,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "lines": 603,
+      "colors": [],
+      "important": 1
+    },
+    {
+      "file": "frontend/src/styles/dialogs.css",
+      "lines": 313,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/styles/shell.css",
+      "lines": 364,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/styles/table.css",
+      "lines": 58,
+      "colors": [],
+      "important": 0
+    },
+    {
+      "file": "frontend/src/styles/tokens.css",
+      "lines": 268,
+      "colors": [
+        "#f5f6f8",
+        "#ffffff",
+        "#f8f9fb",
+        "#f1f3f6",
+        "#f0f1f4",
+        "#0e1116",
+        "#1b2028",
+        "#2b323c",
+        "#e4e7ec",
+        "#d5dae1",
+        "#eef0f3",
+        "#4a5361",
+        "#5f6773",
+        "#b8c0cc",
+        "#252b35",
+        "#1f4fb8",
+        "#163b8c",
+        "#2b59c3",
+        "#eef3fc",
+        "#d55e00",
+        "#fbeee5",
+        "#146c45",
+        "#e8f5ee",
+        "#1a8f5c",
+        "#3ccb8a",
+        "#8a4b0f",
+        "#fff4e5",
+        "#d97706",
+        "#b42318",
+        "#fdecea",
+        "#0072b2",
+        "#009e73",
+        "#e69f00",
+        "#cc79a7",
+        "#56b4e9"
+      ],
+      "important": 2
+    }
+  ]
+}
