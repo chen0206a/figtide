@@ -14,7 +14,7 @@
 
 ## 发布前待所有者决定
 
-当前 checkout 没有 Git 远端，根目录也没有 LICENSE。没有猜测 GitHub 用户名、仓库地址或许可证。页面源码入口暂用有效的页内功能/启动指南；许可证保留 `[许可证]`。确定远端后，再添加真实源码及 README 链接；选择许可证并添加 LICENSE 后，替换许可证占位。部署成功之前不在 README 添加项目主页 URL。
+所有者已指定仓库：[chen0206a/labflow-agent](https://github.com/chen0206a/labflow-agent)。展示页导航、首屏及启动区的 GitHub 入口已指向该地址；启动指南仍为页内文档。核对时 GitHub 仓库为空，因此没有添加尚不存在的远端 README 文档入口。当前本地 checkout 的 Git remote 未修改，代码未推送。根目录没有 LICENSE，许可证保留 `[许可证]`，等待所有者选定；部署成功之前不在 README 添加项目主页 URL。
 
 已准备 `.github/workflows/pages.yml`：仅 main 上 site 文件或该 workflow 变化时触发，也可手动触发；上传静态 site，不打包或托管 React 工作台。所有者需要在仓库 Settings → Pages 将 Source 设置为 GitHub Actions。之后由所有者推送/触发并核实部署 URL；本轮没有推送、执行 Actions 或公开发布。
 

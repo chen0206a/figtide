@@ -30,7 +30,8 @@ const assert = require('node:assert/strict');
       assert.equal(checks.scrollWidth, checks.width, `${width}px page overflows`);
       assert.deepEqual(checks.brokenImages, []); assert.deepEqual(checks.unresolvedTokens, []);
       assert.equal(checks.rawUIColors, 0); assert.equal(checks.buttons, 0, 'Static page must not imply unsupported live actions');
-      assert(checks.links.every(link => link.href.startsWith('#') && link.href !== '#' && link.exists), 'All links must reach real sections');
+      assert(checks.links.every(link => (link.href.startsWith('#') && link.href !== '#' && link.exists) || link.href === 'https://github.com/chen0206a/labflow-agent'), 'Links must reach real sections or the owner-selected repository');
+      assert.equal(checks.links.filter(link => link.href === 'https://github.com/chen0206a/labflow-agent').length, 3, 'Header, hero and startup section must link to the selected repository');
       for (const target of ['features', 'charts', 'assistant', 'start']) {
         await page.locator(`header a[href="#${target}"]`).first().click();
         assert.equal(new URL(page.url()).hash, `#${target}`);

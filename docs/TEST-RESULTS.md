@@ -1,5 +1,11 @@
 # 第一阶段验收记录
 
+## 任务 07 补充：指定 GitHub 仓库（2026-10-23）
+
+按所有者回复，将展示页导航、首屏和启动区三处 GitHub 入口设为 https://github.com/chen0206a/labflow-agent。仓库地址已实际打开核对；当时仓库为空，保留页内启动指南，不添加不存在的 README 页面链接。同步 LANDING-SITE 文档；许可证继续待定，不修改本地 remote，不推送或发布。
+
+验证：node scripts/test-site.cjs **4/4 尺寸通过**，增加指定仓库三处链接的精确断言，保留锚点/图片/网络/token/无溢出断言；更新四张截图及证据。npm test -- --maxWorkers=4 **192/192，15.66 秒**；npm run build **通过，21.25 秒**。未修改产品功能、后端或助手逻辑，未重跑 Java 或模型评测。
+
 ## 任务 07：独立静态展示页（2026-10-23）
 
 从 refactor/reference/site 复制为根目录 site，保留独立单文件结构；用真实编辑器截图替换手绘工作台，其余图型/助手流程明确标注为示意。页面 UI 使用 --lf-* token、Inter/JetBrains Mono 与系统中文回退。新增 .github/workflows/pages.yml（main 的 site/workflow 变化或手动触发），没有部署 React 应用。
