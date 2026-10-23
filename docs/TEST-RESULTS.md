@@ -1,5 +1,19 @@
 # 第一阶段验收记录
 
+## 任务 06：助手停靠面板（2026-10-23）
+
+仅移动 JSX 与调整 CSS：顶部模型/预算摘要，中间对话与提案滚动，底部固定输入、同意与发送，再接确认栏。欢迎区显示原三条建议，产生对话后隐藏；无提案时保留禁用的应用按钮，仅隐藏说明。地址只显示 host，title 保留完整地址；预算摘要增加 3px 进度，不改变计算或额度选择。停靠模式的上下文说明也移入中段，以适配 720px 高度；非停靠模式保留原有输入位置。
+
+实际验证：
+
+- npm test -- --maxWorkers=4：**29 文件、192/192，14.72 秒**；原 AgentAssistant、AgentHistory、agentConversation、agentRecovery 的测试和断言均未修改。
+- npm run build：**通过，19.42 秒**，保留既有 chunk 大小提示。
+- 隔离 Java/MySQL + 本地协议夹具：agent.spec.ts / model-connection.spec.ts / home.spec.ts / assistant-layout.spec.ts，**12/12，47.0 秒**；新 JVM 审计持久化、运行恢复检查通过；清理 10 个测试项目。没有收费请求或真实用户库清理。
+- 新布局 E2E 用真实 DOM 几何验证 1440×900、1280×720 初始建议完整可见，输入/发送不需滚动；长对话后应用/继续可见，仅中段溢出；同意默认未勾选，未确认不改变已存图表。更新 agent-conversation.png、agent-session-budget.png，新增 refactor-06-agent-1440/1280.png。
+- 对比 94213eb：remember/start/reconnect/cancel、34 处 hooks、4 个异步 API 回调的转译代码完全相同，见 docs/test-evidence/refactor06-behavior.json；未改后端、预算、存储键、恢复或幂等逻辑。
+
+首轮专项 **11/12，48.0 秒**：新增尺寸检查发现 720px 高度欢迎建议仍被截断。压缩头部/输入留白，把两段会话说明移入中段后，完整专项重跑通过。单测首轮也为 192/192，17.51 秒，构建 23.03 秒。没有删除或放宽几何断言。与任务文件偏差：额外移动会话说明，仅限停靠模式；增加几何验收。需要人决定的事：无。
+
 ## 任务 05：编辑器按块拆分（2026-10-22，逐步验证记录）
 
 遵循任务文件逐块移动、验证、独立提交；不改变 DOM、类名和可访问标签，只有第 7 步明确允许的工具栏调整例外。后端、historyReducer、DraftWriter、layoutPatch、buildPlot 和助手状态机不在修改范围。

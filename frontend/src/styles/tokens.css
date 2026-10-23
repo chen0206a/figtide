@@ -141,6 +141,38 @@
   --lf-home-size-38: 38px;
   --lf-home-size-220: 220px;
 
+  --lf-agent-size-370: 370px;
+  --lf-agent-size-460: 460px;
+  --lf-agent-size-1: 1px;
+  --lf-agent-size-7: 7px;
+  --lf-agent-size-22: 22px;
+  --lf-agent-size-14: 14px;
+  --lf-agent-size-11-5: 11.5px;
+  --lf-agent-size-18: 18px;
+  --lf-agent-size-9: 9px;
+  --lf-agent-size-13: 13px;
+  --lf-agent-size-11: 11px;
+  --lf-agent-size-3: 3px;
+  --lf-agent-size-6: 6px;
+  --lf-agent-size-10: 10px;
+  --lf-agent-size-86: 86px;
+  --lf-agent-size-220: 220px;
+  --lf-agent-size-400: 400px;
+  --lf-agent-size-5: 5px;
+  --lf-agent-size-110: 110px;
+  --lf-agent-size-30: 30px;
+  --lf-agent-size-2: 2px;
+  --lf-agent-size-260: 260px;
+  --lf-agent-size-610: 610px;
+  --lf-agent-size-170: 170px;
+  --lf-agent-size-350: 350px;
+  --lf-agent-size-15: 15px;
+  --lf-agent-size-26: 26px;
+  --lf-agent-size-90: 90px;
+  --lf-agent-size-45: 45px;
+  --lf-agent-size-180: 180px;
+  --lf-agent-size-250: 250px;
+
   /* ---- motion ---- */
   --lf-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --lf-duration: 160ms;

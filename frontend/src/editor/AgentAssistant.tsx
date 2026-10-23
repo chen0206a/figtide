@@ -464,8 +464,154 @@ export function AgentAssistant(p: {
     const target = result ? proposalPreview.current : thread.current;
     target?.scrollIntoView?.({ block: "nearest", behavior: "auto" });
   }, [turns.length, p.open, run?.status, run?.outcome]);
+  const providerRow = (
+    <div className="agent-provider">
+      <MessageSquare size={17} />
+      <div>
+        <strong>{provider.data?.model || "连接模型服务"}</strong>
+        <span title={provider.data?.endpoint}>
+          {endpointHost(provider.data?.endpoint) || "选择模型，开始调整"}
+        </span>
+      </div>
+      <span
+        className={`agent-connection-indicator ${provider.data?.available ? "connected" : ""}`}
+      >
+        {provider.data?.available ? "已配置" : "未连接"}
+      </span>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="模型连接"
+        disabled={busy}
+        onClick={() => setConnectionOpen(true)}
+      >
+        <Settings2 size={15} />
+      </Button>
+    </div>
+  );
+  const budgetView = (
+    <details className="agent-budget">
+      <summary>
+        {session
+          ? `本次会话 · 已用 ${(session.used_budget + session.reserved_budget).toLocaleString()} / 上限 ${session.max_budget.toLocaleString()}`
+          : `本次会话上限 ${sessionLimit.toLocaleString()}`}
+        <progress
+          aria-label="会话预算使用情况"
+          value={session ? session.used_budget + session.reserved_budget : 0}
+          max={session?.max_budget || sessionLimit}
+        />
+      </summary>
+      {!session && (
+        <label>
+          本次对话额度
+          <select
+            aria-label="本次对话额度"
+            value={sessionLimit}
+            disabled={busy}
+            onChange={(e) => setSessionLimit(Number(e.target.value))}
+          >
+            {[60000, 180000, 360000, 600000].map((value) => (
+              <option key={value} value={value}>
+                {value.toLocaleString()}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <p>跨轮累计的保守预算单位，不是实际账单 token；单轮最多 60,000。</p>
+      {session && (
+        <p>
+          已用 {session.used_budget.toLocaleString()} · 预留{" "}
+          {session.reserved_budget.toLocaleString()} · 剩余{" "}
+          {session.remaining_budget.toLocaleString()}。模型上报{" "}
+          {session.reported_tokens.toLocaleString()} tokens。
+        </p>
+      )}
+      {!!session?.uncertain_runs && (
+        <p>有 {session.uncertain_runs} 次请求用量未明，已保留整轮额度。</p>
+      )}
+    </details>
+  );
+  const composerNotes = (
+    <div className="agent-composer-notes">
+      {!!turns.length && (
+        <p className="agent-context-note">
+          {context.included
+            ? `本轮附带最近 ${context.included} 轮对话`
+            : "本轮按独立需求发送"}
+          {context.omitted > 0 ? " · 较早对话未附带" : ""}
+          。刷新后可恢复仍存活的会话。
+        </p>
+      )}
+      {!!result && (
+        <p className="agent-context-note">
+          继续描述修改，原提案会保留到新提案就绪；最后一次确认即可。
+        </p>
+      )}
+    </div>
+  );
+  const composerView = (
+    <div className="agent-composer">
+      <label className="agent-prompt">
+        希望怎样调整？
+        <textarea
+          ref={composer}
+          value={prompt}
+          maxLength={2000}
+          rows={4}
+          disabled={busy}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="例如：把图例放到右侧，字号改为 16，并将第一条曲线设为蓝色。"
+        />
+      </label>
+      {!p.docked && composerNotes}
+
+      <label className="agent-consent">
+        <input
+          type="checkbox"
+          checked={consent}
+          disabled={busy}
+          onChange={(e) => setConsent(e.target.checked)}
+        />
+        <span>
+          允许发送图表配置和字段摘要。不发送原始数据行，模型服务可能计费。
+        </span>
+      </label>
+      <div className="agent-controls">
+        <Button
+          onClick={start}
+          disabled={
+            busy ||
+            disconnected ||
+            (!!session && session.remaining_budget < 2000) ||
+            !provider.data?.available ||
+            (!!result && !trusted) ||
+            p.config.datasetVersionId !== p.data.id ||
+            !consent ||
+            !prompt.trim()
+          }
+        >
+          {busy ? (
+            <Loader2 size={15} className="agent-spin" />
+          ) : (
+            <MessageSquare size={15} />
+          )}
+          {busy ? "正在生成提案…" : result ? "继续修改提案" : "生成调整提案"}
+        </Button>
+        {active(run) && (
+          <Button variant="outline" onClick={cancel}>
+            <Square size={13} />
+            取消运行
+          </Button>
+        )}
+      </div>
+    </div>
+  );
   const proposalActions = (
-    <div className="quick-result-footer" ref={proposalFooter}>
+    <div
+      className={`quick-result-footer${!result ? " is-idle" : ""}`}
+      ref={proposalFooter}
+    >
       <p>确认后只更新草稿，可一步撤销。保存正式版本仍由你决定。</p>
       {!!result && (
         <Button
@@ -651,32 +797,18 @@ export function AgentAssistant(p: {
         />
       ) : (
         <>
+          {p.docked && (
+            <div className="agent-dock-top">
+              {providerRow}
+              {budgetView}
+            </div>
+          )}
           <div className="quick-actions-body">
             <section
               className="quick-actions-builder agent-conversation"
               aria-label="绘图助手对话"
             >
-              <div className="agent-provider">
-                <MessageSquare size={17} />
-                <div>
-                  <strong>{provider.data?.model || "连接模型服务"}</strong>
-                  <span>{provider.data?.endpoint || "选择模型，开始调整"}</span>
-                </div>
-                <span
-                  className={`agent-connection-indicator ${provider.data?.available ? "connected" : ""}`}
-                >
-                  {provider.data?.available ? "已配置" : "未连接"}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="模型连接"
-                  disabled={busy}
-                  onClick={() => setConnectionOpen(true)}
-                >
-                  <Settings2 size={15} />
-                </Button>
-              </div>
+              {!p.docked && providerRow}
               {provider.isPending ? (
                 <p role="status">正在检查模型配置…</p>
               ) : provider.isError ? (
@@ -699,47 +831,7 @@ export function AgentAssistant(p: {
                   </div>
                 )
               )}
-              <details className="agent-budget">
-                <summary>
-                  会话预算 ·{" "}
-                  {session
-                    ? `${(session.used_budget + session.reserved_budget).toLocaleString()} / ${session.max_budget.toLocaleString()}`
-                    : sessionLimit.toLocaleString()}
-                </summary>
-                {!session && (
-                  <label>
-                    本次对话额度
-                    <select
-                      aria-label="本次对话额度"
-                      value={sessionLimit}
-                      disabled={busy}
-                      onChange={(e) => setSessionLimit(Number(e.target.value))}
-                    >
-                      {[60000, 180000, 360000, 600000].map((value) => (
-                        <option key={value} value={value}>
-                          {value.toLocaleString()}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                )}
-                <p>
-                  跨轮累计的保守预算单位，不是实际账单 token；单轮最多 60,000。
-                </p>
-                {session && (
-                  <p>
-                    已用 {session.used_budget.toLocaleString()} · 预留{" "}
-                    {session.reserved_budget.toLocaleString()} · 剩余{" "}
-                    {session.remaining_budget.toLocaleString()}。模型上报{" "}
-                    {session.reported_tokens.toLocaleString()} tokens。
-                  </p>
-                )}
-                {!!session?.uncertain_runs && (
-                  <p>
-                    有 {session.uncertain_runs} 次请求用量未明，已保留整轮额度。
-                  </p>
-                )}
-              </details>
+              {!p.docked && budgetView}
               {!!session && session.remaining_budget < 2000 && !busy && (
                 <p role="status" className="agent-context-note">
                   本次会话剩余额度不足；仍可查看或应用已有提案，开始新对话可重新设置额度。
@@ -778,6 +870,19 @@ export function AgentAssistant(p: {
                   <div className="agent-welcome">
                     <strong>从一个具体的调整开始。</strong>
                     <p>说出想调整的地方，预览后再应用。</p>
+                    <div className="agent-suggestions">
+                      {["图例放到右侧", "隐藏网格线", "整体字号改为 18"].map(
+                        (text) => (
+                          <button
+                            key={text}
+                            disabled={busy}
+                            onClick={() => setPrompt(text)}
+                          >
+                            {text}
+                          </button>
+                        ),
+                      )}
+                    </div>
                   </div>
                 )}
                 {turns.map((turn) => (
@@ -828,90 +933,7 @@ export function AgentAssistant(p: {
                     上一份提案仍保留，可继续修改或确认应用。
                   </p>
                 )}
-              <div className="agent-composer">
-                <label className="agent-prompt">
-                  希望怎样调整？
-                  <textarea
-                    ref={composer}
-                    value={prompt}
-                    maxLength={2000}
-                    rows={4}
-                    disabled={busy}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="例如：把图例放到右侧，字号改为 16，并将第一条曲线设为蓝色。"
-                  />
-                </label>
-                {!!turns.length && (
-                  <p className="agent-context-note">
-                    {context.included
-                      ? `本轮附带最近 ${context.included} 轮对话`
-                      : "本轮按独立需求发送"}
-                    {context.omitted > 0 ? " · 较早对话未附带" : ""}
-                    。刷新后可恢复仍存活的会话。
-                  </p>
-                )}
-                {!!result && (
-                  <p className="agent-context-note">
-                    继续描述修改，原提案会保留到新提案就绪；最后一次确认即可。
-                  </p>
-                )}
-                <div className="agent-suggestions">
-                  {["图例放到右侧", "隐藏网格线", "整体字号改为 18"].map(
-                    (text) => (
-                      <button
-                        key={text}
-                        disabled={busy}
-                        onClick={() => setPrompt(text)}
-                      >
-                        {text}
-                      </button>
-                    ),
-                  )}
-                </div>
-                <label className="agent-consent">
-                  <input
-                    type="checkbox"
-                    checked={consent}
-                    disabled={busy}
-                    onChange={(e) => setConsent(e.target.checked)}
-                  />
-                  <span>
-                    允许发送图表配置和字段摘要。不发送原始数据行，模型服务可能计费。
-                  </span>
-                </label>
-                <div className="agent-controls">
-                  <Button
-                    onClick={start}
-                    disabled={
-                      busy ||
-                      disconnected ||
-                      (!!session && session.remaining_budget < 2000) ||
-                      !provider.data?.available ||
-                      (!!result && !trusted) ||
-                      p.config.datasetVersionId !== p.data.id ||
-                      !consent ||
-                      !prompt.trim()
-                    }
-                  >
-                    {busy ? (
-                      <Loader2 size={15} className="agent-spin" />
-                    ) : (
-                      <MessageSquare size={15} />
-                    )}
-                    {busy
-                      ? "正在生成提案…"
-                      : result
-                        ? "继续修改提案"
-                        : "生成调整提案"}
-                  </Button>
-                  {active(run) && (
-                    <Button variant="outline" onClick={cancel}>
-                      <Square size={13} />
-                      取消运行
-                    </Button>
-                  )}
-                </div>
-              </div>
+              {p.docked ? composerNotes : composerView}
               {error && (
                 <p role="alert" className="inline-error">
                   {error}
@@ -978,6 +1000,7 @@ export function AgentAssistant(p: {
               {!p.docked && proposalActions}
             </aside>
           </div>
+          {p.docked && composerView}
           {p.docked && proposalActions}
         </>
       )}
@@ -986,4 +1009,13 @@ export function AgentAssistant(p: {
       )}
     </AssistantSurface>
   );
+}
+
+function endpointHost(endpoint?: string) {
+  if (!endpoint) return "";
+  try {
+    return new URL(endpoint).host;
+  } catch {
+    return endpoint;
+  }
 }
