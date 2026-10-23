@@ -1,4 +1,5 @@
 import type { QueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { ApiError, api, send, type Dataset } from "../../lib/api";
 import type { ChartDraft } from "../../lib/chartDraft";
 import { chartDraftKey } from "../../lib/chartDraft";
@@ -56,6 +57,10 @@ export function useChartSave({
   notify,
   onSaved,
 }: useChartSaveProps) {
+  // A request can fail after further edits: persist the current draft, not the
+  // snapshot sent to the server. Keep the existing recovery shape and key.
+  const latestDraft = useRef({ c, name, revision, draftKey });
+  latestDraft.current = { c, name, revision, draftKey };
   async function save(asCopy = false) {
     if (saving || c.datasetVersionId !== data.id) return;
     setSaving(true);
@@ -101,7 +106,15 @@ export function useChartSave({
       if (e instanceof ApiError && e.kind === "offline") {
         let kept = false;
         try {
-          kept = draftWriter.current?.has(draftKey) ?? false;
+          const latest = latestDraft.current;
+          const value = JSON.stringify({
+            config: latest.c,
+            name: latest.name,
+            revision: latest.revision,
+            at: new Date().toISOString(),
+          });
+          const written = draftWriter.current?.writeNow(latest.draftKey, value) ?? false;
+          kept = written && localStorage.getItem(latest.draftKey) === value;
         } catch {}
         notify(saveFailureMessage(kept));
       } else notify(readableError(e));

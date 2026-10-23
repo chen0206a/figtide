@@ -45,7 +45,7 @@ describe("保存失败文案", () => {
   });
 
   it("草稿没写成时不承诺改动还在", () => {
-    expect(saveFailureMessage(false)).toBe("保存失败：本地服务没有响应。");
+    expect(saveFailureMessage(false)).toBe("保存失败：本地服务没有响应。请先不要关闭页面，以免丢失本次修改。");
   });
 });
 

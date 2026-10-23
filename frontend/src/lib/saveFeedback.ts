@@ -4,7 +4,7 @@ import { ApiError } from "./api";
 export function saveFailureMessage(kept: boolean): string {
   return kept
     ? "保存失败：本地服务没有响应。修改仍保存在本机草稿中，服务恢复后可以再次保存。"
-    : "保存失败：本地服务没有响应。";
+    : "保存失败：本地服务没有响应。请先不要关闭页面，以免丢失本次修改。";
 }
 
 /** 统一把异常转成人能读的文案：网络层失败用自己的话，业务错误沿用后端的原话。 */

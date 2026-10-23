@@ -81,5 +81,6 @@ it("reports whether a draft is already stored for the save failure message", () 
   storage.getItem.mockReturnValue("{}");
   expect(writer.has("chart")).toBe(true);
   writer.schedule("chart", "dirty");
-  expect(writer.has("chart")).toBe(true);
+  storage.getItem.mockReturnValue(null);
+  expect(writer.has("chart")).toBe(false);
 });

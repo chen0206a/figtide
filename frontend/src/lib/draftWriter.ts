@@ -34,7 +34,6 @@ export class DraftWriter {
   }
   /** 草稿是否已经落到本机存储（用于失败提示里告诉用户"改动没丢"）。 */
   has(key: string) {
-    if (this.pending?.key === key) return true;
     try {
       return this.storage.getItem(key) !== null;
     } catch {
