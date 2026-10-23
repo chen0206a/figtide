@@ -28,13 +28,13 @@
 .processing-form h3 small {
   font-weight: 400;
   font-size: var(--lf-text-xs);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   margin-left: var(--lf-space-2);
 }
 .processing-form p,
 .processing-preview > p {
   font-size: var(--lf-text-sm);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   line-height: 1.7;
 }
 .processing-field-list {
@@ -85,7 +85,7 @@
 .processing-actions > span {
   flex: 1;
   font-size: var(--lf-text-xs);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .processing-error {
   color: var(--lf-danger);
@@ -102,7 +102,7 @@
   font-size: var(--lf-text-base);
 }
 .processing-counts span {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .processing-preview .table-scroll {
   max-height: 380px;

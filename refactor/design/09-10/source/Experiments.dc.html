@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>LabFlow 实验记录 · 表格视图</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F8}
+a{color:#1F4FB8;text-decoration:none}a:hover{color:#163B8C}
+button,input,select{font-family:inherit}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #F5F6F8; color: #0E1116; font-family: Inter, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif; font-size: 14px; line-height: 1.5">
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #E4E7EC">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; min-height: 64px; padding: 0 28px">
+<a href="#" style="display: flex; align-items: center; gap: 10px; color: #0E1116">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #0E1116; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18 L9 11 L13 14 L20 5"></path></svg></span>
+<span style="font-weight: 700; font-size: 17px">LabFlow</span>
+</a>
+<nav aria-label="主导航" style="display: flex; gap: 2px; padding: 3px; background: #F1F3F6; border-radius: 11px">
+<a href="#" style="padding: 7px 14px; border-radius: 8px; color: #4A5361; font-size: 13px">项目概览</a>
+<a href="#" style="padding: 7px 14px; border-radius: 8px; background: #FFFFFF; color: #0E1116; font-weight: 600; font-size: 13px; box-shadow: 0 1px 2px rgba(14,17,22,0.06)">实验记录</a>
+<a href="#" style="padding: 7px 14px; border-radius: 8px; color: #4A5361; font-size: 13px">数据管理</a>
+<a href="#" style="padding: 7px 14px; border-radius: 8px; color: #4A5361; font-size: 13px">科研绘图</a>
+</nav>
+<div style="flex: 1 1 20px"></div>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5F6773"><span style="width: 7px; height: 7px; border-radius: 50%; background: #1A8F5C"></span>本地工作区</span>
+<button type="button" style="display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border: 1px solid #E4E7EC; border-radius: 11px; background: #FFFFFF; color: #0E1116; font-size: 13px">视觉模型泛化研究 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5F6773" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9 L12 15 L18 9"></path></svg></button>
+<button type="button" style="height: 38px; padding: 0 10px; border: 0; background: transparent; color: #4A5361; font-size: 13px">管理项目</button>
+<button type="button" style="height: 38px; padding: 0 10px; border: 0; background: transparent; color: #4A5361; font-size: 13px">模型连接</button>
+</div>
+</header>
+
+<main style="max-width: 1280px; margin: 0 auto; padding: 32px 28px 40px; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid #E4E7EC">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 26px; line-height: 1.25; font-weight: 700; letter-spacing: -0.02em">实验记录</h1>
+<p style="margin: 0; color: #5F6773; font-size: 13px">参数、指标和数据版本关联在一起，勾选 2–8 个实验进行对比。</p>
+</div>
+<div style="display: flex; gap: 8px">
+<button type="button" style="height: 40px; padding: 0 16px; border: 1px solid #D5DAE1; border-radius: 11px; background: #FFFFFF; color: #0E1116; font-size: 14px">项目数据文件</button>
+<button type="button" style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; border: 0; border-radius: 11px; background: #0E1116; color: #FFFFFF; font-size: 14px; font-weight: 600"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5 V19"></path><path d="M5 12 H19"></path></svg>记录实验</button>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<label style="flex: 1 1 280px; display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border: 1px solid #E4E7EC; border-radius: 8px; background: #FFFFFF; color: #5F6773">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20 L16.5 16.5"></path></svg>
+<input type="text" aria-label="搜索实验" placeholder="搜索名称、标签或备注…" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 13px; color: #0E1116">
+</label>
+<select aria-label="状态" style="height: 38px; padding: 0 10px; border: 1px solid #E4E7EC; border-radius: 8px; background: #FFFFFF; font-size: 13px; color: #0E1116"><option>全部状态</option></select>
+<select aria-label="标签" style="height: 38px; padding: 0 10px; border: 1px solid #E4E7EC; border-radius: 8px; background: #FFFFFF; font-size: 13px; color: #0E1116"><option>全部标签</option></select>
+<div role="group" aria-label="视图" style="display: flex; gap: 2px; padding: 3px; border-radius: 9px; background: #F1F3F6">
+<button type="button" aria-pressed="true" style="height: 32px; padding: 0 12px; border: 0; border-radius: 7px; background: #FFFFFF; color: #0E1116; font-size: 13px; font-weight: 600; box-shadow: 0 1px 2px rgba(14,17,22,0.06)">表格</button>
+<button type="button" aria-pressed="false" style="height: 32px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: #4A5361; font-size: 13px">卡片</button>
+</div>
+<span style="white-space: nowrap; color: #5F6773; font-size: 13px">8 条记录</span>
+</div>
+
+<section aria-label="实验列表" style="background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 16px; overflow: hidden">
+<div style="overflow-x: auto">
+<div role="table" aria-label="实验参数与指标" style="min-width: 1120px; font-size: 13px">
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: end; padding: 12px 8px 0; color: #5F6773; font-size: 11px; letter-spacing: 0.04em; font-family: 'JetBrains Mono', monospace">
+<span style="grid-column: 4 / span 4; padding: 0 8px 6px; border-bottom: 1px solid #E4E7EC">参数</span>
+<span style="grid-column: 8 / span 2; padding: 0 8px 6px; border-bottom: 1px solid #E4E7EC; margin-left: 12px">指标</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 40px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; color: #5F6773; font-weight: 500">
+<span role="columnheader" style="display: flex; justify-content: center"><input type="checkbox" aria-label="全选" style="width: 16px; height: 16px; accent-color: #0E1116"></span>
+<span role="columnheader" style="padding: 0 8px">实验</span>
+<span role="columnheader" style="padding: 0 8px">状态</span>
+<span role="columnheader" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px">lr</span>
+<span role="columnheader" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px">batch</span>
+<span role="columnheader" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px">epochs</span>
+<span role="columnheader" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px">optimizer</span>
+<span role="columnheader" aria-sort="descending" style="display: flex; justify-content: flex-end; align-items: center; gap: 4px; padding: 0 8px; margin-left: 12px; color: #0E1116; font-family: 'JetBrains Mono', monospace; font-size: 12px">accuracy<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5 V19"></path><path d="M6 13 L12 19 L18 13"></path></svg></span>
+<span role="columnheader" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px">macro_f1</span>
+<span role="columnheader" style="padding: 0 8px 0 20px">数据版本</span>
+<span role="columnheader" style="padding: 0 8px; text-align: right">更新</span>
+<span role="columnheader"></span>
+</div>
+
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 56px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; background: {{r.rowBg}}">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" aria-label="选择 {{r.code}}" checked="{{r.checked}}" onChange="{{r.toggle}}" style="width: 16px; height: 16px; accent-color: #0E1116; cursor: pointer"></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; padding: 0 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="font-family: 'JetBrains Mono', monospace; color: #5F6773; font-size: 12px">{{r.code}}</span>
+<span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{r.name}}</span>
+<sc-if value="{{r.baseline}}" hint-placeholder-val="{{false}}"><span style="flex-shrink: 0; padding: 1px 7px; border-radius: 999px; border: 1px solid #D5DAE1; color: #4A5361; font-size: 11px">基线</span></sc-if>
+</span>
+<span style="color: #5F6773; font-size: 12px">{{r.tag}}</span>
+</span>
+<span role="cell" style="padding: 0 8px"><span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: {{r.chipBg}}; color: {{r.chipFg}}">{{r.statusLabel}}</span></span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">{{r.lr}}</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">{{r.bs}}</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">{{r.ep}}</span>
+<span role="cell" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; color: #4A5361">{{r.opt}}</span>
+<span role="cell" style="padding: 0 8px; margin-left: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: {{r.accColor}}; font-weight: {{r.accWeight}}">{{r.acc}}</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: {{r.f1Color}}; font-weight: {{r.f1Weight}}">{{r.f1}}</span>
+<span role="cell" style="padding: 0 8px 0 20px"><a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 12px">{{r.data}}</a></span>
+<span role="cell" style="padding: 0 8px; text-align: right; color: #5F6773; font-size: 12px">{{r.updated}}</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" aria-label="更多操作 {{r.code}}" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #5F6773; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></span>
+</div>
+</sc-for>
+
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 12px 20px; color: #5F6773; font-size: 12px">
+<span>点击列名排序 · 指标最优值以强调色标出（仅 accuracy、f1 这类方向明确的指标）</span>
+<button type="button" style="border: 0; background: transparent; color: #1F4FB8; font-size: 12px; cursor: pointer">列设置</button>
+</div>
+</section>
+
+<sc-if value="{{hasSelection}}" hint-placeholder-val="{{true}}">
+<div style="position: sticky; bottom: 20px; align-self: center; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 10px 10px 20px; border-radius: 14px; background: #0E1116; color: #FFFFFF; box-shadow: 0 24px 48px -16px rgba(14,17,22,0.35)">
+<span style="font-size: 13px">已选 <strong style="font-family: 'JetBrains Mono', monospace">{{count}}</strong> 个实验<span style="color: #B8C0CC">（最多 8 个）</span></span>
+<span style="font-size: 13px; color: #B8C0CC">基线 <span style="font-family: 'JetBrains Mono', monospace; color: #FFFFFF">EXP-001</span></span>
+<button type="button" onClick="{{clear}}" style="height: 34px; padding: 0 12px; border: 1px solid #2B323C; border-radius: 9px; background: transparent; color: #D7DCE3; font-size: 13px; cursor: pointer">清空</button>
+<button type="button" style="height: 34px; padding: 0 14px; border: 0; border-radius: 9px; background: #FFFFFF; color: #0E1116; font-size: 13px; font-weight: 600; cursor: pointer">对比所选实验</button>
+</div>
+</sc-if>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D55E00","options":["#D55E00","#1F4FB8","#0E1116"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { selected: ["001", "002"] };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? "#D55E00";
+    const chips = {
+      completed: ["已完成", "#E8F5EE", "#146C45"],
+      running: ["进行中", "#EEF3FC", "#1F4FB8"],
+      failed: ["失败", "#FDECEA", "#B42318"],
+      planned: ["计划中", "#F1F3F6", "#4A5361"],
+    };
+    const data = [
+      ["002", "Proposed method", "main", "completed", "1e-3", 128, 60, "AdamW", 92.8, 0.916, "curves.csv · v1", "10/18"],
+      ["006", "Proposed · bs 256", "sweep", "completed", "1e-3", 256, 60, "AdamW", 92.1, 0.913, "curves.csv · v1", "10/20"],
+      ["005", "Proposed · lr 3e-4", "sweep", "completed", "3e-4", 128, 60, "AdamW", 91.9, 0.910, "curves.csv · v1", "10/20"],
+      ["001", "Baseline · ResNet-50", "baseline", "completed", "1e-3", 128, 60, "AdamW", 87.1, 0.861, "curves.csv · v1", "10/18"],
+      ["003", "Without module A", "ablation", "completed", "1e-3", 128, 60, "AdamW", 84.6, 0.834, "curves.csv · v1", "10/18"],
+      ["004", "Proposed + strong aug", "main", "running", "1e-3", 128, 90, "AdamW", null, null, "curves.csv · v2", "今天"],
+      ["007", "Proposed · SGD", "sweep", "failed", "1e-2", 128, 60, "SGD", null, null, "curves.csv · v1", "10/21"],
+      ["008", "Without module B", "ablation", "planned", "1e-3", 128, 60, "AdamW", null, null, "—", "10/22"],
+    ];
+    const sel = this.state.selected;
+    const rows = data.map(([id, name, tag, status, lr, bs, ep, opt, acc, f1, ds, updated]) => {
+      const checked = sel.includes(id);
+      const [label, bg, fg] = chips[status];
+      return {
+        code: "EXP-" + id,
+        name, tag, lr, bs, ep, opt, updated,
+        data: ds,
+        statusLabel: label, chipBg: bg, chipFg: fg,
+        acc: acc == null ? "—" : acc.toFixed(1),
+        f1: f1 == null ? "—" : f1.toFixed(3),
+        accColor: id === "002" ? accent : acc == null ? "#8A93A0" : "#0E1116",
+        accWeight: id === "002" ? 600 : 400,
+        f1Color: id === "002" ? accent : f1 == null ? "#8A93A0" : "#0E1116",
+        f1Weight: id === "002" ? 600 : 400,
+        baseline: id === "001",
+        checked,
+        rowBg: checked ? "#F6F9FE" : "#FFFFFF",
+        toggle: () =>
+          this.setState({
+            selected: checked
+              ? sel.filter((v) => v !== id)
+              : sel.length >= 8 ? sel : [...sel, id],
+          }),
+      };
+    });
+    return {
+      rows,
+      count: sel.length,
+      hasSelection: sel.length > 0,
+      clear: () => this.setState({ selected: [] }),
+    };
+  }
+}
+</script>
+</body>
+</html>

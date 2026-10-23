@@ -131,7 +131,7 @@
   border-radius: var(--lf-radius-sm);
   padding: var(--lf-space-3);
   box-shadow: 0 var(--lf-space-2) var(--lf-space-6)
-    color-mix(in srgb, var(--lf-info) 7.84%, transparent);
+    color-mix(in srgb, var(--lf-text) 7.84%, transparent);
 }
 .column-options label {
   padding: var(--lf-space-1);
@@ -155,7 +155,7 @@
   touch-action: none;
 }
 .column-resize:hover {
-  background: var(--lf-info);
+  background: var(--lf-text);
 }
 .data-table .missing-cell {
   background: var(--lf-surface-2);
@@ -264,7 +264,7 @@ input::placeholder,
   scrollbar-color: var(--lf-border-strong) transparent;
 }
 .dialog-overlay {
-  background: color-mix(in srgb, var(--lf-info) 25.1%, transparent);
+  background: color-mix(in srgb, var(--lf-text) 25.1%, transparent);
   backdrop-filter: none;
   animation: fade-in 160ms ease-out both;
 }
@@ -273,7 +273,7 @@ input::placeholder,
   max-height: calc(100dvh - 64px);
   padding: var(--lf-space-7);
   box-shadow: 0 var(--lf-space-6) calc(var(--lf-space-1) * 20)
-    color-mix(in srgb, var(--lf-info) 16.86%, transparent);
+    color-mix(in srgb, var(--lf-text) 16.86%, transparent);
   animation: experience-dialog-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .dialog-content[role="dialog"] h2 {
@@ -288,7 +288,7 @@ input::placeholder,
   top: 22px;
   right: 22px;
   border-radius: calc(var(--lf-space-1) * 1.75);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   transition: background-color 160ms;
 }
 .dialog-content .dialog-close:hover {

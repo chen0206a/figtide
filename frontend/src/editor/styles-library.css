@@ -6,7 +6,7 @@
   padding: calc(var(--lf-space-1) * 6.5) 0 0;
   border-radius: var(--lf-space-5);
   overflow: hidden;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   background: white;
 }
 .style-library-dialog > h2 {
@@ -18,7 +18,7 @@
   margin: 0 calc(var(--lf-space-1) * 15) var(--lf-space-5)
     calc(var(--lf-space-1) * 7.5);
   font-size: var(--lf-text-sm);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   line-height: 1.65;
 }
 .style-tabs {
@@ -33,7 +33,7 @@
   gap: calc(var(--lf-space-1) * 1.75);
   padding: calc(var(--lf-space-1) * 3.25) 0;
   border-bottom: 2px solid transparent;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-size: var(--lf-text-sm);
   transition:
     color 0.16s,
@@ -45,7 +45,7 @@
   font-weight: 600;
 }
 .style-tabs button:hover {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .style-library-body {
   display: grid;
@@ -74,7 +74,7 @@
   margin: 0 0 calc(var(--lf-space-1) * 1.75);
 }
 .style-browser-heading p {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-size: var(--lf-text-xs);
   line-height: 1.7;
   margin: 0;
@@ -144,7 +144,7 @@
 .style-card p {
   font-size: var(--lf-text-xs);
   line-height: 1.7;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   margin: var(--lf-space-2) calc(var(--lf-space-1) * 0.5)
     calc(var(--lf-space-1) * 0.75);
 }
@@ -198,7 +198,7 @@
 .style-preview p {
   font-size: var(--lf-text-xs);
   padding: var(--lf-space-2) var(--lf-space-3);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .style-preview p[role="alert"] {
   color: var(--lf-warning);
@@ -211,7 +211,7 @@
 }
 .style-detail-scroll > p {
   font-size: var(--lf-text-xs);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   line-height: 1.8;
   margin: 0;
   overflow-wrap: anywhere;
@@ -228,7 +228,7 @@
   justify-content: space-between;
 }
 .style-detail dt {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   flex-shrink: 0;
 }
 .style-detail dd {
@@ -237,7 +237,7 @@
   overflow-wrap: anywhere;
 }
 .style-detail-note {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-size: var(--lf-text-caption);
   line-height: 1.8;
 }
@@ -257,7 +257,7 @@
     calc(var(--lf-space-1) * 0.5);
 }
 .preset-traits span {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   background: var(--lf-surface-2);
   padding: calc(var(--lf-space-1) * 0.75) calc(var(--lf-space-1) * 1.25);
   border-radius: var(--lf-space-1);
@@ -370,7 +370,7 @@
 .style-empty h4 {
   margin: calc(var(--lf-space-1) * 3.75) 0 calc(var(--lf-space-1) * 1.25);
   font-size: var(--lf-text-md);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-weight: 500;
 }
 .style-empty p {
@@ -414,7 +414,7 @@
   margin-bottom: 0;
 }
 .style-count {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-size: var(--lf-text-caption);
   margin: 0 0 var(--lf-space-3);
 }
@@ -466,7 +466,7 @@
 .style-reuse-body > p {
   font-size: var(--lf-text-sm);
   line-height: 1.8;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   margin: var(--lf-space-4) 0;
 }
 .sidebar-style-grid {

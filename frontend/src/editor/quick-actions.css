@@ -16,7 +16,7 @@
   margin: 0 calc(var(--lf-space-1) * 13.75) calc(var(--lf-space-1) * 5.5)
     calc(var(--lf-space-1) * 7.5);
   font-size: var(--lf-text-sm);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .quick-actions-body {
   display: grid;
@@ -44,7 +44,7 @@
 .quick-actions-note {
   font-size: var(--lf-text-xs);
   line-height: 1.8;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   margin: calc(var(--lf-space-1) * 3.5) 0;
 }
 .quick-fields {
@@ -64,7 +64,7 @@
   align-items: center;
   gap: calc(var(--lf-space-1) * 1.75);
   font-size: var(--lf-text-xs);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .quick-field.active > span,
 .quick-field.active .quick-field-toggle {
@@ -132,7 +132,7 @@
 .quick-queue small {
   display: block;
   margin-top: var(--lf-space-1);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-size: var(--lf-text-caption);
   line-height: 1.7;
   overflow-wrap: anywhere;
@@ -181,7 +181,7 @@
 }
 .quick-result-heading span {
   font-size: var(--lf-text-caption);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .quick-result-footer {
   flex-shrink: 0;
@@ -190,7 +190,7 @@
 }
 .quick-result-footer p {
   font-size: var(--lf-text-caption);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   line-height: 1.8;
   margin-bottom: var(--lf-space-3);
 }
@@ -215,18 +215,18 @@
 }
 .quick-changes strong {
   font-weight: 500;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .quick-changes span {
   display: flex;
   align-items: center;
   gap: var(--lf-space-2);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   overflow-wrap: anywhere;
   min-width: 0;
 }
 .quick-changes del {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 @media (max-width: 760px) {
   .quick-actions-body {

@@ -91,7 +91,7 @@ export function DataLayersPanel({
           <span className="version-tag">v{data.version}</span>
         </div>
         <details className="field-disclosure">
-          <summary>
+          <summary className="lf-mono">
             查看字段 <span>{data.fields.length}</span>
           </summary>
           <div className="field-list">

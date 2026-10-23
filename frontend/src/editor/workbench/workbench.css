@@ -29,7 +29,7 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  color: var(--lf-link);
+  color: var(--lf-text-3);
   background: var(--lf-info-soft);
 }
 .figure-info input {
@@ -156,7 +156,7 @@
 .version-tag {
   margin-left: auto;
   padding: calc(var(--lf-space-1) * 0.25) calc(var(--lf-space-1) * 1.25);
-  color: var(--lf-link);
+  color: var(--lf-text-3);
   background: var(--lf-info-soft);
   border-radius: var(--lf-radius-xs);
 }
@@ -188,7 +188,7 @@
   width: 14px;
   font-family: var(--lf-font-mono);
   font-size: var(--lf-text-compact);
-  color: var(--lf-link);
+  color: var(--lf-text-3);
   text-align: center;
 }
 .string-symbol {
@@ -544,7 +544,7 @@
   color: var(--lf-text);
 }
 .property-section h3 svg {
-  color: var(--lf-link);
+  color: var(--lf-text-3);
 }
 .property-section label {
   margin-bottom: calc(var(--lf-space-1) * 2.75);
@@ -721,7 +721,7 @@
   touch-action: none;
 }
 .panel-resize:hover {
-  background: var(--lf-info);
+  background: var(--lf-text);
 }
 .editor.hide-left .resize-left,
 .editor.hide-right .resize-right,
@@ -788,7 +788,7 @@
 .canvas-stage {
   padding: var(--lf-space-7) var(--lf-space-8);
   min-height: 160px;
-  background-image: radial-gradient(var(--lf-info) 0.55px, transparent 0.55px);
+  background-image: radial-gradient(var(--lf-border-strong) 0.55px, transparent 0.55px);
   background-size: 20px 20px;
 }
 .paper-caption {
@@ -917,7 +917,7 @@
   font-weight: 400;
 }
 .editor .field-disclosure summary span {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .editor .field-list {
   max-height: 200px;
@@ -968,7 +968,7 @@
 }
 .editor .chart-picker > summary span {
   margin-left: auto;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-weight: 400;
 }
 .editor .chart-picker > summary svg {

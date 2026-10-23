@@ -59,7 +59,7 @@
 }
 .record-title > span {
   font-size: var(--lf-text-caption);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .experiment-tags {
   display: flex;
@@ -72,7 +72,7 @@
   padding: calc(var(--lf-space-1) * 0.5) var(--lf-space-2);
   background: var(--lf-surface-sunken);
   border-radius: var(--lf-space-1);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .record-values {
   display: grid;
@@ -82,7 +82,7 @@
 }
 .record-values small {
   font-size: var(--lf-text-caption);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .record-values p {
   display: flex;
@@ -90,7 +90,7 @@
   gap: calc(var(--lf-space-1) * 2.5);
   font-size: var(--lf-text-xs);
   margin: calc(var(--lf-space-1) * 1.25) 0;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .record-values p > span {
   display: flex;
@@ -100,7 +100,7 @@
   overflow-wrap: anywhere;
 }
 .record-values b {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-weight: 500;
   max-width: 200px;
   overflow: hidden;
@@ -140,7 +140,7 @@
   cursor: pointer;
 }
 .record-foot small {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-size: var(--lf-text-caption);
 }
 .comparison-selection {
@@ -154,7 +154,7 @@
   border: 1px solid var(--lf-border);
   border-radius: var(--lf-space-3);
   box-shadow: 0 var(--lf-space-2) calc(var(--lf-space-1) * 7.5)
-    color-mix(in srgb, var(--lf-info) 6.27%, transparent);
+    color-mix(in srgb, var(--lf-text) 6.27%, transparent);
   margin-top: calc(var(--lf-space-1) * 5.5);
   z-index: 2;
   min-height: var(--lf-selection-bar-h);
@@ -162,7 +162,7 @@
 .comparison-selection > span {
   margin-right: auto;
   font-size: var(--lf-text-sm);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .experiment-form-body {
   border: 0;
@@ -191,7 +191,7 @@
 }
 .form-section-head > span {
   font-size: var(--lf-text-xs);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .kv-row,
 .kv-head {
@@ -201,12 +201,12 @@
   margin: var(--lf-space-2) 0;
 }
 .kv-head {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-size: var(--lf-text-xs);
 }
 .field-help {
   font-size: var(--lf-text-xs);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   margin: var(--lf-space-3) 0;
   line-height: 1.7;
 }
@@ -230,7 +230,7 @@
   accent-color: var(--lf-info);
 }
 .dataset-link-options small {
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-size: var(--lf-text-caption);
 }
 .comparison-heading {
@@ -246,7 +246,7 @@
 }
 .comparison-heading p {
   font-size: var(--lf-text-sm);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .compare-controls {
   border: 1px solid var(--lf-border);
@@ -303,7 +303,7 @@
 }
 .comparison-table small {
   display: block;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   font-size: var(--lf-text-caption);
   font-weight: 400;
   margin-top: calc(var(--lf-space-1) * 1.25);
@@ -345,7 +345,7 @@
   gap: var(--lf-space-4);
   font-size: var(--lf-text-sm);
   margin: var(--lf-space-5) 0;
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .source-experiment {
   border-top: 1px solid var(--lf-border);
@@ -357,7 +357,7 @@
 }
 .source-experiment p {
   font-size: var(--lf-text-xs);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 .source-experiment pre {
   font-size: var(--lf-text-xs);
@@ -437,7 +437,7 @@
   background: var(--lf-surface-2);
   border-bottom: 1px solid var(--lf-border);
   font-size: var(--lf-text-xs);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
 }
 @media (prefers-reduced-motion: reduce) {
   .experiment-record {

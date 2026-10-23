@@ -129,7 +129,7 @@
   align-items: flex-start;
   gap: calc(var(--lf-space-1) * 2.25);
   font-size: var(--lf-text-xs);
-  color: var(--lf-info);
+  color: var(--lf-text-3);
   line-height: 1.7;
   margin: var(--lf-space-5) 0 0;
 }

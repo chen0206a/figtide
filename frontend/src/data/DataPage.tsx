@@ -88,7 +88,7 @@ export function DataPage({
                 <FileSpreadsheet size={18} />
                 <span>
                   <b className="lf-mono">{d.filename}</b>
-                  <small>
+                  <small className="lf-mono">
                     v{d.version} · {d.row_count} 行
                   </small>
                 </span>

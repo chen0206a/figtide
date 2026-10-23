@@ -349,7 +349,7 @@ label textarea {
   width: 120px;
   height: 120px;
   margin-bottom: calc(var(--lf-space-1) * 1.5);
-  color: var(--lf-link);
+  color: var(--lf-text-3);
   background: var(--lf-info-soft);
   border: 1px solid var(--lf-border);
   border-radius: 50%;
@@ -358,7 +358,7 @@ label textarea {
   width: 20px;
   height: 20px;
   border: 1.5px solid var(--lf-border-strong);
-  border-top-color: var(--lf-link);
+  border-top-color: var(--lf-border-strong);
   border-radius: 50%;
   animation: spin 0.9s linear infinite;
 }
@@ -582,7 +582,7 @@ label textarea {
 .field-pills b {
   font-family: var(--lf-font-mono);
   font-size: var(--lf-text-2xs);
-  color: var(--lf-link);
+  color: var(--lf-text-3);
 }
 .field-pills small {
   font-family: var(--lf-font-mono);
@@ -631,7 +631,7 @@ tbody tr:hover {
   margin-right: calc(var(--lf-space-1) * 1.5);
   font-family: var(--lf-font-mono);
   font-size: var(--lf-text-caption);
-  color: var(--lf-link);
+  color: var(--lf-text-3);
 }
 .row-number {
   width: 44px;

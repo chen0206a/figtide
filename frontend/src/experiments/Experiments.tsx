@@ -148,7 +148,7 @@ export function Experiments({
                 <option key={t}>{t}</option>
               ))}
             </select>
-            <span>
+            <span className="lf-mono">
               {filtered.length} / {rows.length} 条记录
             </span>
           </div>
@@ -195,7 +195,7 @@ export function Experiments({
                     />
                     <button className="record-title" onClick={() => setEdit(r)}>
                       <h3>{r.name}</h3>
-                      <span>
+                      <span className="lf-mono">
                         {new Date(r.updated_at).toLocaleString()} · 修订{" "}
                         {r.revision}
                       </span>
@@ -249,7 +249,7 @@ export function Experiments({
                           .map(([k, v]) => (
                             <span key={k}>
                               {k}
-                              <b>{display(v)}</b>
+                              <b className="lf-mono">{display(v)}</b>
                             </span>
                           ))}
                         {Object.keys(r.parameters).length > 4 && (

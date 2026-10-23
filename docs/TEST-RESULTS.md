@@ -1,5 +1,25 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 09-1 收敛蓝色
+
+- 合并任务包，仅执行09。85条辅助信息/装饰声明改为中性色，数字、版本与时间补等宽类。保留链接、选中、焦点、进行中状态。
+- `npm test -- --maxWorkers=4` 首轮191/192（未改动助手测试超时），原样重跑192/192；`npm run build` 通过20.27s。
+- `$env:LABFLOW_POLISH_STAGE='09-1'; ./.runtime/test-refactor09.ps1`：独立真实MySQL和API8087、生产构建5178、本地模型协议夹具，调用 `npx playwright test visual-polish.spec.ts`：1/1通过，三张1440px截图，配置和revision不变；新JVM审计/恢复检查通过。首次测试夹具漏必填description，修正后通过。
+- 未执行：Java单测、真实模型、完整E2E（留总验收）。无后端/API/助手逻辑改动；差异：无。需要人决定：无。
+
+选择器清单（完整前后值见 test-evidence/refactor09-1-selectors.json）：
+- `frontend/src/styles.css`: `.empty-art`, `.spinner`, `.field-pills b`, `.field-type`
+- `frontend/src/components/model-connection.css`: `.model-connection-dialog .connection-consent`
+- `frontend/src/editor/agent-assistant.css`: `.agent-budget progress`, `.agent-budget progress::-webkit-progress-value`, `.agent-budget progress::-moz-progress-bar`
+- `frontend/src/editor/professional.css`: `.professional-kicker`, `.professional-intro p`, `.facet-plan-head`, `.facet-plan-head strong`, `.facet-mini-grid b`, `.facet-mini-grid i`, `.facet-mini-grid small`, `.sample-summary th`, `.sample-summary td`, `.sample-summary-note`, `.canvas-empty-plot`, `.canvas-empty-plot strong`, `.publication-readout strong, .publication-readout span`, `.publication-readout strong`, `.tiny-note`, `.export-checks`, `.evaluation-panel`
+- `frontend/src/editor/quick-actions.css`: `.quick-actions-dialog > p`, `.quick-actions-note`, `.quick-field > span, .quick-field-toggle`, `.quick-queue small`, `.quick-result-heading span`, `.quick-result-footer p`, `.quick-changes strong`, `.quick-changes span`, `.quick-changes del`
+- `frontend/src/editor/styles-library.css`: `.dialog-content.style-library-dialog`, `.style-library-dialog > p`, `.style-tabs button`, `.style-tabs button:hover`, `.style-browser-heading p`, `.style-card p`, `.style-preview p`, `.style-detail-scroll > p`, `.style-detail dt`, `.style-detail-note`, `.preset-traits span`, `.style-empty h4`, `.style-count`, `.style-reuse-body > p`
+- `frontend/src/experiments/experiments.css`: `.record-title > span`, `.experiment-tags span`, `.record-values small`, `.record-values p`, `.record-values b`, `.record-foot small`, `.comparison-selection`, `.comparison-selection > span`, `.form-section-head > span`, `.kv-head`, `.field-help`, `.dataset-link-options small`, `.comparison-heading p`, `.comparison-table small`, `.source-summary`, `.source-experiment p`, `.provenance-strip`
+- `frontend/src/processing/processing.css`: `.processing-form h3 small`, `.processing-form p, .processing-preview > p`, `.processing-actions > span`, `.processing-counts span`
+- `frontend/src/styles/dialogs.css`: `.column-options`, `.column-resize:hover`, `.dialog-overlay`, `.dialog-content[role="dialog"]`, `.dialog-content .dialog-close`
+- `frontend/src/components/home/home.css`: `.home-quick-icon`
+- `frontend/src/editor/workbench/workbench.css`: `.figure-icon`, `.version-tag`, `.number-symbol, .string-symbol`, `.property-section h3 svg`, `.panel-resize:hover`, `.canvas-stage`, `.editor .field-disclosure summary span`, `.editor .chart-picker > summary span`
+
 ## 任务 08：清理与文档收尾（2026-10-23）
 
 本任务从干净的 5f197f0 开始，只整理前端呈现与文档。删除过渡别名、旧导航/覆盖样式，将现用规则归入 shell.css、styles/dialogs.css 与 editor/workbench/workbench.css。根 App 移除旧外壳类，main 更新样式入口；仍在使用旧页眉标签的 Editor 空状态与 Comparison 改用 lf-kicker。后端、API、schema、原始数据、绘图计算、草稿、保存、撤销及助手状态/预算/恢复逻辑未改。

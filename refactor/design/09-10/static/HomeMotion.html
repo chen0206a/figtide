@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F8}
+a{color:#1F4FB8;text-decoration:none}a:hover{color:#163B8C}
+button,input{font-family:inherit}
+/* ---- entrance choreography ---- */
+.lf-anim .fx-up{animation:fxUp .75s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0ms)}
+@keyframes fxUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.lf-anim .fx-stage{animation:fxStage 1s cubic-bezier(.22,1,.36,1) both;animation-delay:.18s}
+@keyframes fxStage{from{opacity:0;transform:translateY(22px) scale(.985)}to{opacity:1;transform:none}}
+.lf-anim .fx-draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:fxDraw 1.5s cubic-bezier(.65,0,.35,1) forwards;animation-delay:var(--d,0ms)}
+@keyframes fxDraw{to{stroke-dashoffset:0}}
+.lf-anim .fx-fade{animation:fxFade .9s ease both;animation-delay:var(--d,0ms)}
+@keyframes fxFade{from{opacity:0}to{opacity:1}}
+.lf-anim .fx-pop{transform-box:fill-box;transform-origin:center;animation:fxPop .5s cubic-bezier(.34,1.56,.64,1) both;animation-delay:var(--d,0ms)}
+@keyframes fxPop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+.fx-pulse{animation:fxPulse 1.8s ease-in-out infinite}
+@keyframes fxPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,119,6,.45)}50%{box-shadow:0 0 0 6px rgba(217,119,6,0)}}
+.fx-caret{display:inline-block;width:1px;height:16px;margin-left:2px;background:#0E1116;vertical-align:-3px;animation:fxCaret 1s steps(1) infinite}
+@keyframes fxCaret{50%{opacity:0}}
+.fx-swap{animation:fxSwap .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes fxSwap{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* ---- hover ---- */
+.lift{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s,border-color .25s}
+.lift:hover{transform:translateY(-2px);box-shadow:0 14px 30px -18px rgba(14,17,22,.35);border-color:#D5DAE1}
+.paper{transition:transform .6s cubic-bezier(.22,1,.36,1),box-shadow .6s}
+.paper:hover{transform:translateY(-4px) rotate(-.3deg);box-shadow:0 40px 80px -36px rgba(0,0,0,.65)}
+.cta{transition:transform .2s,background .2s}
+.cta:hover{transform:translateX(2px)}
+/* ---- shared-element transition (home -> editor) ---- */
+.fx-leave{transition:opacity .32s ease,transform .32s ease}
+.is-leaving .fx-leave{opacity:0;transform:translateY(-10px)}
+.is-leaving .paper{transform:translate(-120px,40px) scale(1.18);box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .62s cubic-bezier(.65,0,.35,1),box-shadow .62s}
+.is-leaving .stage-bg{background:#F0F1F4;transition:background .62s ease}
+.ed-in .ed-top{animation:edTop .5s cubic-bezier(.22,1,.36,1) both}
+@keyframes edTop{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+.ed-in .ed-left{animation:edLeft .55s cubic-bezier(.22,1,.36,1) .08s both}
+@keyframes edLeft{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+.ed-in .ed-right{animation:edRight .55s cubic-bezier(.22,1,.36,1) .12s both}
+@keyframes edRight{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.ed-in .ed-paper{animation:edPaper .55s cubic-bezier(.22,1,.36,1) both}
+@keyframes edPaper{from{transform:scale(1.06);opacity:.85}to{transform:none;opacity:1}}
+.ed-in .ed-ask{animation:fxUp .6s cubic-bezier(.22,1,.36,1) .35s both}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+</style>
+
+</head>
+<body>
+
+
+<div class="lf-anim" style="min-height: 1000px; background: #F5F6F8; color: #0E1116; font-family: Inter, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif; font-size: 14px; line-height: 1.5; overflow: hidden">
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #E4E7EC; position: relative; z-index: 2">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; min-height: 64px; padding: 0 28px">
+<a href="#" style="display: flex; align-items: center; gap: 10px; color: #0E1116">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #0E1116; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18 L9 11 L13 14 L20 5"></path></svg></span>
+<span style="font-weight: 700; font-size: 17px">LabFlow</span>
+</a>
+<nav aria-label="主导航" style="display: flex; gap: 2px; padding: 3px; background: #F1F3F6; border-radius: 11px">
+<a href="#" style="padding: 7px 14px; border-radius: 8px; font-size: 13px; background: #FFFFFF; color: #0E1116; font-weight: 600">项目概览</a>
+<a href="#" style="padding: 7px 14px; border-radius: 8px; color: #4A5361; font-size: 13px">实验记录</a>
+<a href="#" style="padding: 7px 14px; border-radius: 8px; color: #4A5361; font-size: 13px">数据管理</a>
+<a href="#" style="padding: 7px 14px; border-radius: 8px; font-size: 13px; background: transparent; color: #4A5361; font-weight: 400">科研绘图</a>
+</nav>
+<div style="flex: 1 1 20px"></div>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5F6773"><span style="width: 7px; height: 7px; border-radius: 50%; background: #1A8F5C"></span>本地工作区</span>
+<button type="button" style="display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border: 1px solid #E4E7EC; border-radius: 11px; background: #FFFFFF; color: #0E1116; font-size: 13px">视觉模型泛化研究 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5F6773" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9 L12 15 L18 9"></path></svg></button>
+</div>
+</header>
+
+
+<main style="max-width: 1280px; margin: 0 auto; padding: 36px 28px 40px; display: flex; flex-direction: column; gap: 22px">
+
+<section class="fx-leave" style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span class="fx-up" style="--d: 0ms; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #5F6773">10月23日 · 星期五 · 本地工作区</span>
+<h1 class="fx-up" style="--d: 70ms; margin: 0; font-size: 36px; line-height: 1.15; font-weight: 800; letter-spacing: -0.03em">下午好，接着上次的图继续。</h1>
+</div>
+<div class="fx-up" style="--d: 140ms; display: flex; gap: 10px">
+<button type="button" class="lift" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border: 1px solid #D5DAE1; border-radius: 12px; background: #FFFFFF; color: #0E1116; font-size: 14px; font-weight: 500; cursor: pointer">导入数据</button>
+<button type="button" class="lift" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: #0E1116; color: #FFFFFF; font-size: 14px; font-weight: 600; cursor: pointer">新建图表</button>
+</div>
+</section>
+
+<label class="fx-up fx-leave lift" style="--d: 180ms; display: flex; align-items: center; gap: 14px; height: 58px; padding: 0 10px 0 18px; border: 1px solid #E4E7EC; border-radius: 16px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(14,17,22,0.05); cursor: text">
+<span style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 9px; background: #0E1116; display: flex; align-items: center; justify-content: center">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true"><path d="M12 2 L13.8 9.2 L21 11 L13.8 12.8 L12 20 L10.2 12.8 L3 11 L10.2 9.2 Z"></path><path d="M19 15 L19.8 17.2 L22 18 L19.8 18.8 L19 21 L18.2 18.8 L16 18 L18.2 17.2 Z" opacity="0.7"></path></svg>
+</span>
+<span style="display: flex; flex-direction: column; flex: 1; min-width: 0">
+<span style="font-size: 11px; color: #5F6773">搜索项目与图表，或让绘图助手修改最近的图</span>
+<span style="display: flex; align-items: center; min-width: 0; font-size: 15px; color: #8A93A0; white-space: nowrap; overflow: hidden"><span class="fx-swap" key="0">把图例放到右下角，Proposed 线加粗</span><span class="fx-caret"></span></span>
+</span>
+<span style="display: flex; align-items: center; gap: 6px; flex-shrink: 0">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 7px; border: 1px solid #E4E7EC; border-radius: 6px; color: #5F6773">⌘K</span>
+<span style="height: 38px; padding: 0 14px; display: flex; align-items: center; border-radius: 10px; background: #F1F3F6; color: #4A5361; font-size: 13px">在编辑器中预览</span>
+</span>
+</label>
+
+<div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch">
+<section class="fx-stage stage-bg" aria-label="继续上次的图表" style="position: relative; flex: 999 1 760px; min-width: 0; display: flex; flex-wrap: wrap; gap: 26px; align-items: center; padding: 26px 28px; border-radius: 22px; background: #0E1116; color: #FFFFFF; overflow: hidden">
+<div aria-hidden="true" class="fx-leave" style="position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none"></div>
+
+<div class="fx-leave" style="position: relative; flex: 1 1 220px; max-width: 250px; display: flex; flex-direction: column; gap: 14px">
+<span class="fx-up" style="--d: 320ms; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #8A93A0">FIGURE 04 · LINE</span>
+<div class="fx-up" style="--d: 380ms; display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; font-size: 26px; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em">Learning dynamics</h2>
+<span style="color: #B8C0CC; font-size: 13px">视觉模型泛化研究 · <span style="font-family: 'JetBrains Mono', monospace">curves.csv v1</span></span>
+</div>
+<ol class="fx-up" style="--d: 450ms; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; border-left: 1px solid #2B323C">
+<li style="display: flex; align-items: center; gap: 10px; padding: 6px 0 6px 16px; position: relative"><span class="fx-pulse" style="position: absolute; left: -5px; width: 9px; height: 9px; border-radius: 50%; background: #D97706"></span><span style="font-size: 13px">本机草稿 · 有未保存修改</span><span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8A93A0">2 分钟前</span></li>
+<li style="display: flex; align-items: center; gap: 10px; padding: 6px 0 6px 16px; position: relative"><span style="position: absolute; left: -4px; width: 7px; height: 7px; border-radius: 50%; background: #3CCB8A"></span><span style="font-size: 13px; color: #D7DCE3">v3 已保存</span><span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8A93A0">昨天 21:14</span></li>
+<li style="display: flex; align-items: center; gap: 10px; padding: 6px 0 6px 16px; position: relative"><span style="position: absolute; left: -4px; width: 7px; height: 7px; border-radius: 50%; background: #4A5361"></span><span style="font-size: 13px; color: #8A93A0">v1 创建</span><span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8A93A0">10/18</span></li>
+</ol>
+<div class="fx-up" style="--d: 520ms; display: flex; flex-wrap: wrap; gap: 10px">
+<button type="button" class="cta" style="display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px; border: 0; border-radius: 11px; background: #FFFFFF; color: #0E1116; font-size: 14px; font-weight: 700; cursor: pointer">继续编辑
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12 H19"></path><path d="M13 6 L19 12 L13 18"></path></svg></button>
+<button type="button" style="height: 42px; padding: 0 14px; border: 1px solid #2B323C; border-radius: 11px; background: transparent; color: #D7DCE3; font-size: 13px; cursor: pointer">导出 PDF</button>
+</div>
+</div>
+
+<div style="position: relative; flex: 999 1 420px; min-width: 0; display: flex; justify-content: center">
+<div class="paper" style="width: 100%; max-width: 540px; background: #FFFFFF; border-radius: 4px; padding: 12px 12px 4px; box-shadow: 0 30px 70px -34px rgba(0,0,0,0.7)">
+<div class="fx-fade" style="--d: 500ms; display: flex; justify-content: center; gap: 18px; font-size: 12px; color: #2B323C; margin-bottom: 2px">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 2px; background: #0072B2"></span>Baseline</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 3px; background: #D55E00"></span>Proposed method</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; border-top: 2px dashed #009E73"></span>Without module A</span>
+</div>
+<svg viewBox="0 0 700 330" style="display: block; width: 100%; height: auto" role="img" aria-label="三种方法测试准确率随训练轮次变化的学习曲线">
+<g transform="translate(62,10)" font-family="Inter, sans-serif" font-size="11" fill="#5F6773">
+<g class="fx-fade" style="--d: 420ms" stroke="#EDEFF2"><line x1="0" y1="0" x2="620" y2="0"></line><line x1="0" y1="56" x2="620" y2="56"></line><line x1="0" y1="112" x2="620" y2="112"></line><line x1="0" y1="168" x2="620" y2="168"></line><line x1="0" y1="224" x2="620" y2="224"></line></g>
+<g class="fx-fade" style="--d: 380ms">
+<line x1="0" y1="280" x2="620" y2="280" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="280" stroke="#2B323C"></line>
+<g text-anchor="end"><text x="-10" y="4">100</text><text x="-10" y="60">90</text><text x="-10" y="116">80</text><text x="-10" y="172">70</text><text x="-10" y="228">60</text><text x="-10" y="284">50</text></g>
+<g text-anchor="middle"><text x="0" y="298">0</text><text x="103.3" y="298">10</text><text x="206.7" y="298">20</text><text x="310" y="298">30</text><text x="413.3" y="298">40</text><text x="516.7" y="298">50</text><text x="620" y="298">60</text><text x="310" y="320" font-size="12" fill="#2B323C">Training epoch</text></g>
+<text transform="translate(-44,140) rotate(-90)" text-anchor="middle" font-size="12" fill="#2B323C">Test accuracy (%)</text>
+</g>
+<path class="fx-fade" style="--d: 1500ms" d="M0.0,205.0 L51.7,131.7 L103.3,89.0 L155.0,64.3 L206.7,50.0 L258.3,41.8 L310.0,37.1 L361.7,34.4 L413.3,33.0 L465.0,32.1 L516.7,31.7 L568.3,31.5 L620.0,31.4 L620.0,50.0 L568.3,50.3 L516.7,50.9 L465.0,51.9 L413.3,53.4 L361.7,55.8 L310.0,59.8 L258.3,66.4 L206.7,77.3 L155.0,95.4 L103.3,125.3 L51.7,175.3 L0.0,258.7 Z" fill="#D55E00" fill-opacity="0.12"></path>
+<path class="fx-draw" style="--d: 760ms" d="M0.0,242.1 L51.7,175.9 L103.3,137.9 L155.0,116.1 L206.7,103.6 L258.3,96.5 L310.0,92.3 L361.7,90.0 L413.3,88.6 L465.0,87.8 L516.7,87.4 L568.3,87.1 L620.0,87.0" fill="none" stroke="#009E73" stroke-width="2"></path>
+<path class="fx-draw" style="--d: 640ms" d="M0.0,238.2 L51.7,167.7 L103.3,127.2 L155.0,104.0 L206.7,90.7 L258.3,83.1 L310.0,78.7 L361.7,76.2 L413.3,74.7 L465.0,73.9 L516.7,73.4 L568.3,73.2 L620.0,73.0" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path class="fx-draw" style="--d: 520ms" d="M0.0,231.9 L51.7,153.5 L103.3,107.2 L155.0,79.8 L206.7,63.7 L258.3,54.1 L310.0,48.5 L361.7,45.1 L413.3,43.2 L465.0,42.0 L516.7,41.3 L568.3,40.9 L620.0,40.7" fill="none" stroke="#D55E00" stroke-width="2.8"></path>
+<circle class="fx-pop" style="--d: 1900ms" cx="620" cy="40.7" r="4.5" fill="#D55E00"></circle>
+<g class="fx-pop" style="--d: 2050ms"><rect x="528" y="10" width="86" height="21" rx="5" fill="#0E1116"></rect><text x="571" y="24.5" text-anchor="middle" fill="#FFFFFF" font-family="JetBrains Mono, monospace">92.8%</text></g>
+</g>
+</svg>
+</div>
+</div>
+</section>
+<div class="fx-leave" style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<section class="fx-up lift" style="--d: 420ms; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; padding: 18px 20px">
+<div style="display: flex; justify-content: space-between; margin-bottom: 8px"><h3 style="margin: 0; font-size: 15px">最近图表</h3><span style="color: #5F6773; font-size: 13px">共 6 张</span></div>
+<div style="display: flex; flex-direction: column">
+<a href="#" style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #EEF0F3; color: #0E1116"><span>ROC · 两模型对比</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">v2 · 昨天</span></a>
+<a href="#" style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #EEF0F3; color: #0E1116"><span>多分类混淆矩阵</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">v1 · 10/19</span></a>
+<a href="#" style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #EEF0F3; color: #0E1116"><span>重复实验 · mean ± SEM</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">v1 · 10/19</span></a>
+</div>
+</section>
+<section class="fx-up" style="--d: 500ms; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button type="button" class="lift" style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px; border: 1px solid #E4E7EC; border-radius: 16px; background: #FFFFFF; text-align: left; cursor: pointer"><span style="font-weight: 600; font-size: 14px; color: #0E1116">导入数据</span><span style="font-size: 12px; color: #5F6773">CSV · XLSX · JSON</span></button>
+<button type="button" class="lift" style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px; border: 1px solid #E4E7EC; border-radius: 16px; background: #FFFFFF; text-align: left; cursor: pointer"><span style="font-weight: 600; font-size: 14px; color: #0E1116">新建图表</span><span style="font-size: 12px; color: #5F6773">11 类科研图</span></button>
+<button type="button" class="lift" style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px; border: 1px solid #E4E7EC; border-radius: 16px; background: #FFFFFF; text-align: left; cursor: pointer"><span style="font-weight: 600; font-size: 14px; color: #0E1116">对比实验</span><span style="font-size: 12px; color: #5F6773">2–8 个实验</span></button>
+<button type="button" class="lift" style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px; border: 1px solid #E4E7EC; border-radius: 16px; background: #FFFFFF; text-align: left; cursor: pointer"><span style="font-weight: 600; font-size: 14px; color: #0E1116">处理与汇总</span><span style="font-size: 12px; color: #5F6773">mean ± SD / SEM</span></button>
+</section>
+</div>
+</div>
+
+
+<div class="fx-leave" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 18px">
+<section class="fx-up lift" style="--d: 580ms; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; padding: 18px 20px">
+<div style="display: flex; justify-content: space-between; margin-bottom: 8px"><h3 style="margin: 0; font-size: 15px">最近实验</h3><a href="#" style="font-size: 13px">全部实验</a></div>
+<div style="display: flex; flex-direction: column; font-size: 13px">
+<span style="display: grid; grid-template-columns: minmax(0, 1fr) 64px 72px; gap: 8px; padding: 10px 0; border-top: 1px solid #EEF0F3"><span>EXP-002 Proposed method</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace; color: #D55E00; font-weight: 600">92.8</span><span style="text-align: right; color: #146C45">已完成</span></span>
+<span style="display: grid; grid-template-columns: minmax(0, 1fr) 64px 72px; gap: 8px; padding: 10px 0; border-top: 1px solid #EEF0F3"><span>EXP-001 Baseline</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">87.1</span><span style="text-align: right; color: #146C45">已完成</span></span>
+<span style="display: grid; grid-template-columns: minmax(0, 1fr) 64px 72px; gap: 8px; padding: 10px 0; border-top: 1px solid #EEF0F3"><span>EXP-004 Proposed + aug</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace; color: #8A93A0">—</span><span style="text-align: right; color: #1F4FB8">进行中</span></span>
+</div>
+</section>
+<section class="fx-up lift" style="--d: 640ms; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; padding: 18px 20px">
+<div style="display: flex; justify-content: space-between; margin-bottom: 8px"><h3 style="margin: 0; font-size: 15px">研究项目</h3><a href="#" style="font-size: 13px">新建项目</a></div>
+<div style="display: flex; flex-direction: column; font-size: 13px">
+<span style="display: grid; grid-template-columns: minmax(0, 1fr) 48px 48px 48px; gap: 8px; padding: 6px 0; color: #5F6773; font-size: 12px"><span>项目</span><span style="text-align: right">实验</span><span style="text-align: right">数据</span><span style="text-align: right">图表</span></span>
+<span style="display: grid; grid-template-columns: minmax(0, 1fr) 48px 48px 48px; gap: 8px; padding: 10px 0; border-top: 1px solid #EEF0F3"><span style="display: flex; align-items: center; gap: 8px"><span style="width: 6px; height: 6px; border-radius: 50%; background: #1A8F5C"></span>视觉模型泛化研究</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">8</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">2</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">6</span></span>
+<span style="display: grid; grid-template-columns: minmax(0, 1fr) 48px 48px 48px; gap: 8px; padding: 10px 0; border-top: 1px solid #EEF0F3"><span style="padding-left: 14px">模型评估与区间</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">2</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">1</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">4</span></span>
+<span style="display: grid; grid-template-columns: minmax(0, 1fr) 48px 48px 48px; gap: 8px; padding: 10px 0; border-top: 1px solid #EEF0F3"><span style="padding-left: 14px">分类评估与共同样本</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">2</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">1</span><span style="text-align: right; font-family: 'JetBrains Mono', monospace">3</span></span>
+</div>
+</section>
+</div>
+
+<div class="fx-up fx-leave" style="--d: 840ms; display: flex; justify-content: space-between; align-items: center; padding-top: 6px; color: #5F6773; font-size: 12px">
+<span style="font-family: 'JetBrains Mono', monospace">数据保存在本机 · 原始文件只读</span>
+<button type="button" style="height: 32px; padding: 0 12px; border: 1px solid #D5DAE1; border-radius: 9px; background: #FFFFFF; color: #4A5361; font-size: 12px; cursor: pointer">重播入场动画</button>
+</div>
+</main>
+
+
+
+
+</div>
+
+</body>
+</html>

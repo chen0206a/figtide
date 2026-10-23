@@ -638,16 +638,16 @@
   border-radius: var(--lf-radius-pill);
   overflow: hidden;
   background: var(--lf-surface-sunken);
-  color: var(--lf-link);
+  color: var(--lf-text-3);
 }
 .agent-budget progress::-webkit-progress-bar {
   background: var(--lf-surface-sunken);
 }
 .agent-budget progress::-webkit-progress-value {
-  background: var(--lf-link);
+  background: var(--lf-text);
 }
 .agent-budget progress::-moz-progress-bar {
-  background: var(--lf-link);
+  background: var(--lf-text);
 }
 .agent-dock .quick-actions-builder {
   padding: var(--lf-space-3) var(--lf-space-4);

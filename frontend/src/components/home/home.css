@@ -475,7 +475,7 @@
   justify-content: center;
   border-radius: var(--lf-radius-md);
   background: var(--lf-info-soft);
-  color: var(--lf-link);
+  color: var(--lf-text-3);
 }
 .home-quick-title {
   font-size: var(--lf-text-md);

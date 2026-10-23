@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F7F8FA}
+a{color:#1F4FB8;text-decoration:none}a:hover{color:#163B8C}
+button{font-family:inherit}
+/* hero headline: lines rise out of a mask */
+.line{display:block;overflow:hidden;padding-bottom:.08em}
+.line>span{display:inline-block;animation:rise 1s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0ms)}
+@keyframes rise{from{transform:translateY(105%)}to{transform:none}}
+.up{animation:up .9s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0ms)}
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.fade{animation:fade 1s ease both;animation-delay:var(--d,0ms)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.underline{stroke-dasharray:420;stroke-dashoffset:420;animation:draw 1s cubic-bezier(.65,0,.35,1) forwards;animation-delay:1.05s}
+.draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.6s cubic-bezier(.65,0,.35,1) forwards;animation-delay:var(--d,0ms)}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pop{transform-box:fill-box;transform-origin:center;animation:pop .55s cubic-bezier(.34,1.56,.64,1) both;animation-delay:var(--d,0ms)}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+.card-in{animation:cardIn 1s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0ms)}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px) rotate(var(--rot,0deg)) scale(.97)}to{opacity:1;transform:rotate(var(--rot,0deg))}}
+.scan{animation:scan 2.4s cubic-bezier(.65,0,.35,1) 1.4s infinite}
+@keyframes scan{0%{transform:translateY(0);opacity:0}10%{opacity:1}80%{transform:translateY(150px);opacity:1}100%{transform:translateY(150px);opacity:0}}
+.flow{stroke-dasharray:6 8;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-28}}
+.chip{animation:pop .6s cubic-bezier(.34,1.56,.64,1) both, float var(--f,6s) ease-in-out infinite;animation-delay:var(--d,0ms), calc(var(--d,0ms) + .6s)}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -7px}}
+.shine{position:relative;overflow:hidden}
+.shine::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);transform:translateX(-120%);animation:shine 4.5s ease-in-out 2.4s infinite}
+@keyframes shine{0%{transform:translateX(-120%)}35%,100%{transform:translateX(120%)}}
+.cta{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
+.cta:hover{transform:translateY(-2px);box-shadow:0 18px 36px -16px rgba(14,17,22,.55)}
+.cta:hover .arrow{transform:translateX(4px)}
+.arrow{transition:transform .25s cubic-bezier(.22,1,.36,1)}
+.lift{transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s,border-color .3s}
+.lift:hover{transform:translateY(-4px);box-shadow:0 22px 44px -26px rgba(14,17,22,.4);border-color:#D5DAE1}
+/* assistant loop (7s) */
+.lg1{animation:lg1 7s cubic-bezier(.22,1,.36,1) infinite}
+.lg2{animation:lg2 7s cubic-bezier(.22,1,.36,1) infinite}
+.lg3{animation:lg3 7s cubic-bezier(.22,1,.36,1) infinite}
+@keyframes lg1{0%,34%{transform:translate(110px,22px)}46%,88%{transform:translate(334px,206px)}96%,100%{transform:translate(110px,22px)}}
+@keyframes lg2{0%,35%{transform:translate(200px,22px)}47%,88%{transform:translate(334px,226px)}96%,100%{transform:translate(200px,22px)}}
+@keyframes lg3{0%,36%{transform:translate(352px,22px)}48%,88%{transform:translate(334px,246px)}96%,100%{transform:translate(352px,22px)}}
+.lgbox{animation:lgbox 7s ease infinite}
+@keyframes lgbox{0%,36%{opacity:0}46%,88%{opacity:1}96%,100%{opacity:0}}
+.thick{animation:thick 7s cubic-bezier(.22,1,.36,1) infinite}
+@keyframes thick{0%,36%{stroke-width:2.6px}46%,88%{stroke-width:4.4px}96%,100%{stroke-width:2.6px}}
+.msg{animation:msg 7s ease infinite;animation-delay:var(--d,0ms)}
+@keyframes msg{0%{opacity:0;transform:translateY(6px)}6%,88%{opacity:1;transform:none}96%,100%{opacity:0}}
+.row1{animation:row 7s ease infinite;--a:18%}
+.row2{animation:row2 7s ease infinite}
+.row3{animation:row3 7s ease infinite}
+@keyframes row{0%,16%{opacity:0;transform:translateX(-6px)}22%,88%{opacity:1;transform:none}96%,100%{opacity:0}}
+@keyframes row2{0%,20%{opacity:0;transform:translateX(-6px)}26%,88%{opacity:1;transform:none}96%,100%{opacity:0}}
+@keyframes row3{0%,24%{opacity:0;transform:translateX(-6px)}30%,88%{opacity:1;transform:none}96%,100%{opacity:0}}
+.applied{animation:applied 7s ease infinite}
+@keyframes applied{0%,52%{opacity:0;transform:scale(.9)}58%,88%{opacity:1;transform:none}96%,100%{opacity:0}}
+/* scroll reveal (progressive enhancement) */
+@supports (animation-timeline: view()){
+.reveal{animation:up linear both;animation-timeline:view();animation-range:entry 0% entry 90%}
+.trace{stroke-dasharray:1200;stroke-dashoffset:1200;animation:draw linear both;animation-timeline:view();animation-range:entry 10% cover 45%}
+}
+/* page -> app transition */
+.wipe{clip-path:circle(0px at var(--cx) var(--cy));animation:wipe .8s cubic-bezier(.65,0,.35,1) forwards}
+@keyframes wipe{to{clip-path:circle(160vmax at var(--cx) var(--cy))}}
+.wipe-mark{animation:up .6s cubic-bezier(.22,1,.36,1) .35s both}
+@media (max-width: 760px){.hero-aux{display:none!important}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.underline,.draw,.trace{stroke-dashoffset:0!important}}
+</style>
+
+</head>
+<body>
+
+
+<div style="background: #F7F8FA; color: #0E1116; font-family: Inter, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif; font-size: 15px; line-height: 1.6">
+
+<header class="fade" style="--d: 0ms; position: sticky; top: 0; z-index: 10; background: rgba(247,248,250,0.82); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid rgba(228,231,236,0.7)">
+<div style="max-width: 1200px; margin: 0 auto; padding: 14px 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px">
+<a href="#" aria-label="LabFlow" style="display: flex; align-items: center; gap: 10px; color: #0E1116">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #0E1116; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18 L9 11 L13 14 L20 5"></path></svg></span>
+<span style="font-weight: 700; font-size: 17px; letter-spacing: -0.01em">LabFlow</span>
+</a>
+<nav aria-label="页面导航" style="display: flex; flex-wrap: wrap; gap: 4px 26px; font-size: 14px">
+<a href="#trace" style="color: #4A5361">可追溯</a>
+<a href="#assistant" style="color: #4A5361">绘图助手</a>
+<a href="#charts" style="color: #4A5361">图表</a>
+<a href="https://github.com/chen0206a/labflow-agent" style="color: #4A5361">GitHub</a>
+</nav>
+<div style="flex: 1 1 20px"></div>
+<button type="button" class="cta" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border: 0; border-radius: 11px; background: #0E1116; color: #FFFFFF; font-size: 14px; font-weight: 600; cursor: pointer">开始创作 <span class="arrow" aria-hidden="true">→</span></button>
+</div>
+</header>
+
+<section aria-label="LabFlow 介绍" style="position: relative; overflow: hidden; padding: 84px 28px 40px">
+<div aria-hidden="true" class="fade" style="--d: 100ms; position: absolute; inset: 0; background-image: linear-gradient(rgba(14,17,22,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(14,17,22,0.05) 1px, transparent 1px); background-size: 44px 44px; -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%); mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%); pointer-events: none"></div>
+<div style="position: relative; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 26px">
+<div class="up" style="--d: 60ms; display: flex; align-items: center; gap: 10px; padding: 5px 14px 5px 6px; border: 1px solid #E4E7EC; border-radius: 999px; background: #FFFFFF; font-size: 13px; color: #4A5361">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #0E1116; color: #FFFFFF">开源</span>本地优先 · 无需账号 · 数据不出本机
+</div>
+<h1 style="margin: 0; font-size: 76px; line-height: 1.08; font-weight: 800; letter-spacing: -0.035em">
+<span class="line"><span style="--d: 150ms">让实验数据，</span></span>
+<span class="line"><span style="--d: 300ms">自然成为<span style="position: relative; display: inline-block">论文图<svg aria-hidden="true" viewBox="0 0 300 24" preserveAspectRatio="none" style="position: absolute; left: -2%; bottom: -10px; width: 104%; height: 20px; overflow: visible"><path class="underline" d="M4 16 C 70 6, 150 4, 296 12" fill="none" stroke="#D55E00" stroke-width="7" stroke-linecap="round"></path></svg></span>。</span></span>
+</h1>
+<p class="up" style="--d: 620ms; margin: 0; max-width: 640px; font-size: 19px; color: #4A5361">实验记录、数据版本和科研绘图放在同一个本地工作台。每一张图，都能回到它的数据和处理规则。</p>
+<div class="up" style="--d: 760ms; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; align-items: center">
+<button type="button" class="cta shine" style="display: flex; align-items: center; gap: 10px; height: 58px; padding: 0 30px; border: 0; border-radius: 16px; background: #0E1116; color: #FFFFFF; font-size: 17px; font-weight: 700; cursor: pointer">开始创作 <span class="arrow" aria-hidden="true" style="font-size: 18px">→</span></button>
+<a href="#trace" style="display: flex; align-items: center; gap: 6px; height: 58px; padding: 0 18px; color: #0E1116; font-size: 15px; font-weight: 500">了解它如何工作 <span aria-hidden="true">↓</span></a>
+</div>
+
+<div class="hero-aux" style="position: relative; width: 100%; max-width: 1120px; aspect-ratio: 1120 / 470; margin-top: 18px">
+<svg aria-hidden="true" viewBox="0 0 1120 470" style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible"><path class="flow fade" style="--d: 1500ms" d="M 336 250 C 390 250, 400 230, 452 230" fill="none" stroke="#9AA3B0" stroke-width="2"></path><circle class="pop" style="--d: 1550ms" cx="452" cy="230" r="4" fill="#9AA3B0"></circle></svg>
+
+<div class="card-in" style="--d: 1000ms; --rot: -3deg; position: absolute; left: 2%; top: 17%; width: 27%; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 14px; box-shadow: 0 24px 50px -30px rgba(14,17,22,0.35); text-align: left; overflow: hidden">
+<div style="padding: 10px 14px; border-bottom: 1px solid #EEF0F3; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #5F6773; display: flex; justify-content: space-between"><span>curves.csv · v1</span><span>sha256 aacd…</span></div>
+<div style="position: relative; font-family: 'JetBrains Mono', monospace; font-size: 12px">
+<div class="scan" aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 30px; height: 30px; background: rgba(31,79,184,0.08); border-top: 1px solid rgba(31,79,184,0.25); border-bottom: 1px solid rgba(31,79,184,0.25)"></div>
+<div style="display: grid; grid-template-columns: 1.4fr 0.8fr 1fr; padding: 6px 14px; color: #5F6773"><span>model</span><span>epoch</span><span style="text-align: right">accuracy</span></div>
+<div style="display: grid; grid-template-columns: 1.4fr 0.8fr 1fr; padding: 6px 14px; border-top: 1px solid #F1F3F6"><span>Baseline</span><span>10</span><span style="text-align: right">0.734</span></div>
+<div style="display: grid; grid-template-columns: 1.4fr 0.8fr 1fr; padding: 6px 14px; border-top: 1px solid #F1F3F6"><span>Baseline</span><span>30</span><span style="text-align: right">0.842</span></div>
+<div style="display: grid; grid-template-columns: 1.4fr 0.8fr 1fr; padding: 6px 14px; border-top: 1px solid #F1F3F6"><span>Proposed</span><span>10</span><span style="text-align: right">0.786</span></div>
+<div style="display: grid; grid-template-columns: 1.4fr 0.8fr 1fr; padding: 6px 14px; border-top: 1px solid #F1F3F6"><span>Proposed</span><span>30</span><span style="text-align: right">0.903</span></div>
+<div style="display: grid; grid-template-columns: 1.4fr 0.8fr 1fr; padding: 6px 14px; border-top: 1px solid #F1F3F6"><span>Ablation</span><span>30</span><span style="text-align: right">0.823</span></div>
+</div>
+</div>
+
+<div class="card-in" style="--d: 1350ms; position: absolute; left: 41%; top: 4%; width: 55%; background: #FFFFFF; border-radius: 6px; padding: 14px 14px 6px; box-shadow: 0 1px 2px rgba(14,17,22,0.06), 0 40px 80px -40px rgba(14,17,22,0.45)">
+<div class="fade" style="--d: 2000ms; display: flex; justify-content: center; gap: 18px; font-size: 12px; color: #2B323C">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 2px; background: #0072B2"></span>Baseline</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 3px; background: #D55E00"></span>Proposed</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; border-top: 2px dashed #009E73"></span>w/o module A</span>
+</div>
+<svg viewBox="0 0 700 330" style="display: block; width: 100%; height: auto" role="img" aria-label="由表格数据生成的学习曲线">
+<g transform="translate(62,10)" font-family="Inter, sans-serif" font-size="11" fill="#5F6773">
+<g class="fade" style="--d: 1650ms" stroke="#EDEFF2"><line x1="0" y1="0" x2="620" y2="0"></line><line x1="0" y1="56" x2="620" y2="56"></line><line x1="0" y1="112" x2="620" y2="112"></line><line x1="0" y1="168" x2="620" y2="168"></line><line x1="0" y1="224" x2="620" y2="224"></line></g>
+<g class="fade" style="--d: 1600ms"><line x1="0" y1="280" x2="620" y2="280" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="280" stroke="#2B323C"></line>
+<g text-anchor="end"><text x="-10" y="4">100</text><text x="-10" y="60">90</text><text x="-10" y="116">80</text><text x="-10" y="172">70</text><text x="-10" y="228">60</text><text x="-10" y="284">50</text></g>
+<g text-anchor="middle"><text x="0" y="298">0</text><text x="206.7" y="298">20</text><text x="413.3" y="298">40</text><text x="620" y="298">60</text><text x="310" y="320" font-size="12" fill="#2B323C">Training epoch</text></g></g>
+<path class="fade" style="--d: 3100ms" d="M0.0,205.0 L51.7,131.7 L103.3,89.0 L155.0,64.3 L206.7,50.0 L258.3,41.8 L310.0,37.1 L361.7,34.4 L413.3,33.0 L465.0,32.1 L516.7,31.7 L568.3,31.5 L620.0,31.4 L620.0,50.0 L568.3,50.3 L516.7,50.9 L465.0,51.9 L413.3,53.4 L361.7,55.8 L310.0,59.8 L258.3,66.4 L206.7,77.3 L155.0,95.4 L103.3,125.3 L51.7,175.3 L0.0,258.7 Z" fill="#D55E00" fill-opacity="0.12"></path>
+<path class="draw" style="--d: 2050ms" d="M0.0,242.1 L51.7,175.9 L103.3,137.9 L155.0,116.1 L206.7,103.6 L258.3,96.5 L310.0,92.3 L361.7,90.0 L413.3,88.6 L465.0,87.8 L516.7,87.4 L568.3,87.1 L620.0,87.0" fill="none" stroke="#009E73" stroke-width="2"></path>
+<path class="draw" style="--d: 1900ms" d="M0.0,238.2 L51.7,167.7 L103.3,127.2 L155.0,104.0 L206.7,90.7 L258.3,83.1 L310.0,78.7 L361.7,76.2 L413.3,74.7 L465.0,73.9 L516.7,73.4 L568.3,73.2 L620.0,73.0" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path class="draw" style="--d: 1750ms" d="M0.0,231.9 L51.7,153.5 L103.3,107.2 L155.0,79.8 L206.7,63.7 L258.3,54.1 L310.0,48.5 L361.7,45.1 L413.3,43.2 L465.0,42.0 L516.7,41.3 L568.3,40.9 L620.0,40.7" fill="none" stroke="#D55E00" stroke-width="2.8"></path>
+<circle class="pop" style="--d: 3300ms" cx="620" cy="40.7" r="4.5" fill="#D55E00"></circle>
+</g>
+</svg>
+</div>
+
+<span class="chip" style="--d: 3400ms; --f: 6s; position: absolute; left: 35%; top: 0%; padding: 7px 12px; border-radius: 999px; background: #FFFFFF; border: 1px solid #E4E7EC; box-shadow: 0 10px 24px -14px rgba(14,17,22,0.35); font-family: 'JetBrains Mono', monospace; font-size: 12px">mean ± SEM · n = 3</span>
+<span class="chip" style="--d: 3550ms; --f: 7s; position: absolute; right: 0%; top: 40%; padding: 7px 12px; border-radius: 999px; background: #0E1116; color: #FFFFFF; font-family: 'JetBrains Mono', monospace; font-size: 12px">92.8%</span>
+<span class="chip" style="--d: 3700ms; --f: 6.5s; position: absolute; left: 76%; top: 88%; padding: 7px 12px; border-radius: 999px; background: #FFFFFF; border: 1px solid #E4E7EC; box-shadow: 0 10px 24px -14px rgba(14,17,22,0.35); font-family: 'JetBrains Mono', monospace; font-size: 12px">88 mm · 8 pt · 矢量 PDF</span>
+<span class="chip" style="--d: 3850ms; --f: 7.5s; position: absolute; left: 6%; top: 84%; padding: 7px 12px; border-radius: 999px; background: #FFFFFF; border: 1px solid #E4E7EC; box-shadow: 0 10px 24px -14px rgba(14,17,22,0.35); font-size: 12px; color: #2B323C"><span style="display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: #1A8F5C; vertical-align: 1px"></span>v3 · 可追溯到数据版本</span>
+</div>
+</div>
+</section>
+
+<section id="trace" style="max-width: 1200px; margin: 0 auto; padding: 110px 28px 0">
+<div class="reveal" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 44px">
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 600px">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #5F6773">01 · REPRODUCIBLE</span>
+<h2 style="margin: 0; font-size: 44px; line-height: 1.15; font-weight: 800; letter-spacing: -0.025em">可复现，是默认值。</h2>
+</div>
+<p style="margin: 0; max-width: 420px; color: #4A5361">审稿人问「这个数怎么来的」，你可以直接打开它的数据版本和处理规则。</p>
+</div>
+<div style="position: relative">
+<svg aria-hidden="true" viewBox="0 0 1144 20" preserveAspectRatio="none" style="position: absolute; left: 0; right: 0; top: 34px; width: 100%; height: 20px"><path class="trace" d="M 40 10 L 1104 10" fill="none" stroke="#C3C9D2" stroke-width="2" stroke-dasharray="1200"></path></svg>
+<div style="position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px">
+<div class="reveal lift" style="padding: 24px; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; display: flex; flex-direction: column; gap: 12px"><span style="width: 34px; height: 34px; border-radius: 50%; background: #0E1116; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px">01</span><strong style="font-size: 18px">原始数据</strong><span style="color: #4A5361; font-size: 14px">导入后只读保存，更新时追加新版本，不覆盖。</span><span style="margin-top: auto; padding: 8px 10px; border-radius: 8px; background: #F5F6F8; font-family: 'JetBrains Mono', monospace; font-size: 12px">sha256 aacd2a68…</span></div>
+<div class="reveal lift" style="padding: 24px; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; display: flex; flex-direction: column; gap: 12px"><span style="width: 34px; height: 34px; border-radius: 50%; background: #0E1116; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px">02</span><strong style="font-size: 18px">处理规则</strong><span style="color: #4A5361; font-size: 14px">过滤、分组和汇总都记成显式规则，派生数据保留来源。</span><span style="margin-top: auto; padding: 8px 10px; border-radius: 8px; background: #F5F6F8; font-family: 'JetBrains Mono', monospace; font-size: 12px">group_by model → mean ± SEM</span></div>
+<div class="reveal lift" style="padding: 24px; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; display: flex; flex-direction: column; gap: 12px"><span style="width: 34px; height: 34px; border-radius: 50%; background: #0E1116; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px">03</span><strong style="font-size: 18px">图表版本</strong><span style="color: #4A5361; font-size: 14px">每次保存一个版本，可回看、可恢复，撤销重做不丢。</span><span style="margin-top: auto; padding: 8px 10px; border-radius: 8px; background: #F5F6F8; font-family: 'JetBrains Mono', monospace; font-size: 12px">Figure 04 · v3</span></div>
+<div class="reveal lift" style="padding: 24px; background: #0E1116; border: 1px solid #0E1116; color: #FFFFFF; border-radius: 18px; display: flex; flex-direction: column; gap: 12px"><span style="width: 34px; height: 34px; border-radius: 50%; background: #FFFFFF; color: #0E1116; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px">04</span><strong style="font-size: 18px">论文级导出</strong><span style="color: #C9CFD8; font-size: 14px">嵌入字体的矢量 PDF 与 SVG，按 mm 设定成品尺寸。</span><span style="margin-top: auto; padding: 8px 10px; border-radius: 8px; background: #1B2028; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #D7DCE3">PDF · 88 mm · 8 pt</span></div>
+</div>
+</div>
+</section>
+
+<section id="assistant" style="max-width: 1200px; margin: 0 auto; padding: 120px 28px 0; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+<div class="reveal" style="flex: 1 1 380px; display: flex; flex-direction: column; gap: 18px">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #5F6773">02 · ASSISTANT</span>
+<h2 style="margin: 0; font-size: 44px; line-height: 1.15; font-weight: 800; letter-spacing: -0.025em">说一句话，<br>先预览，再应用。</h2>
+<p style="margin: 0; color: #4A5361">绘图助手只能通过 13 个受校验的工具修改图表。每次修改先成为提案，在画布上标出位置，你确认后整组应用，一步就能撤销。</p>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<li style="display: flex; gap: 10px"><span style="color: #D55E00; font-weight: 700">✓</span>与手动编辑合并，有冲突时拦截</li>
+<li style="display: flex; gap: 10px"><span style="color: #D55E00; font-weight: 700">✓</span>不自动保存，不发送原始数据行</li>
+<li style="display: flex; gap: 10px"><span style="color: #D55E00; font-weight: 700">✓</span>接入任意兼容 Chat Completions 的模型</li>
+</ul>
+</div>
+<div class="reveal" style="flex: 1 1 520px; min-width: 0; display: flex; gap: 14px; align-items: stretch; padding: 22px; border-radius: 24px; background: #FFFFFF; border: 1px solid #E4E7EC; box-shadow: 0 30px 60px -40px rgba(14,17,22,0.35)">
+<div style="flex: 1.5; min-width: 0; position: relative; background: #FCFCFD; border: 1px solid #EEF0F3; border-radius: 12px; padding: 6px">
+<svg viewBox="0 0 520 300" style="display: block; width: 100%; height: auto" role="img" aria-label="助手提案预览：图例移到右下角，Proposed 线加粗">
+<g transform="translate(44,40)" font-family="Inter, sans-serif" font-size="10" fill="#5F6773">
+<g stroke="#EDEFF2"><line x1="0" y1="0" x2="460" y2="0"></line><line x1="0" y1="57.5" x2="460" y2="57.5"></line><line x1="0" y1="115" x2="460" y2="115"></line><line x1="0" y1="172.5" x2="460" y2="172.5"></line></g>
+<line x1="0" y1="230" x2="460" y2="230" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="230" stroke="#2B323C"></line>
+<path d="M0.0,198.9 L38.3,144.5 L76.7,113.3 L115.0,95.4 L153.3,85.1 L191.7,79.2 L230.0,75.9 L268.3,73.9 L306.7,72.8 L345.0,72.2 L383.3,71.8 L421.7,71.6 L460.0,71.5" fill="none" stroke="#009E73" stroke-width="2" stroke-dasharray="5 3"></path>
+<path d="M0.0,195.6 L38.3,137.7 L76.7,104.5 L115.0,85.5 L153.3,74.5 L191.7,68.2 L230.0,64.6 L268.3,62.6 L306.7,61.4 L345.0,60.7 L383.3,60.3 L421.7,60.1 L460.0,60.0" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path class="thick" d="M0.0,190.5 L38.3,126.1 L76.7,88.0 L115.0,65.6 L153.3,52.3 L191.7,44.4 L230.0,39.8 L268.3,37.1 L306.7,35.5 L345.0,34.5 L383.3,33.9 L421.7,33.6 L460.0,33.4" fill="none" stroke="#D55E00" stroke-width="2.6"></path>
+</g>
+<rect class="lgbox" x="322" y="190" width="160" height="70" rx="6" fill="#FFFFFF" stroke="#1F4FB8" stroke-width="1.5" stroke-dasharray="5 4"></rect>
+<g class="lg1" font-family="Inter, sans-serif" font-size="11" fill="#2B323C"><line x1="0" y1="-4" x2="18" y2="-4" stroke="#0072B2" stroke-width="2"></line><text x="24" y="0">Baseline</text></g>
+<g class="lg2" font-family="Inter, sans-serif" font-size="11" fill="#2B323C"><line class="thick" x1="0" y1="-4" x2="18" y2="-4" stroke="#D55E00" stroke-width="2.6"></line><text x="24" y="0">Proposed</text></g>
+<g class="lg3" font-family="Inter, sans-serif" font-size="11" fill="#2B323C"><line x1="0" y1="-4" x2="18" y2="-4" stroke="#009E73" stroke-width="2" stroke-dasharray="5 3"></line><text x="24" y="0">w/o A</text></g>
+</svg>
+<span class="applied" style="position: absolute; top: 10px; left: 50%; translate: -50% 0; padding: 4px 10px; border-radius: 999px; background: #E8F5EE; color: #146C45; font-size: 11px; white-space: nowrap">已应用 · 可撤销</span>
+</div>
+<div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 10px; font-size: 12px">
+<div class="msg" style="align-self: flex-end; padding: 8px 12px; border-radius: 12px 12px 4px 12px; background: #0E1116; color: #FFFFFF">图例放到右下角，Proposed 加粗</div>
+<div class="row1" style="display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid #EEF0F3; border-radius: 9px; font-family: 'JetBrains Mono', monospace"><span>legend</span><span style="color: #146C45">→ 右下</span></div>
+<div class="row2" style="display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid #EEF0F3; border-radius: 9px; font-family: 'JetBrains Mono', monospace"><span>width</span><span style="color: #146C45">2.6 → 4.4</span></div>
+<div class="row3" style="display: flex; justify-content: center; padding: 9px; border-radius: 9px; background: #0E1116; color: #FFFFFF; font-weight: 600">应用这组调整</div>
+</div>
+</div>
+</section>
+
+<section id="charts" style="max-width: 1200px; margin: 0 auto; padding: 120px 28px 0">
+<div class="reveal" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 40px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #5F6773">03 · CHARTS</span>
+<h2 style="margin: 0; font-size: 44px; line-height: 1.15; font-weight: 800; letter-spacing: -0.025em">11 类科研图，开箱即用。</h2>
+</div>
+<p style="margin: 0; max-width: 420px; color: #4A5361">折线、柱状、散点、热力图、箱线、小提琴、直方图、ECDF、ROC、PR、混淆矩阵。</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<figure class="reveal lift" style="--r: 0ms; margin: 0; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="学习曲线与区间带示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="120" stroke="#2B323C"></line>
+<path d="M0.0,87.8 L20.0,56.4 L40.0,38.1 L60.0,27.5 L80.0,21.4 L100.0,17.9 L120.0,15.9 L140.0,14.8 L160.0,14.1 L180.0,13.8 L200.0,13.6 L220.0,13.5 L240.0,13.4 L240.0,21.4 L220.0,21.6 L200.0,21.8 L180.0,22.2 L160.0,22.9 L140.0,23.9 L120.0,25.6 L100.0,28.5 L80.0,33.1 L60.0,40.9 L40.0,53.7 L20.0,75.1 L0.0,110.9 Z" fill="#D55E00" fill-opacity="0.14"></path>
+<path d="M0.0,102.1 L20.0,71.9 L40.0,54.5 L60.0,44.6 L80.0,38.9 L100.0,35.6 L120.0,33.7 L140.0,32.7 L160.0,32.0 L180.0,31.7 L200.0,31.5 L220.0,31.4 L240.0,31.3" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path d="M0.0,99.4 L20.0,65.8 L40.0,45.9 L60.0,34.2 L80.0,27.3 L100.0,23.2 L120.0,20.8 L140.0,19.3 L160.0,18.5 L180.0,18.0 L200.0,17.7 L220.0,17.5 L240.0,17.4" fill="none" stroke="#D55E00" stroke-width="2.5"></path>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">折线 + 区间带</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">mean ± SEM</span></figcaption>
+</figure>
+<figure class="reveal lift" style="--r: 70ms; margin: 0; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="分组柱状图示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line>
+<rect x="18" y="15.5" width="18" height="104.5" fill="#0072B2"></rect><rect x="38" y="8.6" width="18" height="111.4" fill="#D55E00"></rect><rect x="58" y="18.5" width="18" height="101.5" fill="#009E73"></rect>
+<rect x="98" y="45" width="18" height="75" fill="#0072B2"></rect><rect x="118" y="35.5" width="18" height="84.5" fill="#D55E00"></rect><rect x="138" y="49" width="18" height="71" fill="#009E73"></rect>
+<rect x="178" y="57.5" width="18" height="62.5" fill="#0072B2"></rect><rect x="198" y="48.8" width="18" height="71.2" fill="#D55E00"></rect><rect x="218" y="61.6" width="18" height="58.4" fill="#009E73"></rect>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">分组柱状图</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">3 datasets × 3 models</span></figcaption>
+</figure>
+<figure class="reveal lift" style="--r: 140ms; margin: 0; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="ROC 曲线示例，图例标注 AUC">
+<g transform="translate(20,0)">
+<line x1="0" y1="120" x2="120" y2="120" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="120" stroke="#2B323C"></line>
+<path d="M0 120 L120 0" stroke="#C3C9D2" stroke-dasharray="3 3" fill="none"></path>
+<path d="M0.0,120.0 L0.0,54.0 L12.0,54.0 L12.0,43.2 L24.0,43.2 L24.0,32.4 L48.0,32.4 L48.0,21.6 L72.0,21.6 L72.0,0.0 L120.0,0.0" stroke="#0072B2" stroke-width="2" fill="none"></path>
+<path d="M0.0,120.0 L0.0,36.0 L12.0,36.0 L12.0,24.0 L24.0,24.0 L24.0,12.0 L48.0,12.0 L48.0,0.0 L120.0,0.0" stroke="#D55E00" stroke-width="2.5" fill="none"></path>
+</g>
+<g font-family="Inter, sans-serif" font-size="11" fill="#2B323C">
+<line x1="158" y1="50" x2="172" y2="50" stroke="#D55E00" stroke-width="2.5"></line><text x="177" y="54">A · AUC 0.93</text>
+<line x1="158" y1="70" x2="172" y2="70" stroke="#0072B2" stroke-width="2"></line><text x="177" y="74">B · AUC 0.83</text>
+</g>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">ROC / PR</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">AUC · AP 自动标注</span></figcaption>
+</figure>
+<figure class="reveal lift" style="--r: 210ms; margin: 0; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<div role="img" aria-label="混淆矩阵示例" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; width: 140px; height: 140px; font-family: 'JetBrains Mono', monospace; font-size: 13px">
+<span style="background: #0D4A8C; color: #FFFFFF; display: flex; align-items: center; justify-content: center; border-radius: 3px">8</span>
+<span style="background: #D6E4F2; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">1</span>
+<span style="background: #F1F5FA; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">0</span>
+<span style="background: #D6E4F2; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">1</span>
+<span style="background: #1E64A8; color: #FFFFFF; display: flex; align-items: center; justify-content: center; border-radius: 3px">7</span>
+<span style="background: #D6E4F2; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">1</span>
+<span style="background: #F1F5FA; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">0</span>
+<span style="background: #D6E4F2; color: #0E1116; display: flex; align-items: center; justify-content: center; border-radius: 3px">1</span>
+<span style="background: #08306B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; border-radius: 3px">9</span>
+</div>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">混淆矩阵</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">P / R / F1 · macro</span></figcaption>
+</figure>
+<figure class="reveal lift" style="--r: 280ms; margin: 0; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="箱线图示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line>
+<g stroke="#2B323C" stroke-width="1.5" fill="none">
+<line x1="50" y1="95" x2="50" y2="70"></line><line x1="50" y1="45" x2="50" y2="25"></line><line x1="42" y1="95" x2="58" y2="95"></line><line x1="42" y1="25" x2="58" y2="25"></line>
+<line x1="120" y1="80" x2="120" y2="55"></line><line x1="120" y1="28" x2="120" y2="12"></line><line x1="112" y1="80" x2="128" y2="80"></line><line x1="112" y1="12" x2="128" y2="12"></line>
+<line x1="190" y1="100" x2="190" y2="80"></line><line x1="190" y1="58" x2="190" y2="40"></line><line x1="182" y1="100" x2="198" y2="100"></line><line x1="182" y1="40" x2="198" y2="40"></line>
+</g>
+<rect x="32" y="45" width="36" height="25" fill="#0072B2" fill-opacity="0.2" stroke="#0072B2" stroke-width="1.5"></rect><line x1="32" y1="58" x2="68" y2="58" stroke="#0072B2" stroke-width="2.5"></line>
+<rect x="102" y="28" width="36" height="27" fill="#D55E00" fill-opacity="0.2" stroke="#D55E00" stroke-width="1.5"></rect><line x1="102" y1="40" x2="138" y2="40" stroke="#D55E00" stroke-width="2.5"></line>
+<rect x="172" y="58" width="36" height="22" fill="#009E73" fill-opacity="0.2" stroke="#009E73" stroke-width="1.5"></rect><line x1="172" y1="68" x2="208" y2="68" stroke="#009E73" stroke-width="2.5"></line>
+<circle cx="50" cy="108" r="2.5" fill="#0072B2"></circle><circle cx="190" cy="110" r="2.5" fill="#009E73"></circle>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">箱线图</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">分布 · 离群点</span></figcaption>
+</figure>
+<figure class="reveal lift" style="--r: 350ms; margin: 0; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px; overflow: hidden">
+<div style="height: 180px; background: #FAFBFC; display: flex; align-items: center; justify-content: center; padding: 20px">
+<svg viewBox="-4 -4 248 128" style="width: 100%; height: 100%" role="img" aria-label="ECDF 经验累积分布示例">
+<line x1="0" y1="120" x2="240" y2="120" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="120" stroke="#2B323C"></line>
+<path d="M0,120 L32.6,120 L32.6,114 L49.1,114 L49.1,105 L57.5,105 L57.5,96 L69.2,96 L69.2,87 L83.4,87 L83.4,75 L87,75 L87,66 L91,66 L91,57 L95.1,57 L95.1,48 L100.5,48 L100.5,39 L105.4,39 L105.4,30 L112.9,30 L112.9,21 L119,21 L119,12 L128.5,12 L128.5,3 L150.7,3 L150.7,0 L240,0" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path d="M0,120 L74.6,120 L74.6,114 L86.8,114 L86.8,105 L112.5,105 L112.5,96 L118.7,96 L118.7,87 L124.7,87 L124.7,78 L128.9,78 L128.9,69 L135.8,69 L135.8,60 L138.2,60 L138.2,51 L141.7,51 L141.7,42 L152.8,42 L152.8,30 L171.3,30 L171.3,21 L174.9,21 L174.9,12 L191.7,12 L191.7,3 L198.8,3 L198.8,0 L240,0" fill="none" stroke="#D55E00" stroke-width="2.5"></path>
+</svg>
+</div>
+<figcaption style="padding: 16px 20px; border-top: 1px solid #EEF0F3; display: flex; justify-content: space-between; gap: 12px"><span style="font-weight: 600">ECDF</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6773">经验累积分布</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 120px 28px 72px">
+<div class="reveal" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; padding: 48px 52px; border-radius: 24px; background: #0E1116; color: #FFFFFF">
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 560px">
+<h2 style="margin: 0; font-size: 36px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">下一张图，从这里开始。</h2>
+<p style="margin: 0; color: #B8C0CC">导入一份 CSV，几分钟内得到一张可以直接放进论文的图。数据只保存在你的电脑上。</p>
+</div>
+<button type="button" class="cta" style="display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 28px; border: 0; border-radius: 16px; background: #FFFFFF; color: #0E1116; font-size: 17px; font-weight: 700; cursor: pointer">开始创作 <span class="arrow" aria-hidden="true">→</span></button>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 36px; font-size: 13px; color: #5F6773">
+<span>LabFlow · 开源 · 本地单用户</span>
+<a href="https://github.com/chen0206a/labflow-agent" style="color: #4A5361">github.com/chen0206a/labflow-agent</a>
+</div>
+</section>
+
+
+
+</div>
+
+</body>
+</html>
