@@ -89,15 +89,22 @@ test("docked assistant keeps composer and confirmation visible at both desktop h
     panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeEnabled();
   await expect(panel.locator(".agent-suggestions")).toHaveCount(0);
+  // A pending proposal collapses the composer so the status and the decision row fit.
+  await expect(
+    panel.getByRole("textbox", { name: "希望怎样调整？" }),
+  ).toHaveCount(0);
+  await expect(
+    panel.getByRole("button", { name: "继续修改", exact: true }),
+  ).toBeVisible();
   for (const size of [
     { width: 1440, height: 900 },
     { width: 1280, height: 720 },
   ]) {
     await page.setViewportSize(size);
-    await check(".agent-composer textarea");
-    await check(".agent-controls button");
-    await check(".quick-result-footer > button:first-of-type");
-    await check(".quick-result-footer > button:nth-of-type(2)");
+    await check(".agent-run-status");
+    await check(".agent-apply");
+    await check(".agent-preview-toggle");
+    await expect(panel.getByText("提案已就绪")).toBeVisible();
     const scroll = await panel
       .locator(".quick-actions-body")
       .evaluate((el) => ({
@@ -106,14 +113,14 @@ test("docked assistant keeps composer and confirmation visible at both desktop h
       }));
     expect(scroll.height).toBeGreaterThan(0);
     expect(scroll.content).toBeGreaterThan(scroll.height);
-    await panel.locator(".quick-actions-body").evaluate((el) => {
-      el.scrollTop = el.scrollHeight;
-    });
-    await check(".agent-composer textarea");
     await page.screenshot({
       path: `../docs/screenshots/refactor-06-agent-${size.width}.png`,
     });
   }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await panel.getByRole("button", { name: "继续修改", exact: true }).click();
+  await expect(input).toBeVisible();
+  await expect(panel.getByRole("button", { name: "继续修改提案" })).toBeVisible();
   const saved = await (
     await request.get(`/api/projects/${p.id}/charts/${c.id}`)
   ).json();

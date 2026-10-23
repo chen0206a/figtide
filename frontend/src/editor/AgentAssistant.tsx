@@ -187,6 +187,8 @@ export function AgentAssistant(p: {
   const composer = useRef<HTMLTextAreaElement>(null);
   const proposalFooter = useRef<HTMLDivElement>(null);
   const proposalPreview = useRef<HTMLElement>(null);
+  const reply = useRef<HTMLDivElement>(null);
+  const [composerExpanded, setComposerExpanded] = useState(false);
   const [tab, setTab] = useState<"edit" | "history">("edit");
   const [rejectionReason, setRejectionReason] = useState("");
   const [consent, setConsent] = useState(false);
@@ -393,6 +395,7 @@ export function AgentAssistant(p: {
     setSubmitting(true);
     setError("");
     setRun(null);
+    setComposerExpanded(false);
     setRejectionReason("");
     sentPrompt.current = prompt;
     const context = conversationPrompt(turns, prompt);
@@ -479,8 +482,11 @@ export function AgentAssistant(p: {
   },[canPreview,result,snapshot?.token,p.onPreview]);
   useEffect(() => {
     if (!p.docked || p.open === false) return;
-    const target = result ? proposalPreview.current : thread.current;
-    target?.scrollIntoView?.({ block: "nearest", behavior: "auto" });
+    const target = result ? reply.current : thread.current;
+    target?.scrollIntoView?.({
+      block: result ? "start" : "nearest",
+      behavior: "auto",
+    });
   }, [turns.length, p.open, run?.status, run?.outcome]);
   const providerRow = (
     <div className="agent-provider">
@@ -568,6 +574,7 @@ export function AgentAssistant(p: {
       )}
     </div>
   );
+  const composerVisible = !result || composerExpanded;
   const composerView = (
     <div className="agent-composer">
       <label className="agent-prompt">
@@ -631,22 +638,20 @@ export function AgentAssistant(p: {
       ref={proposalFooter}
     >
       <p>确认后只更新草稿，可一步撤销。保存正式版本仍由你决定。</p>
-      {!!result && (
-        <Button
+      {!!result && !composerExpanded && (
+        <button
+          type="button"
           className="agent-refine"
-          variant="outline"
           disabled={busy}
           onClick={() => {
+            setComposerExpanded(true);
             composer.current?.focus();
-            composer.current?.scrollIntoView({
-              block: "nearest",
-              behavior: "auto",
-            });
           }}
         >
           继续修改
-        </Button>
+        </button>
       )}
+      {!!result && (
       <Button
         className="agent-apply"
         disabled={
@@ -722,6 +727,7 @@ export function AgentAssistant(p: {
         应用这组调整
         <ArrowRight size={15} />
       </Button>
+      )}
       {canPreview&&p.onTogglePreview&&<Button variant="outline" className="agent-preview-toggle" onClick={p.onTogglePreview}>{p.previewVisible?'查看原图':'预览修改'}</Button>}
       {!!result && (
         <details className="agent-reject">
@@ -962,7 +968,7 @@ export function AgentAssistant(p: {
                 </p>
               )}
               {run && (
-                <div className="agent-reply" aria-live="polite">
+                <div className="agent-reply" aria-live="polite" ref={reply}>
                   <div className="agent-run-status">
                     <strong>
                       {run.outcome &&
@@ -1024,7 +1030,7 @@ export function AgentAssistant(p: {
               {!p.docked && proposalActions}
             </aside>
           </div>
-          {p.docked && composerView}
+          {p.docked && composerVisible && composerView}
           {p.docked && proposalActions}
         </>
       )}

@@ -334,6 +334,12 @@ body {margin:0;background:var(--lf-surface-2);color:var(--lf-text);font:var(--lf
  .product-intro #assistant>div {flex-basis:100%;}
  .product-intro section[class] {padding-top:var(--lf-space-10);}
 }
+@media(max-width:640px){
+ .product-intro .pi-s3 {flex-wrap:nowrap;gap:var(--lf-intro-size-12);padding:var(--lf-intro-size-8) var(--lf-intro-size-16);}
+ .product-intro .pi-s7 {display:none;}
+ .product-intro .pi-s9 {flex:1 1 var(--lf-intro-size-8);}
+ .product-intro .pi-s10 {height:var(--lf-intro-size-36);padding:0 var(--lf-intro-size-14);}
+}
 @media(prefers-reduced-motion:reduce){
  .product-intro *, .product-intro *::before, .product-intro *::after{animation:none!important;transition:none!important;}
  .product-intro .draw,.product-intro .underline,.product-intro .trace{stroke-dashoffset:0!important;}
@@ -410,18 +416,18 @@ body {margin:0;background:var(--lf-surface-2);color:var(--lf-text);font:var(--lf
 <g transform="translate(62,10)" font-family="Inter, sans-serif" font-size="11" fill="#5F6773">
 <g class="fade pi-s44" stroke="#EDEFF2"><line x1="0" y1="0" x2="620" y2="0"></line><line x1="0" y1="56" x2="620" y2="56"></line><line x1="0" y1="112" x2="620" y2="112"></line><line x1="0" y1="168" x2="620" y2="168"></line><line x1="0" y1="224" x2="620" y2="224"></line></g>
 <g class="fade pi-s45"><line x1="0" y1="280" x2="620" y2="280" stroke="#2B323C"></line><line x1="0" y1="0" x2="0" y2="280" stroke="#2B323C"></line>
-<g text-anchor="end"><text x="-10" y="4">100</text><text x="-10" y="60">90</text><text x="-10" y="116">80</text><text x="-10" y="172">70</text><text x="-10" y="228">60</text><text x="-10" y="284">50</text></g>
+<g text-anchor="end"><text x="-10" y="4">1.0</text><text x="-10" y="60">0.9</text><text x="-10" y="116">0.8</text><text x="-10" y="172">0.7</text><text x="-10" y="228">0.6</text><text x="-10" y="284">0.5</text></g>
 <g text-anchor="middle"><text x="0" y="298">0</text><text x="206.7" y="298">20</text><text x="413.3" y="298">40</text><text x="620" y="298">60</text><text x="310" y="320" font-size="12" fill="#2B323C">Training epoch</text></g></g>
-<path class="fade pi-s46" d="M0.0,205.0 L51.7,131.7 L103.3,89.0 L155.0,64.3 L206.7,50.0 L258.3,41.8 L310.0,37.1 L361.7,34.4 L413.3,33.0 L465.0,32.1 L516.7,31.7 L568.3,31.5 L620.0,31.4 L620.0,50.0 L568.3,50.3 L516.7,50.9 L465.0,51.9 L413.3,53.4 L361.7,55.8 L310.0,59.8 L258.3,66.4 L206.7,77.3 L155.0,95.4 L103.3,125.3 L51.7,175.3 L0.0,258.7 Z" fill="#D55E00" fill-opacity="0.12"></path>
-<path class="draw pi-s47" d="M0.0,242.1 L51.7,175.9 L103.3,137.9 L155.0,116.1 L206.7,103.6 L258.3,96.5 L310.0,92.3 L361.7,90.0 L413.3,88.6 L465.0,87.8 L516.7,87.4 L568.3,87.1 L620.0,87.0" fill="none" stroke="#009E73" stroke-width="2"></path>
-<path class="draw pi-s48" d="M0.0,238.2 L51.7,167.7 L103.3,127.2 L155.0,104.0 L206.7,90.7 L258.3,83.1 L310.0,78.7 L361.7,76.2 L413.3,74.7 L465.0,73.9 L516.7,73.4 L568.3,73.2 L620.0,73.0" fill="none" stroke="#0072B2" stroke-width="2"></path>
-<path class="draw pi-s49" d="M0.0,231.9 L51.7,153.5 L103.3,107.2 L155.0,79.8 L206.7,63.7 L258.3,54.1 L310.0,48.5 L361.7,45.1 L413.3,43.2 L465.0,42.0 L516.7,41.3 L568.3,40.9 L620.0,40.7" fill="none" stroke="#D55E00" stroke-width="2.8"></path>
-<circle class="pop pi-s50" cx="620" cy="40.7" r="4.5" fill="#D55E00"></circle>
+<path class="fade pi-s46" d="M0.0,243 L51.7,170.2 L103.3,128.2 L155.0,103 L206.7,85.1 L258.3,72.2 L310.0,64.4 L361.7,58.8 L413.3,54.8 L465.0,52 L516.7,49.8 L568.3,47 L620.0,45.3 L620.0,63.3 L568.3,65 L516.7,67.8 L465.0,70 L413.3,72.8 L361.7,76.8 L310.0,82.4 L258.3,90.2 L206.7,103.1 L155.0,121 L103.3,146.2 L51.7,188.2 L0.0,261 Z" fill="#D55E00" fill-opacity="0.12"></path>
+<path class="draw pi-s47" d="M0.0,274.4 L51.7,210 L103.3,165.2 L155.0,140 L206.7,126 L258.3,117.6 L310.0,112 L361.7,108.6 L413.3,105.8 L465.0,103.6 L516.7,101.9 L568.3,100.2 L620.0,99.1" fill="none" stroke="#009E73" stroke-width="2"></path>
+<path class="draw pi-s48" d="M0.0,280 L51.7,212.8 L103.3,168 L155.0,142.8 L206.7,126 L258.3,114.8 L310.0,107.5 L361.7,102.5 L413.3,98 L465.0,94.6 L516.7,91.8 L568.3,89.6 L620.0,88.5" fill="none" stroke="#0072B2" stroke-width="2"></path>
+<path class="draw pi-s49" d="M0.0,252 L51.7,179.2 L103.3,137.2 L155.0,112 L206.7,94.1 L258.3,81.2 L310.0,73.4 L361.7,67.8 L413.3,63.8 L465.0,61 L516.7,58.8 L568.3,56 L620.0,54.3" fill="none" stroke="#D55E00" stroke-width="2.8"></path>
+<circle class="pop pi-s50" cx="620" cy="54.3" r="4.5" fill="#D55E00"></circle>
 </g>
 </svg><small class="intro-demo-note">示意数据</small></div>
 
 <span class="chip hero-aux pi-s51">mean ± SEM · n = 3</span>
-<span class="chip hero-aux pi-s52">92.8%</span>
+<span class="chip hero-aux pi-s52">0.903</span>
 <span class="chip hero-aux pi-s53">88 mm · 8 pt · 矢量 PDF</span>
 <span class="chip hero-aux pi-s54"><span class="pi-s55"></span>v3 · 可追溯到数据版本</span>
 </div>

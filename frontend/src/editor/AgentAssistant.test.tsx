@@ -354,7 +354,7 @@ it("persists explicit rejection without changing the canvas", async () => {
   fireEvent.click(screen.getByRole("button", { name: "拒绝提案" }));
   await screen.findByText("已拒绝");
   expect(s.onApply).not.toHaveBeenCalled();
-  expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: "应用这组调整" })).toBeNull();
   const sent = s.fetcher.mock.calls.find(([url]) => url.endsWith("/decision"));
   expect(JSON.parse(sent![1]!.body as string)).toEqual({
     outcome: "rejected",
@@ -427,7 +427,8 @@ it("refines an unapplied proposal against the latest manual draft and applies th
     true,
   );
   await start();
-  await screen.findByRole("button", { name: "继续修改提案" });
+  await screen.findByRole("button", { name: "继续修改" });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
   s.rerender(s.ui({ ...s.props, config: manual, token: "manual-draft" }));
   expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled();
   fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
@@ -475,7 +476,8 @@ it.each(["failed", "answered", "cancelled"] as const)(
       true,
     );
     await start();
-    await screen.findByRole("button", { name: "继续修改提案" });
+    await screen.findByRole("button", { name: "继续修改" });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
     fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
       target: { value: "继续调整" },
     });
@@ -511,14 +513,17 @@ it("retires the previous proposal when the server validates a complete withdrawa
     true,
   );
   await start();
-  await screen.findByRole("button", { name: "继续修改提案" });
+  await screen.findByRole("button", { name: "继续修改" });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
   fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
     target: { value: "撤回全部调整" },
   });
   fireEvent.click(screen.getByRole("button", { name: "继续修改提案" }));
   await screen.findByText("累计调整已撤回");
   await waitFor(() =>
-    expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled(),
+    expect(
+      screen.queryByRole("button", { name: "应用这组调整" }),
+    ).toBeNull(),
   );
   expect(screen.getByRole("log")).toHaveTextContent("已由续改替代");
   expect(screen.getByRole("button", { name: "开始新对话" })).toBeEnabled();
@@ -531,7 +536,8 @@ it("retains the old proposal when refinement fails before a run is created", asy
       throw new Error("手动修改与原提案冲突");
   }, true);
   await start();
-  await screen.findByRole("button", { name: "继续修改提案" });
+  await screen.findByRole("button", { name: "继续修改" });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
   fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
     target: { value: "继续" },
   });
@@ -566,6 +572,7 @@ it("restores a pending proposal using a server baseline without resubmitting or 
   );
   await screen.findByText("已恢复本次对话；尚未应用的提案仍需确认。");
   expect(screen.getByRole("log")).toHaveTextContent("恢复前的需求");
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
   expect(screen.getByRole("checkbox")).not.toBeChecked();
   expect(
     s.fetcher.mock.calls.some(

@@ -1,5 +1,21 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 10-7b 助手面板、编号标记与视觉一致性
+
+- `npx tsc -b --force` 0 错（新增 `agentShortcut`、`proposalMarkers` 的类型收窄）；`npx vitest run` **43 文件 / 238 通过**（`AgentAssistant.test.tsx` 28 条含 5 条续改用例、`proposalMarkers.test.ts` 5 条）；`npm run build` 通过（13.31s，`index-*.js` 仍 >500 kB，属既有分包提示）。
+- 面板遮挡（第 6 项）用探针 `tmp/probe-dock.cjs` 在隔离栈实测，1440×1000 与 1440×720 各一组：
+  - 修复前：`.quick-actions-body` 在 1000 高下 325.8px（scrollTop 295）、在 720 高下只剩 **45.8px**，「提案已就绪」整块滚出可视区（`overlapTop:true`）；composer 常驻 197.2px。
+  - 修复后：body **511px / 231px**，composer 默认收起（`composerPresent:false`），两种视口 `overlapTop:false`，页脚只剩「继续修改 / 应用这组调整 / 查看原图 / 拒绝提案」。
+  - 根因两条：`.agent-dock .quick-actions-body` 只有 `min-height:24px` 被顶部行与常驻 composer 挤扁；滚动 effect 固定 `scrollIntoView` 到提案预览区，把上方状态行推出视口。不是 sticky 头部、也不是负 margin（`agent-assistant.css` 的 sticky 只对 dialog 模式生效）。
+- 第 7 项：无提案时「应用这组调整」不渲染（非禁用）——`AgentAssistant.test.tsx` 与 `agent.spec.ts` 的取消/拒绝两条断言由 `toBeDisabled()` 改为 `toHaveCount(0)`。
+- 第 8 项：有待确认提案时页脚只留主按钮、原图/预览切换、不采用链接；输入框收起为「继续修改」文字按钮，点开才出现输入框与同意勾选；重复的灰色「继续修改提案」大按钮已删除，发送/同意/单次请求逻辑未改，`agent.spec.ts` 三轮续改用例改为先点「继续修改」再断言输入框 `toHaveCount(0)`。
+- 第 9 项：`/series/{i}/*` 标记改到曲线中点（`getPointAtLength(totalLength/2)` + `getScreenCTM` 手算，jsdom 无 `matrixTransform`），`/title` 与 `/style/title` 映射到 `.gtitle` 包围盒；`proposalMarkers.test.ts` 重写 5 条覆盖。
+- 第 10 项：`welcome.css` 新增 ≤640px 断点（顶栏单行、隐藏导航、按钮 36px 高），`site/index.html` 镜像同一段；`scripts/test-site.cjs` 增加 `headerHeight ≤64` 与 `navVisible === false` 断言，实跑 **PASS 4/4**（390/768/1280/1440 无溢出）。
+- 第 11 项：`HomeSide.tsx` 模型已配置时链接文案为「模型设置」，未配置仍为「配置模型连接」（`provider.data?.available`）。
+- 第 12 项：介绍页首屏示意曲线 y 轴改 0.5–1.0，Proposed 终点与 chip 对齐 CSV 的 0.903，`site/index.html` 同步。
+- E2E（本轮专项）：主栈 `intro` 4/4 + `home` 2/2 + `navigation` 2/2 + `refinements` 1/1（25.1s）；隔离栈 `agent` 8/8 + `assistant-layout` 1/1（43.8s，清理 9 个测试项目）。
+- 截图重拍：`refactor-10-home.png`、`refactor-10-intro-390.png`、`refactor-10-assistant-idle.png`、`refactor-10-assistant-preview.png`；其余被 E2E 顺带重写的截图已还原，未进提交。
+
 ## 2026-10-23 · 10-7a 导航与入口
 
 - `npx vitest run`：**235 通过**（新增 `agentShortcut.test.ts` 4 条、`ProductIntro.test.tsx` 2 条）；`npm run build` 通过（10.66s，`index-*.js` 578.93 kB）。

@@ -220,6 +220,12 @@
  .product-intro #assistant>div {flex-basis:100%;}
  .product-intro section[class] {padding-top:var(--lf-space-10);}
 }
+@media(max-width:640px){
+ .product-intro .pi-s3 {flex-wrap:nowrap;gap:var(--lf-intro-size-12);padding:var(--lf-intro-size-8) var(--lf-intro-size-16);}
+ .product-intro .pi-s7 {display:none;}
+ .product-intro .pi-s9 {flex:1 1 var(--lf-intro-size-8);}
+ .product-intro .pi-s10 {height:var(--lf-intro-size-36);padding:0 var(--lf-intro-size-14);}
+}
 @media(prefers-reduced-motion:reduce){
  .product-intro *, .product-intro *::before, .product-intro *::after{animation:none!important;transition:none!important;}
  .product-intro .draw,.product-intro .underline,.product-intro .trace{stroke-dashoffset:0!important;}

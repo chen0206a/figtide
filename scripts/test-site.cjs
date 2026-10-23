@@ -43,6 +43,9 @@ const REPO = 'https://github.com/chen0206a/labflow-agent';
           unresolvedTokens: [...document.querySelectorAll('[style]')]
             .flatMap(el => [...el.getAttribute('style').matchAll(/var\((--lf-[\w-]+)\)/g)]
               .filter(m => !getComputedStyle(el).getPropertyValue(m[1]).trim()).map(m => m[1])),
+          headerHeight: Math.round(document.querySelector('header')?.getBoundingClientRect().height || 0),
+          navVisible: [...document.querySelectorAll('header nav a')]
+            .some(link => getComputedStyle(link).display !== 'none' && link.getBoundingClientRect().width > 0),
         };
       }, README);
       assert.equal(checks.scrollWidth, checks.width, `${width}px page overflows`);
@@ -58,12 +61,17 @@ const REPO = 'https://github.com/chen0206a/labflow-agent';
         'Links must reach a real section, the README install steps or the repository',
       );
       for (const target of ['trace', 'assistant', 'charts']) {
+        if (width <= 640) break;
         await page.locator(`header a[href="#${target}"]`).first().click();
         assert.equal(new URL(page.url()).hash, `#${target}`);
       }
+      if (width <= 640) {
+        assert.equal(checks.navVisible, false, 'Under 640px the header keeps only the logo and the primary action');
+        assert(checks.headerHeight <= 64, `Under 640px the header must stay within 64px, got ${checks.headerHeight}`);
+      }
       await page.goto(pathToFileURL(path.join(root, 'site/index.html')).href);
       await page.screenshot({ path: path.join(root, `docs/screenshots/refactor-10-site-${width}.png`), fullPage: true });
-      viewports.push({ width, scrollWidth: checks.scrollWidth, readmeLinks: checks.readmeLinks, anchorsValid: true });
+      viewports.push({ width, scrollWidth: checks.scrollWidth, readmeLinks: checks.readmeLinks, anchorsValid: true, headerHeight: checks.headerHeight });
     }
     assert.deepEqual(consoleErrors, []);
     assert(

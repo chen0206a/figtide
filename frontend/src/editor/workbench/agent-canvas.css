@@ -34,13 +34,16 @@
 .agent-wait-skeleton i{height:var(--lf-space-2);border-radius:var(--lf-radius-pill);background:var(--lf-border);animation:agent-wait 1s var(--lf-ease-in-out) infinite;}
 .agent-wait-skeleton i:nth-child(2){width:85%;animation-delay:120ms;}.agent-wait-skeleton i:nth-child(3){width:65%;animation-delay:240ms;}
 @keyframes agent-wait{50%{opacity:.35}}
-.agent-dock .agent-dock-top{flex-shrink:1;min-height:0;overflow-y:auto;}
-.agent-dock .quick-actions-body{min-height:var(--lf-space-6);}
-.agent-dock .quick-result-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(var(--lf-space-1)*1.5);max-height:35%;overflow-y:auto;}
-.agent-dock .quick-result-footer>p{grid-column:1/-1;grid-row:1;margin:0;font-size:var(--lf-text-2xs);}
+.agent-dock .agent-dock-top{flex:0 0 auto;overflow:visible;}
+.agent-dock .quick-actions-body{min-height:0;}
+.agent-dock .agent-reply{scroll-margin-top:var(--lf-space-2);}
+.agent-dock .quick-result-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(var(--lf-space-1)*1.5);max-height:45%;overflow-y:auto;padding:var(--lf-space-3) var(--lf-space-5) var(--lf-space-4);}
+.agent-dock .quick-result-footer>p{grid-column:1/-1;grid-row:1;margin:0;font-size:var(--lf-text-2xs);color:var(--lf-text-3);}
 .agent-dock .agent-apply{grid-column:1/-1;grid-row:2;min-height:var(--lf-space-8);height:var(--lf-space-8);}
 .agent-dock .agent-preview-toggle{grid-column:1;grid-row:3;}
-.agent-dock .agent-refine{grid-column:2;grid-row:3;}
-.agent-dock .agent-preview-toggle,.agent-dock .agent-refine{min-height:var(--lf-space-7);height:var(--lf-space-7);padding:var(--lf-space-1);font-size:var(--lf-text-xs);}
+.agent-dock .agent-refine{grid-column:2;grid-row:3;align-self:center;justify-self:start;padding:0;border:0;background:transparent;color:var(--lf-link);font-size:var(--lf-text-xs);text-decoration:underline;text-underline-offset:3px;}
+.agent-dock .agent-refine:disabled{color:var(--lf-text-3);cursor:not-allowed;}
+.agent-dock .agent-preview-toggle{min-height:var(--lf-space-7);height:var(--lf-space-7);padding:var(--lf-space-1);font-size:var(--lf-text-xs);}
 .agent-dock .agent-reject{grid-column:1/-1;grid-row:4;}
+.agent-dock .agent-reject>summary{color:var(--lf-text-3);font-size:var(--lf-text-xs);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
 @media(prefers-reduced-motion:reduce){.agent-trigger svg,.agent-dock,.agent-dock .agent-turn,.agent-wait-skeleton i{animation:none!important}.canvas-proposal-layer{transition:none!important}}

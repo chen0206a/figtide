@@ -240,7 +240,7 @@ test("cancel during a pending HTTP response leaves no proposal or chart mutation
   await expect(dialog.getByText("已取消", { exact: true })).toBeVisible();
   await expect(
     dialog.getByRole("button", { name: "应用这组调整" }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
   expect((await (await request.get(f.api)).json()).config).toEqual(f.config);
   const audits = await (
     await request.get(
@@ -275,7 +275,7 @@ test("explicit rejection is persisted, redacted, immutable and readable after re
   await expect(dialog.getByText("已拒绝", { exact: true })).toBeVisible();
   await expect(
     dialog.getByRole("button", { name: "应用这组调整" }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
   expect((await (await request.get(f.api)).json()).config).toEqual(f.config);
   await page.reload();
   await page.getByRole("button", { name: "绘图助手", exact: true }).click();
@@ -333,8 +333,11 @@ test("three proposal rounds preserve a manual edit, confirm once, undo once and 
   await panel.getByRole("checkbox").check();
   await panel.getByRole("button", { name: "生成调整提案" }).click();
   await expect(
-    panel.getByRole("button", { name: "继续修改提案" }),
+    panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeVisible();
+  await expect(
+    panel.getByRole("textbox", { name: "希望怎样调整？" }),
+  ).toHaveCount(0);
   await panel.getByRole("button", { name: "收起绘图助手" }).click();
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
@@ -344,23 +347,25 @@ test("three proposal rounds preserve a manual edit, confirm once, undo once and 
   await expect(
     panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeDisabled();
+  await panel.getByRole("button", { name: "继续修改", exact: true }).click();
   await panel
     .getByRole("textbox", { name: "希望怎样调整？" })
     .fill("续改字号20，其他保留");
   await panel.getByRole("button", { name: "继续修改提案" }).click();
   await expect(
     panel.getByRole("textbox", { name: "希望怎样调整？" }),
-  ).toHaveValue("");
+  ).toHaveCount(0);
   await expect(
     panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeEnabled();
+  await panel.getByRole("button", { name: "继续修改", exact: true }).click();
   await panel
     .getByRole("textbox", { name: "希望怎样调整？" })
     .fill("续改隐藏网格：只隐藏Y轴网格");
   await panel.getByRole("button", { name: "继续修改提案" }).click();
   await expect(
     panel.getByRole("textbox", { name: "希望怎样调整？" }),
-  ).toHaveValue("");
+  ).toHaveCount(0);
   await expect(
     panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeEnabled();
