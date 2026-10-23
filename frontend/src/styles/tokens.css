@@ -7,8 +7,6 @@
    - Components reference --lf-* tokens only. No raw hex in
      component CSS (exception: chart SVG/Plotly configs).
    - Text tokens meet 4.5:1 on --lf-surface and --lf-bg.
-   - The "legacy aliases" block keeps old CSS working during
-     migration; phase 8 deletes it.
    ============================================================ */
 
 :root {
@@ -177,34 +175,6 @@
   --lf-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --lf-duration: 160ms;
 
-  /* ============================================================
-     Legacy aliases — keep old selectors rendering with the new
-     palette while files are migrated. DELETE in phase 8.
-     ============================================================ */
-  --paper: var(--lf-bg);
-  --paper-2: var(--lf-surface-sunken);
-  --card: var(--lf-surface);
-  --ink: var(--lf-text);
-  --ink-2: var(--lf-text-2);
-  --ink-3: var(--lf-text-3);
-  --line: var(--lf-border);
-  --line-2: var(--lf-border-strong);
-  --clay: var(--lf-link);
-  --clay-soft: var(--lf-info-soft);
-  --sage: var(--lf-success);
-  --sky: var(--lf-info);
-  --amber: var(--lf-warning);
-  --danger: var(--lf-danger);
-  --r-xs: var(--lf-radius-xs);
-  --r-sm: var(--lf-radius-sm);
-  --r-md: var(--lf-radius-sm);
-  --shadow-card: var(--lf-shadow-sm);
-  --shadow-paper: var(--lf-shadow-paper);
-  --ease: var(--lf-ease);
-  --font-sans: var(--lf-font-sans);
-  --font-serif: var(--lf-font-sans); /* serif retired */
-  --font-mono: var(--lf-font-mono);
-
   /* ---- document defaults ---- */
   font-family: var(--lf-font-sans);
   font-size: var(--lf-text-base);
@@ -214,6 +184,11 @@
   color-scheme: light;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
+  --lf-text-caption: 11.5px;
+  --lf-text-compact: 12.5px;
+  --lf-text-control: 13.5px;
+  --lf-text-heading: 16px;
+  --lf-text-emphasis: 18px;
 }
 
 /* Tailwind's @theme must stay in styles.css (the file that imports
@@ -287,7 +262,7 @@
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    animation: none !important;
+    transition-duration: 0s !important;
   }
 }

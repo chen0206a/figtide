@@ -1,0 +1,311 @@
+{
+  "method": "Remove only earlier declarations superseded by the identical selector/property in the same unconditional container; do not move surviving rules",
+  "removed": 61,
+  "details": [
+    {
+      "file": "frontend/src/data/data-page.css",
+      "selector": ".data-layout .dataset-list button",
+      "property": "transition"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock > .quick-result-footer",
+      "property": "padding"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock .agent-prompt textarea",
+      "property": "min-height"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock .agent-prompt textarea",
+      "property": "height"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock > .agent-composer",
+      "property": "padding"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock-top .agent-budget",
+      "property": "padding-bottom"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock-top .agent-provider",
+      "property": "padding-bottom"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock-top .agent-provider",
+      "property": "margin-bottom"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock > .quick-result-footer",
+      "property": "max-height"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock .agent-prompt textarea",
+      "property": "min-height"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock .quick-actions-builder",
+      "property": "padding"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock .agent-tabs",
+      "property": "padding"
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "selector": ".agent-dock-heading",
+      "property": "padding"
+    },
+    {
+      "file": "frontend/src/styles/shell.css",
+      "selector": ".app-shell .global-right",
+      "property": "align-items"
+    },
+    {
+      "file": "frontend/src/styles/shell.css",
+      "selector": ".app-shell .workspace-nav-link.active",
+      "property": "font-weight"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor .editor-left select,.editor\n  .inspector-scroll\n  input:not([type=\"range\"]):not([type=\"color\"]):not([type=\"checkbox\"]),.editor .inspector-scroll select",
+      "property": "border-color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor .editor-left select,.editor\n  .inspector-scroll\n  input:not([type=\"range\"]):not([type=\"color\"]):not([type=\"checkbox\"]),.editor .inspector-scroll select",
+      "property": "min-height"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor .editor-left select,.editor\n  .inspector-scroll\n  input:not([type=\"range\"]):not([type=\"color\"]):not([type=\"checkbox\"]),.editor .inspector-scroll select",
+      "property": "font-size"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor .editor-left,.editor .editor-right",
+      "property": "background"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-column",
+      "property": "background"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor .save-state",
+      "property": "font-size"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor .save-state",
+      "property": "white-space"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor .editor-toolbar",
+      "property": "gap"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor-statusbar",
+      "property": "background"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor-statusbar",
+      "property": "color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor-statusbar",
+      "property": "letter-spacing"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor-statusbar",
+      "property": "font-family"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".inspector-tabs button.active",
+      "property": "border-color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".inspector-tabs button.active",
+      "property": "color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".inspector-tabs button",
+      "property": "font-size"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".bottom-tabs button.active",
+      "property": "color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".bottom-tabs",
+      "property": "background"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".paper-footnote",
+      "property": "color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".paper-footnote",
+      "property": "letter-spacing"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".paper-footnote",
+      "property": "font-size"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".paper-footnote",
+      "property": "font-family"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".paper-caption span:first-child",
+      "property": "color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".paper-caption",
+      "property": "color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".paper-caption",
+      "property": "letter-spacing"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".paper-caption",
+      "property": "font-size"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-loading",
+      "property": "background"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-loading",
+      "property": "color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-loading",
+      "property": "letter-spacing"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-loading",
+      "property": "font-family"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-stage",
+      "property": "background-size"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-stage",
+      "property": "background-image"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-stage",
+      "property": "padding"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-stage",
+      "property": "min-height"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-toolbar .btn",
+      "property": "border-radius"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-toolbar .btn",
+      "property": "min-height"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-toolbar .btn",
+      "property": "width"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-toolbar",
+      "property": "background"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-toolbar",
+      "property": "color"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-toolbar",
+      "property": "letter-spacing"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".canvas-column",
+      "property": "background"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor-left",
+      "property": "background"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".figure-info input",
+      "property": "font-family"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".figure-icon",
+      "property": "border-radius"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor-toolbar",
+      "property": "background"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor",
+      "property": "border-top"
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".editor",
+      "property": "min-height"
+    }
+  ]
+}

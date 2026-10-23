@@ -142,14 +142,16 @@ test("four real workspace pages keep their layout while adopting shared tokens",
       const tokens = await page.locator(".app-shell").evaluate((el) => {
         const s = getComputedStyle(el);
         return {
-          ink: s.getPropertyValue("--ink").trim(),
+          legacyInk: s.getPropertyValue("--ink").trim(),
           text: s.getPropertyValue("--lf-text").trim(),
-          paper: s.getPropertyValue("--paper").trim(),
+          legacyPaper: s.getPropertyValue("--paper").trim(),
           bg: s.getPropertyValue("--lf-bg").trim(),
         };
       });
-      expect(tokens.ink).toBe(tokens.text);
-      expect(tokens.paper).toBe(tokens.bg);
+      expect(tokens.legacyInk).toBe("");
+      expect(tokens.text).toBe("#0e1116");
+      expect(tokens.legacyPaper).toBe("");
+      expect(tokens.bg).toBe("#f5f6f8");
       if (entry.name === "home") {
         const inverseText = await page
           .locator(":root")

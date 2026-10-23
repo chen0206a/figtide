@@ -1,8 +1,4 @@
-/* App shell — one header for every page (phase 3).
-   Import after styles.css and every components/*.css file. Selectors are
-   prefixed with .app-shell so they outrank the legacy .refined-shell rules;
-   phase 8 deletes those legacy masthead rules (styles.css, navigation.css,
-   showcase.css, home.css). Class names match the current App.tsx markup. */
+/* Canonical application shell and navigation. Shared tokens own its dimensions and palette. */
 
 .app-shell {
   min-height: 100vh;
@@ -81,14 +77,12 @@
 }
 .app-shell .workspace-nav-link.active {
   color: var(--lf-link);
-  font-weight: 600;
 }
 
 .app-shell .global-right {
   margin-left: auto;
   display: flex;
   flex-wrap: nowrap;
-  align-items: center;
   gap: var(--lf-space-2);
 }
 .app-shell .global-right select {
@@ -236,5 +230,135 @@
 @media (prefers-reduced-motion: reduce) {
   .app-shell .workspace-nav .nav-indicator {
     transition: none;
+  }
+}
+.app-shell .workspace-nav {
+  isolation: isolate;
+  align-items: center;
+  flex-shrink: 0;
+}
+.app-shell .workspace-nav .nav-indicator {
+  z-index: -1;
+  pointer-events: none;
+}
+.app-shell .workspace-nav-link {
+  justify-content: center;
+  font-family: var(--lf-font-sans);
+  font-weight: 500;
+  transition:
+    color var(--lf-duration),
+    transform var(--lf-duration) var(--lf-ease);
+}
+.app-shell .workspace-nav-link.active {
+  font-weight: 600;
+  background: var(--lf-selected);
+}
+.app-shell .workspace-nav-link:hover {
+  transform: translateY(-1px);
+}
+.app-shell .workspace-nav-link:active {
+  transform: translateY(0) scale(0.97);
+}
+.app-shell .global-right select {
+  font-family: var(--lf-font-sans);
+}
+.app-shell .masthead {
+  backdrop-filter: none;
+}
+.route-view {
+  outline: none;
+  animation: workspace-enter var(--lf-duration) var(--lf-ease) both;
+}
+@keyframes workspace-enter {
+  from {
+    opacity: 0.92;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 1400px) {
+  .app-shell .local-badge {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .workspace-nav-link {
+    transition: none;
+  }
+  .app-shell .workspace-nav-link:hover,
+  .app-shell .workspace-nav-link:active {
+    transform: none;
+  }
+  .route-view {
+    animation: none;
+  }
+}
+.app-shell .global-right {
+  align-items: center;
+}
+.app-shell .local-badge {
+  flex-shrink: 0;
+  padding: calc(var(--lf-space-1) * 1.25) calc(var(--lf-space-1) * 2.5);
+  font-family: var(--lf-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius-xs);
+}
+.app-shell .local-badge > span {
+  flex-shrink: 0;
+}
+.workbench-skeleton {
+  height: calc(100dvh - 102px);
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  background: var(--lf-surface-sunken);
+}
+.workbench-skeleton > p {
+  padding: calc(var(--lf-space-1) * 4.5) var(--lf-space-6);
+  background: var(--lf-surface);
+  border-bottom: 1px solid var(--lf-border);
+  font-size: var(--lf-text-sm);
+  color: var(--lf-text-3);
+}
+.workbench-skeleton-layout {
+  display: grid;
+  grid-template-columns: 236px 1fr 292px;
+  flex: 1;
+  min-height: 0;
+}
+.workbench-skeleton-layout > div {
+  padding: var(--lf-space-6) calc(var(--lf-space-1) * 4.5);
+  background: var(--lf-surface-2);
+}
+.workbench-skeleton-layout i {
+  display: block;
+  height: 28px;
+  background: var(--lf-surface-sunken);
+  border-radius: calc(var(--lf-space-1) * 1.75);
+  margin-bottom: calc(var(--lf-space-1) * 4.5);
+}
+.workbench-skeleton-layout i:nth-child(2n) {
+  width: 70%;
+}
+.workbench-skeleton-layout > span {
+  align-self: center;
+  justify-self: center;
+  width: 80%;
+  height: 65%;
+  background: color-mix(in srgb, var(--lf-text-on-inverse) 78.82%, transparent);
+  border: 1px solid var(--lf-border);
+}
+@media (max-width: 1100px) {
+  .workbench-skeleton-layout {
+    grid-template-columns: 210px 1fr;
+  }
+  .workbench-skeleton-layout > div:last-child {
+    display: none;
   }
 }

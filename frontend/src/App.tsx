@@ -38,7 +38,6 @@ import { UploadDialog } from "./components/UploadDialog";
 import { ProjectManager } from "./components/ProjectManager";
 import { ModelConnectionDialog } from "./components/ModelConnectionDialog";
 import { useConfirm } from "./components/useConfirm";
-import "./components/refinements.css";
 import { Experiments } from "./experiments/Experiments";
 const loadEditor = () => import("./editor/Editor");
 const Editor = lazy(loadEditor);
@@ -252,7 +251,7 @@ export default function App() {
   };
   return (
     <div
-      className={`app-shell refined-shell ${page === "home" ? "home-shell" : "workbench-shell"}`}
+      className={`app-shell ${page === "home" ? "home-shell" : "workbench-shell"}`}
       data-workspace-page={page}
     >
       <div className="main-shell">

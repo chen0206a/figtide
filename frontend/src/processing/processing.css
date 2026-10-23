@@ -1,10 +1,10 @@
 .processing-source {
-  padding: 12px 14px;
+  padding: var(--lf-space-3) calc(var(--lf-space-1) * 3.5);
   background: var(--lf-surface-2);
   border: 1px solid var(--lf-border);
-  border-radius: 8px;
-  margin: 18px 0;
-  font-size: 13px;
+  border-radius: var(--lf-radius-sm);
+  margin: calc(var(--lf-space-1) * 4.5) 0;
+  font-size: var(--lf-text-sm);
   overflow-wrap: anywhere;
 }
 .processing-form {
@@ -16,41 +16,41 @@
 .processing-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: calc(var(--lf-space-1) * 4.5);
 }
 .processing-form section {
-  margin: 14px 0;
+  margin: calc(var(--lf-space-1) * 3.5) 0;
 }
 .processing-form h3 {
-  font-size: 15px;
-  margin: 0 0 10px;
+  font-size: var(--lf-text-md);
+  margin: 0 0 calc(var(--lf-space-1) * 2.5);
 }
 .processing-form h3 small {
   font-weight: 400;
-  font-size: 12px;
-  color: #687384;
-  margin-left: 8px;
+  font-size: var(--lf-text-xs);
+  color: var(--lf-info);
+  margin-left: var(--lf-space-2);
 }
 .processing-form p,
 .processing-preview > p {
-  font-size: 13px;
-  color: #566274;
+  font-size: var(--lf-text-sm);
+  color: var(--lf-info);
   line-height: 1.7;
 }
 .processing-field-list {
   max-height: 155px;
   overflow: auto;
-  padding: 10px;
+  padding: calc(var(--lf-space-1) * 2.5);
   background: var(--lf-surface-2);
   border: 1px solid var(--lf-border);
-  border-radius: 6px;
+  border-radius: calc(var(--lf-space-1) * 1.5);
 }
 .processing-field-list label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 6px 0;
-  font-size: 13px;
+  gap: var(--lf-space-2);
+  margin: calc(var(--lf-space-1) * 1.5) 0;
+  font-size: var(--lf-text-sm);
   overflow-wrap: anywhere;
 }
 .processing-field-list input[type="checkbox"] {
@@ -61,8 +61,8 @@
 .processing-rule {
   display: flex;
   align-items: end;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: var(--lf-space-3);
+  margin-bottom: calc(var(--lf-space-1) * 2.5);
 }
 .processing-rule label {
   flex: 1;
@@ -71,38 +71,38 @@
 }
 .processing-rule button {
   flex-shrink: 0;
-  margin-bottom: 2px;
+  margin-bottom: calc(var(--lf-space-1) * 0.5);
 }
 .processing-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 16px 0;
+  gap: calc(var(--lf-space-1) * 2.5);
+  padding: var(--lf-space-4) 0;
   border-top: 1px solid var(--lf-border);
-  margin-top: 20px;
+  margin-top: var(--lf-space-5);
 }
 .processing-actions > span {
   flex: 1;
-  font-size: 12px;
-  color: #687384;
+  font-size: var(--lf-text-xs);
+  color: var(--lf-info);
 }
 .processing-error {
-  color: #a33232;
-  background: #fff1f0;
-  padding: 12px;
-  border-radius: 6px;
+  color: var(--lf-danger);
+  background: var(--lf-surface-2);
+  padding: var(--lf-space-3);
+  border-radius: calc(var(--lf-space-1) * 1.5);
 }
 .processing-counts {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--lf-space-3);
   flex-wrap: wrap;
-  padding: 12px 0;
-  font-size: 14px;
+  padding: var(--lf-space-3) 0;
+  font-size: var(--lf-text-base);
 }
 .processing-counts span {
-  color: #687384;
+  color: var(--lf-info);
 }
 .processing-preview .table-scroll {
   max-height: 380px;

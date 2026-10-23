@@ -1,0 +1,43 @@
+{
+  "baseline": "5f197f0",
+  "protected_paths_unchanged": [
+    "backend",
+    "frontend/src/lib",
+    "frontend/src/editor/AgentAssistant.tsx",
+    "frontend/src/editor/workbench/Workbench.tsx",
+    "frontend/src/editor/model.ts",
+    "frontend/src/editor/plot-core.ts",
+    "frontend/src/editor/plot.ts",
+    "frontend/src/editor/evaluation.ts",
+    "frontend/src/editor/confusion.ts",
+    "frontend/src/editor/pdf.ts",
+    "frontend/src/editor/agentConversation.ts",
+    "frontend/src/editor/agentRecovery.ts"
+  ],
+  "presentation_only_changes": [
+    "frontend/src/editor/Editor.tsx",
+    "frontend/src/experiments/Comparison.tsx",
+    "frontend/src/App.tsx"
+  ],
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "surfaces": [
+    "home",
+    "experiments",
+    "data",
+    "editor"
+  ],
+  "compared_elements": 26,
+  "compared_properties": [
+    "box",
+    "font",
+    "fontSize",
+    "lineHeight",
+    "radius",
+    "padding",
+    "display"
+  ],
+  "layout_matches": true
+}

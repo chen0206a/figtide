@@ -1,4 +1,70 @@
-# 第一阶段验收记录
+# LabFlow 测试与验收记录
+
+## 任务 08：清理与文档收尾（2026-10-23）
+
+本任务从干净的 5f197f0 开始，只整理前端呈现与文档。删除过渡别名、旧导航/覆盖样式，将现用规则归入 shell.css、styles/dialogs.css 与 editor/workbench/workbench.css。根 App 移除旧外壳类，main 更新样式入口；仍在使用旧页眉标签的 Editor 空状态与 Comparison 改用 lf-kicker。后端、API、schema、原始数据、绘图计算、草稿、保存、撤销及助手状态/预算/恢复逻辑未改。
+
+### 改动与统计
+
+| 指标（任务 00 同一六位 hex / CSS 行数口径） | 00 历史基线 | 08 开始前 | 08 完成后 |
+| --- | ---: | ---: | ---: |
+| CSS 文件数 | 15 | 17 | 16 |
+| CSS 行数 | 7,820 | 7,575 | **6,304** |
+| 六位十六进制颜色种类，含全部 CSS 和 token | 417 | 199 | **35** |
+| !important | 26 | 23 | **3** |
+| 衬线引用行 | 22 | 1 | **0** |
+
+当前统计没有排除 editor CSS，比任务要求的“排除图表相关文件后少于 120 种”更严格。保留的三处 !important 是两条全局减少动态效果规则和原有 select 箭头预留。旧外壳、旧字体和 launch 前缀在 frontend/src 均无引用。颜色、字号、间距、圆角直接引用 --lf-*；新字号 token 保留已有像素值，没有缩小正文。Tailwind @theme 只转接 canonical token。
+
+按实际 TS/TSX 字符串及 className 动态前缀核对，删除 **171 个无使用者的选择器**，包括旧 hero、图版、能力介绍、首页列表与旧页眉。明确保留 Plotly 运行时生成的 xtitle/ytitle 类；不是仅凭当前页面 CSS coverage 删除。另删除 **61 条**同容器、同选择器、同属性已被后续声明覆盖的规则，不移动其余声明顺序。审计见 [CSS 前](test-evidence/refactor08-css-before.json)、[CSS 后](test-evidence/refactor08-css-after.json)、[选择器核对](test-evidence/refactor08-unused-selectors.json)、[重复声明](test-evidence/refactor08-duplicates.json)。可复跑 `node scripts/audit-css.cjs`。
+
+主要文件：
+
+- styles.css / styles/{tokens,shell,dialogs}.css 与 editor/workbench/workbench.css；组件、实验、处理及样式库 CSS 直接使用 token。删除 components/{navigation,refinements,experience}.css。
+- App.tsx、main.tsx、editor/Editor.tsx、experiments/Comparison.tsx 仅改样式接线或标签类名。
+- 新增 e2e/cleanup-visual.spec.ts、scripts/audit-css.cjs；design-tokens.spec.ts 将过渡期的别名相等检查改为“旧变量为空、canonical 颜色精确匹配”，保留其他业务、颜色、字体和几何断言，避免自比较的无效检查。
+- 更新 DESIGN.md 的当前视觉/信息结构与可选助手边界；三个 HOME-* 文档标记为历史记录；README 改用本轮截图。保留过去任务的截图与测试记录，没有把新照片覆盖成旧阶段的证据。
+
+### 实际验证
+
+- `cd frontend; npm test -- --maxWorkers=4`：最终 **29 文件，192/192，14.82 秒**。
+- `cd frontend; npm run build`：**通过，20.32 秒**，包含 TypeScript；既有 Plotly 大 chunk 提示仍在，未升级依赖或宣称 FPS/性能提升。
+- `$env:CI='true'; .\.runtime\test-refactor08.ps1 -All`：调用完整 Playwright test，系统 Chrome + 最终生产 dist + 真实隔离 Java/MySQL + 本地协议夹具，**60/60，3.1 分钟**；新 JVM 审计持久化及中断运行恢复检查通过；清理 69 个测试项目。前端使用标准 Node 静态 HTTP 服务原样转发 /api 到测试后端，沿用 05 对长测 Vite 进程退出的处理；没有业务 Mock 或真实模型调用。保留既有测试的空状态边界夹具，不把它冒充后端主流程。
+- 轴标题修复后先单独执行新视觉/点击用例：**1/1，6.0 秒**，再进行上述完整 60 项；完整通过后为干净的 README 截图单独重导出四页 **1/1，3.8 秒**。最后强化旧 token 断言，仅测试文件变化，专项 cleanup-visual / design-tokens **2/2，6.1 秒**，新 JVM 恢复检查通过，清理 2 个测试项目。
+- 1440×1000 的首页/实验/数据/编辑器截图前后各四张。**26 个关键元素**的 box、字体、字号、行高、圆角、内边距和 display 与本任务开始前完全一致，严格几何断言已纳入 E2E；截图也已目视检查。阶段 02 后的外壳/Inter 字体保持；04 首页和 05 工具栏的既定变化保留。示例项目、文件和数据明确为合成演示，ID/时间属于重新导出的真实夹具。
+- [保护范围与几何证据](test-evidence/refactor08-contracts.json)：对照 5f197f0，backend、lib、AgentAssistant、Workbench、model/plot-core/plot、评估/混淆矩阵/PDF、会话与恢复源码未变。两个空状态/对比标签与 App 的改动已按允许的呈现替换逐字比对。
+- 本机 5176 与 8086 /api/health 均返回 local-only / ok，没有重启用户服务或清理用户主库。README 本地文件链接检查无缺失。
+- **未执行**：本轮没有重新运行 Java 单元/集成测试、真实模型评测、付费模型或 Pages 部署；07 静态页无变化，不重复其四宽检查。真实 Java/MySQL 的浏览器与重启恢复验证如上，不等于本轮重跑了 Java JUnit。
+
+### 过程修正、偏差与视觉边界
+
+首次四页对比发现移除组件 !important 后，标题框恢复默认内边距，导致编辑器工具栏高 18px；改用明确的组件选择器恢复原尺寸，没有加回组件 !important。初步单测 192/192、构建及两轮四页检查均通过后，再执行全量。
+
+全量首轮 **59/60，3.2 分钟**：唯一失败是减少动态效果下导航过渡仍有极短时长，原断言要求 0s。恢复为完全关闭，原断言不变。第二轮 **59/60，3.4 分钟**：导航已通过，新增真实轴标题点击断言暴露 Plotly 的 pointer-events:none，使原选轴回调收不到点击。保留运行时标题类并仅补 pointer-events:all，未改 FigureCanvas 的回调或任何绘图业务。普通真实 click（无 force）单独通过后，最终完整 **60/60**。没有删除或放宽已有断言、增加重试或把失败计作通过。
+
+任务文件认为 page-eyebrow 已无使用者，实际有两处，因此先改为现有 lf-kicker；额外补齐上述轴标题 CSS 入口并增加回归检查。这是与清理步骤的具体偏差。少量旧近似 UI 色统一到状态/文本 token；图中的数据颜色、字体与统计继续来自图表配置。本次没有重设计首页或增加图表/模型能力。
+
+四页当前图：[首页](screenshots/refactor-08-after-home.png) · [实验](screenshots/refactor-08-after-experiments.png) · [数据](screenshots/refactor-08-after-data.png) · [编辑器](screenshots/refactor-08-after-editor.png)。对应 before 图片和 JSON 留在同目录。需要人决定的事：08 无新增；07 已记录的许可证选择与公开部署仍由所有者处理。本地提交、不推送，08 后停下。
+
+### 本轮重构总览
+
+以下汇总历史各任务真实记录，具体命令、失败和补跑保留在后续对应章节；不是在 08 重新执行了所有历史测试。
+
+| 任务 | 前端单测 | 构建 | 浏览器 / 其他验证 |
+| --- | --- | --- | --- |
+| 00 基线 | 162/162 | 通过 | 全量 53/53；Java 未跑 |
+| 01 图表修复 | 175/175 | 通过 | 全量 56/56；Java 171 运行、170 通过、1 按开关跳过；SVG/PDF 检查 |
+| 01c 图表观感 | 180/180 | 通过 | 相关 15 条均有通过记录（14 + 单独 ROC 1），未宣称同轮全量全绿；三图导出检查 |
+| 02 token | 180/180 | 通过 | 全量 57/57，后续专项 6/6、截图 1/1 |
+| 01d 比例与色条 | 183/183 | 通过 | 图表/评估/分类 7/7；混淆矩阵与 ROC 重导出 |
+| 03 外壳和页面 | 183/183 | 通过 | 全量 58/58；390px 页面与导航几何 |
+| 04 首页 A | 190/190 | 通过 | 专项 11/11；真实图预览与助手预填不自动请求 |
+| 05 编辑器拆分 | 192/192，各块验证 | 通过 | 最终全量 58/58；草稿/保存转译比对、两页冲突与菜单 |
+| 06 助手布局 | 192/192 | 通过 | 专项 12/12；1440/1280 几何与恢复 |
+| 07 独立站 | 192/192 | 通过 | 静态页四宽 4/4；后续仓库链接补充亦 4/4；未部署 |
+| 08 清理 | 192/192 | 通过 | 最终全量 60/60 + 强化 token/截图专项 2/2；CSS 指标与四页比对 |
+
+已知的图形变化来自 01/01c/01d：旧分组图重开会获得区分组色与更短图例；可选 legendMetric 显示真实 AUC/AP，缺少该字段的旧图不自动补写；ROC 仅渲染时等比例、PR 不锁比例；矩阵副标题/计数色条与定位修正。数据版本和已存画布尺寸不被这些显示修复改写。08 只清理 UI 样式并恢复已有交互入口，没有再次改动这套科学绘图逻辑。
 
 ## 任务 07 补充：指定 GitHub 仓库（2026-10-23）
 

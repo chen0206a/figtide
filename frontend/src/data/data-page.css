@@ -68,3 +68,23 @@
     white-space: normal;
   }
 }
+.data-layout .dataset-list {
+  border-radius: var(--lf-radius-xl);
+  background: var(--lf-surface);
+}
+.data-layout .dataset-list button {
+  border-radius: var(--lf-radius-md);
+}
+.data-layout .dataset-list button:hover {
+  background: var(--lf-surface-2);
+}
+.data-layout .dataset-list button.active {
+  background: var(--lf-surface-sunken);
+  color: var(--lf-text);
+}
+.data-layout .data-detail {
+  border-radius: var(--lf-radius-xl);
+}
+.data-layout .dataset-list button {
+  transition: none;
+}

@@ -7,8 +7,8 @@ import App from "./App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./styles/tokens.css";
 import "./styles.css";
-import "./components/experience.css";
-import "./components/navigation.css";
+import "./editor/workbench/workbench.css";
+import "./styles/dialogs.css";
 import "./styles/shell.css";
 const client = new QueryClient({
   defaultOptions: {

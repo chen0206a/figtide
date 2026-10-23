@@ -48,7 +48,7 @@ export default function Editor(p: EditorProps) {
         <div className="empty-art">
           <ChartNoAxesCombined size={64} />
         </div>
-        <span className="page-eyebrow">从第一份数据开始</span>
+        <span className="lf-kicker">从第一份数据开始</span>
         <h1>从数据，走向发现。</h1>
         <p>导入实验结果，开始构建你的第一张科研图表。</p>
         <Button onClick={p.onUpload}>

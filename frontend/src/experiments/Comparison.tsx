@@ -59,7 +59,7 @@ export function Comparison({
     <section className="comparison-workspace">
       <div className="comparison-heading">
         <div>
-          <span className="page-eyebrow">EXPERIMENT COMPARISON</span>
+          <span className="lf-kicker">EXPERIMENT COMPARISON</span>
           <h2>让每一次变化，都有依据。</h2>
           <p>{records.length} 个实验 · 参数差异与指标差值 · 缺失结果保持缺失</p>
         </div>

@@ -1,0 +1,1213 @@
+{
+  "method": "AST source string/template literals, plus dynamic prefixes only within JSX className attributes; no identifier-based or runtime-coverage-only deletion; Plotly-generated axis title classes were explicitly retained after runtime review",
+  "removed": [
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".accent",
+      "missing_classes": [
+        "accent"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".kicker",
+      "missing_classes": [
+        "kicker"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".kicker::before",
+      "missing_classes": [
+        "kicker"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".masthead-meta",
+      "missing_classes": [
+        "masthead-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".nav-link",
+      "missing_classes": [
+        "nav-link"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".nav-link:hover",
+      "missing_classes": [
+        "nav-link"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".nav-link.active",
+      "missing_classes": [
+        "nav-link"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".nav-link.active::after",
+      "missing_classes": [
+        "nav-link"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".nav-index",
+      "missing_classes": [
+        "nav-index"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".nav-spacer",
+      "missing_classes": [
+        "nav-spacer"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".nav-note",
+      "missing_classes": [
+        "nav-note"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".page-content > .page-eyebrow:first-child",
+      "missing_classes": [
+        "page-eyebrow"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".page-eyebrow",
+      "missing_classes": [
+        "page-eyebrow"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".page-eyebrow::before",
+      "missing_classes": [
+        "page-eyebrow"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".page-heading",
+      "missing_classes": [
+        "page-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".page-heading h1",
+      "missing_classes": [
+        "page-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".page-heading p",
+      "missing_classes": [
+        "page-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".page-footer",
+      "missing_classes": [
+        "page-footer"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-side .kicker",
+      "missing_classes": [
+        "kicker"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".toc-no",
+      "missing_classes": [
+        "toc-no"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-grid",
+      "missing_classes": [
+        "plate-grid"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate",
+      "missing_classes": [
+        "plate"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-canvas",
+      "missing_classes": [
+        "plate-canvas"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-canvas svg",
+      "missing_classes": [
+        "plate-canvas"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-caption",
+      "missing_classes": [
+        "plate-caption"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-head",
+      "missing_classes": [
+        "plate-head"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-no",
+      "missing_classes": [
+        "plate-no"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-spec",
+      "missing_classes": [
+        "plate-spec"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-caption h3",
+      "missing_classes": [
+        "plate-caption"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-caption p",
+      "missing_classes": [
+        "plate-caption"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".cap-list",
+      "missing_classes": [
+        "cap-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".cap-item",
+      "missing_classes": [
+        "cap-item"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".cap-no",
+      "missing_classes": [
+        "cap-no"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".cap-item h3",
+      "missing_classes": [
+        "cap-item"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".cap-item p",
+      "missing_classes": [
+        "cap-item"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".cap-tag",
+      "missing_classes": [
+        "cap-tag"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-grid",
+      "missing_classes": [
+        "project-grid"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-card",
+      "missing_classes": [
+        "project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-card:hover",
+      "missing_classes": [
+        "project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-card.selected",
+      "missing_classes": [
+        "project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-card-top",
+      "missing_classes": [
+        "project-card-top"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-icon",
+      "missing_classes": [
+        "project-icon"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-icon svg",
+      "missing_classes": [
+        "project-icon"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-icon.p1",
+      "missing_classes": [
+        "project-icon",
+        "p1"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-icon.p2",
+      "missing_classes": [
+        "project-icon",
+        "p2"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-card h3",
+      "missing_classes": [
+        "project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-card p",
+      "missing_classes": [
+        "project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".project-meta",
+      "missing_classes": [
+        "project-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".guide-icon",
+      "missing_classes": [
+        "guide-icon"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".home-guide .page-eyebrow",
+      "missing_classes": [
+        "page-eyebrow"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".home-guide .page-eyebrow::before",
+      "missing_classes": [
+        "page-eyebrow"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".guide-step",
+      "missing_classes": [
+        "guide-step"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".guide-step > span",
+      "missing_classes": [
+        "guide-step"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".guide-step b",
+      "missing_classes": [
+        "guide-step"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".guide-step small",
+      "missing_classes": [
+        "guide-step"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".guide-note",
+      "missing_classes": [
+        "guide-note"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".chart-list",
+      "missing_classes": [
+        "chart-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".chart-list > button",
+      "missing_classes": [
+        "chart-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".chart-list > button:hover",
+      "missing_classes": [
+        "chart-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".chart-list strong",
+      "missing_classes": [
+        "chart-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".chart-list small",
+      "missing_classes": [
+        "chart-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".chart-list .muted",
+      "missing_classes": [
+        "chart-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".mini-chart",
+      "missing_classes": [
+        "mini-chart"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".mini-chart svg",
+      "missing_classes": [
+        "mini-chart"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".empty-state .page-eyebrow",
+      "missing_classes": [
+        "page-eyebrow"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".experiment-list",
+      "missing_classes": [
+        "experiment-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".experiment-list > button",
+      "missing_classes": [
+        "experiment-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".experiment-list > button > svg",
+      "missing_classes": [
+        "experiment-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".experiment-list > button:hover",
+      "missing_classes": [
+        "experiment-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".experiment-list > button > div",
+      "missing_classes": [
+        "experiment-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".experiment-list h3",
+      "missing_classes": [
+        "experiment-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".experiment-list p",
+      "missing_classes": [
+        "experiment-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".experiment-icon",
+      "missing_classes": [
+        "experiment-icon"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".experiment-icon svg",
+      "missing_classes": [
+        "experiment-icon"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".metric-pills",
+      "missing_classes": [
+        "metric-pills"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".metric-pills span",
+      "missing_classes": [
+        "metric-pills"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".metric-pills b",
+      "missing_classes": [
+        "metric-pills"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".tiny-badge",
+      "missing_classes": [
+        "tiny-badge"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".tiny-label",
+      "missing_classes": [
+        "tiny-label"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".keyboard-key",
+      "missing_classes": [
+        "keyboard-key"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".cap-list",
+      "missing_classes": [
+        "cap-list"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".masthead-meta",
+      "missing_classes": [
+        "masthead-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".plate-grid",
+      "missing_classes": [
+        "plate-grid"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".cap-list",
+      "missing_classes": [
+        "cap-list"
+      ]
+    },
+    {
+      "file": "frontend/src/components/experience.css",
+      "selector": ".home-shell .masthead-meta",
+      "missing_classes": [
+        "masthead-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/components/experience.css",
+      "selector": ".home-shell .nav-note",
+      "missing_classes": [
+        "nav-note"
+      ]
+    },
+    {
+      "file": "frontend/src/components/experience.css",
+      "selector": ".home-shell .nav-link",
+      "missing_classes": [
+        "nav-link"
+      ]
+    },
+    {
+      "file": "frontend/src/components/navigation.css",
+      "selector": ".refined-shell .workbench-context",
+      "missing_classes": [
+        "workbench-context"
+      ]
+    },
+    {
+      "file": "frontend/src/components/navigation.css",
+      "selector": ".refined-shell .workbench-context > a",
+      "missing_classes": [
+        "workbench-context"
+      ]
+    },
+    {
+      "file": "frontend/src/components/navigation.css",
+      "selector": ".refined-shell .workbench-context > a:hover",
+      "missing_classes": [
+        "workbench-context"
+      ]
+    },
+    {
+      "file": "frontend/src/components/navigation.css",
+      "selector": ".refined-shell.workbench-shell .page-eyebrow",
+      "missing_classes": [
+        "page-eyebrow"
+      ]
+    },
+    {
+      "file": "frontend/src/components/navigation.css",
+      "selector": ".refined-shell.workbench-shell .page-heading h1",
+      "missing_classes": [
+        "page-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/components/navigation.css",
+      "selector": ".refined-shell.workbench-shell .page-eyebrow",
+      "missing_classes": [
+        "page-eyebrow"
+      ]
+    },
+    {
+      "file": "frontend/src/components/navigation.css",
+      "selector": ".refined-shell.workbench-shell .page-heading h1",
+      "missing_classes": [
+        "page-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/components/navigation.css",
+      "selector": ".refined-shell.workbench-shell .page-heading p",
+      "missing_classes": [
+        "page-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/experiments/experiments.css",
+      "selector": ".experiment-status",
+      "missing_classes": [
+        "experiment-status"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".link-arrow",
+      "missing_classes": [
+        "link-arrow"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".link-arrow:hover",
+      "missing_classes": [
+        "link-arrow"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".local-dot span",
+      "missing_classes": [
+        "local-dot"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".site-nav",
+      "missing_classes": [
+        "site-nav"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero",
+      "missing_classes": [
+        "hero"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-grid",
+      "missing_classes": [
+        "hero-grid"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-main h1",
+      "missing_classes": [
+        "hero-main"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-main h1 em",
+      "missing_classes": [
+        "hero-main"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".lede",
+      "missing_classes": [
+        "lede"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-actions",
+      "missing_classes": [
+        "hero-actions"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-side",
+      "missing_classes": [
+        "hero-side"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-toc",
+      "missing_classes": [
+        "hero-toc"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-toc li",
+      "missing_classes": [
+        "hero-toc"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-toc li:first-child",
+      "missing_classes": [
+        "hero-toc"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-toc a",
+      "missing_classes": [
+        "hero-toc"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-toc a:hover",
+      "missing_classes": [
+        "hero-toc"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-toc b",
+      "missing_classes": [
+        "hero-toc"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-toc small",
+      "missing_classes": [
+        "hero-toc"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-toc a > svg",
+      "missing_classes": [
+        "hero-toc"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-meta",
+      "missing_classes": [
+        "hero-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-meta > div",
+      "missing_classes": [
+        "hero-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-meta > div + div",
+      "missing_classes": [
+        "hero-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-meta dt",
+      "missing_classes": [
+        "hero-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-meta dd",
+      "missing_classes": [
+        "hero-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat-strip",
+      "missing_classes": [
+        "stat-strip"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat",
+      "missing_classes": [
+        "stat"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat + .stat",
+      "missing_classes": [
+        "stat",
+        "stat"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat-icon",
+      "missing_classes": [
+        "stat-icon"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat-icon svg",
+      "missing_classes": [
+        "stat-icon"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat > div",
+      "missing_classes": [
+        "stat"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat strong",
+      "missing_classes": [
+        "stat"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat > div > span",
+      "missing_classes": [
+        "stat"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section",
+      "missing_classes": [
+        "section"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-head",
+      "missing_classes": [
+        "section-head"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-head h2",
+      "missing_classes": [
+        "section-head"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-note",
+      "missing_classes": [
+        "section-note"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".home-columns",
+      "missing_classes": [
+        "home-columns"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-heading",
+      "missing_classes": [
+        "section-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-heading h2",
+      "missing_classes": [
+        "section-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-heading h2 > span",
+      "missing_classes": [
+        "section-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-heading > .muted",
+      "missing_classes": [
+        "section-heading"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-heading.spaced",
+      "missing_classes": [
+        "section-heading",
+        "spaced"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".selected-label",
+      "missing_classes": [
+        "selected-label"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".home-guide",
+      "missing_classes": [
+        "home-guide"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".home-guide h2",
+      "missing_classes": [
+        "home-guide"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".home-guide > p",
+      "missing_classes": [
+        "home-guide"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".home-guide > .btn",
+      "missing_classes": [
+        "home-guide"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".site-nav",
+      "missing_classes": [
+        "site-nav"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-main h1",
+      "missing_classes": [
+        "hero-main"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-grid",
+      "missing_classes": [
+        "hero-grid"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".home-columns",
+      "missing_classes": [
+        "home-columns"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".site-nav",
+      "missing_classes": [
+        "site-nav"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-grid",
+      "missing_classes": [
+        "hero-grid"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-side",
+      "missing_classes": [
+        "hero-side"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-main h1",
+      "missing_classes": [
+        "hero-main"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".home-columns",
+      "missing_classes": [
+        "home-columns"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-meta",
+      "missing_classes": [
+        "hero-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".hero-meta > div + div",
+      "missing_classes": [
+        "hero-meta"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat",
+      "missing_classes": [
+        "stat"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat + .stat",
+      "missing_classes": [
+        "stat",
+        "stat"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".stat strong",
+      "missing_classes": [
+        "stat"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-head",
+      "missing_classes": [
+        "section-head"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".section-note",
+      "missing_classes": [
+        "section-note"
+      ]
+    },
+    {
+      "file": "frontend/src/editor/styles-library.css",
+      "selector": ".style-preview-warning",
+      "missing_classes": [
+        "style-preview-warning"
+      ]
+    },
+    {
+      "file": "frontend/src/experiments/experiments.css",
+      "selector": ".status-completed",
+      "missing_classes": [
+        "status-completed"
+      ]
+    },
+    {
+      "file": "frontend/src/experiments/experiments.css",
+      "selector": ".status-running",
+      "missing_classes": [
+        "status-running"
+      ]
+    },
+    {
+      "file": "frontend/src/experiments/experiments.css",
+      "selector": ".status-failed",
+      "missing_classes": [
+        "status-failed"
+      ]
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".swatches",
+      "missing_classes": [
+        "swatches"
+      ]
+    },
+    {
+      "file": "frontend/src/editor/workbench/workbench.css",
+      "selector": ".swatches i",
+      "missing_classes": [
+        "swatches"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".new-project-card",
+      "missing_classes": [
+        "new-project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".new-project-card:hover",
+      "missing_classes": [
+        "new-project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".new-project-card",
+      "missing_classes": [
+        "new-project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".new-project-card:hover",
+      "missing_classes": [
+        "new-project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".new-project-card span",
+      "missing_classes": [
+        "new-project-card"
+      ]
+    },
+    {
+      "file": "frontend/src/styles.css",
+      "selector": ".new-project-card small",
+      "missing_classes": [
+        "new-project-card"
+      ]
+    }
+  ],
+  "generated_runtime_classes": {
+    "Plotly": [
+      "xtitle",
+      "ytitle"
+    ]
+  }
+}

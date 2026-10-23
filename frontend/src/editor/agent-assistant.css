@@ -20,7 +20,6 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: var(--lf-space-5) var(--lf-space-5) var(--lf-space-4);
 }
 .agent-dock-heading h2 {
   display: flex;
@@ -36,7 +35,6 @@
   color: var(--lf-text-3);
 }
 .agent-dock .agent-tabs {
-  padding: 0 var(--lf-space-5);
   gap: var(--lf-agent-size-22);
 }
 .agent-dock .quick-actions-body {
@@ -48,7 +46,6 @@
   flex: 1;
 }
 .agent-dock .quick-actions-builder {
-  padding: var(--lf-space-5);
   overflow: visible;
 }
 .agent-dock .agent-provider {
@@ -140,7 +137,6 @@
   font-size: var(--lf-text-xs);
 }
 .agent-dock .agent-prompt textarea {
-  min-height: var(--lf-agent-size-86);
   font-size: var(--lf-text-sm);
 }
 .agent-dock .agent-suggestions {
@@ -175,7 +171,6 @@
 .agent-dock > .quick-result-footer {
   position: static;
   flex: 0 0 auto;
-  max-height: 44%;
   overflow-y: auto;
 }
 .agent-dock .quick-result-footer > .btn {
@@ -624,10 +619,6 @@
   padding: var(--lf-space-3) var(--lf-space-4) 0;
   border-bottom: 1px solid var(--lf-divider);
 }
-.agent-dock-top .agent-provider {
-  margin-bottom: var(--lf-space-2);
-  padding-bottom: var(--lf-space-2);
-}
 .agent-dock-top .agent-provider span[title] {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -635,7 +626,6 @@
 }
 .agent-dock-top .agent-budget {
   margin: 0;
-  padding-bottom: var(--lf-space-3);
   border: 0;
 }
 .agent-budget progress {
@@ -675,7 +665,6 @@
 .agent-dock > .agent-composer {
   flex: 0 0 auto;
   border-top: 1px solid var(--lf-border);
-  padding: var(--lf-space-3) var(--lf-space-4);
   background: var(--lf-surface);
 }
 .agent-dock .agent-prompt {
@@ -683,8 +672,6 @@
   gap: var(--lf-space-2);
 }
 .agent-dock .agent-prompt textarea {
-  height: var(--lf-header-h);
-  min-height: var(--lf-header-h);
   resize: none;
   line-height: var(--lf-leading-relaxed);
 }
@@ -705,7 +692,6 @@
   gap: var(--lf-space-2);
   max-height: none;
   overflow: visible;
-  padding: var(--lf-space-3) var(--lf-space-4);
 }
 .agent-dock > .quick-result-footer > p,
 .agent-dock > .quick-result-footer > details {
