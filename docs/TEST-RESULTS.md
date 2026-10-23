@@ -1,5 +1,13 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 10-5 公开展示页
+
+- `site/index.html` 换成 10-2 介绍页的静态导出：正文复用 10-2 已 token 化的标记与 `welcome.css`，96 个 `--lf-*` 令牌内联解析，无内联十六进制颜色；三处「开始创作」按钮改为指向 README 安装说明的链接，文案「本地运行」；滚动浮现用原生 IntersectionObserver，无 JS 或 `prefers-reduced-motion: reduce` 时直接显示最终状态。
+- 几何对齐真实 `/welcome`：1440 与 390 两个宽度下 h1 文案与字号（76px / 40px）、section 数量（5）、横向溢出（0）完全一致；三处 CTA 文本均为「本地运行 →」。
+- `node scripts/test-site.cjs`：4/4 视图（390 / 768 / 1280 / 1440）无横向溢出、无 `href="#"`、外部请求只有 `fonts.googleapis.com` / `fonts.gstatic.com`；原有断图片/内联色/未解析令牌/锚点可解析等检查保留，截图 `docs/screenshots/refactor-10-site-*.png`，证据 `docs/test-evidence/refactor10-site.json`。
+- 偏差：任务允许直接复用 `refactor/design/09-10/static/ProductIntro.html`，该稿全部使用内联十六进制颜色与内联样式，与视觉规则（只用 `--lf-*`）和站点测试的「无内联 UI 色」冲突；故改为复用 10-2 已完成的 token 化标记，视觉与真实页面逐项一致（上条几何对比）。需要人决定：无。
+
+
 ## 2026-10-23 · 10-4 助手画布预览
 
 - 画布底部新增输入条（CanvasAsk：默认不勾同意，未勾不可发送）；提案直接画在画布上：FigureCanvas 的 proposal 层、`预览中 · 尚未应用` 胶囊、原图/预览切换。proposalMarkers 把 JSON Pointer 映射到图例/坐标轴/序列的边界框，序列直接复用 `js-line` 的 `d` 描边，编号与右侧 diff 一一对应。
