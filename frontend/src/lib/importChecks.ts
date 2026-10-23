@@ -18,10 +18,9 @@ export function checkImportShape(input: {
   rowCount: number;
 }): ImportShapeCheck {
   const named = input.fieldNames.filter((name) => name.trim() !== "");
-  if (
-    named.length === 1 &&
-    (named[0].trim().length > 30 || SENTENCE_MARKS.test(named[0]))
-  )
+  // 只有单列文件才可能是"散文被当成表格"；多列文件即使只有一行也是正常表格。
+  if (named.length !== 1) return { looksLikeTable: true, reason: null };
+  if (named[0].trim().length > 30 || SENTENCE_MARKS.test(named[0]))
     return { looksLikeTable: false, reason: "prose-column" };
   if (input.rowCount <= 1) return { looksLikeTable: false, reason: "single-row" };
   return { looksLikeTable: true, reason: null };

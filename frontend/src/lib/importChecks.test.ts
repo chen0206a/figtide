@@ -22,13 +22,34 @@ describe("checkImportShape", () => {
     ).toBe("prose-column");
   });
 
-  it("flags a single data row", () => {
+  it("flags a single-column file with only one data row", () => {
     expect(
-      checkImportShape({ fieldNames: ["epoch", "accuracy"], rowCount: 1 }),
+      checkImportShape({ fieldNames: ["accuracy"], rowCount: 1 }),
     ).toEqual({ looksLikeTable: false, reason: "single-row" });
     expect(
       shapeWarning({ looksLikeTable: false, reason: "single-row" }),
     ).toContain("只有一行数据");
+  });
+
+  it("accepts a one-row file when it has several columns", () => {
+    expect(
+      checkImportShape({
+        fieldNames: ["epoch", "accuracy", "loss", "run", "seed"],
+        rowCount: 1,
+      }),
+    ).toEqual({ looksLikeTable: true, reason: null });
+  });
+
+  it("still flags a one-row single-column sentence", () => {
+    const check = checkImportShape({
+      fieldNames: ["这是一份实验记录，不是表格，只有一行。"],
+      rowCount: 1,
+    });
+    expect(check).toEqual({
+      looksLikeTable: false,
+      reason: "prose-column",
+    });
+    expect(shapeWarning(check)).toContain("只识别出 1 列");
   });
 
   it("accepts a real single-column table", () => {

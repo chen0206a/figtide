@@ -14,7 +14,9 @@ import { loadEditor } from "./lib/loadEditor";
 import { Link, useLocation, useNavigate, useBlocker } from "react-router-dom";
 import {
   readWorkspaceMemory,
+  rememberDataset,
   rememberWorkspace,
+  workspaceDataset,
   workspaceTargets,
 } from "./lib/workspaceMemory";
 import { WorkspaceNav } from "./components/WorkspaceNav";
@@ -74,7 +76,7 @@ export default function App() {
     () => { try { return Number(localStorage.getItem("labflow-project")) || 0; } catch { return 0; } },
   );
   const project = route.project || workspaceProject;
-  const lastDataset = useRef(0);
+  const lastDataset = useRef({ project: 0, id: 0 });
   const [modal, setModal] = useState(false),
     [name, setName] = useState(""),
     [description, setDescription] = useState(""),
@@ -152,17 +154,14 @@ export default function App() {
       });
   };
   const setDataset = (id: number) => {
-    lastDataset.current = id;
+    lastDataset.current = { project, id };
+    setMemory((m) => rememberDataset(m, project, id));
     if (page === "data")
       void go(workspaceUrl("data", project, null, id), { replace: true });
   };
-  const previousProject = useRef(project);
   useEffect(() => {
-    if (previousProject.current !== project) lastDataset.current = 0;
-    previousProject.current = project;
     if (route.project) setProject(route.project);
-    if (route.dataset) lastDataset.current = route.dataset;
-  }, [project, route.project, route.dataset]);
+  }, [route.project]);
   const routeFocus = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const names = {
@@ -195,6 +194,15 @@ export default function App() {
     queryFn: () => api<any[]>(`/projects/${project}/charts`),
     enabled: !!project && !showIntro,
   });
+  // 数据集必须确认属于当前项目才写进记忆：从别的项目带过来的 ?dataset=
+  // 不能留在地址或记忆里，否则切换项目后会被带到下一个项目。
+  useEffect(() => {
+    if (page !== "data" || !dataset) return;
+    if (!datasets.data?.some((d) => d.id === dataset)) return;
+    setMemory((m) => rememberDataset(m, project, dataset));
+    if (lastDataset.current.project !== project || lastDataset.current.id !== dataset)
+      lastDataset.current = { project, id: dataset };
+  }, [page, dataset, project, datasets.data]);
   useEffect(() => {
     if (
       !route.project &&
@@ -202,7 +210,6 @@ export default function App() {
       !projects.data.some((p) => p.id === project && !p.archived)
     ) {
       setProject(projects.data.find((p) => !p.archived)?.id || 0);
-      lastDataset.current = 0;
     }
   }, [projects.data, project, route.project]);
   useEffect(() => {
@@ -216,9 +223,9 @@ export default function App() {
         project,
         p === "editor" ? (id ?? chart) : null,
         dataId ??
-          (lastDataset.current ||
-            readWorkspaceRoute(...(targets.data.split("?") as [string, string]))
-              .dataset),
+          (lastDataset.current.project === project && lastDataset.current.id
+            ? lastDataset.current.id
+            : workspaceDataset(memory, project)),
       ),
     );
   const refresh = () => {
@@ -254,7 +261,7 @@ export default function App() {
   function imported(d: Dataset) {
     setPendingFile(null);
     setUploadVersion(null);
-    lastDataset.current = d.id;
+    lastDataset.current = { project, id: d.id };
     refresh();
     void navigate("data", undefined, d.id);
     setMessage(`已导入 ${d.row_count} 行，原始文件与解析规则已归档`);
@@ -309,7 +316,6 @@ export default function App() {
                   if (nextProject === project) return;
                   if (page === "home") {
                     setProject(nextProject);
-                    lastDataset.current = 0;
                   } else void go(workspaceTargets(memory, nextProject)[page]);
                 }}
               >
@@ -442,7 +448,6 @@ export default function App() {
                   onCreate={() => setModal(true)}
                   onProject={(id) => {
                     setProject(id);
-                    lastDataset.current = 0;
                   }}
                   onPlot={() => {
                     void navigate("editor", 0);

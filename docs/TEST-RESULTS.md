@@ -1,5 +1,13 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 11-2 补充修复（按项目记忆数据集、单列形态体检）
+
+- 工作区记忆：`frontend/src/lib/workspaceMemory.ts` 新增 `rememberDataset()` / `workspaceDataset()`；`rememberWorkspace()` 记录数据页时不再原样保存地址里的 `?dataset=`，数据集只能通过 `rememberDataset()` 写入；`readWorkspaceMemory()` 把旧记忆里的数据集迁移进来。`App.tsx` 的 `lastDataset` 由全局 number 改为 `{project,id}`，新增 effect 只在 `datasets` 里确实存在该 id 时才写入记忆；`navigate()` 的数据集回退按当前项目读取；删除对地址里任意 `?dataset=` 的信任赋值。`DataPage.tsx:50-57` 的守卫保留。
+- 实测（隔离栈前端 5179 / 后端 8089）：项目 1 数据页选中数据集后切到空项目 2，地址为 `/projects/2/data`，`sessionStorage` 为 `{"1":{"data":"/projects/1/data?dataset=1"},"2":{"data":"/projects/2/data"}}`；直接打开 `/projects/2/data?dataset=1` 后项目 2 的记忆仍不带 dataset；从首页进入项目 1 数据页恢复 `?dataset=1`。
+- `frontend/src/lib/importChecks.ts`：字段数不等于 1 时直接判为表格，「数据行 ≤ 1」只在单列时生效。单测调整/新增：1 行 × 5 列不提示；1 行 × 1 列长句子仍提示 `prose-column`；1 行 × 1 列普通列名提示 `single-row`。
+- 本提交同时把 `refactor/tasks/11-productize.md` 纳入版本库。
+- 验证：`npx vitest run --maxWorkers=4` **45 文件 / 257 通过**（默认并发下 5 条既有 jsdom 用例偶发 5s 超时，单独重跑 19/19 通过）；`npm run build` 通过；`npx playwright test e2e/isolation.spec.ts`（隔离栈）**5 passed (15.2s)**。
+
 ## 2026-10-23 · 11-2 上传形态体检与本地服务报错
 
 - 新增 `frontend/src/lib/importChecks.ts`：`checkImportShape({fieldNames,rowCount})` 把「散文被读成一列」（只有 1 个字段且字段名 >30 字或含 `。，、；？！`）与「只有一行数据」判为不像表格，返回 `{looksLikeTable, reason}`；`shapeWarning()` 给出对应文案。6 条单测覆盖散文、纯长列名、单行、正常单列（20 行）、正常多列、长列名不带标点。
