@@ -1,5 +1,13 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-23 · 09-3 实验表格视图
+
+- 新增 ExperimentsTable、tableModel、lib/metrics、lib/format 和10项单测。默认表格/卡片持久化；全项目字段频率推断、4参数/3指标默认、按项目列设置、双向排序且空值始终最后；已知方向最优值高亮；数据版本按钮、编辑/复制菜单。展示数字取6位有效数字，title保留完整值，排序/数据不变。
+- 复用原有selected/chosen、复制和Comparison逻辑；深色选择栏只在有选择时显示，首个所选即既有比较默认基线，去掉原列表预留空白。卡片和版本历史统一本地日期格式。
+- `npm test -- --maxWorkers=4`：202/202（31文件，15.54s）；`npm run build`：通过11.09s。首轮build发现Testing Library角色查询不支持exact参数，改成等价精确名称查询后通过；误在该次构建失败后执行的旧产物E2E有1/2失败，不计验收，后续均重新构建。
+- `$env:LABFLOW_POLISH_STAGE='09-3'; ./.runtime/test-refactor09.ps1 -Specs experiments.spec.ts,visual-polish.spec.ts` 最终2/2（6.5s）；表格选2项进对比、返回切卡片保留选择、原3项对比/生成/追溯断言全部保留通过。另 `LABFLOW_POLISH_UPDATE_BASELINE=1` + cleanup-visual.spec.ts 1/1；新JVM检查通过。
+- 与任务偏差：09有意改变布局，08截图几何契约更新为显式09快照基线，仍保留四页每元素七项几何/字体断言；完整E2E会在总验收对最终基线再次独立比较。没有修改草稿/保存/助手状态机。未执行：Java单测、真实模型、完整E2E（留总验收）。需要人决定：无。
+
 ## 2026-10-23 · 09-2 统一表格样式
 
 - 新增 styles/table.css；首页项目列表改为语义表格，两张首页表、导入预览、DataTable、Comparison和评估/分类/样本结果表统一lf-table。移除全局th背景/大写；数据表100%宽，56px行号、数字右对齐等宽、空值“空”及aria-label，底栏明确不当作0。版本历史本来是快照列表（无table），保留其操作结构。

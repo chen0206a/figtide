@@ -70,9 +70,17 @@ test("three experiments → linked versions → comparison → immutable chart �
     }
     await page.getByRole("button", { name: "保存记录", exact: true }).click();
     await expect(
-      page.getByRole("heading", { name: names[i], exact: true }),
+      page.locator(".experiment-name").filter({ hasText: names[i] }),
     ).toBeVisible();
   }
+  await expect(page.getByRole("button", { name: "表格", exact: true })).toHaveAttribute("aria-pressed", "true");
+  for (const name of names.slice(0, 2)) await page.getByLabel(`选择实验 ${name}`, { exact: true }).check();
+  await page.getByRole("button", { name: "对比所选实验", exact: true }).click();
+  await expect(page.locator(".comparison-table thead th")).toHaveCount(3);
+  await page.getByRole("button", { name: "返回实验列表", exact: true }).click();
+  await page.getByRole("button", { name: "卡片", exact: true }).click();
+  await expect(page.getByRole("heading", { name: names[0], exact: true })).toBeVisible();
+  await expect(page.getByLabel(`选择实验 ${names[0]}`, { exact: true })).toBeChecked();
   await page.getByLabel("搜索实验").fill("Proposed");
   await expect(page.locator(".experiment-record")).toHaveCount(1);
   await page.getByLabel("搜索实验").fill("");

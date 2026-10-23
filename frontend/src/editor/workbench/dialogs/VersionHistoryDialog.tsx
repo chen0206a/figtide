@@ -3,6 +3,7 @@ import { Button } from "../../../components/ui/button";
 import { Dialog } from "../../../components/ui/dialog";
 import { type Config } from "../../model";
 import type { ChartVersion } from "../types";
+import { formatDateTime } from "../../../lib/format";
 
 type VersionHistoryDialogProps = {
   historyOpen: boolean;
@@ -36,7 +37,7 @@ export function VersionHistoryDialog({
           <div className="version-row" key={v.version}>
             <span>
               <b>版本 {v.version}</b>
-              <small>{new Date(v.created_at).toLocaleString()}</small>
+              <small className="lf-mono">{formatDateTime(v.created_at)}</small>
             </span>
             <Button
               variant="outline"

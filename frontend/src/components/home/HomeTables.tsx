@@ -4,7 +4,8 @@ import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { statuses } from "../../experiments/ExperimentForm";
 import { api, type Experiment, type Project } from "../../lib/api";
 import "./home.css";
-import { bestIndex, formatMetric, metricColumns } from "./homeData";
+import { bestIndex } from "../../lib/metrics";
+import { formatMetric, metricColumns } from "./homeData";
 
 export function ProjectsPanel({
   projects,

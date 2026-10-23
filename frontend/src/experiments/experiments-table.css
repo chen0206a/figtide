@@ -1,0 +1,194 @@
+.experiment-view-switch {
+  display: flex;
+  padding: var(--lf-space-1);
+  background: var(--lf-surface-sunken);
+  border-radius: var(--lf-radius-md);
+  white-space: nowrap;
+}
+.experiment-view-switch button {
+  padding: var(--lf-space-2) var(--lf-space-3);
+  color: var(--lf-text-3);
+  border-radius: var(--lf-radius-sm);
+  font-size: var(--lf-text-sm);
+}
+.experiment-view-switch button[aria-pressed="true"] {
+  background: var(--lf-surface);
+  color: var(--lf-text);
+  box-shadow: var(--lf-shadow-xs);
+}
+.experiment-filters input {
+  flex: 1;
+  min-width: 0;
+}
+.experiment-filters select {
+  width: auto;
+  max-width: 180px;
+}
+.experiments-table-card {
+  background: var(--lf-surface);
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius-lg);
+}
+.experiments-table-scroll {
+  overflow-x: auto;
+  border-radius: var(--lf-radius-lg) var(--lf-radius-lg) 0 0;
+}
+.experiments-table {
+  font-size: var(--lf-text-xs);
+}
+.experiments-table :is(th, td) {
+  white-space: nowrap;
+}
+.experiments-table thead th {
+  background: var(--lf-surface);
+}
+.experiments-table .experiment-column-groups th {
+  border: 0;
+  color: var(--lf-text-3);
+  font-size: var(--lf-text-caption);
+  padding-block: var(--lf-space-2);
+}
+.experiments-table :is(th, td):first-child {
+  width: var(--lf-space-14);
+}
+.experiments-table .is-selected {
+  background: var(--lf-selected);
+}
+.experiments-table .is-best {
+  color: var(--lf-accent);
+  font-weight: 600;
+}
+.experiment-name-cell {
+  min-width: 220px;
+  max-width: 340px;
+}
+.experiment-name {
+  padding: 0;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.experiment-name strong {
+  font-weight: 500;
+  color: var(--lf-text);
+}
+.experiment-id {
+  color: var(--lf-text-3);
+  font-size: var(--lf-text-caption);
+}
+.experiment-table-tags {
+  color: var(--lf-text-3);
+  margin-top: var(--lf-space-1);
+  white-space: normal;
+}
+.experiment-data-link {
+  color: var(--lf-link);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--lf-space-2);
+  font-size: var(--lf-text-xs);
+}
+.experiments-table .experiment-date {
+  color: var(--lf-text-3);
+}
+.experiment-row-menu {
+  position: relative;
+}
+.experiment-row-menu > button {
+  color: var(--lf-text-3);
+  padding: var(--lf-space-1);
+  width: auto;
+}
+.experiment-row-menu > div {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  z-index: 5;
+  min-width: 120px;
+  background: var(--lf-surface);
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius-sm);
+  box-shadow: var(--lf-shadow-sm);
+  padding: var(--lf-space-1);
+}
+.experiment-row-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--lf-space-2) var(--lf-space-3);
+  border-radius: var(--lf-radius-xs);
+}
+.experiment-row-menu button:hover {
+  background: var(--lf-surface-2);
+}
+.experiment-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lf-space-3);
+  padding: var(--lf-space-3) var(--lf-space-5);
+  font-size: var(--lf-text-xs);
+  color: var(--lf-text-3);
+  position: relative;
+}
+.experiment-column-settings {
+  position: absolute;
+  right: var(--lf-space-4);
+  top: 100%;
+  z-index: 8;
+  display: flex;
+  gap: var(--lf-space-6);
+  padding: var(--lf-space-4);
+  background: var(--lf-surface);
+  border: 1px solid var(--lf-border);
+  border-radius: var(--lf-radius-md);
+  box-shadow: var(--lf-shadow-pop);
+  max-height: 320px;
+  overflow: auto;
+}
+.experiment-column-settings fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 130px;
+}
+.experiment-column-settings label {
+  display: flex;
+  align-items: center;
+  gap: var(--lf-space-2);
+  margin-block: var(--lf-space-2);
+}
+.comparison-selection .btn-primary {
+  background: var(--lf-surface);
+  color: var(--lf-text);
+  border-color: var(--lf-surface);
+}
+.comparison-selection .btn-ghost {
+  color: var(--lf-text-on-inverse-2);
+}
+.comparison-selection .btn-ghost:hover {
+  background: var(--lf-inverse-2);
+  color: var(--lf-text-on-inverse);
+}
+.comparison-selection .selection-baseline {
+  display: flex;
+  align-items: center;
+  gap: var(--lf-space-2);
+  max-width: 200px;
+}
+.selection-baseline b {
+  color: var(--lf-text-on-inverse);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+@media (max-width: 900px) {
+  .experiment-filters {
+    flex-wrap: wrap;
+  }
+  .comparison-selection {
+    border-radius: var(--lf-radius-lg);
+    flex-wrap: wrap;
+  }
+}

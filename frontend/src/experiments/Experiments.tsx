@@ -11,7 +11,11 @@ import {
 } from "./ExperimentForm";
 import { Comparison } from "./Comparison";
 import { display } from "./compare";
+import { formatDateTime } from "../lib/format";
+import { ExperimentsTable } from "./ExperimentsTable";
+import { readView, writeView } from "./tableModel";
 import "./experiments.css";
+import "./experiments-table.css";
 export function Experiments({
   project,
   datasets,
@@ -57,6 +61,7 @@ export function Experiments({
     } catch {}
   }, [project, search, status, tag]);
   const [selected, setSelected] = useState<number[]>([]);
+  const [view, setView] = useState(readView);
   const [comparing, setComparing] = useState(false);
   const rows = query.data || [];
   const chosen = selected
@@ -151,6 +156,24 @@ export function Experiments({
             <span className="lf-mono">
               {filtered.length} / {rows.length} 条记录
             </span>
+            <div
+              className="experiment-view-switch"
+              role="group"
+              aria-label="实验视图"
+            >
+              {(["table", "cards"] as const).map((value) => (
+                <button
+                  key={value}
+                  aria-pressed={view === value}
+                  onClick={() => {
+                    setView(value);
+                    writeView(value);
+                  }}
+                >
+                  {value === "table" ? "表格" : "卡片"}
+                </button>
+              ))}
+            </div>
           </div>
           {query.isPending ? (
             <div className="empty-state">正在读取实验记录…</div>
@@ -166,6 +189,24 @@ export function Experiments({
               <p>保存参数、指标和研究笔记，随时回来继续。</p>
               <Button onClick={create}>创建实验记录</Button>
             </div>
+          ) : view === "table" ? (
+            <ExperimentsTable
+              key={project}
+              project={project}
+              allRows={rows}
+              rows={filtered}
+              selected={selected}
+              onToggle={(r, checked) =>
+                setSelected(
+                  checked
+                    ? [...selected, r.id]
+                    : selected.filter((id) => id !== r.id),
+                )
+              }
+              onEdit={setEdit}
+              onCopy={copy}
+              onData={onData}
+            />
           ) : (
             <div className="experiment-records">
               {filtered.map((r) => (
@@ -196,8 +237,7 @@ export function Experiments({
                     <button className="record-title" onClick={() => setEdit(r)}>
                       <h3>{r.name}</h3>
                       <span className="lf-mono">
-                        {new Date(r.updated_at).toLocaleString()} · 修订{" "}
-                        {r.revision}
+                        {formatDateTime(r.updated_at)} · 修订 {r.revision}
                       </span>
                     </button>
                     <span
@@ -299,27 +339,36 @@ export function Experiments({
               )}
             </div>
           )}
-          <div className="comparison-selection">
-            <span>
-              已选 {selected.length} 个实验（最多 8 个）
-              {selected.some((id) => !filtered.some((r) => r.id === id))
-                ? "（含筛选外记录）"
-                : ""}
-            </span>
-            <Button
-              variant="ghost"
-              disabled={!selected.length}
-              onClick={() => setSelected([])}
+          {!!selected.length && (
+            <div
+              className="comparison-selection"
+              role="region"
+              aria-label="所选实验"
             >
-              清空选择
-            </Button>
-            <Button
-              disabled={chosen.length < 2}
-              onClick={() => setComparing(true)}
-            >
-              对比所选实验
-            </Button>
-          </div>
+              <span>
+                已选 {selected.length} 个实验（最多 8 个）
+                {selected.some((id) => !filtered.some((r) => r.id === id))
+                  ? "（含筛选外记录）"
+                  : ""}
+              </span>
+              <span className="selection-baseline">
+                基线 <b>{chosen[0]?.name || "—"}</b>
+              </span>
+              <Button
+                variant="ghost"
+                disabled={!selected.length}
+                onClick={() => setSelected([])}
+              >
+                清空选择
+              </Button>
+              <Button
+                disabled={chosen.length < 2}
+                onClick={() => setComparing(true)}
+              >
+                对比所选实验
+              </Button>
+            </div>
+          )}
         </>
       )}
       {edit && (

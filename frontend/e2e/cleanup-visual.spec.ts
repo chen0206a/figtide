@@ -70,11 +70,11 @@ test("cleanup preserves the four workspace surfaces and their controls", async (
     {
       name: "experiments",
       url: `/projects/${project.id}/experiments`,
-      ready: ".experiment-record",
+      ready: ".experiments-table",
       selectors: [
         ".masthead",
         ".lf-page-header",
-        ".experiment-record",
+        ".experiments-table",
         ".lf-chip",
       ],
     },
@@ -142,7 +142,7 @@ test("cleanup preserves the four workspace surfaces and their controls", async (
     }
     records[surface.name] = measured;
     await page.screenshot({
-      path: `../docs/screenshots/refactor-08-${phase}-${surface.name}.png`,
+      path: `../docs/screenshots/refactor-09-regression-${surface.name}.png`,
       fullPage: true,
       animations: "disabled",
     });
@@ -151,13 +151,18 @@ test("cleanup preserves the four workspace surfaces and their controls", async (
     ).toBe(1440);
   }
   fs.writeFileSync(
-    `../docs/test-evidence/refactor08-${phase}.json`,
+    `../docs/test-evidence/refactor09-current-layout.json`,
     JSON.stringify(records, null, 2) + "\n",
   );
 
+  // Task09 intentionally replaces table/layout geometry. Refresh this explicit
+  // visual baseline, retaining the same seven property checks for all surfaces.
+  if (process.env.LABFLOW_POLISH_UPDATE_BASELINE === "1") {
+    fs.writeFileSync("../docs/test-evidence/refactor09-layout-baseline.json", JSON.stringify(records, null, 2) + "\n");
+  }
   if (phase === "after") {
     const previous = JSON.parse(
-      fs.readFileSync("../docs/test-evidence/refactor08-before.json", "utf8"),
+      fs.readFileSync("../docs/test-evidence/refactor09-layout-baseline.json", "utf8"),
     );
     for (const [surface, elements] of Object.entries(previous)) {
       for (const [selector, styles] of Object.entries(
