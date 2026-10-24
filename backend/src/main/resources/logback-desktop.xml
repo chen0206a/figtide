@@ -1,0 +1,16 @@
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <springProperty scope="context" name="DESKTOP_LOG_DIR" source="labflow.desktop.logs-dir" defaultValue="./.runtime/desktop-logs"/>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder><pattern>${CONSOLE_LOG_PATTERN}</pattern><charset>UTF-8</charset></encoder>
+  </appender>
+  <appender name="DESKTOP_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${DESKTOP_LOG_DIR}/figtide.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${DESKTOP_LOG_DIR}/figtide.%i.log</fileNamePattern><minIndex>1</minIndex><maxIndex>5</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy"><maxFileSize>10MB</maxFileSize></triggeringPolicy>
+    <encoder><pattern>${FILE_LOG_PATTERN}</pattern><charset>UTF-8</charset></encoder>
+  </appender>
+  <root level="INFO"><appender-ref ref="CONSOLE"/><appender-ref ref="DESKTOP_FILE"/></root>
+</configuration>

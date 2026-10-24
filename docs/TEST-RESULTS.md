@@ -1,3 +1,13 @@
+## 2026-10-24 · 14-2-2：单进程桌面启动器
+
+- 桌面启动授权：main 第一行设 UTC，只有 desktop profile 进入 DesktopLauncher；用户 LOCALAPPDATA / 用户主目录回退、可覆盖数据目录、随机 loopback 端口、OS 文件锁、app.port JSON（port + instance_id）、仅 desktop 的 GET /api/desktop/ping。重复启动先验证 ping 的实例 ID，成功后打开原页面并退出；活动锁但 ping 不通时等待并报错，绝不抢锁再开数据库。陈旧“锁文件”无 OS 锁则可正常恢复。
+- DesktopUi 支持 Desktop.browse / Windows rundll32 回退，AWT headless=false，16/32px 品牌图标、四项托盘菜单、首次气泡。正常退出先关闭 Spring/数据源，再删除自己实例的端口记录和释放锁；app.lock 空文件保留以避免锁文件 inode 竞态。
+- desktop-only logback 配置：logs/figtide.log，10MB 按大小滚动，5 个归档；不改变默认 profile 日志配置。测试假密钥不出现在日志。
+- `mvn -B -f backend/pom.xml -Dtest=DesktopLauncherTest,DesktopPagesTest test`：11 passed / 0 failed / 0 skipped。新增7例路径/锁/身份/陈旧记录/日志策略测试。
+- `mvn -B -f backend/pom.xml -Pdesktop -DskipTests -Dlabflow.build.directory=../.runtime/desktop-build package` 通过；依赖 classpath 生成后 `node scripts/check-desktop-launcher.cjs`：9 项通过（真实子 JVM、中文空格路径、随机端口、同 JAR 页面、第二实例退出、正常退出清端口、正常重启与强杀重启数据保留、日志位置/假密钥检查）。证据 `docs/test-evidence/desktop14-2-launcher.json`。测试入口 LauncherProcessProbe 只在 test classes，不进产品 JAR。
+- `npm test -- --maxWorkers=4`：52 files / 280 passed；`npm run build`：通过（11.54s，既有 chunk 提示）。
+- 未执行：浏览器自动唤起、托盘真实点击与气泡目视、系统关机；列入14-2-5人工清单。全量双库后端与83条E2E留总验收，不把上述进程探针当成全量E2E。
+
 ## 2026-10-24 · 14-2-1：桌面 JAR 提供前端
 
 - 静态页面授权：新增 desktop-only DesktopPages，GET 首页/深链接返回 no-cache index，现有 API 优先匹配、未知 API 返回 JSON 404，缺失 assets 不回退 HTML，带哈希 assets 长期缓存。默认 profile 不注册页面控制器。

@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-24T09:13:21.283Z",
+  "passed": [
+    "random port",
+    "same-JAR SPA",
+    "Chinese/spaced path",
+    "single instance",
+    "normal exit removes port",
+    "normal restart persists",
+    "forced restart persists",
+    "rotating log location",
+    "no model key in logs"
+  ],
+  "dataDirectory": ".runtime\\launcher-probe-fc1db36c-693e-4721-8cb6-7ead91af14f9\\中文 空间\\data",
+  "ports": [
+    57974,
+    58002,
+    56126
+  ]
+}

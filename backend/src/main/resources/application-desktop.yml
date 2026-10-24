@@ -1,5 +1,10 @@
 labflow:
-  data-dir: ./.runtime/desktop-data
+  data-dir: ${LOCALAPPDATA:${user.home}/AppData/Local}/FigTide/data
+server:
+  address: 127.0.0.1
+  port: 0
+logging:
+  config: classpath:logback-desktop.xml
 spring:
   datasource:
     # WRITE_DELAY=0：提交即落盘。H2 默认把已提交数据缓存在内存里延迟约 1 秒写盘，
