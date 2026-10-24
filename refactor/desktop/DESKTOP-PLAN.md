@@ -46,9 +46,11 @@ FigTide.exe（jpackage 生成的启动器）
 启动流程：
 1. 检查是否已有实例在运行（数据目录下的锁文件 + 端口文件）。如果有，直接用浏览器打开已有实例的地址，然后退出。
 2. 在 127.0.0.1 上选一个空闲端口启动，把端口写进端口文件。
-3. Flyway 迁移 H2（`db/migration/h2/`），MySQL 继续用原来的 `db/migration/`（按 profile 选择 `spring.flyway.locations`）。
+3. Flyway 迁移 H2（`db/migration-h2/`，与 `db/migration/` 平级——Flyway 11 的 classpath 位置递归扫描子目录，`db/migration/h2/` 会让默认 MySQL profile 重复扫到两套 V1，详见 `docs/desktop/H2-PROBE.md`），MySQL 继续用原来的 `db/migration/`（按 profile 选择 `spring.flyway.locations`）。
 4. 服务就绪后，用系统默认浏览器打开 `http://127.0.0.1:<端口>/`。
 5. 系统托盘图标，菜单：「打开 FigTide」「打开数据文件夹」「导出诊断日志」「退出」。退出时正常关闭服务和数据库。
+
+**时区**：启动器必须以 `-Duser.timezone=UTC` 启动 JVM（14-2 执行）。H2 的 `TIMESTAMP` 不带时区，按 JVM 默认时区换算；MySQL 侧会话固定 UTC（`serverTimezone=UTC`），桌面 JVM 统一 UTC 才能保证备份导入导出与将来跨库迁移时 `created_at` 等时间戳逐毫秒一致。
 
 **本机安全**（桌面版新增的要求）：本地服务虽然只监听 127.0.0.1，但浏览器里打开的其他网站也能向它发请求。必须：
 - 校验 `Host` 头只能是 `127.0.0.1:<端口>` 或 `localhost:<端口>`，防 DNS 重绑定；

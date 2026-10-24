@@ -17,7 +17,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 /**
- * db/migration/（MySQL）与 db/migration/h2/（H2）的 Flyway 版本集合必须完全一致。
+ * db/migration/（MySQL）与 db/migration-h2/（H2）的 Flyway 版本集合必须完全一致。
  *
  * <p>14-1-2.3：以后新增 MySQL 迁移却忘了写 H2 版本，本测试失败。AGENTS.md「桌面版后端授权」一节同款规则：
  * 新增迁移必须同时提供 MySQL 和 H2 两个版本。</p>
@@ -27,33 +27,33 @@ class MigrationParityTest {
   @Test
   void versionSetsMatchBetweenMysqlAndH2() throws Exception {
     Set<String> mysql = versions("classpath:db/migration/V*.sql");
-    Set<String> h2 = versions("classpath:db/migration/h2/V*.sql");
+    Set<String> h2 = versions("classpath:db/migration-h2/V*.sql");
     assertEquals(mysql, h2,
-        "db/migration 与 db/migration/h2 的版本集合不一致（新增迁移必须同时提供 MySQL 和 H2 两个版本）。"
+        "db/migration 与 db/migration-h2 的版本集合不一致（新增迁移必须同时提供 MySQL 和 H2 两个版本）。"
             + "MySQL=" + mysql + " H2=" + h2);
   }
 
   /**
-   * 按文件名顺序在同一个内存 H2（参数与 application-desktop.yml 一致）上执行 db/migration/h2/ 的全部语句，
+   * 按文件名顺序在同一个内存 H2（参数与 application-desktop.yml 一致）上执行 db/migration-h2/ 的全部语句，
    * 模拟 Flyway 顺序应用：任何一条失败即测试失败。14-1-2 改写脚本的自检。
    */
   @Test
   void h2MigrationsApplyInOrderOnH2() throws Exception {
     PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-    Resource[] resources = resolver.getResources("classpath:db/migration/h2/V*.sql");
+    Resource[] resources = resolver.getResources("classpath:db/migration-h2/V*.sql");
     List<String> names = new ArrayList<>();
     for (Resource r : resources) {
       names.add(r.getFilename());
     }
     names.sort(String::compareTo);
-    assertTrue(names.size() >= 8, "db/migration/h2 至少应有 V1–V8，实际 " + names);
+    assertTrue(names.size() >= 8, "db/migration-h2 至少应有 V1–V8，实际 " + names);
 
     try (Connection conn = DriverManager.getConnection(
         "jdbc:h2:mem:migration_parity;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE",
         "sa", "");
         Statement st = conn.createStatement()) {
       for (String name : names) {
-        String text = new String(resolver.getResource("classpath:db/migration/h2/" + name)
+        String text = new String(resolver.getResource("classpath:db/migration-h2/" + name)
             .getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         for (String raw : stripComments(text).split(";")) {
           String stmt = raw.trim();

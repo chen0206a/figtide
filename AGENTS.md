@@ -74,4 +74,6 @@ git add -A && git commit -m "refactor(NN): <一句话>"
 
 > **桌面版后端授权（任务 14）**：在任务 14 的任务书明确列出的范围内，允许修改后端：新增 H2 依赖、`desktop` profile、`db/migration/h2/` 迁移脚本；为了两种数据库通用而做的可移植性修改（如显式赋值 `updated_at`、用 Java 计算替代数据库专有函数）；测试数据源参数化。仍然禁止：修改已有的 MySQL 迁移脚本（`db/migration/V*.sql`）；改变 API 的请求和响应；改变乐观锁、预算、幂等、恢复的业务语义；连接或修改真实工作区数据库。每一处后端改动都要在汇报里写明属于哪一类授权。
 >
-> 新增迁移必须同时提供 MySQL 和 H2 两个版本（`db/migration/` 与 `db/migration/h2/`，版本号一一对应；`MigrationParityTest` 会校验）。
+> 新增迁移必须同时提供 MySQL 和 H2 两个版本（`db/migration/` 与 `db/migration-h2/`，版本号与文件名一一对应；`MigrationParityTest` 会校验）。
+>
+> H2 迁移脚本放在 `db/migration-h2/`（与任务书写的 `db/migration/h2/` 不同）：Flyway 11 的 `classpath:` 位置会**递归扫描子目录**，H2 目录若放在 `db/migration/` 之下，默认 MySQL profile（locations=`classpath:db/migration`，一行不改）会同时扫到两套 V1–V8 并报 `Found more than one migration with version 1`。因此 H2 脚本目录必须与 `db/migration/` 平级。实测证据见 `docs/desktop/H2-PROBE.md`。

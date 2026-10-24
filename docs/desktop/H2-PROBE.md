@@ -69,7 +69,9 @@
 
 小结：盘点报告 9 个不确定项（U1–U9）中，**7 个被实测直接消解**（U1、U2、U3、U4、U5、U6、U7 的 JDBC 层），U8 在 14-1-1 消解，U9 转入 14-1-3.5。两个「确定/较确定」级别的判断被推翻（内联 INDEX、LONGBLOB），一个语法层面被推翻但改写规则不变（ON UPDATE）——这也是把探针测试留在仓库里作为 H2 升级回归检查的原因。
 
-## 实测结论如何落进 `db/migration/h2/`（V1–V8，与 MySQL 版文件名一一对应）
+## 实测结论如何落进 `db/migration-h2/`（V1–V8，与 MySQL 版文件名一一对应）
+
+> **路径偏差（14-1-3 实测发现）**：任务书写的是 `db/migration/h2/`，实际放在与 `db/migration/` **平级**的 `db/migration-h2/`。原因：Flyway 11 的 `classpath:` 位置会**递归扫描子目录**——`db/migration/h2/` 一旦存在，默认 MySQL profile（`locations=classpath:db/migration`，任务书要求一行不改）会把两套 V1–V8 一起扫出来，启动即报 `Found more than one migration with version 1: …db\migration\h2\V1__workspace.sql …db\migration\V1__workspace.sql`（第一次在 MySQL 上启动带 Spring 上下文的集成测试时实测复现）。Flyway 11.7.2 没有 `classpathpath:` 之类的非递归前缀（jar 内字符串检索为 0 处），因此唯一不触碰默认配置的做法是把 H2 脚本目录移出 `db/migration/` 子树。
 
 | 改动 | 处数 | 依据 |
 |---|---|---|

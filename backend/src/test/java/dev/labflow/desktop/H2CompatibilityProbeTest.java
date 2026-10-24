@@ -26,7 +26,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  *
  * <p>结果写入 target/h2-probe-report.md（实测证据；结论固化在 docs/desktop/H2-PROBE.md）。
  * 断言记录当前 H2 版本（2.3.232，由 Spring Boot BOM 管理）的实测行为：以后升级 H2 时
- * 如果行为变化，这里的断言失败，提醒重新核对 db/migration/h2/ 里的脚本。
+ * 如果行为变化，这里的断言失败，提醒重新核对 db/migration-h2/ 里的脚本。
  */
 class H2CompatibilityProbeTest {
   private static final String H2_URL_PARAMS =
@@ -76,7 +76,7 @@ class H2CompatibilityProbeTest {
     List<Probe> probes = probeMysqlMigrationStatements();
     for (Probe p : probes) {
       assertEquals(EXPECTED_MYSQL_SCRIPT.get(p.id()), p.ok(),
-          "H2 行为与记录不符（升级 H2 后请重新核对 db/migration/h2/）：" + p.id() + " " + p.sql());
+          "H2 行为与记录不符（升级 H2 后请重新核对 db/migration-h2/）：" + p.id() + " " + p.sql());
     }
   }
 
@@ -85,7 +85,7 @@ class H2CompatibilityProbeTest {
     List<Probe> probes = new ArrayList<>(probeFeatures());
     for (Probe p : probes) {
       assertEquals(EXPECTED_FEATURE_PROBES.get(p.id()), p.ok(),
-          "H2 行为与记录不符（升级 H2 后请重新核对 db/migration/h2/）：" + p.id() + " " + p.label());
+          "H2 行为与记录不符（升级 H2 后请重新核对 db/migration-h2/）：" + p.id() + " " + p.label());
     }
   }
 

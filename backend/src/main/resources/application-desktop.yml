@@ -7,4 +7,8 @@ spring:
     password: ""
   flyway:
     enabled: true
-    locations: classpath:db/migration/h2
+    # 位置是 db/migration-h2（而不是任务书写的 db/migration/h2）：Flyway 11 的 classpath
+    # 位置会递归扫描子目录，h2 目录若放在 db/migration 之下，默认 MySQL profile
+    # （locations=classpath:db/migration，一行不改）会同时扫到两套 V1–V8 并报
+    # "Found more than one migration with version 1"。详见 docs/desktop/H2-PROBE.md。
+    locations: classpath:db/migration-h2
