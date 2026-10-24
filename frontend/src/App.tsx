@@ -56,7 +56,7 @@ export default function App() {
   const location = useLocation();
   const routerGo = useNavigate();
   const go = useCallback(
-    (to: string, options: { replace?: boolean } = {}) => routerGo(to, options),
+    (to: string, options: { replace?: boolean; flushSync?: boolean } = {}) => routerGo(to, options),
     [routerGo],
   );
   const [memory, setMemory] = useState(() => {
@@ -233,12 +233,12 @@ export default function App() {
             : workspaceDataset(memory, project)),
       ),
     );
-  const refresh = () => {
-    qc.invalidateQueries({ queryKey: ["style-templates"] });
-    qc.invalidateQueries({ queryKey: ["projects"] });
-    qc.invalidateQueries({ queryKey: ["datasets", project] });
-    qc.invalidateQueries({ queryKey: ["charts", project] });
-  };
+  const refresh = () => Promise.all([
+    qc.invalidateQueries({ queryKey: ["style-templates"] }),
+    qc.invalidateQueries({ queryKey: ["projects"] }),
+    qc.invalidateQueries({ queryKey: ["datasets", project] }),
+    qc.invalidateQueries({ queryKey: ["charts", project] }),
+  ]);
   async function createProject(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -293,11 +293,14 @@ export default function App() {
   function importFile(file: File) {
     if (project) setPendingFile(file);
   }
-  function imported(d: Dataset) {
+  async function imported(d: Dataset) {
+    // Only announce completion after the committed version and project counts
+    // have reached the cache. The upload preview is not a successful import.
+    qc.setQueryData(["data", project, d.id], d);
+    await refresh();
     setPendingFile(null);
     setUploadVersion(null);
     lastDataset.current = { project, id: d.id };
-    refresh();
     void navigate("data", undefined, d.id);
     setMessage(`已导入 ${d.row_count} 行，原始文件与解析规则已归档`);
     if (upload.current) upload.current.value = "";
@@ -351,7 +354,7 @@ export default function App() {
                   if (nextProject === project) return;
                   if (page === "home") {
                     setProject(nextProject);
-                  } else void go(workspaceTargets(memory, nextProject)[page]);
+                  } else void go(workspaceTargets(memory, nextProject)[page], { flushSync: true });
                 }}
               >
                 <option value={0} disabled>

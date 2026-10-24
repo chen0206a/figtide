@@ -1,5 +1,13 @@
 # LabFlow 测试与验收记录
 
+## 2026-10-24 · 11-7 / 提交 1：先诊断两项隔离失败
+
+- 实验失败原文首个命中为表格行 `EXP-117 实验隔离 B 526`，不是 select/面包屑。`App.tsx` 的 Experiments key={project}、查询 [experiments,project] 已正确；根因为顶栏 onChange 的 useNavigate 默认并发 transition，缓存 B→A 时切换事件已结束但旧 B 表格仍有一帧可见。`App.project-switch.test.tsx` 在 change 冒泡结束时读取真实表格，修前红（命中 Experiment 2）、修后绿；`App.tsx` 顶栏项目切换以 flushSync:true 原子提交路由，未改助手/保存/草稿保护，也未扩大或缩小采样范围。
+- 上传旧 trace：B=524，POST /projects/524/datasets 于 15:42:08.405Z 开始，耗时约 35ms；旧测试 GET 于 08.425Z 返回 []，上传后 08.443Z 的 GET 已返回 1 个版本。提交落 B，不是落 A/丢失。原失败用例把导入预览文件名可见当成上传完成，11-1 时可能刚好 POST 更快；de8b840 只在编辑器离线保存失败分支执行，与此数据页导入无关，工作区记忆也不改变 POST 的 project 参数。
+- 现场重建：E2E 可控地挂起 B 的 POST，在请求未完成时查询 A/B，再释放并等待真实响应、弹窗关闭与列表刷新，最后再查 A/B。提交前 A=1/B=0，提交后 A=1/B=1；A 保留原文件，B 文件名正确。记录 `docs/test-evidence/refactor11-7-upload-diagnosis.json`。原现场已由 11-6 teardown 清理，不伪称重新查询了原来的 523/524。
+- `App.imported` 等待项目计数、datasets/charts 查询失效并刷新后才关闭弹窗；UploadDialog 等待该回调。测试等待 POST 与弹窗消失，文件名断言从歧义 getByText 改为真实数据标题（完成后标题与侧栏均同名），计数/归属原断言全部保留。
+- 验证：`npm test -- --maxWorkers=4` 49 文件 / 275 通过；build 通过（25.32s）；`./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('isolation.spec.ts')` **5 passed / 0 failed / 0 skipped**（21.2s），新 JVM 审计恢复也通过。首次专项暴露同名标题/侧栏的 strict locator 歧义，修正为 heading 后重新通过，未删断言。日志 `.runtime/task11-7-1-*`。
+
 ## 2026-10-24 · 日常工作区历史验收记录整理
 
 - 用户指出首页仍展示「第一批验收」「草稿恢复验收」等记录。核查为早期 E2E 已写入日常库的项目/图表内容，不是本轮界面静态文案。11-6 仅隔离本轮新测试，未处理这些历史残留；此处补记并处理。

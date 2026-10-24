@@ -29,7 +29,7 @@ export function UploadDialog({
   project: number;
   version: number | null;
   onClose: () => void;
-  onImported: (d: Dataset) => void;
+  onImported: (d: Dataset) => void | Promise<void>;
 }) {
   const [rules, setRules] = useState<ImportRules>(() => ({
     ...defaultImportRules(),
@@ -97,7 +97,7 @@ export function UploadDialog({
         `/projects/${project}/datasets${version ? `/${version}/versions` : ""}`,
         { method: "POST", body: form },
       );
-      onImported(result);
+      await onImported(result);
     } catch (e) {
       setError((e as Error).message);
     } finally {

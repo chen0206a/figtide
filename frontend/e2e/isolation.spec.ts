@@ -123,9 +123,29 @@ test("import dialog stores the file in the project that is currently selected", 
     mimeType: "text/csv",
     buffer: Buffer.from("epoch,accuracy\n1,0.6\n2,0.8"),
   });
+  // Hold the actual commit to reproduce the old "filename already visible"
+  // race. Inspect both projects while pending, then after the real response.
+  let release!: () => void;
+  let started = false;
+  const hold = new Promise<void>((resolve) => { release = resolve; });
+  await page.route(`**/api/projects/${b.project}/datasets`, async route => {
+    if (route.request().method() === "POST") { started = true; await hold; }
+    await route.continue();
+  });
+  const committed = page.waitForResponse(r => r.request().method() === "POST" && new URL(r.url()).pathname === `/api/projects/${b.project}/datasets`);
   await page.getByRole("button", { name: "确认导入" }).click();
+  await expect.poll(() => started).toBe(true);
+  const read = async (id: number) => {
+    const response = await request.get(`/api/projects/${id}/datasets`);
+    expect(response.ok()).toBe(true);
+    return response.json() as Promise<{ id: number; filename: string }[]>;
+  };
+  const before = { a: await read(a.project), b: await read(b.project) };
+  release();
+  expect((await committed).ok()).toBe(true);
+  await expect(page.getByRole("dialog", { name: "确认数据导入" })).toHaveCount(0);
 
-  await expect(page.getByText("isolation-target.csv")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "isolation-target.csv", exact: true })).toBeVisible();
   const stored = await (
     await request.get(`/api/projects/${b.project}/datasets`)
   ).json();
@@ -134,6 +154,11 @@ test("import dialog stores the file in the project that is currently selected", 
     await request.get(`/api/projects/${a.project}/datasets`)
   ).json();
   expect(untouched.length).toBe(1);
+  expect(stored[0].filename).toBe("isolation-target.csv");
+  expect(untouched[0].filename).toBe(a.file);
+  expect(before.a).toHaveLength(1);
+  expect(before.b).toHaveLength(0);
+  fs.writeFileSync(test.info().outputPath("upload-target-diagnosis.json"), JSON.stringify({ projectA: a.project, projectB: b.project, beforeCommit: before, afterCommit: { a: untouched, b: stored } }, null, 2));
 });
 
 test("home charts and experiment lists stay isolated when switching projects", async ({
