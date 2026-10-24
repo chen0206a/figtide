@@ -1,3 +1,13 @@
+## 2026-10-24 · 14-2-1：桌面 JAR 提供前端
+
+- 静态页面授权：新增 desktop-only DesktopPages，GET 首页/深链接返回 no-cache index，现有 API 优先匹配、未知 API 返回 JSON 404，缺失 assets 不回退 HTML，带哈希 assets 长期缓存。默认 profile 不注册页面控制器。
+- 构建设施：`scripts/build-desktop.ps1` 在独立 `.runtime/desktop-ui-<uuid>/frontend` 执行 npm ci + build，Maven `-Pdesktop` 将 dist 复制到 JAR 的 `desktop-static/` 并输出 `.runtime/desktop-build/figtide.jar`。资源不用 Boot 默认 static 目录，避免默认 profile 意外提供页面；未把 dist 入库。
+- `mvn -B -f backend/pom.xml -Dtest=DesktopPagesTest test`：4 passed / 0 failed / 0 skipped，覆盖首页/深链接、缓存/资源404、API JSON404、默认profile不注册。
+- `./scripts/build-desktop.ps1`：npm ci、前端 build、Maven package 全部通过。JAR ZIP 检查含 index + 41 个 desktop-only assets，不含默认 static 路径。实际临时 H2 JAR（18871）首页/深链接内容一致、未知 API JSON404 检查通过；探针清理 Wait-Process 因已退出进程使外层命令返回1，HTTP断言已全部执行，不记作正式E2E通过。
+- `npm test -- --maxWorkers=4`：52 files / 280 passed / 0 failed。全量 E2E / 双库后端留总验收。
+- 构建过程：首次在原 frontend 运行 npm ci 因 Windows Vite 原生模块锁 EPERM 失败；改为隔离构建，补复制测试引用的 docs/config-v1.example.json 后通过。原目录依赖用 npm ci 恢复；只重启已跟踪的 Vite，未连接/重启 8086 或操作日常数据库。构建脚本后续不再清理运行中的 node_modules。
+- 偏差：桌面资源用 desktop-static 而非默认 static，以满足“默认 profile 不提供页面”；其余语义不变。
+
 ## 2026-10-24 · 14-2-0：14-1 收尾与启动基线
 
 - 从 `desktop/14-1` 的 `d84e002` 创建 `desktop/14-2`；开工时跟踪文件干净，唯一未跟踪项为前轮按约定留下的 DB-AUDIT-glm-5.3.md，本节按新任务要求入库。
