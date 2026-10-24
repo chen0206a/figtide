@@ -25,4 +25,6 @@ Copy-Item (Join-Path $stage 'dist') (Join-Path $root 'frontend') -Recurse -Force
 $output = [IO.Path]::GetFullPath((Join-Path $root $BuildDirectory))
 & mvn.cmd -B -f backend/pom.xml -Pdesktop -DskipTests "-Dlabflow.build.directory=$output" package
 if ($LASTEXITCODE) { throw 'Desktop JAR build failed.' }
+$buildInfo = @{ jar_sha256 = (Get-FileHash (Join-Path $output 'figtide.jar') -Algorithm SHA256).Hash.ToLowerInvariant(); frontend_lock_sha256 = (Get-FileHash (Join-Path $stage 'package-lock.json') -Algorithm SHA256).Hash.ToLowerInvariant(); frontend_stage = $stage; created_at = [DateTime]::UtcNow.ToString('o') }
+[IO.File]::WriteAllText((Join-Path $output 'build-info.json'), ($buildInfo | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
 Write-Host "Desktop JAR: $(Join-Path $output 'figtide.jar')"
