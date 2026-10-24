@@ -1,0 +1,133 @@
+{
+  "from": "http://127.0.0.1:8087",
+  "to": "http://127.0.0.1:17870",
+  "mode": "Migrate",
+  "started_at": "2026-10-24T11:13:58.951Z",
+  "finished_at": "2026-10-24T11:14:23.590Z",
+  "projects": [
+    {
+      "name": "rep-大项目",
+      "source_id": 4,
+      "result": "成功",
+      "target_id": 1,
+      "target_name": "rep-大项目",
+      "counts": {
+        "source": {
+          "datasets": 11,
+          "dataset_versions": 11,
+          "charts": 0,
+          "chart_versions": 0,
+          "experiments": 0,
+          "experiment_dataset_links": 0,
+          "style_templates": 0
+        },
+        "target": {
+          "datasets": 11,
+          "dataset_versions": 11,
+          "charts": 0,
+          "chart_versions": 0,
+          "experiments": 0,
+          "experiment_dataset_links": 0,
+          "style_templates": 0
+        }
+      },
+      "diffs": [],
+      "note": null,
+      "backup_file": ".runtime/migration-e2e-20261024-201201/report-first/001-rep-大项目.labflow.zip"
+    },
+    {
+      "name": "归档项目/特殊·字符「α」",
+      "source_id": 3,
+      "result": "成功",
+      "target_id": 2,
+      "target_name": "归档项目/特殊·字符「α」",
+      "counts": {
+        "source": {
+          "datasets": 1,
+          "dataset_versions": 1,
+          "charts": 1,
+          "chart_versions": 1,
+          "experiments": 0,
+          "experiment_dataset_links": 0,
+          "style_templates": 0
+        },
+        "target": {
+          "datasets": 1,
+          "dataset_versions": 1,
+          "charts": 1,
+          "chart_versions": 1,
+          "experiments": 0,
+          "experiment_dataset_links": 0,
+          "style_templates": 0
+        }
+      },
+      "diffs": [],
+      "note": "已按源项目恢复归档状态。",
+      "backup_file": ".runtime/migration-e2e-20261024-201201/report-first/002-归档项目_特殊·字符「α」.labflow.zip"
+    },
+    {
+      "name": "rep-experiments",
+      "source_id": 2,
+      "result": "成功",
+      "target_id": 3,
+      "target_name": "rep-experiments",
+      "counts": {
+        "source": {
+          "datasets": 2,
+          "dataset_versions": 2,
+          "charts": 1,
+          "chart_versions": 2,
+          "experiments": 2,
+          "experiment_dataset_links": 2,
+          "style_templates": 0
+        },
+        "target": {
+          "datasets": 2,
+          "dataset_versions": 2,
+          "charts": 1,
+          "chart_versions": 2,
+          "experiments": 2,
+          "experiment_dataset_links": 2,
+          "style_templates": 0
+        }
+      },
+      "diffs": [],
+      "note": null,
+      "backup_file": ".runtime/migration-e2e-20261024-201201/report-first/003-rep-experiments.labflow.zip"
+    },
+    {
+      "name": "代表·图表全家福",
+      "source_id": 1,
+      "result": "成功",
+      "target_id": 4,
+      "target_name": "代表·图表全家福",
+      "counts": {
+        "source": {
+          "datasets": 3,
+          "dataset_versions": 4,
+          "charts": 3,
+          "chart_versions": 4,
+          "experiments": 0,
+          "experiment_dataset_links": 0,
+          "style_templates": 1
+        },
+        "target": {
+          "datasets": 3,
+          "dataset_versions": 4,
+          "charts": 3,
+          "chart_versions": 4,
+          "experiments": 0,
+          "experiment_dataset_links": 0,
+          "style_templates": 1
+        }
+      },
+      "diffs": [],
+      "note": null,
+      "backup_file": ".runtime/migration-e2e-20261024-201201/report-first/004-代表·图表全家福.labflow.zip"
+    }
+  ],
+  "footer": {
+    "assistant_history_note": "助手的运行记录和会话不随迁移保留（桌面方案既定范围，备份格式不含 agent_runs/agent_sessions）。",
+    "old_db_untouched_note": "旧库没有被修改过：本工具对旧版只调用 GET /api/projects 和 GET /api/projects/{p}/backup。"
+  }
+}
