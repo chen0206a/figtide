@@ -6,9 +6,9 @@
 
 ## 参考与取舍
 
-- [RAWGraphs 的界面演进](https://www.rawgraphs.io/post/a-short-history-of-rawgraphs-interface)：官方文章明确区分 data / mapping / layout，并通过分步方式支持返回修改。LabFlow 借鉴职责分离，保留实时画布，避免将已有编辑流程改成必须顺序完成的向导。
-- [Lyra](https://github.com/vega/lyra)：图形对象与数据字段绑定、直接操作图形。LabFlow 保留点击曲线选中序列和对应属性面板，左侧图层只保留图表和序列。
-- [Vega Editor](https://github.com/vega/editor)：定位为 Vega / Vega-Lite IDE。它可作为配置可复现性的参考，但代码编辑器并不适合 LabFlow 的无需编程定位，因此不引入 JSON 主编辑区。
+- [RAWGraphs 的界面演进](https://www.rawgraphs.io/post/a-short-history-of-rawgraphs-interface)：官方文章明确区分 data / mapping / layout，并通过分步方式支持返回修改。FigTide 借鉴职责分离，保留实时画布，避免将已有编辑流程改成必须顺序完成的向导。
+- [Lyra](https://github.com/vega/lyra)：图形对象与数据字段绑定、直接操作图形。FigTide 保留点击曲线选中序列和对应属性面板，左侧图层只保留图表和序列。
+- [Vega Editor](https://github.com/vega/editor)：定位为 Vega / Vega-Lite IDE。它可作为配置可复现性的参考，但代码编辑器并不适合 FigTide 的无需编程定位，因此不引入 JSON 主编辑区。
 
 仅参考交互组织原则；没有复制这些项目的代码或素材，也不宣称遵循某个项目的官方设计认证。
 

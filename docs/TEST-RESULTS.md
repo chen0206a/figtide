@@ -1,3 +1,13 @@
+## 2026-10-24 · 任务 13-2：文案与公开展示页
+
+- 盘点见 `docs/BRAND-RENAME.md`：用户可见品牌、内部协议、历史记录逐处分类。界面/无障碍名称/动态标题/隐私声明/脚本提示改为 FigTide；请求头、存储键、环境变量、API 和历史记录保留。下载显示名改为 figtide，备份 `.labflow.zip` 扩展名及结构不变。
+- 展示页换新图标与字标；仓库链接统一 `https://github.com/chen0206a/figtide`，补 og:image / twitter:card。已在线确认该仓库存在，当前为空；README 与 raw 媒体地址在所有者推送 main 后生效。本地未推送。
+- `npm test -- --maxWorkers=4`：51 files / 279 passed / 0 failed；`npm run build`：通过（已有 chunk 提示）。
+- `./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('intro.spec.ts','productize.spec.ts','release-brand.spec.ts')`：9 passed / 0 failed / 0 skipped；重启审计检查通过。新增 release-brand 两例，覆盖品牌、标题、真实图表保持不变、旧存储键、关于入口、1440/390 布局与 favicon/apple 图标实际响应，原用例未删除。
+- `node scripts/test-site.cjs`：4/4 宽度通过（390/768/1280/1440），无溢出、坏图、空链接或页面错误；仅静态站 Google Fonts 请求，0 请求失败。
+- 等价断言更新：productize.spec 离线提示品牌；test-site 的仓库/README 目标；新增标题/品牌/社交元信息断言。13-1 的 intro 关于弹窗路径检查保留。逐条记录见改名盘点。
+- 静态站测试原先写旧任务截图，现默认写 `.runtime/site-acceptance/`，仅 LABFLOW_CAPTURE=1 复制到 release-0.1 新名称；未回写历史截图或基线。全量 E2E 留总验收。
+
 ## 2026-10-24 · 任务 13-1：图标与品牌组件
 
 - 分支：从 `refactor/frontend` 的 `f13b69c` 创建 `release/v0.1.0`。任务包品牌源资产与任务说明入库，媒体文件留到 13-3。

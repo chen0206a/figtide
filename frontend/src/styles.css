@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* LabFlow interface styles · design variables live in styles/tokens.css */
+/* FigTide interface styles · design variables live in styles/tokens.css */
 
 @theme {
   --color-primary: var(--lf-primary);

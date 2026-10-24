@@ -8,11 +8,13 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const assert = require('node:assert/strict');
 
-const README = 'https://github.com/chen0206a/labflow-agent#readme';
-const REPO = 'https://github.com/chen0206a/labflow-agent';
+const README = 'https://github.com/chen0206a/figtide#readme';
+const REPO = 'https://github.com/chen0206a/figtide';
 
 (async () => {
   const root = path.resolve(__dirname, '..');
+  const output = path.join(root, '.runtime/site-acceptance');
+  fs.mkdirSync(output, { recursive: true });
   const browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || 'chrome', headless: true });
   const requests = new Set(), failures = [], consoleErrors = [], viewports = [];
   try {
@@ -48,6 +50,11 @@ const REPO = 'https://github.com/chen0206a/labflow-agent';
             .some(link => getComputedStyle(link).display !== 'none' && link.getBoundingClientRect().width > 0),
         };
       }, README);
+      assert.equal(await page.title(), '从实验数据到论文插图 · FigTide');
+      assert.equal(await page.locator('header [role="img"][aria-label="FigTide"]').count(), 1);
+      assert.equal(await page.locator('meta[property="og:title"]').getAttribute('content'), await page.title());
+      assert.equal(await page.locator('meta[property="og:image"]').getAttribute('content'), 'https://raw.githubusercontent.com/chen0206a/figtide/main/docs/media/social-preview.png');
+      assert.equal(await page.locator('meta[name="twitter:card"]').getAttribute('content'), 'summary_large_image');
       assert.equal(checks.scrollWidth, checks.width, `${width}px page overflows`);
       assert(checks.anchors.every(link => link.href !== '#'), 'Placeholder href="#" must not ship');
       assert.deepEqual(checks.brokenImages, []);
@@ -70,7 +77,12 @@ const REPO = 'https://github.com/chen0206a/labflow-agent';
         assert(checks.headerHeight <= 64, `Under 640px the header must stay within 64px, got ${checks.headerHeight}`);
       }
       await page.goto(pathToFileURL(path.join(root, 'site/index.html')).href);
-      await page.screenshot({ path: path.join(root, `docs/screenshots/refactor-10-site-${width}.png`), fullPage: true });
+      const screenshot = path.join(output, `release-0.1-site-${width}.png`);
+      await page.screenshot({ path: screenshot, fullPage: true });
+      if (process.env.LABFLOW_CAPTURE === '1') {
+        fs.mkdirSync(path.join(root, 'docs/screenshots'), { recursive: true });
+        fs.copyFileSync(screenshot, path.join(root, `docs/screenshots/release-0.1-site-${width}.png`));
+      }
       viewports.push({ width, scrollWidth: checks.scrollWidth, readmeLinks: checks.readmeLinks, anchorsValid: true, headerHeight: checks.headerHeight });
     }
     assert.deepEqual(consoleErrors, []);
@@ -89,7 +101,12 @@ const REPO = 'https://github.com/chen0206a/labflow-agent';
       pageErrors: consoleErrors,
       paidRequests: 0,
     };
-    fs.writeFileSync(path.join(root, 'docs/test-evidence/refactor10-site.json'), JSON.stringify(evidence, null, 2) + '\n');
+    const report = path.join(output, 'release-0.1-site.json');
+    fs.writeFileSync(report, JSON.stringify(evidence, null, 2) + '\n');
+    if (process.env.LABFLOW_CAPTURE === '1') {
+      fs.mkdirSync(path.join(root, 'docs/test-evidence'), { recursive: true });
+      fs.copyFileSync(report, path.join(root, 'docs/test-evidence/release-0.1-site.json'));
+    }
     console.log(`PASS: ${viewports.length}/4 viewports; no overflow, no href="#", Google Fonts only.`);
     console.log(`Font request failures: ${failures.length}.`);
   } finally { await browser.close(); }

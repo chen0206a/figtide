@@ -1,4 +1,4 @@
-# AGENTS.md — LabFlow 前端重构
+# AGENTS.md — FigTide 前端重构
 
 > 放到仓库根目录。Codex 每次开工前先读本文件，再读 `refactor/REFACTOR-PLAN.md` 和当前要做的 `refactor/tasks/NN-*.md`。
 

@@ -62,7 +62,7 @@ export function EvaluationResults({
     );
     const a = document.createElement("a");
     a.href = url;
-    a.download = "labflow-evaluation.json";
+    a.download = "figtide-evaluation.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };

@@ -176,7 +176,7 @@ export default function App() {
       editor: "绘图工作台",
       welcome: "欢迎",
     };
-    document.title = `${names[page]} · LabFlow`;
+    document.title = `${names[page]} · FigTide`;
     routeFocus.current?.focus({ preventScroll: true });
     window.scrollTo({
       top:
@@ -311,9 +311,9 @@ export default function App() {
   };
   if (needsIntroRedirect)
     return (
-      <main aria-label="正在载入LabFlow介绍">正在载入…</main>
+      <main aria-label="正在载入FigTide介绍">正在载入…</main>
     );
-  if (showIntro) return <Suspense fallback={<main aria-label="正在载入LabFlow介绍">正在载入…</main>}><ProductIntro seen={seenIntro} onStart={(event) => {
+  if (showIntro) return <Suspense fallback={<main aria-label="正在载入FigTide介绍">正在载入…</main>}><ProductIntro seen={seenIntro} onStart={(event) => {
     markIntroSeen();
     const update = () => flushSync(() => {setSeenIntro(true); void routerGo("/");});
     if (reducedMotion || !document.startViewTransition) { update(); return; }
@@ -332,7 +332,7 @@ export default function App() {
       <div className="main-shell">
         <header className="masthead">
           <div className="masthead-bar">
-            <Link className="brand" to="/" title="LabFlow 首页">
+            <Link className="brand" to="/" title="FigTide 首页">
               <BrandMark size={29} />
             </Link>
             <WorkspaceNav
@@ -434,7 +434,7 @@ export default function App() {
               <BrandMark size={40} />
               <AlertCircle />
               <h2>无法连接本地服务</h2>
-              <p>请确认 LabFlow 已经启动。你的数据保存在本机，没有丢失。</p>
+              <p>请确认 FigTide 已经启动。你的数据保存在本机，没有丢失。</p>
               <Button onClick={() => projects.refetch()}>重新连接</Button>
             </div>
           ) : route.project && (!current || current.archived) ? (

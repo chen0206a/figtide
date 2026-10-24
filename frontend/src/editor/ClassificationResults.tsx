@@ -31,7 +31,7 @@ export function ClassificationResults({
       );
       const a = document.createElement("a");
       a.href = url;
-      a.download = "labflow-classification.json";
+      a.download = "figtide-classification.json";
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (e) {

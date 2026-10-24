@@ -237,7 +237,7 @@ export function ModelConnectionDialog({ onClose }: { onClose: () => void }) {
                 <p className="connection-hint">地址已更换，请填写新密钥。</p>
               )}
               <p className="connection-hint">
-                密钥只保存在本机 LabFlow 服务的内存中，不写入磁盘；重启 LabFlow 后需要重新填写。
+                密钥只保存在本机 FigTide 服务的内存中，不写入磁盘；重启 FigTide 后需要重新填写。
               </p>
               <label className="connection-consent">
                 <input

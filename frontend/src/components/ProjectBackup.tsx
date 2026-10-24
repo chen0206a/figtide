@@ -76,7 +76,7 @@ export function ProjectBackup({
             }
             downloadBlob(
               await res.blob(),
-              `labflow-project-${project}.labflow.zip`,
+              `figtide-project-${project}.labflow.zip`,
             );
             setDone("项目备份已下载；请保存在工作区以外的位置。");
           })

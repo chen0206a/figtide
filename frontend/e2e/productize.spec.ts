@@ -64,7 +64,7 @@ test("the offline page speaks about the local service, not the fetch error", asy
   await page.reload();
 
   await expect(page.getByRole("heading", { name: "无法连接本地服务" })).toBeVisible();
-  await expect(page.getByText(/请确认 LabFlow 已经启动/)).toBeVisible();
+  await expect(page.getByText(/请确认 FigTide 已经启动/)).toBeVisible();
   await expect(page.getByLabel("当前项目", { exact: true })).toHaveCount(0);
   expect(await page.locator(".offline-state").evaluate((el) => getComputedStyle(el).paddingLeft)).toBe("16px");
   const body = await page.locator("body").innerText();

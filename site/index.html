@@ -1,16 +1,25 @@
 <!DOCTYPE html><html lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LabFlow · 从实验数据到论文插图</title>
+<title>从实验数据到论文插图 · FigTide</title>
 <meta name="description" content="面向 AI / ML 研究生的本地实验记录与科研绘图工作台。本地优先，无需账号，原始数据本地保存。">
-<meta property="og:title" content="LabFlow · 从实验数据到论文插图">
+<meta property="og:title" content="从实验数据到论文插图 · FigTide">
+<meta property="og:image" content="https://raw.githubusercontent.com/chen0206a/figtide/main/docs/media/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
 <meta property="og:description" content="导入 CSV，生成 11 类论文图，导出嵌入字体的矢量 PDF。原始数据始终只读。">
+<link rel="icon" href="./favicon.ico" sizes="any">
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
 <style>
 :root {
+  --lf-tracking-brand: -0.03em;
+  --lf-space-3: 12px;
+  --lf-space-5: 20px;
+  --lf-text-xl: 20px;
+  --lf-text-on-inverse: #ffffff;
   --lf-accent: #d55e00;
   --lf-bg: #f5f6f8;
   --lf-border: #e4e7ec;
@@ -353,28 +362,52 @@ body {margin:0;background:var(--lf-surface-2);color:var(--lf-text);font:var(--lf
   .js [data-reveal] {opacity:1;transform:none;transition:none;}
   .product-intro.lf-motion-on * {animation:none !important;}
 }
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lf-space-2);
+  flex-shrink: 0;
+  font-family: var(--lf-font-sans);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.brand-mark-dark { color: var(--lf-text); }
+.brand-mark-light { color: var(--lf-text-on-inverse); }
+.brand-mark img { display: block; flex-shrink: 0; }
+.brand-wordmark { letter-spacing: var(--lf-tracking-brand); }
+.brand-wordmark b { font-weight: 800; }
+.brand-wordmark > span { font-weight: 400; }
+.brand-cn {
+  border-left: 1px solid currentColor;
+  padding-left: var(--lf-space-2);
+  font-weight: 700;
+}
+.intro-footer-brand { display: inline-flex; align-items: center; gap: var(--lf-space-3); flex-wrap: wrap; }
+.about-brand { margin-block: var(--lf-space-5); font-size: var(--lf-text-xl); }
+.about-links { display: flex; gap: var(--lf-space-5); margin-top: var(--lf-space-5); flex-wrap: wrap; }
+.about-links a { color: var(--lf-link); }
+
 </style>
 </head><body>
 <main id="labflow-intro" class="product-intro"><div class="pi-s1">
 
 <header class="fade pi-s2">
 <div class="pi-s3">
-<a class="pi-s4" href="#labflow-intro" aria-label="LabFlow">
-<span class="pi-s5"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18 L9 11 L13 14 L20 5"></path></svg></span>
-<span class="pi-s6">LabFlow</span>
+<a class="pi-s4" href="#labflow-intro" aria-label="FigTide">
+<span class="brand-mark brand-mark-dark" role="img" aria-label="FigTide"><img src="./brand/figtide-icon.svg" width="30" height="30" alt=""><span class="brand-wordmark" aria-hidden="true"><b>Fig</b><span>Tide</span></span></span>
 </a>
 <nav class="pi-s7" aria-label="页面导航">
 <a class="pi-s8" href="#trace">可追溯</a>
 <a class="pi-s8" href="#assistant">绘图助手</a>
 <a class="pi-s8" href="#charts">图表</a>
-<a class="pi-s8" href="https://github.com/chen0206a/labflow-agent">GitHub</a>
+<a class="pi-s8" href="https://github.com/chen0206a/figtide">GitHub</a>
 </nav>
 <div class="pi-s9"></div>
-<a class="cta pi-s10" href="https://github.com/chen0206a/labflow-agent#readme">本地运行 <span class="arrow" aria-hidden="true">→</span></a>
+<a class="cta pi-s10" href="https://github.com/chen0206a/figtide#readme">本地运行 <span class="arrow" aria-hidden="true">→</span></a>
 </div>
 </header>
 
-<section data-reveal class="pi-s11" aria-label="LabFlow 介绍">
+<section data-reveal class="pi-s11" aria-label="FigTide 介绍">
 <div aria-hidden="true" class="fade pi-s12"></div>
 <div class="pi-s13">
 <div class="up pi-s14">
@@ -384,9 +417,9 @@ body {margin:0;background:var(--lf-surface-2);color:var(--lf-text);font:var(--lf
 <span class="line"><span class="pi-s17">让实验数据，</span></span>
 <span class="line"><span class="pi-s18">自然成为<span class="pi-s19">论文图<svg class="pi-s20" aria-hidden="true" viewBox="0 0 300 24" preserveAspectRatio="none"><path class="underline" d="M4 16 C 70 6, 150 4, 296 12" fill="none" stroke="#D55E00" stroke-width="7" stroke-linecap="round"></path></svg></span>。</span></span>
 </h1>
-<p class="up pi-s21">实验记录、数据版本和科研绘图放在同一个本地工作台。每一张图，都能回到它的数据和处理规则。</p>
+<p class="up pi-s21">FigTide 图汐 · 实验记录、数据版本和科研绘图放在同一个本地工作台。每一张图，都能回到它的数据和处理规则。</p>
 <div class="up pi-s22">
-<a class="cta shine pi-s23" href="https://github.com/chen0206a/labflow-agent#readme">本地运行 <span class="arrow pi-s24" aria-hidden="true">→</span></a>
+<a class="cta shine pi-s23" href="https://github.com/chen0206a/figtide#readme">本地运行 <span class="arrow pi-s24" aria-hidden="true">→</span></a>
 <a class="pi-s25" href="#trace">了解它如何工作 <span aria-hidden="true">↓</span></a>
 </div>
 
@@ -586,9 +619,9 @@ body {margin:0;background:var(--lf-surface-2);color:var(--lf-text);font:var(--lf
 
 <section class="pi-s87" id="privacy" aria-labelledby="privacy-title">
 <h2 id="privacy-title" class="pi-s60">数据在哪里</h2>
-<p class="pi-s61">LabFlow 运行在你的电脑上。数据、图表和所有版本都保存在本机，我们没有用于接收这些数据的云端服务器，也不收集任何使用数据。只有在你配置模型并勾选同意后，绘图助手才会把图表配置和字段摘要发给你选择的模型服务，不会附带原始数据行和上传文件名。</p>
+<p class="pi-s61">FigTide 运行在你的电脑上。数据、图表和所有版本都保存在本机，我们没有用于接收这些数据的云端服务器，也不收集任何使用数据。只有在你配置模型并勾选同意后，绘图助手才会把图表配置和字段摘要发给你选择的模型服务，不会附带原始数据行和上传文件名。</p>
 <p class="pi-s61">发送内容还包括你输入的描述、会话上下文和数据版本元信息。字段摘要包含字段名、类型、缺失数、数值范围、唯一值数和字段角色；版本元信息包含行数、版本标识与内容指纹。你主动写入标题、注释或对话的内容也会发送。模型服务可能计费。</p>
-<p class="pi-s61">导入、保存和解析由本机 LabFlow 服务完成。模型连通性测试仅在你勾选测试同意并点击测试后发送两条固定测试消息，不包含实验数据。备份导出文件保存在你选择的下载位置。</p>
+<p class="pi-s61">导入、保存和解析由本机 FigTide 服务完成。模型连通性测试仅在你勾选测试同意并点击测试后发送两条固定测试消息，不包含实验数据。备份导出文件保存在你选择的下载位置。</p>
 </section>
 
 <section data-reveal class="pi-s107">
@@ -597,11 +630,11 @@ body {margin:0;background:var(--lf-surface-2);color:var(--lf-text);font:var(--lf
 <h2 class="pi-s110">下一张图，从这里开始。</h2>
 <p class="pi-s111">导入一份 CSV，几分钟内得到一张可以直接放进论文的图。数据只保存在你的电脑上。</p>
 </div>
-<a class="cta pi-s112" href="https://github.com/chen0206a/labflow-agent#readme">本地运行 <span class="arrow" aria-hidden="true">→</span></a>
+<a class="cta pi-s112" href="https://github.com/chen0206a/figtide#readme">本地运行 <span class="arrow" aria-hidden="true">→</span></a>
 </div>
 <div class="pi-s113">
-<span>LabFlow · 开源 · 本地单用户</span>
-<a class="pi-s8" href="https://github.com/chen0206a/labflow-agent">github.com/chen0206a/labflow-agent</a>
+<span class="intro-footer-brand"><span class="brand-mark brand-mark-dark" role="img" aria-label="FigTide"><img src="./brand/figtide-icon-small.svg" width="24" height="24" alt=""><span class="brand-wordmark" aria-hidden="true"><b>Fig</b><span>Tide</span></span><span class="brand-cn" aria-hidden="true">图汐</span></span><span>开源 · 本地单用户</span></span>
+<a class="pi-s8" href="https://github.com/chen0206a/figtide">github.com/chen0206a/figtide</a>
 </div>
 </section>
 

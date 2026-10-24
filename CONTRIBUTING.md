@@ -1,4 +1,4 @@
-# 参与 LabFlow
+# 参与 FigTide
 
 项目当前为单用户本地科研绘图工作台。先阅读 README、docs/API.md 和各批交付记录，再调整接口或配置字段。
 

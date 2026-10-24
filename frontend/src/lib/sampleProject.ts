@@ -10,7 +10,7 @@ import {
 
 export const SAMPLE_PROJECT_NAME = "示例 · 学习曲线";
 export const SAMPLE_PROJECT_DESCRIPTION =
-  "合成示例数据，用于体验 LabFlow 的功能，可以随时归档。";
+  "合成示例数据，用于体验 FigTide 的功能，可以随时归档。";
 export const SAMPLE_FILENAME = "示例-学习曲线.csv";
 export const SAMPLE_NOTE = "合成演示数据，不能用于真实结论。";
 export const SAMPLE_PARTIAL_FAILURE =
