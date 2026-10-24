@@ -1,3 +1,12 @@
+## 2026-10-24 · 14-2-4：桌面 JAR 浏览器测试入口
+
+- 测试设施授权：test-agent.ps1 新增 -Desktop，调用 build-desktop.ps1，在新建临时目录用 H2 / WRITE_DELAY=0 / open-browser=false / tray=false 启动 figtide.jar，从 app.port 读取随机端口并核对 ping 实例 ID。网页与 API 同端口，脚本核对监听者是自己启动的 loopback Java PID，Playwright 桌面模式不注册 Vite webServer。
+- audit-restart 的地址改读 LABFLOW_API；重启后重新读新端口再验证预算与审计，默认地址仍为8087。原 -Database h2 入口也使用同 JAR 桌面通道，以遵守 desktop 只允许当前端口 Origin 的规则；MySQL开发模式仍8087/5178，默认生产静态测试入口保留。
+- H2测试文件名仍labflow_e2e以通过原测试库守卫，目录每轮UUID隔离；清理前检查绝对路径在仓库.runtime内且目录名前缀匹配。未触及真实工作区、API业务或任何测试断言。
+- 构建的 npm ci / build / Maven package 通过。PowerShell语法检查通过。
+- `./scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('home.spec.ts','agent.spec.ts','model-connection.spec.ts','processing.spec.ts','isolation.spec.ts')`：20 passed / 0 failed / 0 skipped，57.6s；新JVM审计/中断恢复检查通过。真实同JAR端口51967，证据 `docs/test-evidence/desktop14-2-scoped.json`。
+- 本节未执行全量83条；没有新增/删除E2E用例。前端产品代码不变，只调整测试配置与重启夹具，前端280项在前节通过，全量留总验收。
+
 ## 2026-10-24 · 14-2-3：桌面 Host / Origin 边界
 
 - 本机安全授权：LocalOriginFilter 仅在 desktop profile 对所有请求检查 Host=127.0.0.1:<实际socket端口> / localhost:<实际socket端口>。不使用 Host 自带端口或 X-Forwarded-* 作为可信端口；写请求有 Origin 时仅放行该端口的两个本机来源。无 Origin 保持本机程序调用可用，GET/HEAD/OPTIONS 的 Origin 不做写请求检查，但 Host 必须正确。
