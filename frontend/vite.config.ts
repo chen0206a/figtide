@@ -1,7 +1,9 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import tailwind from "@tailwindcss/vite";
+import { version } from "./package.json";
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(version) },
   plugins: [react(), tailwind()],
   // Discover lazy PDF dependencies at startup; a first export must not reload the editor.
   optimizeDeps: { include: ["jspdf", "svg2pdf.js"] },

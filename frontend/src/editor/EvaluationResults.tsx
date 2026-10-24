@@ -62,7 +62,7 @@ export function EvaluationResults({
     );
     const a = document.createElement("a");
     a.href = url;
-    a.download = "labflow-evaluation.json";
+    a.download = "figtide-evaluation.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
@@ -85,11 +85,11 @@ export function EvaluationResults({
       {!metrics.length ? (
         <p className="subtle">请在专业面板配置二分类标签及正类，并检查告警。</p>
       ) : (
-        <table className="sample-summary" aria-label="模型评估指标">
+        <table className="lf-table sample-summary" aria-label="模型评估指标">
           <thead>
             <tr>
               {columns.map(([k, title]) => (
-                <th key={k}>{title}</th>
+                <th key={k} className={typeof metrics[0]?.[k] !== "string" ? "num" : ""}>{title}</th>
               ))}
             </tr>
           </thead>
@@ -97,7 +97,7 @@ export function EvaluationResults({
             {metrics.map((m, i) => (
               <tr key={i}>
                 {columns.map(([k]) => (
-                  <td key={k}>
+                  <td key={k} className={typeof m[k] !== "string" ? "num" : ""}>
                     {typeof m[k] === "string"
                       ? m[k] || "单图"
                       : number(m[k] as number | null)}

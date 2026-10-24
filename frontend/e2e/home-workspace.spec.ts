@@ -1,99 +1,110 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./workspace-test";
+import fs from "node:fs";
+import { artifactPath } from "./artifacts";
 
-test("home workspace stays open and compact, searches real projects and reveals more without inner scrolling", async ({
+test("search and pagination switch real recent charts and experiments", async ({
   page,
   request,
 }) => {
-  const projects = await (await request.get("/api/projects")).json();
-  const selected =
-    projects.find(
-      (p: any) => !p.archived && p.name === "成果复用与交付 · 合成演示",
-    ) || projects.find((p: any) => !p.archived && p.chart_count > 0);
-  expect(selected).toBeTruthy();
-  await page.setViewportSize({ width: 1440, height: 1200 });
-  await page.addInitScript((id: number) => {
-    sessionStorage.setItem("labflow-intro-v2", "seen");
-    localStorage.setItem("labflow-project", String(id));
-  }, selected.id);
-  await page.goto("/");
-  const entries = page.getByRole("region", { name: "功能入口" });
-  await expect(entries.locator(".tool-shortcut")).toHaveCount(3);
-  await expect
-    .poll(() => page.locator(".workspace-chart").count())
-    .toBeGreaterThan(0);
-  await expect(page.locator(".workspace-project")).toHaveCount(4);
-  await expect(page.locator(".workspace-projects")).toHaveCSS(
-    "max-height",
-    "none",
-  );
-  await expect(page.locator(".workspace-projects")).toHaveCSS(
-    "overflow-y",
-    "visible",
-  );
-  await expect(page.locator(".workspace-recents")).toHaveCSS(
-    "max-height",
-    "none",
-  );
-  await entries.scrollIntoViewIfNeeded();
-  await page.evaluate(() =>
-    window.scrollBy(
-      0,
-      document.querySelector(".launch-tools")!.getBoundingClientRect().top -
-        100,
-    ),
-  );
-  const searchContentLeft = await page
-    .getByRole("textbox", { name: "搜索工作区项目" })
-    .evaluate(
-      (el) =>
-        el.getBoundingClientRect().left +
-        parseFloat(getComputedStyle(el).paddingLeft),
+  const projects: { id: number; name: string }[] = [];
+  const stamp = Date.now();
+  for (let i = 0; i < 12; i++)
+    projects.push(
+      await (
+        await request.post("/api/projects", {
+          data: { name: `首页分页 ${stamp} / ${String(i).padStart(2, "0")}`, description: "合成演示" },
+        })
+      ).json(),
     );
-  const searchIcon = await page
-    .locator(".workspace-search > svg")
-    .boundingBox();
-  expect(searchContentLeft).toBeGreaterThan(
-    searchIcon!.x + searchIcon!.width + 4,
-  );
-  await page.mouse.move(20, 20);
-  await page.screenshot({
-    path: "../docs/screenshots/home-workspace-refined.png",
-  });
-
-  const target = projects.find(
-    (p: any, i: number) => i > 8 && !p.archived && p.id !== selected.id,
-  );
-  expect(target).toBeTruthy();
-  const search = page.getByRole("textbox", { name: "搜索工作区项目" });
-  await search.fill(target.name);
-  const found = page
-    .locator(".workspace-project")
-    .filter({ hasText: target.name });
-  await expect(found).toHaveCount(1);
-  await found.click();
-  await expect(page.getByLabel("当前项目", { exact: true })).toHaveValue(
-    String(target.id),
-  );
-  await search.fill("");
-  await expect(page.locator(".workspace-project")).toHaveCount(4);
-  await page.getByRole("button", { name: /显示更多项目/ }).click();
-  await expect(page.locator(".workspace-project")).toHaveCount(12);
-  await expect(page.locator(".workspace-projects")).toHaveCSS(
-    "overflow-y",
-    "visible",
-  );
-  for (const width of [390, 900, 1280, 1920]) {
-    await page.setViewportSize({ width, height: 1000 });
-    await expect
-      .poll(() =>
-        page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
-      )
-      .toBe(true);
+  for (const [i, p] of projects.slice(0, 2).entries()) {
+    const d = await (
+      await request.post(`/api/projects/${p.id}/datasets`, {
+        multipart: {
+          file: {
+            name: "home.csv",
+            mimeType: "text/csv",
+            buffer: Buffer.from("epoch,accuracy\n1,0.7\n2,0.9"),
+          },
+        },
+      })
+    ).json();
+    const config = JSON.parse(
+      fs.readFileSync("../docs/config-v1.example.json", "utf8"),
+    );
+    config.datasetVersionId = d.id;
+    config.series = [
+      { ...config.series[0], x: "epoch", y: "accuracy", error: "" },
+    ];
+    await request.post(`/api/projects/${p.id}/charts`, {
+      data: { name: `近期图表 ${i}`, config },
+    });
+    await request.post(`/api/projects/${p.id}/experiments`, {
+      data: {
+        name: `近期实验 ${i}`,
+        status: "completed",
+        parameters: { seed: i },
+        metrics: { accuracy: 0.8 + i / 10 },
+        notes: "合成演示",
+        tags: [],
+        datasetVersionIds: [d.id],
+      },
+    });
   }
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.locator(".tool-shortcut").first().hover();
-  await expect(page.locator(".tool-shortcut .tool-icon").first()).toHaveCSS(
-    "transform",
-    "none",
+  await page.addInitScript(
+    (id) => localStorage.setItem("labflow-project", String(id)),
+    projects[0].id,
   );
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "近期图表 0", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".home-table")).toContainText("近期实验 0");
+  await expect(page.locator(".home-project")).toHaveCount(4);
+  await page.getByRole("button", { name: /显示更多项目/ }).click();
+  await expect(page.locator(".home-project")).toHaveCount(12);
+  const search = page.getByRole("textbox", { name: "搜索研究项目" });
+  await page.setViewportSize({ width: 390, height: 1000 });
+  const projectsCard = page.getByRole("region", { name: /研究项目/ });
+  const scroll = projectsCard.locator(".home-table-scroll");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  const box = (await projectsCard.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(390);
+  expect(await scroll.evaluate((el) => el.scrollWidth > el.clientWidth && getComputedStyle(el).overflowX === "auto")).toBe(true);
+  await scroll.evaluate((el) => { el.scrollLeft = el.scrollWidth; });
+  expect(await scroll.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+  await scroll.evaluate((el) => { el.scrollLeft = 0; });
+  const searchBox = (await search.boundingBox())!;
+  expect(searchBox.x + searchBox.width).toBeLessThan(box.x + box.width);
+  const experimentsCard = page.locator("[data-home-experiments]");
+  const experimentScroll = page.getByRole("region", { name: "最近实验表格", exact: true });
+  expect(await experimentScroll.evaluate((el) => getComputedStyle(el).overflowX)).toBe("auto");
+  expect(await experimentScroll.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
+  const experimentBox = (await experimentsCard.boundingBox())!;
+  expect(experimentBox.x).toBeGreaterThanOrEqual(0);
+  expect(experimentBox.x + experimentBox.width).toBeLessThanOrEqual(390);
+  await expect(experimentsCard.getByRole("button", { name: "全部实验", exact: true })).toHaveCSS("white-space", "nowrap");
+  await experimentScroll.evaluate((el) => { el.scrollLeft = el.scrollWidth; });
+  expect(await experimentScroll.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+  await experimentScroll.evaluate((el) => { el.scrollLeft = 0; });
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-8-home-with-project-390.png"), fullPage: true, animations: "disabled" });
+  await page.setViewportSize({ width: 1560, height: 1000 });
+  await search.fill(projects[1].name);
+  await expect(page.locator(".home-project")).toHaveCount(1);
+  await page.locator(".home-project").click();
+  await expect(page.getByLabel("当前项目", { exact: true })).toHaveValue(
+    String(projects[1].id),
+  );
+  await expect(
+    page.getByRole("heading", { name: "近期图表 1", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".home-table")).toContainText("近期实验 1");
+  await expect(page.locator(".home-table")).not.toContainText("近期实验 0");
+  await search.fill("no-match");
+  await expect(page.getByText("没有匹配的项目")).toBeVisible();
+  await page.getByRole("button", { name: "清除搜索" }).click();
+  await expect(page.locator(".home-project")).toHaveCount(4);
 });

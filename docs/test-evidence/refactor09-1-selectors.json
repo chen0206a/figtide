@@ -1,0 +1,597 @@
+[
+  {
+    "file": "frontend/src/styles.css",
+    "selector": ".empty-art",
+    "property": "color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/styles.css",
+    "selector": ".spinner",
+    "property": "border-top-color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-border-strong)"
+  },
+  {
+    "file": "frontend/src/styles.css",
+    "selector": ".field-pills b",
+    "property": "color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/styles.css",
+    "selector": ".field-type",
+    "property": "color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/components/model-connection.css",
+    "selector": ".model-connection-dialog .connection-consent",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/agent-assistant.css",
+    "selector": ".agent-budget progress",
+    "property": "color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/agent-assistant.css",
+    "selector": ".agent-budget progress::-webkit-progress-value",
+    "property": "background",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text)"
+  },
+  {
+    "file": "frontend/src/editor/agent-assistant.css",
+    "selector": ".agent-budget progress::-moz-progress-bar",
+    "property": "background",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".professional-kicker",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".professional-intro p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".facet-plan-head",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".facet-plan-head strong",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".facet-mini-grid b",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".facet-mini-grid i",
+    "property": "border-bottom",
+    "from": "1px solid var(--lf-info)",
+    "to": "1px solid var(--lf-border-strong)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".facet-mini-grid i",
+    "property": "border-left",
+    "from": "1px solid var(--lf-info)",
+    "to": "1px solid var(--lf-border-strong)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".facet-mini-grid small",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".sample-summary th",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".sample-summary td",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".sample-summary-note",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".canvas-empty-plot",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".canvas-empty-plot",
+    "property": "box-shadow",
+    "from": "0 calc(var(--lf-space-1) * 0.75) var(--lf-space-4)\n    color-mix(in srgb, var(--lf-info) 3.14%, transparent)",
+    "to": "0 calc(var(--lf-space-1) * 0.75) var(--lf-space-4)\n    color-mix(in srgb, var(--lf-text) 3.14%, transparent)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".canvas-empty-plot strong",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".publication-readout strong,\n.publication-readout span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".publication-readout strong",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".tiny-note",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".export-checks",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/professional.css",
+    "selector": ".evaluation-panel",
+    "property": "border-left",
+    "from": "2px solid var(--lf-info)",
+    "to": "2px solid var(--lf-border-strong)"
+  },
+  {
+    "file": "frontend/src/editor/quick-actions.css",
+    "selector": ".quick-actions-dialog > p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/quick-actions.css",
+    "selector": ".quick-actions-note",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/quick-actions.css",
+    "selector": ".quick-field > span,\n.quick-field-toggle",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/quick-actions.css",
+    "selector": ".quick-queue small",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/quick-actions.css",
+    "selector": ".quick-result-heading span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/quick-actions.css",
+    "selector": ".quick-result-footer p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/quick-actions.css",
+    "selector": ".quick-changes strong",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/quick-actions.css",
+    "selector": ".quick-changes span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/quick-actions.css",
+    "selector": ".quick-changes del",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".dialog-content.style-library-dialog",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-library-dialog > p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-tabs button",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-tabs button:hover",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-browser-heading p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-card p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-preview p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-detail-scroll > p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-detail dt",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-detail-note",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".preset-traits span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-empty h4",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-count",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/styles-library.css",
+    "selector": ".style-reuse-body > p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".record-title > span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".experiment-tags span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".record-values small",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".record-values p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".record-values b",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".record-foot small",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".comparison-selection",
+    "property": "box-shadow",
+    "from": "0 var(--lf-space-2) calc(var(--lf-space-1) * 7.5)\n    color-mix(in srgb, var(--lf-info) 6.27%, transparent)",
+    "to": "0 var(--lf-space-2) calc(var(--lf-space-1) * 7.5)\n    color-mix(in srgb, var(--lf-text) 6.27%, transparent)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".comparison-selection > span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".form-section-head > span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".kv-head",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".field-help",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".dataset-link-options small",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".comparison-heading p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".comparison-table small",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".source-summary",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".source-experiment p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/experiments/experiments.css",
+    "selector": ".provenance-strip",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/processing/processing.css",
+    "selector": ".processing-form h3 small",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/processing/processing.css",
+    "selector": ".processing-form p,\n.processing-preview > p",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/processing/processing.css",
+    "selector": ".processing-actions > span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/processing/processing.css",
+    "selector": ".processing-counts span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/styles/dialogs.css",
+    "selector": ".column-options",
+    "property": "box-shadow",
+    "from": "0 var(--lf-space-2) var(--lf-space-6)\n    color-mix(in srgb, var(--lf-info) 7.84%, transparent)",
+    "to": "0 var(--lf-space-2) var(--lf-space-6)\n    color-mix(in srgb, var(--lf-text) 7.84%, transparent)"
+  },
+  {
+    "file": "frontend/src/styles/dialogs.css",
+    "selector": ".column-resize:hover",
+    "property": "background",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text)"
+  },
+  {
+    "file": "frontend/src/styles/dialogs.css",
+    "selector": ".dialog-overlay",
+    "property": "background",
+    "from": "color-mix(in srgb, var(--lf-info) 25.1%, transparent)",
+    "to": "color-mix(in srgb, var(--lf-text) 25.1%, transparent)"
+  },
+  {
+    "file": "frontend/src/styles/dialogs.css",
+    "selector": ".dialog-content[role=\"dialog\"]",
+    "property": "box-shadow",
+    "from": "0 var(--lf-space-6) calc(var(--lf-space-1) * 20)\n    color-mix(in srgb, var(--lf-info) 16.86%, transparent)",
+    "to": "0 var(--lf-space-6) calc(var(--lf-space-1) * 20)\n    color-mix(in srgb, var(--lf-text) 16.86%, transparent)"
+  },
+  {
+    "file": "frontend/src/styles/dialogs.css",
+    "selector": ".dialog-content .dialog-close",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/components/home/home.css",
+    "selector": ".home-quick-icon",
+    "property": "color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/workbench/workbench.css",
+    "selector": ".figure-icon",
+    "property": "color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/workbench/workbench.css",
+    "selector": ".version-tag",
+    "property": "color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/workbench/workbench.css",
+    "selector": ".number-symbol,\n.string-symbol",
+    "property": "color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/workbench/workbench.css",
+    "selector": ".property-section h3 svg",
+    "property": "color",
+    "from": "var(--lf-link)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/workbench/workbench.css",
+    "selector": ".panel-resize:hover",
+    "property": "background",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text)"
+  },
+  {
+    "file": "frontend/src/editor/workbench/workbench.css",
+    "selector": ".canvas-stage",
+    "property": "background-image",
+    "from": "radial-gradient(var(--lf-info) 0.55px, transparent 0.55px)",
+    "to": "radial-gradient(var(--lf-border-strong) 0.55px, transparent 0.55px)"
+  },
+  {
+    "file": "frontend/src/editor/workbench/workbench.css",
+    "selector": ".editor .field-disclosure summary span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  },
+  {
+    "file": "frontend/src/editor/workbench/workbench.css",
+    "selector": ".editor .chart-picker > summary span",
+    "property": "color",
+    "from": "var(--lf-info)",
+    "to": "var(--lf-text-3)"
+  }
+]

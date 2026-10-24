@@ -1,8 +1,8 @@
-# LabFlow · 第一阶段产品设计
+# FigTide · 产品与当前前端设计
 
 ## 产品边界与核心路径
-单用户本地研究工作区。创建项目 → 添加实验 → 上传真实 CSV/XLSX → 检查字段与缺失值 → 映射图表 → 即时编辑 → 保存 MySQL 版本 → 重开 → 复用与导出 SVG/PNG/PDF。
-目前八批增量已扩展分布、模型评估、同类分面、可追溯数据处理、样式模板和项目备份。未包含 AI 服务、团队权限、推断检验或显著性标记；预设不是期刊认证。下面保留首版架构，具体增量合同见各批文档。
+单用户本地研究工作区。创建项目 → 添加实验 → 上传 CSV/TSV/TXT/XLSX/JSON/JSONL → 确认解析与字段 → 可选推荐、用户选图 → 映射图表 → 即时编辑 → 保存 MySQL 版本 → 重开 → 复用与导出 SVG/PNG/PDF。
+目前支持 11 类科研图，并包含模型评估、同类分面、可追溯数据处理、样式模板和项目备份。可选绘图助手提供模型适配、Java 循环、会话预算、审计与恢复；核心工作台不依赖模型。未包含团队权限、推断检验或显著性标记，预设不代表期刊认证。下文 ER 与核心 API 保留基础关系，助手增量见 [模型配置](AGENT-PROVIDER.md)、[审计](AGENT-AUDIT.md) 与 [评测](AGENT-EVALUATION.md)。
 
 第九批优化前端体验：官方 Cartesian 分包、增量布局更新、输入/绘图调度、草稿合并写入、自动适配画布和首页列表分批显示。界面样式只作用于应用外壳，不覆盖图形 SVG；保存、导出及统计继续使用原有配置与数据合同。后端及 ER 关系不变。细节和测量方法见 [第九批记录](BATCH-9.md)。
 
@@ -25,7 +25,7 @@ erDiagram
 
 ## 系统架构
 
-2026-10-21 新增确定性绘图工具层：`FigureToolController → FigureToolService → FigureOperations / WorkspaceService → WorkspaceRepository`。目录使用独立 protocol_version=1 与 JSON Schema，继续产生 schema_version=1 图表配置；预览只读，应用由编辑器统一写入撤销栈，正式版本沿用已有保存 API。没有新增数据库关系，没有模型调用或自动执行 Agent。完整合同见 [绘图工具协议](FIGURE-TOOLS.md)。
+2026-10-21 新增确定性绘图工具层：`FigureToolController → FigureToolService → FigureOperations / WorkspaceService → WorkspaceRepository`。目录使用独立 protocol_version=1 与 JSON Schema，继续产生 schema_version=1 图表配置；预览只读，应用由编辑器统一写入撤销栈，正式版本沿用已有保存 API。工具预览层本身只读，不自动保存图表；可选 Agent 在该工具层之上调用并产出提案，用户确认后才进入草稿。完整合同见 [绘图工具协议](FIGURE-TOOLS.md)。
 ```mermaid
 flowchart LR
   UI[React / TypeScript 工作台] -->|HTTP JSON / multipart| API[Spring Boot 3 / Java 21]
@@ -101,25 +101,31 @@ erDiagram
 `config.schema_version=1`；包含 datasetVersionId、type、x、group、series[{id,y,name,color,opacity,width,dash,symbol,size,error}]、axes、style、legend、annotations、transforms。第一版只接受明确的 filter 转换，不修改原始行。所有字段引用均验证归属；未知 schema 拒绝。创建更新时间由服务器记录。
 
 ## 信息架构与视觉规范
-全局窄导轨：概览 / 实验 / 数据 / 绘图。项目选择固定在顶部工具栏。
-概览：研究项目列表、真实数量统计、六项主要能力介绍、最近图表与创建入口。
-实验：列表和编辑表单，参数/指标 JSON 与备注，项目数据文件可跳转。
-数据：上传、数据集版本列表、类型摘要、分页预览、缺失及异常提示。
-编辑器：62px 顶栏；236px 左侧数据/图层；自适应中央画布；288px 右侧属性；底部可折叠表格与告警。
 
-视觉方向（第三版 · 编辑 / 杂志风格）：暖纸、衬线、发丝线、单一强调色。
-纸色 `#f7f4ee`；卡片 `#fffdf9`；墨色 `#1c1a17`；次级文字 `#4b453c` / `#8a8276`；发丝线 `#e4ddd1`。唯一强调色为陶土 `#b65c3a`，只用于编号、斜体标题行与图版标签；鼠尾草绿、石板蓝仅出现在图版配色里。
-字体：Newsreader Variable（衬线标题、统计数字）、Inter Variable（正文与控件）、JetBrains Mono Variable（刊号、导航编号、图注规格、时间）。
-版式：58px 报关头（wordmark + 刊号 + 项目选择）+ 40px 目录导航（01–04，当前项 1.5px 墨线下划线）；1px 发丝线分隔区块；无投影、无渐变、无发光；圆角仅 2–4px。
-首页：Hero（衬线大标题 + 陶土斜体行 + 单行说明 + 主按钮/文字链接）＋ Contents 目录 ＋ 规格行（Stack / Figures / Dependencies）＋ 统计条 ＋「PLATES 图版」双列图版 ＋「CAPABILITIES 能力」双列条目 ＋ 研究项目与最近图表 ＋ colophon 页脚。
-图版：6 幅手绘 SVG，分别按 Nature（89 mm 单栏、5–7 pt Arial、a–d 面板字母、Okabe–Ito 色盲安全配色）、Science（183 mm 双栏、误差棒）、Cell（单元格标注热力图）、NeurIPS（散点回归 + r²）、eLife（箱线 + 抖动散点）的规范渲染；数值取自合成演示数据，不嵌入任何受版权保护的论文图。
-编辑器：纸色外壳 + 白纸画布（`#fff` + 点阵网格 + 双层柔和投影），左右面板 `#f2eee6`、发丝线；图表标题用衬线体，控件保持 8–11px 小字号，暗色仅用于「导出」主按钮。
-交互：页面入场 0.45s 上移 8px，`prefers-reduced-motion` 下关闭；hover 只改变边框与底色，不做缩放或辉光。
-状态：明确加载、空数据引导、错误可重试、未保存/保存中/已保存/冲突反馈。Ctrl+S 保存；Ctrl+Z 撤销；Ctrl+Shift+Z 重做。文本输入保留原生撤销。点击曲线选择序列；点击轴名称/标题选择对应属性。
+应用外壳统一为桌面端 64px 全宽顶栏，包含项目概览、实验记录、数据管理、科研绘图、项目选择与模型连接；窄屏允许换行。工具页面使用 PageHeader，小标题、说明和当前动作在一个紧凑区域内，不再使用旧首页大标语。
+
+首页 A 是研究工作区：最近图表用真实保存配置和数据版本渲染大预览；旁边提供近期图表与助手入口，下方是项目表、最近实验和快速开始。项目数量、图表、数据版本来自真实 API；不虚构缩略图或更新时间。公开产品介绍独立放在 site/，不与工作台混在同一路由视图，也不是缺少后端的在线 Demo。
+
+实验页默认表格，支持卡片切换、字段频率推断、按项目保存列设置、双向排序（空值始终最后），以及状态与标签筛选、参数/指标/备注、固定数据版本关联及 2–8 项对比。选择栏仅在有选择时以深色浮动胶囊呈现，复用原有基线和对比流程。数据页为无外框版本列表与单层详情卡片，提供解析确认、字段画像、表格预览与显式派生规则；派生数据明确标记。实验对比与无数据空状态的标签使用 lf-kicker。
+
+编辑器采用专业工作台：顶部保存/菜单/撤销/导出，左侧数据与图层，中间自适应白色科研画布，右侧随所选元素切换的属性，底部折叠数据/告警/记录。左/右栏默认约 236/292px，可调整和收起；缩放只改变查看比例，导出画布尺寸仍来自配置。论文尺寸分段按钮提供88/120/180mm预设，外观页唯一PublicationPanel提供同一组控件及自定义，开启时显示10mm标尺；沿用publicationMetrics/renderConfig按成品尺寸换算字号，不改变保存的像素宽高。新建单个无分组序列图默认隐藏图例，旧配置不变。入口 Editor.tsx 负责查询与加载，workbench/Workbench.tsx 组合状态、hooks、面板与对话框。
+
+视觉规范：
+
+- 冷灰应用底色 --lf-bg，白色表面 --lf-surface，轻灰面板 --lf-surface-2；画布区域 --lf-canvas，图纸保持白色。
+- 墨黑主按钮 --lf-primary；链接与选中态 --lf-link / --lf-selected。朱红 --lf-accent 只用于少量关键数字，每屏一两处；图表数据编码使用独立色板，不套用 UI 灰色。
+- UI 字体为 Inter 与 JetBrains Mono，中文使用系统回退。编号、版本、规格和时间使用等宽样式；数据页版本列表文件名使用普通字体500字重并完整换行。不再加载 Newsreader 或使用衬线标题。图表中的出版字体由图表配置单独管理。
+- 设计变量唯一来源是 frontend/src/styles/tokens.css；组件直接引用 --lf-*，过渡别名已删除。Tailwind @theme 只转接这些 token。正文维持现有 15px / 1.6，避免迁移造成无意收紧；既有 11.5/12.5/13.5/16/18px 规格有明确的字号 token。
+- shell.css 负责导航和页面骨架；styles.css 保留基础控件；styles/table.css 统一lf-table表头、数字列和缺失值样式，不再以全局th规则影响组件；styles/dialogs.css 负责弹窗、导入/备份；data/data-page.css、experiments/experiments-table.css、editor/workbench/workbench.css 分别负责所属页面。旧 navigation/refinements/experience 覆盖层已移除，组件状态和响应式规则留在各自范围内。
+- 圆角、间距、阴影与颜色引用 token；边界轻、留白清晰。导航保留轻微 hover / 按压反馈，加载、空状态、错误与保存状态有明确反馈。遵循 prefers-reduced-motion，缩短动画和过渡。
+
+助手停靠面板分为固定模型/预算顶部、可滚动对话与提案中段、固定输入/同意/发送底部及确认栏。接入模型需明确同意；提案经校验和预览后由用户确认，确认只改草稿，可一步撤销，正式保存仍需用户决定。
+
+交互约定保持不变：Ctrl/Cmd+S 保存；非文本输入时 Ctrl/Cmd+Z 撤销、Ctrl/Cmd+Shift+Z 重做；Ctrl/Cmd+K 快捷操作。文本输入保留原生撤销。点击曲线选序列；本机草稿、乐观锁冲突、离开保护和助手恢复机制不因样式清理而变化。
 
 ## 安全与数据语义
 仅绑定 loopback，无认证。禁止直接公网部署；未来必须添加认证、项目授权、用户隔离、CSRF 策略与审计。前端 dev proxy 同源访问，无宽泛 CORS。
-上传限 10MB、20000 行、100 列；UTF-8 BOM/严格 UTF-8 CSV；错误编码提示转码；重复/空表头拒绝；缺失值为 null；NaN/Infinity 警告并转 null；XLSX 只读取首个 sheet，不执行公式，公式单元格拒绝，拒绝宏格式。异常行宽拒绝。文件名只用于元数据，原文件从不执行。
+支持六类格式，解析确认合同见 [DATA-TO-FIGURE.md](DATA-TO-FIGURE.md)。上传限 10MB、20000 行、100 列；UTF-8 BOM/严格 UTF-8 CSV；错误编码提示转码；重复/空表头拒绝；缺失值为 null；NaN/Infinity 警告并转 null；XLSX 只读取首个 sheet，不执行公式，公式单元格拒绝，拒绝宏格式。异常行宽拒绝。文件名只用于元数据，原文件从不执行。
 误差棒只能映射实际非负数值列。热力图要求 x/y 唯一坐标，重复坐标明确提示，不静默求平均。对数坐标非正数显示警告。演示 CSV 明确标为合成数据。
 
 ## 测试与交付

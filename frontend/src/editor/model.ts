@@ -1,4 +1,5 @@
 import type { Dataset } from "../lib/api";
+import { stylePresets } from "./stylePresets";
 export type Series = {
   id: string;
   y: string;
@@ -106,6 +107,8 @@ export type Config = {
     rocYTitle: string;
     prXTitle: string;
     prYTitle: string;
+    /** Append "(AUC = …)" / "(AP = …)" to legend entries. Absent on charts saved before 2026-10. */
+    legendMetric?: boolean;
   };
   publication?: {
     enabled: boolean;
@@ -159,21 +162,9 @@ export type Config = {
     value: string;
   }[];
 };
-export const palettes: Record<string, string[]> = {
-  "Clean Academic": ["#6758ce", "#269e95", "#d99641", "#db6d87", "#518ac0"],
-  "Nature-inspired": ["#3b5488", "#00a087", "#e64b35", "#f39b7f", "#8491b4"],
-  "Modern Research": ["#735fe8", "#21a7a0", "#eaab54", "#df729a", "#62a0db"],
-  "Okabe–Ito": [
-    "#0072b2",
-    "#e69f00",
-    "#009e73",
-    "#cc79a7",
-    "#d55e00",
-    "#56b4e9",
-    "#000000",
-    "#f0e442",
-  ],
-};
+export const palettes: Record<string, readonly string[]> = Object.fromEntries(
+  stylePresets.map((p) => [p.key, p.colors]),
+);
 export const defaultSampling: NonNullable<Config["sampling"]> = {
   policy: "independent",
   id: "",
@@ -208,6 +199,7 @@ export const defaultEvaluation: NonNullable<Config["evaluation"]> = {
   rocYTitle: "",
   prXTitle: "",
   prYTitle: "",
+  legendMetric: true,
 };
 export const defaultBand: NonNullable<Series["band"]> = {
   enabled: false,
@@ -252,6 +244,10 @@ export const makeSeries = (y: string, i = 0): Series => ({
   visible: true,
 });
 export function defaults(d: Dataset): Config {
+  const axisTitle = (field: string) => {
+    const label = field.replaceAll("_", " ");
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  };
   const comparison =
     d.source_meta?.kind === "experiment_comparison" ? d.source_meta : undefined;
   const processing =
@@ -336,7 +332,7 @@ export function defaults(d: Dataset): Config {
     }),
     axes: {
       x: {
-        title: comparison ? "实验" : x || "X",
+        title: comparison ? "实验" : axisTitle(x || "X"),
         min: "",
         max: "",
         log: false,
@@ -344,13 +340,14 @@ export function defaults(d: Dataset): Config {
         dtick: "",
       },
       y: {
-        title:
+        title: axisTitle(
           comparison?.metric ||
-          processing?.statistics[0]?.metric ||
-          ys[0] ||
-          nums.find((n) => n !== x && n !== error) ||
-          nums[0] ||
-          "Y",
+            processing?.statistics[0]?.metric ||
+            ys[0] ||
+            nums.find((n) => n !== x && n !== error) ||
+            nums[0] ||
+            "Y",
+        ),
         min: "",
         max: "",
         log: false,
@@ -376,7 +373,7 @@ export function defaults(d: Dataset): Config {
       right: 35,
       preset: "Clean Academic",
     },
-    legend: { show: true, position: "top", orientation: "h" },
+    legend: { show: !!group || ys.length > 1, position: "top", orientation: "h" },
     annotations: [],
     transforms: [],
   };

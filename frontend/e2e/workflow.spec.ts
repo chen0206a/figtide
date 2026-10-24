@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { artifactPath } from "./artifacts";
+import { test, expect } from "./workspace-test";
 import path from "node:path";
 import fs from "node:fs";
 test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG", async ({
@@ -47,6 +48,9 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
   await page.getByLabel("Y 轴名称").fill("Test accuracy (%)");
   await page.getByLabel("最小值", { exact: true }).nth(1).fill("50");
   await page.getByLabel("最大值", { exact: true }).nth(1).fill("100");
+  await page.getByRole("button", { name: "外观", exact: true }).click();
+  await page.locator('summary').filter({ hasText: '图例' }).click();
+  await page.getByRole("switch", { name: "显示图例", exact: true }).check();
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v1", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "数据预览", exact: false }).click();
@@ -59,7 +63,7 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
     })
     .toBe(true);
   await page.screenshot({
-    path: "../docs/screenshots/editor.png",
+    path: artifactPath(test.info(), "../docs/screenshots/editor.png"),
     fullPage: true,
   });
   const configBefore = await page.getByTestId("plot").evaluate((el: any) => ({
@@ -96,12 +100,12 @@ test("real project → CSV → interactive plot → MySQL → reopen → SVG/PNG
     const waiting = page.waitForEvent("download");
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
     const download = await waiting;
-    await download.saveAs(`../docs/exports/learning-dynamics.${format}`);
+    await download.saveAs(artifactPath(test.info(), `../docs/exports/learning-dynamics.${format}`));
     expect(
-      fs.statSync(`../docs/exports/learning-dynamics.${format}`).size,
+      fs.statSync(artifactPath(test.info(), `../docs/exports/learning-dynamics.${format}`)).size,
     ).toBeGreaterThan(1000);
   }
-  const svg = fs.readFileSync("../docs/exports/learning-dynamics.svg", "utf8");
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/learning-dynamics.svg"), "utf8");
   expect(svg).toContain("<svg");
   expect(svg).toContain("Learning dynamics on CIFAR-10");
   expect(svg).toContain("<text");

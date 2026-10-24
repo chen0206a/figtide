@@ -1,5 +1,21 @@
 import { defaultPublication, type Config } from "./model";
 
+export const publicationWidths = [88, 120, 180] as const;
+export const publicationWidthLabels = ["单栏", "1.5 栏", "双栏"] as const;
+/** One reducer patch, only existing schema-v1 publication fields. */
+export function publicationPreset(
+  c: Config,
+  widthMm: (typeof publicationWidths)[number],
+): Partial<Config> {
+  return {
+    publication: {
+      ...(c.publication || defaultPublication),
+      enabled: true,
+      widthMm,
+    },
+  };
+}
+
 export function publicationMetrics(c: Config, multiplier = 2) {
   const p = c.publication || defaultPublication;
   const heightMm = (p.widthMm * c.style.height) / c.style.width;
@@ -41,7 +57,7 @@ export function exportChecks(c: Config, multiplier = 2) {
   const m = publicationMetrics(c, multiplier),
     messages: string[] = [];
   if (!m.enabled)
-    messages.push("当前未指定成品物理尺寸，像素倍率不能直接视为 DPI。");
+    messages.push("尚未选择论文尺寸，导出将按当前画布像素生成。");
   if (m.enabled && m.fontPt < 6)
     messages.push("成品基础字号小于 6 pt，请检查目标期刊要求及缩印可读性。");
   if (m.enabled && m.fontPx * 8 > c.style.height)

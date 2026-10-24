@@ -1,0 +1,74 @@
+{
+  "home": {
+    "frame": {
+      "x": 120,
+      "y": 69,
+      "width": 1200,
+      "height": 1851.609375
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 69
+    },
+    "typography": {
+      "font": "\"Inter Variable\", Inter, \"Segoe UI\", \"Microsoft YaHei\", sans-serif",
+      "color": "rgb(39, 42, 50)"
+    }
+  },
+  "experiments": {
+    "frame": {
+      "x": 0,
+      "y": 69,
+      "width": 1440,
+      "height": 676.875
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 69
+    },
+    "typography": {
+      "font": "\"Inter Variable\", Inter, \"Segoe UI\", \"Microsoft YaHei\", sans-serif",
+      "color": "rgb(28, 26, 23)"
+    }
+  },
+  "data": {
+    "frame": {
+      "x": 40,
+      "y": 283.5,
+      "width": 1360,
+      "height": 613.140625
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 69
+    },
+    "typography": {
+      "font": "\"Inter Variable\", Inter, \"Segoe UI\", \"Microsoft YaHei\", sans-serif",
+      "color": "rgb(37, 39, 43)"
+    }
+  },
+  "editor": {
+    "frame": {
+      "x": 0,
+      "y": 69,
+      "width": 1440,
+      "height": 932
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 69
+    },
+    "typography": {
+      "font": "\"Open Sans\", verdana, arial, sans-serif",
+      "color": "rgb(28, 26, 23)"
+    }
+  }
+}

@@ -3,7 +3,7 @@ import { DraftWriter } from "./draftWriter";
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 function fixture() {
-  const storage = { setItem: vi.fn(), removeItem: vi.fn() },
+  const storage = { setItem: vi.fn(), removeItem: vi.fn(), getItem: vi.fn() },
     saved = vi.fn(),
     failed = vi.fn();
   return {
@@ -72,4 +72,15 @@ it("synchronously preserves the latest edit before navigation and reports a fail
   expect(writer.writeNow("chart", "newer input")).toBe(false);
   expect(writer.flush()).toBe(true);
   expect(storage.setItem).toHaveBeenLastCalledWith("chart", "newer input");
+});
+
+it("reports whether a draft is already stored for the save failure message", () => {
+  const { writer, storage } = fixture();
+  storage.getItem.mockReturnValue(null);
+  expect(writer.has("chart")).toBe(false);
+  storage.getItem.mockReturnValue("{}");
+  expect(writer.has("chart")).toBe(true);
+  writer.schedule("chart", "dirty");
+  storage.getItem.mockReturnValue(null);
+  expect(writer.has("chart")).toBe(false);
 });

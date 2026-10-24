@@ -29,7 +29,7 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 [Windows.Forms.Application]::EnableVisualStyles()
 $form = New-Object Windows.Forms.Form
-$form.Text = 'LabFlow · 模型连接'
+$form.Text = 'FigTide · 模型连接'
 $form.ClientSize = New-Object Drawing.Size(620, 405)
 $form.StartPosition = 'CenterScreen'
 $form.FormBorderStyle = 'FixedDialog'
@@ -64,7 +64,7 @@ $key.Location = New-Object Drawing.Point(24, 221)
 $key.Size = New-Object Drawing.Size(572, 30)
 $key.UseSystemPasswordChar = $true
 $form.Controls.Add($key)
-Add-ConnectionLabel "仅加载到本次后端进程，重启后需重新填写。`n此操作重启 LabFlow 后端，不调用模型、不上传实验数据、不计费。" 272 52
+Add-ConnectionLabel "仅加载到本次后端进程，重启后需重新填写。`n此操作重启 FigTide 后端，不调用模型、不上传实验数据、不计费。" 272 52
 $connect = New-Object Windows.Forms.Button
 $connect.Text = '连接并重启后端'
 $connect.Location = New-Object Drawing.Point(383, 345)
@@ -82,7 +82,7 @@ $connect.Add_Click({
     if (!$model.Text.Trim() -or $model.Text.Trim().Length -gt 200 -or
         $model.Text.Trim() -notmatch '^[A-Za-z0-9][A-Za-z0-9._:/-]*$' -or
         !$key.Text.Trim() -or $key.Text -match '[\r\n]') {
-        [Windows.Forms.MessageBox]::Show($form, '请填写准确的模型 ID 和单行 API Key。', 'LabFlow') | Out-Null
+        [Windows.Forms.MessageBox]::Show($form, '请填写准确的模型 ID 和单行 API Key。', 'FigTide') | Out-Null
         return
     }
     $form.DialogResult = [Windows.Forms.DialogResult]::OK
@@ -157,12 +157,12 @@ try {
     }
     if (!$ready) { throw 'Backend configuration did not become available.' }
     Write-ConnectionStatus 'configured' 'Configuration loaded. No inference request sent; provider compatibility not yet verified.'
-    if (!$ConsoleKey) { [Windows.Forms.MessageBox]::Show('配置已加载。回到绘图编辑器，打开「绘图助手」即可查看。尚未向模型发起请求；生成提案时可能计费。', 'LabFlow · 已连接配置') | Out-Null }
+    if (!$ConsoleKey) { [Windows.Forms.MessageBox]::Show('配置已加载。回到绘图编辑器，打开「绘图助手」即可查看。尚未向模型发起请求；生成提案时可能计费。', 'FigTide · 已连接配置') | Out-Null }
     else { Write-Host 'Model configuration loaded. Credentials were not persisted.' }
 } catch {
     # Avoid forwarding exception bodies, URLs, headers, or input values to logs/status/UI.
     Write-ConnectionStatus 'failed' 'Cannot load configuration. Check owned backend process and local runtime logs; credentials were not saved.'
-    if (!$ConsoleKey) { [Windows.Forms.MessageBox]::Show('配置加载失败。请检查 LabFlow 后端进程与本机运行环境。密钥未写入文件。', 'LabFlow') | Out-Null }
+    if (!$ConsoleKey) { [Windows.Forms.MessageBox]::Show('配置加载失败。请检查 FigTide 后端进程与本机运行环境。密钥未写入文件。', 'FigTide') | Out-Null }
     else { Write-Host 'Cannot load model configuration. Credentials were not persisted.' }
 } finally {
     $env:LABFLOW_AGENT_BASE_URL = $oldBase

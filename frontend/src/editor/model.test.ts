@@ -22,6 +22,23 @@ const d: Dataset = {
   warnings: [],
 };
 describe("reproducible plot model", () => {
+  it("formats only new axis titles and preserves field mappings and saved titles", () => {
+    const input: Dataset = {
+      ...d,
+      fields: [d.fields[0], { name: "macro_f1", type: "number", missing: 0 }],
+    };
+    const c = defaults(input);
+    expect(c.axes.x.title).toBe("Epoch");
+    expect(c.axes.y.title).toBe("Macro f1");
+    expect(c.x).toBe("epoch");
+    expect(c.series[0].y).toBe("macro_f1");
+    c.axes.x.title = "epoch";
+    c.axes.y.title = "macro_f1";
+    const restored = JSON.parse(JSON.stringify(c));
+    const p = buildPlot(restored, input);
+    expect(p.layout.xaxis.title.text).toBe("epoch");
+    expect(p.layout.yaxis.title.text).toBe("macro_f1");
+  });
   it("renders heatmap cells as vector rectangles with no raster image", () => {
     const c = defaults(d);
     c.type = "heatmap";

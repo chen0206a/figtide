@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "datasetVersionId": 131,
+  "datasetVersionId": 337,
   "evaluation": {
     "algorithm": "binary-ranking-v1",
     "missing": "exclude",
@@ -11,11 +11,16 @@
     "rocXTitle": "",
     "rocYTitle": "",
     "prXTitle": "",
-    "prYTitle": ""
+    "prYTitle": "",
+    "legendMetric": true
+  },
+  "sampling": {
+    "policy": "independent",
+    "id": ""
   },
   "series": [
     {
-      "id": "66ddea94-c918-4dfa-b84c-7004c424ab09",
+      "id": "e56ab15c-0f5b-4837-8e9d-00d4d55a2e21",
       "name": "score",
       "score": "score",
       "visible": true
@@ -38,10 +43,12 @@
     {
       "panel": "",
       "series": "score",
-      "seriesId": "66ddea94-c918-4dfa-b84c-7004c424ab09",
+      "seriesId": "e56ab15c-0f5b-4837-8e9d-00d4d55a2e21",
       "group": "全部",
       "n": 4,
       "excluded": 1,
+      "ownMissing": 1,
+      "excludedByOthers": 0,
       "threshold": 0.5,
       "positive": 2,
       "negative": 2,

@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { artifactPath } from "./artifacts";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
 test("JSONL import → actual agent recommendation → user selection → save/reopen → SVG", async ({
@@ -37,7 +38,7 @@ test("JSONL import → actual agent recommendation → user selection → save/r
   await planner
     .getByRole("textbox", { name: "想观察什么？" })
     .fill("观察训练轮次与准确率的变化");
-  await planner.getByRole("checkbox", { name: /同意将字段名/ }).check();
+  await planner.getByRole("checkbox", { name: /同意将字段摘要/ }).check();
   await planner
     .getByRole("button", { name: "分析并推荐", exact: true })
     .click();
@@ -52,7 +53,7 @@ test("JSONL import → actual agent recommendation → user selection → save/r
     planner.locator(".js-plotly-plot .scatterlayer .point"),
   ).toHaveCount(3);
   await page.screenshot({
-    path: "../docs/screenshots/chart-planner.png",
+    path: artifactPath(test.info(), "../docs/screenshots/chart-planner.png"),
     fullPage: true,
   });
   await planner

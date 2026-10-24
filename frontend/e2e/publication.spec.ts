@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { artifactPath } from "./artifacts";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
 test("histogram and ECDF → physical typography → real MySQL reopen → mm SVG and DPI PNG", async ({
@@ -55,10 +56,12 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
   await expect
     .poll(() => page.getByTestId("plot").evaluate((el: any) => el.data[0]?.y))
     .toEqual([0.4, 0.6]);
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
     .getByRole("switch", { name: "按论文物理尺寸输出", exact: true })
     .check();
-  await page.getByRole("button", { name: "单栏 89 mm", exact: true }).click();
+  // Keep exercising saved custom 89mm configurations; new presets are tested separately.
+  await page.getByLabel("成品宽度 / mm").fill("89");
   await page.getByLabel("成品基础字号 / pt").fill("7");
   await expect
     .poll(() =>
@@ -74,7 +77,7 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
   });
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/publication-histogram.png",
+    path: artifactPath(test.info(), "../docs/screenshots/publication-histogram.png"),
     fullPage: true,
   });
   for (const format of ["svg", "png"]) {
@@ -87,17 +90,17 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
     await (
       await waiting
-    ).saveAs(`../docs/exports/publication-histogram.${format}`);
+    ).saveAs(artifactPath(test.info(), `../docs/exports/publication-histogram.${format}`));
   }
   const svg = fs.readFileSync(
-    "../docs/exports/publication-histogram.svg",
+    artifactPath(test.info(), "../docs/exports/publication-histogram.svg"),
     "utf8",
   );
   expect(svg).toContain('width="89mm"');
   expect(svg).toContain('viewBox="0 0 760 500"');
   expect(svg).toContain("<text");
   expect(svg).not.toContain("<image");
-  const png = fs.readFileSync("../docs/exports/publication-histogram.png");
+  const png = fs.readFileSync(artifactPath(test.info(), "../docs/exports/publication-histogram.png"));
   expect(png.readUInt32BE(16)).toBe(1051);
   expect(png.readUInt32BE(20)).toBe(691);
   const phys = png.indexOf(Buffer.from("pHYs"));
@@ -142,14 +145,14 @@ test("histogram and ECDF → physical typography → real MySQL reopen → mm SV
         .evaluate((el: any) => el.layout.yaxis.title.text),
     )
     .toBe("Cumulative probability");
-  await page.getByRole("button", { name: "专业", exact: true }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("成品基础字号 / pt")).toHaveValue("7");
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.locator(".inspector-scroll").evaluate((el) => {
     el.scrollTop = 0;
   });
   await page.screenshot({
-    path: "../docs/screenshots/publication-ecdf.png",
+    path: artifactPath(test.info(), "../docs/screenshots/publication-ecdf.png"),
     fullPage: true,
   });
   expect(
@@ -214,6 +217,13 @@ test("scientific heatmap scale, contrasting numeric labels, and rejected invalid
         .evaluate((el: any) => el.layout.annotations.map((a: any) => a.text)),
     )
     .toEqual(["-2", "0", "3", "6"]);
+  const heatLayout = await page.getByTestId("plot").evaluate((el: any) => ({
+    showlegend: el.layout.showlegend,
+    top: el.layout.margin.t,
+    fontSize: el.layout.font.size,
+  }));
+  expect(heatLayout.showlegend).toBe(false);
+  expect(heatLayout.top).toBe(Math.max(70, heatLayout.fontSize * 2 + 24));
   await expect
     .poll(() =>
       page
@@ -228,7 +238,7 @@ test("scientific heatmap scale, contrasting numeric labels, and rejected invalid
   await page.getByLabel("色阶中心值").scrollIntoViewIfNeeded();
   await page.getByRole("button", { name: "适合窗口", exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/scientific-heatmap.png",
+    path: artifactPath(test.info(), "../docs/screenshots/scientific-heatmap.png"),
     fullPage: true,
   });
   await page.getByLabel("色阶最小值").fill("10");

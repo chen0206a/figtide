@@ -1,0 +1,841 @@
+{
+  "requests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/@vite/client"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/main.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/@react-refresh"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/react.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/react-dom_client.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/@tanstack_react-query.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/@fontsource-variable/inter/index.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/@fontsource-variable/jetbrains-mono/index.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/App.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/react-router-dom.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/styles/tokens.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/styles/motion.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/styles.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/workbench.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/styles/dialogs.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/styles/table.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/styles/shell.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/vite/dist/client/env.mjs"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/chunk-BNG2FCX3.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/chunk-PX6F3LHL.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/react-dom.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/intro.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/useMotion.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/loadEditor.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/workspaceMemory.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/WorkspaceNav.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/routes.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/lucide-react.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/api.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/sampleProject.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/ui/button.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/ui/dialog.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/data/DataPage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/home/HomePage.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/WorkbenchSkeleton.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/LabFlowMark.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/UploadDialog.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/ProjectManager.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/ModelConnectionDialog.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/useConfirm.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/Experiments.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/chunk-ONFTLZP5.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/chunk-KV7XM4KR.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/@radix-ui_react-slot.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/class-variance-authority.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/utils.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/assets/sample/%E7%A4%BA%E4%BE%8B-%E5%AD%A6%E4%B9%A0%E6%9B%B2%E7%BA%BF.csv?import&raw"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/model.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/DataTable.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/PageHeader.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/SourceProvenance.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/processing/ProcessingDialog.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/data/data-page.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/format.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/home/home.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/home/home-motion.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/home/homeData.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/home/ContinueCard.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/home/HomeSide.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/home/HomeTables.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/home/SampleThumbnail.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/privacy.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/importChecks.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/ProjectBackup.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/components/model-connection.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/ExperimentForm.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/Comparison.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/compare.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/ExperimentsTable.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/tableModel.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/experiments.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/experiments-table.css"
+    },
+    {
+      "method": "WS",
+      "url": "ws://127.0.0.1:5178/?token=aqpkdtSViNAB"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/chunk-WMBTJVB6.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/clsx.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/tailwind-merge.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/chunk-U7P2NEEE.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/stylePresets.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/processing/ProcessingProvenance.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/@tanstack_react-table.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/processing/processing.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/chartDraft.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/metrics.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/figureTools.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/download.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/experiments/ObjectFields.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/favicon.svg"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/favicon.svg"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/welcome/ProductIntro.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/useReveal.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/welcome/introMarkup.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/welcome/welcome.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/fonts/NotoSansSC-Bold.ttf"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/favicon.svg"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/agent/provider"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/experiments"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/datasets"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/charts"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5178/api/projects"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/datasets"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/charts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/657/datasets"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/657/charts"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5178/api/projects/656/datasets/preview"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5178/api/projects/656/datasets"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/datasets"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/charts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/favicon.svg"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/favicon.svg"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/Editor.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/styles-library.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/Workbench.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/agentShortcut.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/publication.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/DataLayersPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/EditorStatusBar.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/EditorToolbar.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/FigureAssistantDock.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/FigureCanvas.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/FigureSourceStrip.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/Inspector.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/useCanvasFit.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/useChartSave.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/useEditorDraft.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/useEditorShortcuts.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/useFigureExport.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/usePanelLayout.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/usePlotRenderer.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/WorkbenchOverlays.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/useProposalCanvas.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/agent-canvas.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/BottomDrawer.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/fitZoom.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/PublicationPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/CanvasAsk.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/ProposalPaper.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/AgentAssistant.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/SaveMenu.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/toolbar.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/StyleThumbnail.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/ProfessionalPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/inspector/AnnotationsTab.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/inspector/AppearanceTab.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/inspector/AxesTab.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/inspector/ChartTab.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/inspector/SeriesTab.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/saveFeedback.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/lib/draftWriter.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/node_modules/.vite/deps/plotly__js-cartesian-dist-min.js?v=488715b9"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/layoutPatch.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/plot.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/QuickActions.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/ReuseDialog.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/dialogs/ConflictDialog.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/dialogs/ExportDialog.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/dialogs/RecoveryDialog.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/dialogs/VersionHistoryDialog.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/ClassificationResults.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/EvaluationResults.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/agentPresentation.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/proposalMarkers.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/publication-panel.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/workbench/controls.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/ProposalPreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/AgentHistory.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/AuditTrace.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/quick-actions.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/agent-assistant.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/agentConversation.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/useAssistantAutoStart.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/agentRecovery.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/facets.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/professional.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/ScientificPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/EvaluationPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/ClassificationPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/plot-core.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/sampling.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/reuse.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/StylePreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/SamplingPanel.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/heatmap.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/distribution.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/empirical.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/evaluation.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/bands.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/classification.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/confusion.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/encoding.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/FigurePreview.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/PreviewWarnings.tsx"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/src/editor/color.ts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/agent/provider"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5178/api/projects/656/charts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/datasets"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/charts"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/favicon.svg"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/projects/656/charts/508"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5178/api/agent/provider"
+    },
+    {
+      "method": "GET",
+      "url": "blob:http://127.0.0.1:5178/836f6ba5-a013-4191-9fba-cc85106e6331"
+    }
+  ],
+  "external": []
+}

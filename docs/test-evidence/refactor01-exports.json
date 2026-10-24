@@ -1,0 +1,49 @@
+[
+  {
+    "text": "                                   Repeated runs (synthetic)\r\n\r\n                                          Baseline       Method A\r\n\r\n\r\n\r\n\r\n                         0.9\r\nAccuracy (mean ± SEM)\r\n\r\n\r\n\r\n\r\n                        0.85\r\n\r\n\r\n                         0.8\r\n\r\n\r\n                        0.75\r\n\r\n\r\n                         0.7\r\n\r\n\r\n                        0.65\r\n\r\n\r\n                               1                     2              3\r\n\r\n                                               Epoch\r\n\f",
+    "figure": "sem",
+    "expected_labels": [
+      "Baseline",
+      "Method A",
+      "Accuracy",
+      "SEM"
+    ],
+    "pages": 1,
+    "raster_images": 0,
+    "render": ".runtime/refactor01-pdf-qa/sem.png",
+    "pdf_info": "Producer:        jsPDF 4.2.1\r\nCreationDate:    Thu Oct 22 14:25:25 2026 ������׼ʱ��\r\nCustom Metadata: no\r\nMetadata Stream: no\r\nTagged:          no\r\nUserProperties:  no\r\nSuspects:        no\r\nForm:            none\r\nJavaScript:      no\r\nPages:           1\r\nEncrypted:       no\r\nPage size:       570 x 375 pts\r\nPage rot:        0\r\nFile size:       0 bytes\r\nOptimized:       no\r\nPDF version:     1.3\r\n"
+  },
+  {
+    "text": "                 Classification counts (synthetic)\r\n\r\n\r\n                          Model A · n=7\r\n                                                     3\r\n\r\n\r\n             A    3             1            0\r\n\r\n\r\n\r\n                                                     2\r\nTrue class\r\n\r\n\r\n\r\n\r\n                                                     Count\r\n             B    0             2            0\r\n\r\n\r\n                                                     1\r\n\r\n\r\n\r\n             C    0             0            1\r\n\r\n\r\n                                                     0\r\n                  A             B            C\r\n\r\n                         Predicted class\r\n\f",
+    "figure": "confusion",
+    "expected_labels": [
+      "Model A",
+      "n=7",
+      "Count"
+    ],
+    "pages": 1,
+    "raster_images": 0,
+    "render": ".runtime/refactor01-pdf-qa/confusion.png",
+    "pdf_info": "Producer:        jsPDF 4.2.1\r\nCreationDate:    Thu Oct 22 14:25:28 2026 ������׼ʱ��\r\nCustom Metadata: no\r\nMetadata Stream: no\r\nTagged:          no\r\nUserProperties:  no\r\nSuspects:        no\r\nForm:            none\r\nJavaScript:      no\r\nPages:           1\r\nEncrypted:       no\r\nPage size:       570 x 375 pts\r\nPage rot:        0\r\nFile size:       0 bytes\r\nOptimized:       no\r\nPDF version:     1.3\r\n"
+  },
+  {
+    "text": "                                     ROC evaluation (synthetic)\r\n\r\n                                                 Model A (AUC = 0.750)\r\n                      1\r\n\r\n\r\n\r\n                     0.8\r\nTrue positive rate\r\n\r\n\r\n\r\n\r\n                     0.6\r\n\r\n\r\n\r\n                     0.4\r\n\r\n\r\n\r\n                     0.2\r\n\r\n\r\n\r\n                      0\r\n                           0   0.2         0.4                   0.6     0.8   1\r\n\r\n                                            False positive rate\r\n\f",
+    "figure": "roc",
+    "expected_labels": [
+      "Model A",
+      "AUC = 0.750"
+    ],
+    "pages": 1,
+    "raster_images": 0,
+    "render": ".runtime/refactor01-pdf-qa/roc.png",
+    "pdf_info": "Producer:        jsPDF 4.2.1\r\nCreationDate:    Thu Oct 22 14:27:02 2026 ������׼ʱ��\r\nCustom Metadata: no\r\nMetadata Stream: no\r\nTagged:          no\r\nUserProperties:  no\r\nSuspects:        no\r\nForm:            none\r\nJavaScript:      no\r\nPages:           1\r\nEncrypted:       no\r\nPage size:       570 x 375 pts\r\nPage rot:        0\r\nFile size:       0 bytes\r\nOptimized:       no\r\nPDF version:     1.3\r\n"
+  },
+  {
+    "raster_images": 0,
+    "expected_labels": [
+      "AP = 0.833"
+    ],
+    "format": "svg",
+    "figure": "pr"
+  }
+]

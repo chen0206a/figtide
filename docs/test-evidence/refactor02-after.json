@@ -1,0 +1,74 @@
+{
+  "home": {
+    "frame": {
+      "x": 80,
+      "y": 64,
+      "width": 1280,
+      "height": 1287.71875
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 64
+    },
+    "typography": {
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "color": "rgb(14, 17, 22)"
+    }
+  },
+  "experiments": {
+    "frame": {
+      "x": 80,
+      "y": 64,
+      "width": 1280,
+      "height": 466.0625
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 64
+    },
+    "typography": {
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "color": "rgb(14, 17, 22)"
+    }
+  },
+  "data": {
+    "frame": {
+      "x": 108,
+      "y": 198.296875,
+      "width": 1224,
+      "height": 578.046875
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 64
+    },
+    "typography": {
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "color": "rgb(14, 17, 22)"
+    }
+  },
+  "editor": {
+    "frame": {
+      "x": 0,
+      "y": 64,
+      "width": 1440,
+      "height": 936
+    },
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 64
+    },
+    "typography": {
+      "font": "\"Open Sans\", verdana, arial, sans-serif",
+      "color": "rgb(14, 17, 22)"
+    }
+  }
+}

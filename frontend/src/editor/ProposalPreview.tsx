@@ -9,6 +9,8 @@ export function ProposalPreview(p: {
   config: Config;
   data: Dataset;
   preview?: ToolPreview | null;
+  numbered?: boolean;
+  showPlot?: boolean;
 }) {
   return (
     <div className="quick-result-scroll">
@@ -18,16 +20,16 @@ export function ProposalPreview(p: {
           {p.preview ? `${p.preview.changes.length} 处变化` : "尚未应用"}
         </span>
       </div>
-      <StylePreview config={p.preview?.config || p.config} data={p.data} />
+      {p.showPlot!==false&&<StylePreview config={p.preview?.config || p.config} data={p.data} />}
       {!p.preview ? (
         <p className="quick-actions-note">预览不会保存或修改当前图表。</p>
       ) : !p.preview.changes.length ? (
         <p className="quick-actions-note">这些设置与当前画布相同，无需应用。</p>
       ) : (
         <ul className="quick-changes" aria-label="修改明细">
-          {p.preview.changes.map((v) => (
+          {p.preview.changes.map((v,index) => (
             <li key={v.path}>
-              <strong>{changeLabel(v.path, p.config)}</strong>
+              <strong>{p.numbered&&<span className="proposal-number">{index+1}</span>}{changeLabel(v.path, p.config)}</strong>
               <span>
                 <del>
                   {displayToolValue(v.before, v.path.split("/").at(-1))}

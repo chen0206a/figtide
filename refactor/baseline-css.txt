@@ -1,0 +1,60 @@
+Task 00 CSS baseline
+Date: 2026-10-22 13:32:02 +09:00
+Source commit: 1e4672d9c3282f044f1e3a1ed77ee2d5bbe7c0fb
+Snapshot commit: 0f0325c
+Scope: frontend/src (reference implementations excluded)
+Counting: wc -l equivalent newline count; six-digit hex colors /#[0-9a-fA-F]{6}\b/ case-normalized; !important matching lines; case-sensitive font-serif|Newsreader matching lines.
+
+CSS files: 15
+CSS lines: 7820
+Distinct six-digit hex colors: 417
+Lines containing !important: 26
+Serif reference matching lines: 22
+
+CSS file line counts:
+frontend/src\components\chart-planner.css	216
+frontend/src\components\experience.css	548
+frontend/src\components\home-workspace.css	604
+frontend/src\components\home.css	700
+frontend/src\components\model-connection.css	232
+frontend/src\components\navigation.css	284
+frontend/src\components\refinements.css	325
+frontend/src\components\showcase.css	263
+frontend/src\editor\agent-assistant.css	606
+frontend/src\editor\professional.css	213
+frontend/src\editor\quick-actions.css	244
+frontend/src\editor\styles-library.css	525
+frontend/src\experiments\experiments.css	410
+frontend/src\processing\processing.css	117
+frontend/src\styles.css	2533
+
+Serif references:
+frontend/src\styles.css:14:  --font-serif: "Newsreader Variable", Georgia, "Songti SC", serif;
+frontend/src\styles.css:41:  --font-serif: "Newsreader Variable", Georgia, "Songti SC", serif;
+frontend/src\styles.css:379:  font-family: var(--font-serif);
+frontend/src\styles.css:534:  font-family: var(--font-serif);
+frontend/src\styles.css:572:  font-family: var(--font-serif);
+frontend/src\styles.css:634:  font-family: var(--font-serif);
+frontend/src\styles.css:712:  font-family: var(--font-serif);
+frontend/src\styles.css:743:  font-family: var(--font-serif);
+frontend/src\styles.css:806:  font-family: var(--font-serif);
+frontend/src\styles.css:840:  font-family: var(--font-serif);
+frontend/src\styles.css:882:  font-family: var(--font-serif);
+frontend/src\styles.css:958:  font-family: var(--font-serif);
+frontend/src\styles.css:1039:  font-family: var(--font-serif);
+frontend/src\styles.css:1113:  font-family: var(--font-serif);
+frontend/src\styles.css:1175:  font-family: var(--font-serif);
+frontend/src\styles.css:1182:  font-family: var(--font-serif);
+frontend/src\styles.css:1303:  font-family: var(--font-serif);
+frontend/src\styles.css:1386:  font-family: var(--font-serif);
+frontend/src\styles.css:1414:  font-family: var(--font-serif);
+frontend/src\styles.css:1565:  font-family: var(--font-serif);
+frontend/src\styles.css:1652:  font-family: var(--font-serif) !important;
+frontend/src\styles.css:2311:  font-family: var(--font-serif);
+
+Reproduction commands (PowerShell, cwd frontend/src):
+1) (rg --files -g '*.css' | ForEach-Object { [regex]::Matches([IO.File]::ReadAllText((Resolve-Path $_)), "`n").Count } | Measure-Object -Sum).Sum
+2) (rg -o --no-filename '#[0-9a-fA-F]{6}\b' -g '*.css' . | ForEach-Object { $_.ToLowerInvariant() } | Sort-Object -Unique | Measure-Object).Count
+3) (rg -n '!important' -g '*.css' . | Measure-Object).Count
+4) (rg -n 'font-serif|Newsreader' -g '*.css' -g '*.tsx' . | Measure-Object).Count
+No business source changes. Counts match the reference values supplied with task 00.

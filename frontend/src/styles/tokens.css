@@ -1,0 +1,334 @@
+/* ============================================================
+   FigTide design tokens — single source of truth (phase 2)
+   Cool neutral ground · ink-black primary · one vermillion
+   highlight · Okabe–Ito data colors · mono for specs/IDs.
+
+   Rules
+   - Components reference --lf-* tokens only. No raw hex in
+     component CSS (exception: chart SVG/Plotly configs).
+   - Text tokens meet 4.5:1 on --lf-surface and --lf-bg.
+   ============================================================ */
+
+:root {
+  /* ---- surfaces ---- */
+  --lf-bg: #f5f6f8; /* app background */
+  --lf-surface: #ffffff; /* cards, panels, header */
+  --lf-surface-2: #f8f9fb; /* inputs, subtle fills */
+  --lf-surface-sunken: #f1f3f6; /* segmented controls, wells */
+  --lf-surface-3: var(--lf-surface-sunken); /* progress track */
+  --lf-canvas: #f0f1f4; /* editor canvas backdrop */
+  --lf-inverse: #0e1116; /* dark cards, primary button */
+  --lf-inverse-2: #1b2028; /* fields on dark */
+  --lf-inverse-border: #2b323c;
+
+  /* ---- lines ---- */
+  --lf-border: #e4e7ec;
+  --lf-border-strong: #d5dae1;
+  --lf-divider: #eef0f3;
+
+  /* ---- text ---- */
+  --lf-text: #0e1116;
+  --lf-text-1: var(--lf-text); /* progress fill */
+  --lf-text-2: #4a5361; /* secondary, 7.8:1 on white */
+  --lf-text-3: #5f6773; /* muted / meta, 5.7:1 on white */
+  --lf-text-on-inverse: #ffffff;
+  --lf-text-on-inverse-2: #b8c0cc;
+
+  /* ---- interaction ---- */
+  --lf-primary: var(--lf-inverse);
+  --lf-primary-hover: #252b35;
+  --lf-link: #1f4fb8;
+  --lf-link-hover: #163b8c;
+  --lf-focus: #2b59c3;
+  --lf-selected: #eef3fc; /* selected row / tab fill */
+
+  /* ---- highlight (sparingly: key number, proposed series) ---- */
+  --lf-accent: #d55e00;
+  --lf-accent-soft: #fbeee5;
+
+  /* ---- status ---- */
+  --lf-success: #146c45;
+  --lf-success-soft: #e8f5ee;
+  --lf-success-dot: #1a8f5c;
+  --lf-success-live: #3ccb8a;
+  --lf-warning: #8a4b0f;
+  --lf-warning-soft: #fff4e5;
+  --lf-warning-dot: #d97706;
+  --lf-danger: #b42318;
+  --lf-danger-soft: #fdecea;
+  --lf-info: #1f4fb8;
+  --lf-info-soft: #eef3fc;
+
+  /* ---- data (Okabe–Ito; UI previews only, charts use presets) ---- */
+  --lf-data-1: #0072b2;
+  --lf-data-2: #d55e00;
+  --lf-data-3: #009e73;
+  --lf-data-4: #e69f00;
+  --lf-data-5: #cc79a7;
+  --lf-data-6: #56b4e9;
+
+  /* ---- type ---- */
+  --lf-font-sans:
+    "Inter Variable", Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans SC",
+    system-ui, sans-serif;
+  --lf-font-mono:
+    "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular,
+    Menlo, monospace;
+  --lf-text-2xs: 11px;
+  --lf-text-xs: 12px;
+  --lf-text-sm: 13px;
+  --lf-text-base: 14px;
+  --lf-text-md: 15px;
+  --lf-text-lg: 17px;
+  --lf-text-xl: 20px;
+  --lf-text-2xl: 26px;
+  --lf-text-3xl: 34px;
+  --lf-leading: 1.5;
+  --lf-leading-relaxed: 1.6;
+  --lf-tracking-tight: -0.02em;
+  --lf-tracking-brand: -0.03em;
+  --lf-tracking-mono: 0.04em;
+
+  /* ---- radius ---- */
+  --lf-radius-xs: 5px;
+  --lf-radius-sm: 8px;
+  --lf-radius-md: 11px;
+  --lf-radius-lg: 16px;
+  --lf-radius-xl: 18px;
+  --lf-radius-pill: 999px;
+
+  /* ---- spacing (4px grid) ---- */
+  --lf-space-1: 4px;
+  --lf-space-2: 8px;
+  --lf-space-3: 12px;
+  --lf-space-4: 16px;
+  --lf-space-5: 20px;
+  --lf-space-6: 24px;
+  --lf-space-7: 28px;
+  --lf-space-8: 32px;
+  --lf-space-10: 40px;
+  --lf-space-14: 56px;
+
+  /* ---- elevation ---- */
+  --lf-shadow-xs: 0 1px 2px rgba(14, 17, 22, 0.06);
+  --lf-shadow-sm:
+    0 1px 2px rgba(14, 17, 22, 0.06), 0 8px 24px -16px rgba(14, 17, 22, 0.18);
+  --lf-shadow-pop: 0 24px 48px -16px rgba(14, 17, 22, 0.28);
+  --lf-shadow-paper:
+    0 1px 2px rgba(14, 17, 22, 0.08), 0 30px 60px -30px rgba(14, 17, 22, 0.25);
+
+  /* ---- layout ---- */
+  --lf-header-h: 64px;
+  --lf-page-max: 1280px;
+  --lf-gutter: 28px;
+  --lf-control-h: 38px; /* inputs, secondary buttons */
+  --lf-control-h-lg: 44px; /* primary actions, touch target */
+  --lf-project-picker-w: 200px;
+  --lf-project-picker-compact-w: 150px;
+  --lf-nav-item-w: 104px;
+  --lf-editor-title-basis: 320px;
+  --lf-selection-bar-h: 70px;
+  --lf-selection-bar-mobile-h: 116px;
+
+  --lf-home-size-18: 18px;
+  --lf-home-size-620: 620px;
+  --lf-home-size-340: 340px;
+  --lf-home-size-300: 300px;
+  --lf-home-size-460: 460px;
+  --lf-home-size-420: 420px;
+  --lf-home-size-6: 6px;
+  --lf-home-size-14: 14px;
+  --lf-home-size-240: 240px;
+  --lf-home-size-38: 38px;
+  --lf-home-size-220: 220px;
+
+  --lf-agent-size-370: 370px;
+  --lf-agent-size-460: 460px;
+  --lf-agent-size-1: 1px;
+  --lf-agent-size-7: 7px;
+  --lf-agent-size-22: 22px;
+  --lf-agent-size-14: 14px;
+  --lf-agent-size-11-5: 11.5px;
+  --lf-agent-size-18: 18px;
+  --lf-agent-size-9: 9px;
+  --lf-agent-size-13: 13px;
+  --lf-agent-size-11: 11px;
+  --lf-agent-size-3: 3px;
+  --lf-agent-size-6: 6px;
+  --lf-agent-size-10: 10px;
+  --lf-agent-size-86: 86px;
+  --lf-agent-size-220: 220px;
+  --lf-agent-size-400: 400px;
+  --lf-agent-size-5: 5px;
+  --lf-agent-size-110: 110px;
+  --lf-agent-size-30: 30px;
+  --lf-agent-size-2: 2px;
+  --lf-agent-size-260: 260px;
+  --lf-agent-size-610: 610px;
+  --lf-agent-size-170: 170px;
+  --lf-agent-size-350: 350px;
+  --lf-agent-size-15: 15px;
+  --lf-agent-size-26: 26px;
+  --lf-agent-size-90: 90px;
+  --lf-agent-size-45: 45px;
+  --lf-agent-size-180: 180px;
+  --lf-agent-size-250: 250px;
+
+  /* ---- motion ---- */
+  --lf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --lf-duration: 160ms;
+
+  /* ---- document defaults ---- */
+  font-family: var(--lf-font-sans);
+  font-size: var(--lf-text-base);
+  line-height: var(--lf-leading);
+  color: var(--lf-text);
+  background: var(--lf-bg);
+  color-scheme: light;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  --lf-text-caption: 11.5px;
+  --lf-text-compact: 12.5px;
+  --lf-text-control: 13.5px;
+  --lf-text-heading: 16px;
+  --lf-text-emphasis: 18px;
+}
+
+/* Tailwind's @theme must stay in styles.css (the file that imports
+   "tailwindcss"); see task 02 for the replacement block. */
+
+/* ---- shared focus ring ---- */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--lf-focus);
+  outline-offset: 2px;
+}
+
+/* ---- small shared atoms ---- */
+.lf-mono {
+  font-family: var(--lf-font-mono);
+  letter-spacing: var(--lf-tracking-mono);
+}
+.lf-kicker {
+  font-family: var(--lf-font-mono);
+  font-size: var(--lf-text-xs);
+  letter-spacing: var(--lf-tracking-mono);
+  color: var(--lf-text-3);
+}
+.lf-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lf-success-dot);
+  flex-shrink: 0;
+}
+.lf-dot.is-warning {
+  background: var(--lf-warning-dot);
+}
+.lf-dot.is-live {
+  background: var(--lf-success-live); /* on dark surfaces */
+}
+.lf-dot.is-off {
+  background: var(--lf-text-on-inverse-2);
+}
+.lf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--lf-radius-pill);
+  font-size: var(--lf-text-xs);
+  white-space: nowrap;
+}
+.lf-chip[data-tone="success"] {
+  background: var(--lf-success-soft);
+  color: var(--lf-success);
+}
+.lf-chip[data-tone="warning"] {
+  background: var(--lf-warning-soft);
+  color: var(--lf-warning);
+}
+.lf-chip[data-tone="info"] {
+  background: var(--lf-info-soft);
+  color: var(--lf-info);
+}
+.lf-chip[data-tone="neutral"] {
+  background: var(--lf-surface-sunken);
+  color: var(--lf-text-2);
+}
+.lf-chip[data-tone="danger"] {
+  background: var(--lf-danger-soft);
+  color: var(--lf-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+  }
+}
+
+/* Product introduction dimensions from the supplied design. */
+:root{
+  --lf-intro-size-15: 15px;
+  --lf-intro-size-12: 12px;
+  --lf-intro-size-1: 1px;
+  --lf-intro-size-1200: 1200px;
+  --lf-intro-size-14: 14px;
+  --lf-intro-size-28: 28px;
+  --lf-intro-size-32: 32px;
+  --lf-intro-size-10: 10px;
+  --lf-intro-size-30: 30px;
+  --lf-intro-size-8: 8px;
+  --lf-intro-size-17: 17px;
+  --lf-intro-size-4: 4px;
+  --lf-intro-size-26: 26px;
+  --lf-intro-size-20: 20px;
+  --lf-intro-size-40: 40px;
+  --lf-intro-size-16: 16px;
+  --lf-intro-size-11: 11px;
+  --lf-intro-size-84: 84px;
+  --lf-intro-size-44: 44px;
+  --lf-intro-size-5: 5px;
+  --lf-intro-size-6: 6px;
+  --lf-intro-size-999: 999px;
+  --lf-intro-size-13: 13px;
+  --lf-intro-size-2: 2px;
+  --lf-intro-size-76: 76px;
+  --lf-intro-size-640: 640px;
+  --lf-intro-size-19: 19px;
+  --lf-intro-size-58: 58px;
+  --lf-intro-size-18: 18px;
+  --lf-intro-size-1120: 1120px;
+  --lf-intro-size-3: 3px;
+  --lf-intro-size-7: 7px;
+  --lf-intro-size-110: 110px;
+  --lf-intro-size-600: 600px;
+  --lf-intro-size-420: 420px;
+  --lf-intro-size-34: 34px;
+  --lf-intro-size-220: 220px;
+  --lf-intro-size-24: 24px;
+  --lf-intro-size-120: 120px;
+  --lf-intro-size-56: 56px;
+  --lf-intro-size-380: 380px;
+  --lf-intro-size-520: 520px;
+  --lf-intro-size-22: 22px;
+  --lf-intro-size-180: 180px;
+  --lf-intro-size-9: 9px;
+  --lf-intro-size-300: 300px;
+  --lf-intro-size-140: 140px;
+  --lf-intro-size-72: 72px;
+  --lf-intro-size-48: 48px;
+  --lf-intro-size-52: 52px;
+  --lf-intro-size-560: 560px;
+  --lf-intro-size-36: 36px;
+  --lf-intro-size-150: 150px;
+  --lf-intro-size-334: 334px;
+  --lf-intro-size-206: 206px;
+  --lf-intro-size-200: 200px;
+  --lf-intro-size-226: 226px;
+  --lf-intro-size-352: 352px;
+  --lf-intro-size-246: 246px;
+}

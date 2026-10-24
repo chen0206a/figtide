@@ -1,5 +1,10 @@
 import type { Config } from "./model";
 import { defaultEvaluation } from "./model";
+import {
+  traceEncoding,
+  groupTraceName,
+  type EncodingContext,
+} from "./encoding";
 import { sampleSelection } from "./sampling";
 type Row = Record<string, string | number | null>;
 export type EvaluationMetric = {
@@ -83,6 +88,7 @@ export function evaluationTraces(
   rows: Row[],
   labelUniverse?: Set<string>,
   reference: Config = c,
+  encoding?: EncodingContext,
 ) {
   const e = c.evaluation || defaultEvaluation;
   const traces: any[] = [],
@@ -111,6 +117,7 @@ export function evaluationTraces(
   }
   for (const s of c.series.filter((s) => s.visible))
     for (const group of groups) {
+      const paint = traceEncoding(c, s, group, groups, encoding);
       const selected = c.group
         ? rows.filter((r) => r[c.group] === group)
         : rows;
@@ -153,20 +160,26 @@ export function evaluationTraces(
         continue;
       }
       const key = s.id + ":" + JSON.stringify(group);
+      const score = c.type === "roc" ? values.auc : values.ap;
+      const legendName =
+        groupTraceName(encoding?.config || c, s, group, "缺失") +
+        (e.legendMetric && score != null
+          ? ` (${c.type === "roc" ? "AUC" : "AP"} = ${score.toFixed(3)})`
+          : "");
       traces.push({
         type: "scatter",
         mode: "lines+markers",
-        name: escape(name),
+        name: escape(legendName),
         legendgroup: key,
         x: points.map((p) => (c.type === "roc" ? p.fpr : p.recall)),
         y: points.map((p) => (c.type === "roc" ? p.recall : p.precision)),
         line: {
-          color: s.color,
+          color: paint.color,
           width: s.width,
-          dash: s.dash,
+          dash: paint.dash,
           shape: c.type === "pr" ? "vh" : "linear",
         },
-        marker: { color: s.color, size: s.size, symbol: s.symbol },
+        marker: { color: paint.color, size: s.size, symbol: paint.symbol },
         opacity: s.opacity,
         customdata: points.map(() => s.id),
         connectgaps: false,
@@ -191,7 +204,7 @@ export function evaluationTraces(
                   result.positive / samples.length,
                 ],
           line: {
-            color: c.type === "roc" ? "#a2a9b5" : s.color,
+            color: c.type === "roc" ? "#a2a9b5" : paint.color,
             width: 1,
             dash: "dot",
           },

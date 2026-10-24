@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "datasetVersionId": 181,
+  "datasetVersionId": 324,
   "classification": {
     "input": "labels",
     "label": "truth",
@@ -27,11 +27,11 @@
   "series": [
     {
       "y": "id",
-      "id": "1abc87a9-b145-4b38-ab19-64873a57e34f",
+      "id": "2b5f06a6-8a0d-4493-b896-c5d62a4d7c67",
       "dash": "solid",
       "name": "Model A",
       "size": 6,
-      "color": "#6758ce",
+      "color": "#3568b5",
       "error": "",
       "width": 2.5,
       "symbol": "circle",
@@ -41,11 +41,11 @@
     },
     {
       "y": "id",
-      "id": "4ef2c481-72ba-4c74-8ac0-b97f09dae8b3",
+      "id": "5937d852-43d8-4fa5-809c-268024e674da",
       "dash": "solid",
       "name": "Model B",
       "size": 6,
-      "color": "#269e95",
+      "color": "#228b83",
       "error": "",
       "width": 2.5,
       "symbol": "circle",
@@ -56,7 +56,7 @@
   ],
   "reports": [
     {
-      "seriesId": "1abc87a9-b145-4b38-ab19-64873a57e34f",
+      "seriesId": "2b5f06a6-8a0d-4493-b896-c5d62a4d7c67",
       "groupKey": "\"\"",
       "series": "Model A",
       "group": "全部",
@@ -163,7 +163,7 @@
       "accuracy": 0.8
     },
     {
-      "seriesId": "4ef2c481-72ba-4c74-8ac0-b97f09dae8b3",
+      "seriesId": "5937d852-43d8-4fa5-809c-268024e674da",
       "groupKey": "\"\"",
       "series": "Model B",
       "group": "全部",
@@ -271,8 +271,8 @@
     }
   ],
   "source": {
+    "sha256": "fc5b54acfcbe14567951bc101dca448d455ccea8f1dd1ed42ae98f838f4f8fbe",
     "filename": "synthetic-classes.csv",
-    "version": 1,
-    "sha256": "fc5b54acfcbe14567951bc101dca448d455ccea8f1dd1ed42ae98f838f4f8fbe"
+    "version": 1
   }
 }

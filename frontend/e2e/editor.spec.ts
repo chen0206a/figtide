@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { artifactPath } from "./artifacts";
+import { test, expect } from "./workspace-test";
 import path from "node:path";
 import fs from "node:fs";
 test("dataset switch, undo, styles, annotations, heatmap and history", async ({
@@ -125,8 +126,8 @@ test("dataset switch, undo, styles, annotations, heatmap and history", async ({
   await page.getByLabel("文件格式").selectOption("svg");
   const pending = page.waitForEvent("download");
   await page.getByRole("button", { name: "下载图表", exact: true }).click();
-  await (await pending).saveAs("../docs/exports/heatmap.svg");
-  const svg = fs.readFileSync("../docs/exports/heatmap.svg", "utf8");
+  await (await pending).saveAs(artifactPath(test.info(), "../docs/exports/heatmap.svg"));
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/heatmap.svg"), "utf8");
   expect(svg).not.toContain("<image");
   expect(svg).toContain("shape-group");
 });
@@ -153,6 +154,8 @@ test("experiment creation, editing and malformed CSV feedback", async ({
   await page.getByLabel("指标（JSON）").fill('{"accuracy":92.8}');
   await page.getByLabel("备注", { exact: true }).fill("合成演示记录");
   await page.getByRole("button", { name: "保存记录", exact: true }).click();
+  await expect(page.getByRole("button", { name: /^EXP-\d+ AdamW ablation$/ })).toBeVisible();
+  await page.getByRole("button", { name: "卡片", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "AdamW ablation" }),
   ).toBeVisible();

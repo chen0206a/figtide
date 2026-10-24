@@ -110,7 +110,7 @@ export function ProjectManager({
               <div key={p.id}>
                 <span>
                   {p.name}
-                  <small>{p.archived ? "已归档" : "工作区项目"}</small>
+                  <small>{p.archived ? "已归档" : "研究项目"}</small>
                 </span>
                 <Button
                   variant="ghost"

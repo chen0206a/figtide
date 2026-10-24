@@ -1,4 +1,4 @@
-# AGENTS.md — LabFlow 前端重构
+# AGENTS.md — FigTide 前端重构
 
 > 放到仓库根目录。Codex 每次开工前先读本文件，再读 `refactor/REFACTOR-PLAN.md` 和当前要做的 `refactor/tasks/NN-*.md`。
 
@@ -25,6 +25,10 @@
 - 编号、规格、ID、哈希、时间这类信息用 `.lf-mono` 或 `.lf-kicker`。
 - 工具页面不放大标语，统一用 `PageHeader`（任务 03）。
 - 主按钮是墨黑色（`--lf-primary`），链接和选中态用蓝色（`--lf-link`、`--lf-selected`）。朱红色 `--lf-accent` 只用来突出关键数字，每屏最多一两处。
+
+## 动效规则（任务10起）
+
+只对 `transform`、`opacity`、`clip-path`、`stroke-dashoffset` 做动画，不对布局属性做动画。微交互150–250ms，元素入场500–900ms；工作区整段入场不超过1.2s，产品介绍页可以更长。缓动统一使用 `--lf-ease-out`（`cubic-bezier(.22,1,.36,1)`）和 `--lf-ease-in-out`（`cubic-bezier(.65,0,.35,1)`）。`prefers-reduced-motion: reduce` 时关闭所有入场和循环动画，内容直接显示最终状态。动画不能阻塞操作，入场过程中按钮也必须可以点击。
 
 ## 每个任务的固定流程
 

@@ -1,0 +1,25 @@
+{
+  "width_mm": 180,
+  "height_mm": 118.42105263157893,
+  "publication": {
+    "dpi": 300,
+    "fontPt": 8,
+    "enabled": true,
+    "widthMm": 180
+  },
+  "style": {
+    "top": 70,
+    "bold": false,
+    "font": "Noto Sans SC",
+    "left": 75,
+    "right": 35,
+    "title": "Model performance",
+    "width": 760,
+    "bottom": 70,
+    "height": 500,
+    "preset": "Clean Academic",
+    "fontSize": 14,
+    "background": "#ffffff"
+  },
+  "single_font_px": 24.37373737373737
+}

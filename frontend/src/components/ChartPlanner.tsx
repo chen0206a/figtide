@@ -133,7 +133,8 @@ export default function ChartPlanner(p: {
         : null;
       setRun(next);
     } catch (e) {
-      if (e instanceof ApiError && e.status < 500) ownedRun.current = null;
+      if (e instanceof ApiError && e.kind === "http" && e.status < 500)
+        ownedRun.current = null;
       else if (mounted.current) setPendingId(requestId);
       if (mounted.current) setError((e as Error).message);
     } finally {
@@ -224,14 +225,14 @@ export default function ChartPlanner(p: {
         }}
         closeDisabled={saving || submitting}
         title="选择绘图方案"
-        description="先看数据适合怎样表达，再决定创建哪张图。"
+        description="先看数据适合怎样表达，再决定创建哪种图表。"
         wide
         className="chart-planner"
       >
         <div className="planner-source">
           <b>{p.data.filename}</b>
           <span>
-            数据版本 v{p.data.version} · {p.data.row_count.toLocaleString()} 行
+            v{p.data.version} · {p.data.row_count.toLocaleString()} 行
             · {p.data.fields.length} 个字段
           </span>
         </div>
@@ -246,7 +247,7 @@ export default function ChartPlanner(p: {
               variant="ghost"
               onClick={() => setConnection(true)}
             >
-              配置模型
+              模型设置
             </Button>
           </div>
           <label>
@@ -267,7 +268,7 @@ export default function ChartPlanner(p: {
                 onChange={(e) => setConsent(e.target.checked)}
                 disabled={active || submitting}
               />
-              同意将字段名、类型、统计摘要及这段描述发送给已配置的模型；不发送原始行。
+              同意将字段摘要（字段名、类型、缺失数、数值范围）、版本元信息及这段描述发送给已配置的模型；不发送原始数据行和文件名，模型服务可能计费。
             </label>
             {pendingId ? (
               <Button
@@ -321,8 +322,8 @@ export default function ChartPlanner(p: {
           {!provider.data?.available && (
             <p className="muted">
               {provider.isError
-                ? "无法读取模型连接状态。"
-                : "配置模型后可获取推荐；也可以直接在下方手动选图。"}
+                ? "无法读取模型设置状态。"
+                : "完成模型设置后可获取推荐；也可以直接在下方手动选图。"}
             </p>
           )}
           {active && (

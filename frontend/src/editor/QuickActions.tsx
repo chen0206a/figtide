@@ -137,7 +137,7 @@ export function QuickActions(p: {
         if (!open && !busy) p.onClose();
       }}
       title="快捷操作"
-      description="把多项调整一起预览、一起应用。数据版本与实验记录不会被改写。"
+      description="把多项调整一起预览、一起应用。数据与实验记录不会被改写。"
       wide
       className="quick-actions-dialog"
     >
@@ -403,7 +403,8 @@ export function QuickActions(p: {
               <div className="quick-queue-heading">
                 <h3>
                   <ListChecks size={14} />
-                  待调整 · {operations.length}/30
+                  已选 {operations.length} 项
+                  {operations.length >= 25 ? "（最多 30 项）" : ""}
                 </h3>
                 <Button
                   variant="ghost"

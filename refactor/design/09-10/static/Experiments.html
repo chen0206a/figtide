@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F8}
+a{color:#1F4FB8;text-decoration:none}a:hover{color:#163B8C}
+button,input,select{font-family:inherit}
+</style>
+
+</head>
+<body>
+
+
+<div style="min-height: 100vh; background: #F5F6F8; color: #0E1116; font-family: Inter, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif; font-size: 14px; line-height: 1.5">
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #E4E7EC">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; min-height: 64px; padding: 0 28px">
+<a href="#" style="display: flex; align-items: center; gap: 10px; color: #0E1116">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #0E1116; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18 L9 11 L13 14 L20 5"></path></svg></span>
+<span style="font-weight: 700; font-size: 17px">LabFlow</span>
+</a>
+<nav aria-label="主导航" style="display: flex; gap: 2px; padding: 3px; background: #F1F3F6; border-radius: 11px">
+<a href="#" style="padding: 7px 14px; border-radius: 8px; color: #4A5361; font-size: 13px">项目概览</a>
+<a href="#" style="padding: 7px 14px; border-radius: 8px; background: #FFFFFF; color: #0E1116; font-weight: 600; font-size: 13px; box-shadow: 0 1px 2px rgba(14,17,22,0.06)">实验记录</a>
+<a href="#" style="padding: 7px 14px; border-radius: 8px; color: #4A5361; font-size: 13px">数据管理</a>
+<a href="#" style="padding: 7px 14px; border-radius: 8px; color: #4A5361; font-size: 13px">科研绘图</a>
+</nav>
+<div style="flex: 1 1 20px"></div>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5F6773"><span style="width: 7px; height: 7px; border-radius: 50%; background: #1A8F5C"></span>本地工作区</span>
+<button type="button" style="display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border: 1px solid #E4E7EC; border-radius: 11px; background: #FFFFFF; color: #0E1116; font-size: 13px">视觉模型泛化研究 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5F6773" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9 L12 15 L18 9"></path></svg></button>
+<button type="button" style="height: 38px; padding: 0 10px; border: 0; background: transparent; color: #4A5361; font-size: 13px">管理项目</button>
+<button type="button" style="height: 38px; padding: 0 10px; border: 0; background: transparent; color: #4A5361; font-size: 13px">模型连接</button>
+</div>
+</header>
+
+<main style="max-width: 1280px; margin: 0 auto; padding: 32px 28px 40px; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid #E4E7EC">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 26px; line-height: 1.25; font-weight: 700; letter-spacing: -0.02em">实验记录</h1>
+<p style="margin: 0; color: #5F6773; font-size: 13px">参数、指标和数据版本关联在一起，勾选 2–8 个实验进行对比。</p>
+</div>
+<div style="display: flex; gap: 8px">
+<button type="button" style="height: 40px; padding: 0 16px; border: 1px solid #D5DAE1; border-radius: 11px; background: #FFFFFF; color: #0E1116; font-size: 14px">项目数据文件</button>
+<button type="button" style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; border: 0; border-radius: 11px; background: #0E1116; color: #FFFFFF; font-size: 14px; font-weight: 600"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5 V19"></path><path d="M5 12 H19"></path></svg>记录实验</button>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<label style="flex: 1 1 280px; display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border: 1px solid #E4E7EC; border-radius: 8px; background: #FFFFFF; color: #5F6773">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20 L16.5 16.5"></path></svg>
+<input type="text" aria-label="搜索实验" placeholder="搜索名称、标签或备注…" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 13px; color: #0E1116">
+</label>
+<select aria-label="状态" style="height: 38px; padding: 0 10px; border: 1px solid #E4E7EC; border-radius: 8px; background: #FFFFFF; font-size: 13px; color: #0E1116"><option>全部状态</option></select>
+<select aria-label="标签" style="height: 38px; padding: 0 10px; border: 1px solid #E4E7EC; border-radius: 8px; background: #FFFFFF; font-size: 13px; color: #0E1116"><option>全部标签</option></select>
+<div role="group" aria-label="视图" style="display: flex; gap: 2px; padding: 3px; border-radius: 9px; background: #F1F3F6">
+<button type="button" aria-pressed="true" style="height: 32px; padding: 0 12px; border: 0; border-radius: 7px; background: #FFFFFF; color: #0E1116; font-size: 13px; font-weight: 600; box-shadow: 0 1px 2px rgba(14,17,22,0.06)">表格</button>
+<button type="button" aria-pressed="false" style="height: 32px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: #4A5361; font-size: 13px">卡片</button>
+</div>
+<span style="white-space: nowrap; color: #5F6773; font-size: 13px">8 条记录</span>
+</div>
+
+<section aria-label="实验列表" style="background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 16px; overflow: hidden">
+<div style="overflow-x: auto">
+<div role="table" aria-label="实验参数与指标" style="min-width: 1120px; font-size: 13px">
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: end; padding: 12px 8px 0; color: #5F6773; font-size: 11px; letter-spacing: 0.04em; font-family: 'JetBrains Mono', monospace">
+<span style="grid-column: 4 / span 4; padding: 0 8px 6px; border-bottom: 1px solid #E4E7EC">参数</span>
+<span style="grid-column: 8 / span 2; padding: 0 8px 6px; border-bottom: 1px solid #E4E7EC; margin-left: 12px">指标</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 40px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; color: #5F6773; font-weight: 500">
+<span role="columnheader" style="display: flex; justify-content: center"><input type="checkbox" aria-label="全选" style="width: 16px; height: 16px; accent-color: #0E1116"></span>
+<span role="columnheader" style="padding: 0 8px">实验</span>
+<span role="columnheader" style="padding: 0 8px">状态</span>
+<span role="columnheader" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px">lr</span>
+<span role="columnheader" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px">batch</span>
+<span role="columnheader" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px">epochs</span>
+<span role="columnheader" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px">optimizer</span>
+<span role="columnheader" aria-sort="descending" style="display: flex; justify-content: flex-end; align-items: center; gap: 4px; padding: 0 8px; margin-left: 12px; color: #0E1116; font-family: 'JetBrains Mono', monospace; font-size: 12px">accuracy<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5 V19"></path><path d="M6 13 L12 19 L18 13"></path></svg></span>
+<span role="columnheader" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px">macro_f1</span>
+<span role="columnheader" style="padding: 0 8px 0 20px">数据版本</span>
+<span role="columnheader" style="padding: 0 8px; text-align: right">更新</span>
+<span role="columnheader"></span>
+</div>
+
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 56px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; background: #F6F9FE">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" aria-label="选择 EXP-002" checked style="width: 16px; height: 16px; accent-color: #0E1116; cursor: pointer"></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; padding: 0 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="font-family: 'JetBrains Mono', monospace; color: #5F6773; font-size: 12px">EXP-002</span>
+<span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Proposed method</span>
+
+</span>
+<span style="color: #5F6773; font-size: 12px">main</span>
+</span>
+<span role="cell" style="padding: 0 8px"><span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: #E8F5EE; color: #146C45">已完成</span></span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">1e-3</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">128</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">60</span>
+<span role="cell" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; color: #4A5361">AdamW</span>
+<span role="cell" style="padding: 0 8px; margin-left: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #D55E00; font-weight: 600">92.8</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #D55E00; font-weight: 600">0.916</span>
+<span role="cell" style="padding: 0 8px 0 20px"><a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 12px">curves.csv · v1</a></span>
+<span role="cell" style="padding: 0 8px; text-align: right; color: #5F6773; font-size: 12px">10/18</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" aria-label="更多操作 EXP-002" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #5F6773; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 56px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; background: #FFFFFF">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" aria-label="选择 EXP-006" style="width: 16px; height: 16px; accent-color: #0E1116; cursor: pointer"></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; padding: 0 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="font-family: 'JetBrains Mono', monospace; color: #5F6773; font-size: 12px">EXP-006</span>
+<span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Proposed · bs 256</span>
+
+</span>
+<span style="color: #5F6773; font-size: 12px">sweep</span>
+</span>
+<span role="cell" style="padding: 0 8px"><span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: #E8F5EE; color: #146C45">已完成</span></span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">1e-3</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">256</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">60</span>
+<span role="cell" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; color: #4A5361">AdamW</span>
+<span role="cell" style="padding: 0 8px; margin-left: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #0E1116; font-weight: 400">92.1</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #0E1116; font-weight: 400">0.913</span>
+<span role="cell" style="padding: 0 8px 0 20px"><a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 12px">curves.csv · v1</a></span>
+<span role="cell" style="padding: 0 8px; text-align: right; color: #5F6773; font-size: 12px">10/20</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" aria-label="更多操作 EXP-006" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #5F6773; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 56px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; background: #FFFFFF">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" aria-label="选择 EXP-005" style="width: 16px; height: 16px; accent-color: #0E1116; cursor: pointer"></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; padding: 0 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="font-family: 'JetBrains Mono', monospace; color: #5F6773; font-size: 12px">EXP-005</span>
+<span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Proposed · lr 3e-4</span>
+
+</span>
+<span style="color: #5F6773; font-size: 12px">sweep</span>
+</span>
+<span role="cell" style="padding: 0 8px"><span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: #E8F5EE; color: #146C45">已完成</span></span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">3e-4</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">128</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">60</span>
+<span role="cell" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; color: #4A5361">AdamW</span>
+<span role="cell" style="padding: 0 8px; margin-left: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #0E1116; font-weight: 400">91.9</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #0E1116; font-weight: 400">0.910</span>
+<span role="cell" style="padding: 0 8px 0 20px"><a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 12px">curves.csv · v1</a></span>
+<span role="cell" style="padding: 0 8px; text-align: right; color: #5F6773; font-size: 12px">10/20</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" aria-label="更多操作 EXP-005" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #5F6773; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 56px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; background: #F6F9FE">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" aria-label="选择 EXP-001" checked style="width: 16px; height: 16px; accent-color: #0E1116; cursor: pointer"></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; padding: 0 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="font-family: 'JetBrains Mono', monospace; color: #5F6773; font-size: 12px">EXP-001</span>
+<span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Baseline · ResNet-50</span>
+<span style="flex-shrink: 0; padding: 1px 7px; border-radius: 999px; border: 1px solid #D5DAE1; color: #4A5361; font-size: 11px">基线</span>
+</span>
+<span style="color: #5F6773; font-size: 12px">baseline</span>
+</span>
+<span role="cell" style="padding: 0 8px"><span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: #E8F5EE; color: #146C45">已完成</span></span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">1e-3</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">128</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">60</span>
+<span role="cell" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; color: #4A5361">AdamW</span>
+<span role="cell" style="padding: 0 8px; margin-left: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #0E1116; font-weight: 400">87.1</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #0E1116; font-weight: 400">0.861</span>
+<span role="cell" style="padding: 0 8px 0 20px"><a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 12px">curves.csv · v1</a></span>
+<span role="cell" style="padding: 0 8px; text-align: right; color: #5F6773; font-size: 12px">10/18</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" aria-label="更多操作 EXP-001" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #5F6773; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 56px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; background: #FFFFFF">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" aria-label="选择 EXP-003" style="width: 16px; height: 16px; accent-color: #0E1116; cursor: pointer"></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; padding: 0 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="font-family: 'JetBrains Mono', monospace; color: #5F6773; font-size: 12px">EXP-003</span>
+<span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Without module A</span>
+
+</span>
+<span style="color: #5F6773; font-size: 12px">ablation</span>
+</span>
+<span role="cell" style="padding: 0 8px"><span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: #E8F5EE; color: #146C45">已完成</span></span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">1e-3</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">128</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">60</span>
+<span role="cell" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; color: #4A5361">AdamW</span>
+<span role="cell" style="padding: 0 8px; margin-left: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #0E1116; font-weight: 400">84.6</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #0E1116; font-weight: 400">0.834</span>
+<span role="cell" style="padding: 0 8px 0 20px"><a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 12px">curves.csv · v1</a></span>
+<span role="cell" style="padding: 0 8px; text-align: right; color: #5F6773; font-size: 12px">10/18</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" aria-label="更多操作 EXP-003" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #5F6773; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 56px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; background: #FFFFFF">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" aria-label="选择 EXP-004" style="width: 16px; height: 16px; accent-color: #0E1116; cursor: pointer"></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; padding: 0 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="font-family: 'JetBrains Mono', monospace; color: #5F6773; font-size: 12px">EXP-004</span>
+<span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Proposed + strong aug</span>
+
+</span>
+<span style="color: #5F6773; font-size: 12px">main</span>
+</span>
+<span role="cell" style="padding: 0 8px"><span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: #EEF3FC; color: #1F4FB8">进行中</span></span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">1e-3</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">128</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">90</span>
+<span role="cell" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; color: #4A5361">AdamW</span>
+<span role="cell" style="padding: 0 8px; margin-left: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #8A93A0; font-weight: 400">—</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #8A93A0; font-weight: 400">—</span>
+<span role="cell" style="padding: 0 8px 0 20px"><a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 12px">curves.csv · v2</a></span>
+<span role="cell" style="padding: 0 8px; text-align: right; color: #5F6773; font-size: 12px">今天</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" aria-label="更多操作 EXP-004" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #5F6773; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 56px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; background: #FFFFFF">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" aria-label="选择 EXP-007" style="width: 16px; height: 16px; accent-color: #0E1116; cursor: pointer"></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; padding: 0 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="font-family: 'JetBrains Mono', monospace; color: #5F6773; font-size: 12px">EXP-007</span>
+<span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Proposed · SGD</span>
+
+</span>
+<span style="color: #5F6773; font-size: 12px">sweep</span>
+</span>
+<span role="cell" style="padding: 0 8px"><span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: #FDECEA; color: #B42318">失败</span></span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">1e-2</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">128</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">60</span>
+<span role="cell" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; color: #4A5361">SGD</span>
+<span role="cell" style="padding: 0 8px; margin-left: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #8A93A0; font-weight: 400">—</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #8A93A0; font-weight: 400">—</span>
+<span role="cell" style="padding: 0 8px 0 20px"><a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 12px">curves.csv · v1</a></span>
+<span role="cell" style="padding: 0 8px; text-align: right; color: #5F6773; font-size: 12px">10/21</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" aria-label="更多操作 EXP-007" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #5F6773; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: 48px minmax(220px, 1.6fr) 88px 64px 64px 64px 84px 96px 96px 140px 64px 44px; align-items: center; min-height: 56px; padding: 0 8px; border-bottom: 1px solid #EEF0F3; background: #FFFFFF">
+<span role="cell" style="display: flex; justify-content: center"><input type="checkbox" aria-label="选择 EXP-008" style="width: 16px; height: 16px; accent-color: #0E1116; cursor: pointer"></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; padding: 0 8px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="font-family: 'JetBrains Mono', monospace; color: #5F6773; font-size: 12px">EXP-008</span>
+<span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Without module B</span>
+
+</span>
+<span style="color: #5F6773; font-size: 12px">ablation</span>
+</span>
+<span role="cell" style="padding: 0 8px"><span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: #F1F3F6; color: #4A5361">计划中</span></span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">1e-3</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">128</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #4A5361">60</span>
+<span role="cell" style="padding: 0 8px; font-family: 'JetBrains Mono', monospace; color: #4A5361">AdamW</span>
+<span role="cell" style="padding: 0 8px; margin-left: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #8A93A0; font-weight: 400">—</span>
+<span role="cell" style="padding: 0 8px; text-align: right; font-family: 'JetBrains Mono', monospace; color: #8A93A0; font-weight: 400">—</span>
+<span role="cell" style="padding: 0 8px 0 20px"><a href="#" style="font-family: 'JetBrains Mono', monospace; font-size: 12px">—</a></span>
+<span role="cell" style="padding: 0 8px; text-align: right; color: #5F6773; font-size: 12px">10/22</span>
+<span role="cell" style="display: flex; justify-content: center"><button type="button" aria-label="更多操作 EXP-008" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #5F6773; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button></span>
+</div>
+
+
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 12px 20px; color: #5F6773; font-size: 12px">
+<span>点击列名排序 · 指标最优值以强调色标出（仅 accuracy、f1 这类方向明确的指标）</span>
+<button type="button" style="border: 0; background: transparent; color: #1F4FB8; font-size: 12px; cursor: pointer">列设置</button>
+</div>
+</section>
+
+
+<div style="position: sticky; bottom: 20px; align-self: center; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 10px 10px 20px; border-radius: 14px; background: #0E1116; color: #FFFFFF; box-shadow: 0 24px 48px -16px rgba(14,17,22,0.35)">
+<span style="font-size: 13px">已选 <strong style="font-family: 'JetBrains Mono', monospace">2</strong> 个实验<span style="color: #B8C0CC">（最多 8 个）</span></span>
+<span style="font-size: 13px; color: #B8C0CC">基线 <span style="font-family: 'JetBrains Mono', monospace; color: #FFFFFF">EXP-001</span></span>
+<button type="button" style="height: 34px; padding: 0 12px; border: 1px solid #2B323C; border-radius: 9px; background: transparent; color: #D7DCE3; font-size: 13px; cursor: pointer">清空</button>
+<button type="button" style="height: 34px; padding: 0 14px; border: 0; border-radius: 9px; background: #FFFFFF; color: #0E1116; font-size: 13px; font-weight: 600; cursor: pointer">对比所选实验</button>
+</div>
+
+
+</main>
+</div>
+
+</body>
+</html>

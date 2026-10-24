@@ -82,7 +82,7 @@ export function ExperimentForm({
         if (!v && !busy) onClose();
       }}
       title={edit.id ? "编辑实验记录" : "新建实验记录"}
-      description="记录参数、指标和固定的数据版本，让每次实验都有清楚的来源。"
+      description="记录参数、指标和固定的版本，让每次实验都有清楚的来源。"
     >
       <form onSubmit={save}>
         <fieldset disabled={busy} className="experiment-form-body">
@@ -138,7 +138,7 @@ export function ExperimentForm({
           />
           <section className="object-fields">
             <div className="form-section-head">
-              <h3>关联数据版本</h3>
+              <h3>关联版本</h3>
               <span>{edit.dataset_version_ids.length} 个已选</span>
             </div>
             <input

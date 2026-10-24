@@ -1,0 +1,332 @@
+
+ RUN  v5.0.5 D:/RAG-agent项目/LabFlow/frontend
+
+ ❯ src/App.processing-selection.test.tsx (1 test | 1 failed) 3343ms
+   × keeps the committed derived dataset selected while the dataset-list refresh is pending 3341ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/App.processing-selection.test.tsx > keeps the committed derived dataset selected while the dataset-list refresh is pending
+TestingLibraryElementError: Unable to find role="button" and name "数据处理来源"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="app-shell workbench-shell"
+      data-workspace-page="data"
+    >
+      <div
+        class="main-shell"
+      >
+        <header
+          class="masthead"
+        >
+          <div
+            class="masthead-bar"
+          >
+            <a
+              class="brand"
+              data-discover="true"
+              href="/"
+              title="LabFlow 首页"
+            >
+              <svg
+                aria-hidden="true"
+                class="labflow-mark "
+                fill="none"
+                height="29"
+                viewBox="0 0 64 64"
+                width="29"
+              >
+                <rect
+                  fill="#22252b"
+                  height="62"
+                  rx="18"
+                  width="62"
+                  x="1"
+                  y="1"
+                />
+                <rect
+                  height="61"
+                  rx="17.5"
+                  stroke="white"
+                  stroke-opacity=".12"
+                  width="61"
+                  x="1.5"
+                  y="1.5"
+                />
+                <path
+                  class="mark-l"
+                  d="M19 17V39C19 44 22 47 27 47H45"
+                  stroke="#f8f9fc"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="6.5"
+                />
+                <path
+                  class="mark-f"
+                  d="M45 17H36C31 17 28 20 28 25V35M28 30H42"
+                  stroke="#a7c7ff"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="6.5"
+                />
+              </svg>
+              <span>
+                LabFlow
+              </span>
+            </a>
+            <nav
+              aria-label="主导航"
+              class="workspace-nav"
+            >
+              <span
+                aria-hidden="true"
+                class="nav-indicator"
+                style="width: 0px; transform: translateX(0px);"
+              />
+              <a
+                class="workspace-nav-link "
+                data-discover="true"
+                data-page="home"
+                href="/"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-house"
+                  fill="none"
+                  height="15"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="15"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"
+                  />
+                  <path
+                    d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                  />
+                </svg>
+                项目概览
+              </a>
+              <a
+                class="workspace-nav-link "
+                data-discover="true"
+                data-page="experiments"
+                href="/projects/1/experiments"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-flask-conical"
+                  fill="none"
+                  height="15"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="15"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"
+                  />
+                  <path
+                    d="M6.453 15h11.094"
+                  />
+                  <path
+                    d="M8.5 2h7"
+                  />
+                </svg>
+                实验记录
+              </a>
+              <a
+                aria-current="page"
+                class="workspace-nav-link active"
+                data-discover="true"
+                data-page="data"
+                href="/projects/1/data?dataset=1"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-database"
+                  fill="none"
+                  height="15"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  ...
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="app-shell workbench-shell"
+      data-workspace-page="data"
+    >
+      <div
+        class="main-shell"
+      >
+        <header
+          class="masthead"
+        >
+          <div
+            class="masthead-bar"
+          >
+            <a
+              class="brand"
+              data-discover="true"
+              href="/"
+              title="LabFlow 首页"
+            >
+              <svg
+                aria-hidden="true"
+                class="labflow-mark "
+                fill="none"
+                height="29"
+                viewBox="0 0 64 64"
+                width="29"
+              >
+                <rect
+                  fill="#22252b"
+                  height="62"
+                  rx="18"
+                  width="62"
+                  x="1"
+                  y="1"
+                />
+                <rect
+                  height="61"
+                  rx="17.5"
+                  stroke="white"
+                  stroke-opacity=".12"
+                  width="61"
+                  x="1.5"
+                  y="1.5"
+                />
+                <path
+                  class="mark-l"
+                  d="M19 17V39C19 44 22 47 27 47H45"
+                  stroke="#f8f9fc"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="6.5"
+                />
+                <path
+                  class="mark-f"
+                  d="M45 17H36C31 17 28 20 28 25V35M28 30H42"
+                  stroke="#a7c7ff"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="6.5"
+                />
+              </svg>
+              <span>
+                LabFlow
+              </span>
+            </a>
+            <nav
+              aria-label="主导航"
+              class="workspace-nav"
+            >
+              <span
+                aria-hidden="true"
+                class="nav-indicator"
+                style="width: 0px; transform: translateX(0px);"
+              />
+              <a
+                class="workspace-nav-link "
+                data-discover="true"
+                data-page="home"
+                href="/"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-house"
+                  fill="none"
+                  height="15"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="15"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"
+                  />
+                  <path
+                    d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                  />
+                </svg>
+                项目概览
+              </a>
+              <a
+                class="workspace-nav-link "
+                data-discover="true"
+                data-page="experiments"
+                href="/projects/1/experiments"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-flask-conical"
+                  fill="none"
+                  height="15"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="15"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"
+                  />
+                  <path
+                    d="M6.453 15h11.094"
+                  />
+                  <path
+                    d="M8.5 2h7"
+                  />
+                </svg>
+                实验记录
+              </a>
+              <a
+                aria-current="page"
+                class="workspace-nav-link active"
+                data-discover="true"
+                data-page="data"
+                href="/projects/1/data?dataset=1"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-database"
+                  fill="none"
+                  height="15"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  ...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/App.processing-selection.test.tsx:58:25
+     56|     fireEvent.click(await screen.findByRole("button", { name: "处理与统计" …
+     57|     fireEvent.click(screen.getByRole("button", { name: "完成派生数据保存" }));
+     58|     expect(await screen.findByRole("button", { name: "数据处理来源" })).toBe…
+       |                         ^
+     59|     expect(router.state.location.search).toBe("?dataset=2");
+     60|     expect(screen.getByRole("heading", { name: "Sorted epochs.csv" }))…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  12:51:04
+   Duration  4.96s (tests 70%, environment 16%, import 6%, setup 5%, transform 3%)
+

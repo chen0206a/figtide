@@ -1,4 +1,5 @@
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import { artifactPath } from "./artifacts";
+import { test, expect, type APIRequestContext } from "./workspace-test";
 import { defaults } from "../src/editor/model";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
@@ -44,7 +45,7 @@ test("clarification carries into a follow-up and collapsing the panel preserves 
   expect(saved.config.axes.y.max).toBe("1");
   expect(saved.config.axes.x).toEqual(f.config.axes.x);
 });
-async function fixture(request: APIRequestContext) {
+async function fixture(request: APIRequestContext, canvasPreview=false) {
   const provider = await (await request.get("/api/agent/provider")).json();
   test.skip(
     provider.model !== "labflow-fixture",
@@ -68,6 +69,7 @@ async function fixture(request: APIRequestContext) {
   ).json();
   const config = defaults(data);
   config.style.title = "Before agent";
+  if(canvasPreview)config.legend.show=true;
   const chart = await (
     await request.post(`/api/projects/${project.id}/charts`, {
       data: { name: "Assistant test", config },
@@ -81,6 +83,35 @@ async function fixture(request: APIRequestContext) {
     url: `/projects/${project.id}/figures/${chart.id}`,
   };
 }
+test("canvas consent → one real run → isolated marked preview → original → apply → undo",async({page,request})=>{
+  const f=await fixture(request,true);await page.setViewportSize({width:1440,height:1000});await page.goto(f.url);
+  await expect(page.getByTestId('plot').locator('.main-svg').first()).toBeVisible();
+  await page.screenshot({path:artifactPath(test.info(), '../docs/screenshots/refactor-10-assistant-idle.png'),fullPage:true});
+  const posts:any[]=[];page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/agent/runs'))posts.push(r.postDataJSON())});
+  const form=page.getByRole('form',{name:'画布绘图助手'});
+  await form.getByLabel('描述绘图调整').fill('画布预览测试：图例右侧、第一条曲线加粗、隐藏Y网格');
+  await expect(form.getByRole('button',{name:'发送给绘图助手'})).toBeDisabled();await expect(form.getByRole('checkbox')).not.toBeChecked();expect(posts).toHaveLength(0);
+  const draftKey=`labflow-draft-v1:${f.project.id}:${f.chart.id}`;
+  const beforeDraft=await page.evaluate(key=>localStorage.getItem(key),draftKey);
+  await form.getByRole('checkbox', {name:'允许把图表配置和字段摘要（字段名、类型、缺失数、数值范围）发送给你配置的模型服务。不发送原始数据行和文件名；模型服务可能计费。',exact:true}).check();await form.getByRole('button',{name:'发送给绘图助手'}).click();
+  const panel=page.getByRole('complementary',{name:'绘图助手',exact:true});await expect(panel.getByRole('button',{name:'应用这组调整'})).toBeEnabled();
+  await expect(page.locator('.canvas-proposal-layer')).toHaveClass(/is-visible/);expect(posts).toHaveLength(1);
+  await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText(f.config.style.title);
+  await expect(page.getByRole('button',{name:'撤销',exact:true})).toBeDisabled();
+  expect(await page.evaluate(key=>localStorage.getItem(key),draftKey)).toBe(beforeDraft);
+  const overlay=page.getByTestId('canvas-proposal');await expect(overlay.locator('.gtitle')).toHaveText('Canvas proposal · synthetic');
+  for(const kind of ['legend','series','axis'])await expect(page.locator(`[data-marker-kind="${kind}"]`).first()).toBeAttached();
+  await page.screenshot({path:artifactPath(test.info(), '../docs/screenshots/refactor-10-assistant-preview.png'),fullPage:true});
+  await panel.getByRole('button',{name:'查看原图',exact:true}).click();await expect(overlay).not.toHaveClass(/is-visible/);
+  await panel.getByRole('button',{name:'预览修改',exact:true}).click();await expect(overlay).toHaveClass(/is-visible/);
+  await panel.getByRole('button',{name:'收起绘图助手'}).click();await expect(page.getByTestId('canvas-proposal')).toHaveCount(0);expect(posts).toHaveLength(1);
+  await page.getByRole('button',{name:'绘图助手',exact:true}).click();await expect(overlay).toHaveClass(/is-visible/);expect(posts).toHaveLength(1);
+  await page.getByRole('button',{name:'导出',exact:true}).click();await page.getByLabel('文件格式').selectOption('svg');const download=page.waitForEvent('download');await page.getByRole('button',{name:'下载图表',exact:true}).click();const file=await(await download).path();const svg=fs.readFileSync(file!,'utf8');expect(svg).toContain(f.config.style.title);expect(svg).not.toContain('Canvas proposal');expect(svg).not.toContain('proposal-marker');
+  await panel.getByRole('button',{name:'应用这组调整'}).click();await expect(page.getByTestId('canvas-proposal')).toHaveCount(0);await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText('Canvas proposal · synthetic');
+  await page.getByRole('button',{name:'撤销',exact:true}).click();await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText(f.config.style.title);
+  const saved=await(await request.get(f.api)).json();expect(saved.config).toEqual(f.config);expect(saved.revision).toBe(1);
+});
+
 test("real Java/HTTP harness → diff confirmation → undo → save/reopen → vector export", async ({
   page,
   request,
@@ -104,11 +135,11 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   await dialog.getByRole("checkbox").check();
   await dialog.getByRole("button", { name: "生成调整提案" }).click();
   await expect(dialog.getByText("提案已就绪", { exact: true })).toBeVisible();
-  await expect(dialog.getByLabel("当前数据样式预览")).toHaveAttribute(
+  await expect(page.getByLabel("待确认的画布预览")).toHaveAttribute(
     "aria-busy",
     "false",
   );
-  await expect(dialog.locator(".gtitle")).toHaveText(
+  await expect(page.getByTestId('canvas-proposal').locator(".gtitle")).toHaveText(
     "Agent proposal · synthetic",
   );
   expect((await (await request.get(f.api)).json()).revision).toBe(1);
@@ -118,7 +149,7 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   );
   await dialog.getByText("运行记录", { exact: true }).click();
   await page.screenshot({
-    path: "../docs/screenshots/agent-conversation.png",
+    path: artifactPath(test.info(), "../docs/screenshots/agent-conversation.png"),
     fullPage: true,
   });
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -186,7 +217,7 @@ test("real Java/HTTP harness → diff confirmation → undo → save/reopen → 
   ).toContainText('"fontSize": 18');
   await page.setViewportSize({ width: 1560, height: 1000 });
   await page.screenshot({
-    path: "../docs/screenshots/agent-conversation-history.png",
+    path: artifactPath(test.info(), "../docs/screenshots/agent-conversation-history.png"),
     fullPage: true,
   });
 });
@@ -210,7 +241,7 @@ test("cancel during a pending HTTP response leaves no proposal or chart mutation
   await expect(dialog.getByText("已取消", { exact: true })).toBeVisible();
   await expect(
     dialog.getByRole("button", { name: "应用这组调整" }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
   expect((await (await request.get(f.api)).json()).config).toEqual(f.config);
   const audits = await (
     await request.get(
@@ -237,7 +268,10 @@ test("explicit rejection is persisted, redacted, immutable and readable after re
   await dialog.getByRole("checkbox").check();
   await dialog.getByRole("button", { name: "生成调整提案" }).click();
   await expect(dialog.getByText("提案已就绪", { exact: true })).toBeVisible();
-  await dialog.getByText("不采用这份提案", { exact: true }).click();
+  await expect(
+    dialog.getByRole("button", { name: "不采用这份提案", exact: true }),
+  ).toBeVisible();
+  await dialog.getByRole("button", { name: "填写原因", exact: true }).click();
   await dialog
     .getByRole("textbox", { name: "拒绝原因（可选）" })
     .fill("图例位置不合适 api_key=do-not-store");
@@ -245,7 +279,7 @@ test("explicit rejection is persisted, redacted, immutable and readable after re
   await expect(dialog.getByText("已拒绝", { exact: true })).toBeVisible();
   await expect(
     dialog.getByRole("button", { name: "应用这组调整" }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
   expect((await (await request.get(f.api)).json()).config).toEqual(f.config);
   await page.reload();
   await page.getByRole("button", { name: "绘图助手", exact: true }).click();
@@ -303,8 +337,11 @@ test("three proposal rounds preserve a manual edit, confirm once, undo once and 
   await panel.getByRole("checkbox").check();
   await panel.getByRole("button", { name: "生成调整提案" }).click();
   await expect(
-    panel.getByRole("button", { name: "继续修改提案" }),
+    panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeVisible();
+  await expect(
+    panel.getByRole("textbox", { name: "希望怎样调整？" }),
+  ).toHaveCount(0);
   await panel.getByRole("button", { name: "收起绘图助手" }).click();
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await page
@@ -314,23 +351,25 @@ test("three proposal rounds preserve a manual edit, confirm once, undo once and 
   await expect(
     panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeDisabled();
+  await panel.getByRole("button", { name: "继续修改", exact: true }).click();
   await panel
     .getByRole("textbox", { name: "希望怎样调整？" })
     .fill("续改字号20，其他保留");
   await panel.getByRole("button", { name: "继续修改提案" }).click();
   await expect(
     panel.getByRole("textbox", { name: "希望怎样调整？" }),
-  ).toHaveValue("");
+  ).toHaveCount(0);
   await expect(
     panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeEnabled();
+  await panel.getByRole("button", { name: "继续修改", exact: true }).click();
   await panel
     .getByRole("textbox", { name: "希望怎样调整？" })
     .fill("续改隐藏网格：只隐藏Y轴网格");
   await panel.getByRole("button", { name: "继续修改提案" }).click();
   await expect(
     panel.getByRole("textbox", { name: "希望怎样调整？" }),
-  ).toHaveValue("");
+  ).toHaveCount(0);
   await expect(
     panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeEnabled();
@@ -346,7 +385,7 @@ test("three proposal rounds preserve a manual edit, confirm once, undo once and 
     "Before agent",
   );
   await page.screenshot({
-    path: "../docs/screenshots/agent-refinement.png",
+    path: artifactPath(test.info(), "../docs/screenshots/agent-refinement.png"),
     fullPage: true,
   });
   await panel.getByRole("button", { name: "应用这组调整" }).click();
@@ -459,8 +498,9 @@ test("lost HTTP start response recovers the original run; explicit new conversat
     panel.getByRole("button", { name: "应用这组调整" }),
   ).toBeEnabled();
   expect(posts).toBe(1);
-  await panel.getByText("不采用这份提案").click();
-  await panel.getByRole("button", { name: "拒绝提案", exact: true }).click();
+  await panel
+    .getByRole("button", { name: "不采用这份提案", exact: true })
+    .click();
   await panel.getByRole("button", { name: "开始新对话" }).click();
   await page.unroute("**/api/projects/*/agent/runs");
   await panel.locator(".agent-budget summary").click();
@@ -497,7 +537,7 @@ test("lost HTTP start response recovers the original run; explicit new conversat
     panel.getByRole("combobox", { name: "本次对话额度" }),
   ).toBeEnabled();
   await page.screenshot({
-    path: "../docs/screenshots/agent-session-budget.png",
+    path: artifactPath(test.info(), "../docs/screenshots/agent-session-budget.png"),
     fullPage: true,
   });
 });

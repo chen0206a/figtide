@@ -201,7 +201,7 @@ export function ReuseDialog(p: {
               <div>
                 <h3>
                   {tab === "builtin"
-                    ? "找到适合这张图的表达"
+                    ? "找到适合这张图表的表达"
                     : "把好用的样式留给下一次"}
                 </h3>
                 <p>
@@ -412,7 +412,7 @@ export function ReuseDialog(p: {
                 <p>
                   {search
                     ? "试试其他关键词，或切换到全部项目。"
-                    : "调整好一张图后，保存它的外观，下次直接使用。"}
+                    : "调整好一张图表后，保存它的外观，下次直接使用。"}
                 </p>
                 {!search && (
                   <Button variant="outline" onClick={() => setCreating(true)}>
@@ -549,9 +549,9 @@ export function ReuseDialog(p: {
       ) : (
         <div className="style-reuse-body">
           <label>
-            目标数据版本
+            目标版本
             <select
-              aria-label="复用目标数据版本"
+              aria-label="复用目标版本"
               value={target}
               onChange={(e) => {
                 setTarget(Number(e.target.value));

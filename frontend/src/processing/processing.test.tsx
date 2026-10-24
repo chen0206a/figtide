@@ -139,7 +139,7 @@ describe("processing and chart contracts", () => {
       error: columns.sem,
       name: "accuracy · mean ± SEM",
     });
-    expect(c.axes.x.title).toBe("epoch");
+    expect(c.axes.x.title).toBe("Epoch");
     expect(c.style.title).toBe("Grouped means ± SEM");
     expect(buildPlot(c, d).traces[0].error_y.array).toEqual([1 / Math.sqrt(3)]);
   });

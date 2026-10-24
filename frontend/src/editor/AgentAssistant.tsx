@@ -8,6 +8,7 @@ import {
   X,
   Plus,
   Settings2,
+  Sparkles,
 } from "lucide-react";
 import { ApiError, api, send, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
@@ -26,6 +27,9 @@ import {
 import "./quick-actions.css";
 import "./agent-assistant.css";
 import { conversationPrompt, type ConversationTurn } from "./agentConversation";
+import {agentConsent,agentSuggestions,type AssistantSubmission} from "./agentPresentation";
+import {useAssistantAutoStart} from "./useAssistantAutoStart";
+import type {CanvasProposal} from "./workbench/useProposalCanvas";
 
 import {
   recoveryKey,
@@ -67,7 +71,7 @@ function AssistantSurface(p: {
       <header className="agent-dock-heading">
         <div>
           <h2>
-            <MessageSquare size={17} />
+            <Sparkles size={17} />
             绘图助手
           </h2>
         </div>
@@ -137,6 +141,13 @@ const statusNames: Record<AgentRun["status"], string> = {
   incomplete: "运行未完成",
 };
 export function AgentAssistant(p: {
+  initialPrompt?: string;
+  initialConsent?: boolean;
+  autoStart?: boolean;
+  submission?: AssistantSubmission;
+  onPreview?: (proposal:CanvasProposal|null)=>void;
+  previewVisible?: boolean;
+  onTogglePreview?: ()=>void;
   project: number;
   chartId: number | null;
   revision: number;
@@ -168,7 +179,7 @@ export function AgentAssistant(p: {
   const cursor = useRef<string | null>(null);
   const failures = useRef(0);
   const storeKey = recoveryKey(p.project, p.chartId, p.data.id);
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState(p.initialPrompt ?? "");
   const [connectionOpen, setConnectionOpen] = useState(false);
   const [turns, setTurns] = useState<ConversationTurn[]>([]);
   const sentPrompt = useRef("");
@@ -176,8 +187,11 @@ export function AgentAssistant(p: {
   const composer = useRef<HTMLTextAreaElement>(null);
   const proposalFooter = useRef<HTMLDivElement>(null);
   const proposalPreview = useRef<HTMLElement>(null);
+  const reply = useRef<HTMLDivElement>(null);
+  const [composerExpanded, setComposerExpanded] = useState(false);
   const [tab, setTab] = useState<"edit" | "history">("edit");
   const [rejectionReason, setRejectionReason] = useState("");
+  const [reasonOpen, setReasonOpen] = useState(false);
   const [consent, setConsent] = useState(false);
   const [run, setRun] = useState<AgentRun | null>(null);
   const [candidate, setCandidate] = useState<{
@@ -280,7 +294,7 @@ export function AgentAssistant(p: {
         (restored.session.dataset_version_id !== now.data.id ||
           restored.session.chart_id !== now.chartId)
       )
-        throw new Error("恢复记录不属于当前图表或数据版本");
+        throw new Error("恢复记录不属于当前图表或版本");
       const capture = (baseline: NonNullable<typeof restored.baseline>) => ({
         config: baseline.config,
         token:
@@ -382,6 +396,7 @@ export function AgentAssistant(p: {
     setSubmitting(true);
     setError("");
     setRun(null);
+    setComposerExpanded(false);
     setRejectionReason("");
     sentPrompt.current = prompt;
     const context = conversationPrompt(turns, prompt);
@@ -414,7 +429,9 @@ export function AgentAssistant(p: {
       remember(result.run_id);
       setRun(result);
     } catch (e) {
-      if (e instanceof ApiError) remember(previousCursor);
+      // 网络中断时保留原请求游标，页面重启后仍能找回这次运行；
+      // api.ts 会把 TypeError 统一转成 offline 的 ApiError，不能只按类型判断。
+      if (e instanceof ApiError && e.kind !== "offline") remember(previousCursor);
       else setDisconnected(true);
       setError((e as Error).message);
     } finally {
@@ -458,30 +475,211 @@ export function AgentAssistant(p: {
     );
   const busy = submitting || active(run) || applying || recovering;
   const context = conversationPrompt(turns, prompt);
+  useAssistantAutoStart({submission:p.submission,autoStart:p.autoStart,initialConsent:p.initialConsent,initialPrompt:p.initialPrompt,prompt,consent,
+    ready:p.open!==false&&!busy&&!disconnected&&!!provider.data?.available&&!(session&&session.remaining_budget<2000)&&!(result&&!trusted)&&p.config.datasetVersionId===p.data.id,
+    recoveringExisting:!!cursor.current,setPrompt,setConsent,start});
+  const canPreview=p.open!==false&&!busy&&!disconnected&&trusted&&!!result?.changes.length&&snapshot?.token===p.token;
+  useEffect(()=>{
+    p.onPreview?.(canPreview?{preview:result!,token:snapshot!.token}:null);
+    return()=>p.onPreview?.(null);
+  },[canPreview,result,snapshot?.token,p.onPreview]);
   useEffect(() => {
     if (!p.docked || p.open === false) return;
-    const target = result ? proposalPreview.current : thread.current;
-    target?.scrollIntoView?.({ block: "nearest", behavior: "auto" });
+    const target = result ? reply.current : thread.current;
+    target?.scrollIntoView?.({
+      block: result ? "start" : "nearest",
+      behavior: "auto",
+    });
   }, [turns.length, p.open, run?.status, run?.outcome]);
-  const proposalActions = (
-    <div className="quick-result-footer" ref={proposalFooter}>
-      <p>确认后只更新草稿，可一步撤销。保存正式版本仍由你决定。</p>
-      {!!result && (
+  const usedBudget = session
+    ? session.used_budget + session.reserved_budget
+    : 0;
+  const budgetMax = session?.max_budget || sessionLimit;
+  const budgetPercent = budgetMax > 0 ? Math.round((usedBudget / budgetMax) * 100) : 0;
+  const budgetTitle = `已用 ${usedBudget.toLocaleString()} / 上限 ${budgetMax.toLocaleString()} token`;
+  const providerRow = (
+    <div className="agent-provider">
+      <MessageSquare size={17} />
+      <div>
+        {provider.data?.available ? (
+          <strong>
+            已连接 ·{" "}
+            <span className="agent-model-name lf-mono">
+              {provider.data.model}
+            </span>
+          </strong>
+        ) : (
+          <>
+            <strong>连接模型服务</strong>
+            <span>选择模型，开始调整</span>
+          </>
+        )}
+      </div>
+      {!provider.data?.available && (
+        <span className="agent-connection-indicator">未连接</span>
+      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="模型设置"
+        disabled={busy}
+        onClick={() => setConnectionOpen(true)}
+      >
+        <Settings2 size={15} />
+      </Button>
+    </div>
+  );
+  const budgetView = (
+    <details className="agent-budget">
+      <summary title={budgetTitle}>
+        {session
+          ? `本次会话已用 ${budgetPercent}%`
+          : `本次会话上限 ${sessionLimit.toLocaleString()}`}
+        <progress
+          aria-label="会话预算使用情况"
+          title={budgetTitle}
+          data-high={budgetPercent >= 80}
+          value={usedBudget}
+          max={budgetMax}
+        />
+      </summary>
+      {!session && (
+        <label>
+          本次对话额度
+          <select
+            aria-label="本次对话额度"
+            value={sessionLimit}
+            disabled={busy}
+            onChange={(e) => setSessionLimit(Number(e.target.value))}
+          >
+            {[60000, 180000, 360000, 600000].map((value) => (
+              <option key={value} value={value}>
+                {value.toLocaleString()}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <p>跨轮累计的保守预算单位，不是实际账单 token；单轮最多 60,000。</p>
+      {session && (
+        <p>
+          已用 {session.used_budget.toLocaleString()} · 预留{" "}
+          {session.reserved_budget.toLocaleString()} · 剩余{" "}
+          {session.remaining_budget.toLocaleString()}。模型上报{" "}
+          {session.reported_tokens.toLocaleString()} tokens。
+        </p>
+      )}
+      {!!session?.uncertain_runs && (
+        <p>有 {session.uncertain_runs} 次请求用量未明，已保留整轮额度。</p>
+      )}
+    </details>
+  );
+  const rejectProposal = async (reason: string) => {
+    if (!pendingRun) return;
+    setApplying(true);
+    setError("");
+    try {
+      const decision = await api<AgentRun>(
+        `${path}/${pendingRun.run_id}/decision`,
+        send("POST", {
+          outcome: "rejected",
+          reason,
+          proposal_hash: pendingRun.proposal_hash,
+        }),
+      );
+      if (decision.outcome !== "rejected")
+        throw new Error("拒绝记录未写入，请重试");
+      setCandidate(null);
+      setRun({ ...pendingRun, outcome: "rejected", proposal: undefined });
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setApplying(false);
+    }
+  };
+  const composerVisible = !result || composerExpanded;
+  const composerView = (
+    <div className="agent-composer">
+      <label className="agent-prompt">
+        希望怎样调整？
+        <textarea
+          ref={composer}
+          value={prompt}
+          maxLength={2000}
+          rows={4}
+          disabled={busy}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder={
+            result
+              ? "还有哪里不满意？例如：线再粗一点"
+              : "例如：把图例放到右侧，字号改为 16，并将第一条曲线设为蓝色。"
+          }
+        />
+      </label>
+
+      <label className="agent-consent">
+        <input
+          type="checkbox"
+          checked={consent}
+          disabled={busy}
+          onChange={(e) => setConsent(e.target.checked)}
+        />
+        <span>
+          {agentConsent}
+        </span>
+      </label>
+      <div className="agent-controls">
         <Button
-          variant="outline"
+          onClick={start}
+          disabled={
+            busy ||
+            disconnected ||
+            (!!session && session.remaining_budget < 2000) ||
+            !provider.data?.available ||
+            (!!result && !trusted) ||
+            p.config.datasetVersionId !== p.data.id ||
+            !consent ||
+            !prompt.trim()
+          }
+        >
+          {busy ? (
+            <Loader2 size={15} className="agent-spin" />
+          ) : (
+            <MessageSquare size={15} />
+          )}
+          {busy ? "正在生成提案…" : result ? "继续修改提案" : "生成调整提案"}
+        </Button>
+        {active(run) && (
+          <Button variant="outline" onClick={cancel}>
+            <Square size={13} />
+            取消运行
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+  const proposalActions = (
+    <div
+      className={`quick-result-footer${!result ? " is-idle" : ""}`}
+      ref={proposalFooter}
+    >
+      <p>确认后只修改草稿，可一步撤销；是否保存正式版本由你决定。</p>
+      {!!result && !composerExpanded && (
+        <button
+          type="button"
+          className="agent-refine"
           disabled={busy}
           onClick={() => {
+            setComposerExpanded(true);
             composer.current?.focus();
-            composer.current?.scrollIntoView({
-              block: "nearest",
-              behavior: "auto",
-            });
           }}
         >
           继续修改
-        </Button>
+        </button>
       )}
+      {!!result && (
       <Button
+        className="agent-apply"
         disabled={
           busy ||
           disconnected ||
@@ -555,52 +753,52 @@ export function AgentAssistant(p: {
         应用这组调整
         <ArrowRight size={15} />
       </Button>
+      )}
+      {canPreview&&p.onTogglePreview&&<Button variant="outline" className="agent-preview-toggle" onClick={p.onTogglePreview}>{p.previewVisible?'查看原图':'预览修改'}</Button>}
       {!!result && (
-        <details className="agent-reject">
-          <summary>不采用这份提案</summary>
-          <label>
-            拒绝原因（可选）
-            <input
-              value={rejectionReason}
-              maxLength={500}
-              disabled={busy}
-              onChange={(e) => setRejectionReason(e.target.value)}
-            />
-          </label>
+        <div className="agent-reject">
           <Button
-            variant="outline"
+            variant="ghost"
+            size="sm"
+            className="agent-reject-action"
             disabled={busy}
-            onClick={async () => {
-              if (!pendingRun) return;
-              setApplying(true);
-              setError("");
-              try {
-                const decision = await api<AgentRun>(
-                  `${path}/${pendingRun.run_id}/decision`,
-                  send("POST", {
-                    outcome: "rejected",
-                    reason: rejectionReason,
-                    proposal_hash: pendingRun.proposal_hash,
-                  }),
-                );
-                if (decision.outcome !== "rejected")
-                  throw new Error("拒绝记录未写入，请重试");
-                setCandidate(null);
-                setRun({
-                  ...pendingRun,
-                  outcome: "rejected",
-                  proposal: undefined,
-                });
-              } catch (e) {
-                setError((e as Error).message);
-              } finally {
-                setApplying(false);
-              }
-            }}
+            onClick={() => void rejectProposal("")}
           >
-            拒绝提案
+            不采用这份提案
           </Button>
-        </details>
+          {!reasonOpen && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="agent-reject-reason-toggle"
+              disabled={busy}
+              onClick={() => setReasonOpen(true)}
+            >
+              填写原因
+            </Button>
+          )}
+          {reasonOpen && (
+            <div className="agent-reject-reason">
+              <label>
+                拒绝原因（可选）
+                <input
+                  value={rejectionReason}
+                  maxLength={500}
+                  disabled={busy}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                />
+              </label>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={busy}
+                onClick={() => void rejectProposal(rejectionReason)}
+              >
+                拒绝提案
+              </Button>
+            </div>
+          )}
+        </div>
       )}
       {result && snapshot && snapshot.token !== p.token && (
         <p role="alert">画布已变化，请继续修改以合并手动编辑，再确认应用。</p>
@@ -650,32 +848,18 @@ export function AgentAssistant(p: {
         />
       ) : (
         <>
+          {p.docked && (
+            <div className="agent-dock-top">
+              {providerRow}
+              {budgetView}
+            </div>
+          )}
           <div className="quick-actions-body">
             <section
               className="quick-actions-builder agent-conversation"
               aria-label="绘图助手对话"
             >
-              <div className="agent-provider">
-                <MessageSquare size={17} />
-                <div>
-                  <strong>{provider.data?.model || "连接模型服务"}</strong>
-                  <span>{provider.data?.endpoint || "选择模型，开始调整"}</span>
-                </div>
-                <span
-                  className={`agent-connection-indicator ${provider.data?.available ? "connected" : ""}`}
-                >
-                  {provider.data?.available ? "已配置" : "未连接"}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="模型连接"
-                  disabled={busy}
-                  onClick={() => setConnectionOpen(true)}
-                >
-                  <Settings2 size={15} />
-                </Button>
-              </div>
+              {!p.docked && providerRow}
               {provider.isPending ? (
                 <p role="status">正在检查模型配置…</p>
               ) : provider.isError ? (
@@ -693,52 +877,12 @@ export function AgentAssistant(p: {
                       variant="outline"
                       onClick={() => setConnectionOpen(true)}
                     >
-                      配置模型
+                      模型设置
                     </Button>
                   </div>
                 )
               )}
-              <details className="agent-budget">
-                <summary>
-                  会话预算 ·{" "}
-                  {session
-                    ? `${(session.used_budget + session.reserved_budget).toLocaleString()} / ${session.max_budget.toLocaleString()}`
-                    : sessionLimit.toLocaleString()}
-                </summary>
-                {!session && (
-                  <label>
-                    本次对话额度
-                    <select
-                      aria-label="本次对话额度"
-                      value={sessionLimit}
-                      disabled={busy}
-                      onChange={(e) => setSessionLimit(Number(e.target.value))}
-                    >
-                      {[60000, 180000, 360000, 600000].map((value) => (
-                        <option key={value} value={value}>
-                          {value.toLocaleString()}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                )}
-                <p>
-                  跨轮累计的保守预算单位，不是实际账单 token；单轮最多 60,000。
-                </p>
-                {session && (
-                  <p>
-                    已用 {session.used_budget.toLocaleString()} · 预留{" "}
-                    {session.reserved_budget.toLocaleString()} · 剩余{" "}
-                    {session.remaining_budget.toLocaleString()}。模型上报{" "}
-                    {session.reported_tokens.toLocaleString()} tokens。
-                  </p>
-                )}
-                {!!session?.uncertain_runs && (
-                  <p>
-                    有 {session.uncertain_runs} 次请求用量未明，已保留整轮额度。
-                  </p>
-                )}
-              </details>
+              {!p.docked && budgetView}
               {!!session && session.remaining_budget < 2000 && !busy && (
                 <p role="status" className="agent-context-note">
                   本次会话剩余额度不足；仍可查看或应用已有提案，开始新对话可重新设置额度。
@@ -777,6 +921,19 @@ export function AgentAssistant(p: {
                   <div className="agent-welcome">
                     <strong>从一个具体的调整开始。</strong>
                     <p>说出想调整的地方，预览后再应用。</p>
+                    <div className="agent-suggestions">
+                      {agentSuggestions.map(
+                        (text) => (
+                          <button
+                            key={text}
+                            disabled={busy}
+                            onClick={() => setPrompt(text)}
+                          >
+                            {text}
+                          </button>
+                        ),
+                      )}
+                    </div>
                   </div>
                 )}
                 {turns.map((turn) => (
@@ -797,6 +954,7 @@ export function AgentAssistant(p: {
                   </p>
                 )}
                 <div ref={thread} />
+                {busy&&<div className="agent-wait-skeleton" aria-hidden="true"><i/><i/><i/></div>}
               </div>
               {(!!turns.length || !!session || disconnected) && (
                 <Button
@@ -827,97 +985,14 @@ export function AgentAssistant(p: {
                     上一份提案仍保留，可继续修改或确认应用。
                   </p>
                 )}
-              <div className="agent-composer">
-                <label className="agent-prompt">
-                  希望怎样调整？
-                  <textarea
-                    ref={composer}
-                    value={prompt}
-                    maxLength={2000}
-                    rows={4}
-                    disabled={busy}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="例如：把图例放到右侧，字号改为 16，并将第一条曲线设为蓝色。"
-                  />
-                </label>
-                {!!turns.length && (
-                  <p className="agent-context-note">
-                    {context.included
-                      ? `本轮附带最近 ${context.included} 轮对话`
-                      : "本轮按独立需求发送"}
-                    {context.omitted > 0 ? " · 较早对话未附带" : ""}
-                    。刷新后可恢复仍存活的会话。
-                  </p>
-                )}
-                {!!result && (
-                  <p className="agent-context-note">
-                    继续描述修改，原提案会保留到新提案就绪；最后一次确认即可。
-                  </p>
-                )}
-                <div className="agent-suggestions">
-                  {["图例放到右侧", "隐藏网格线", "整体字号改为 18"].map(
-                    (text) => (
-                      <button
-                        key={text}
-                        disabled={busy}
-                        onClick={() => setPrompt(text)}
-                      >
-                        {text}
-                      </button>
-                    ),
-                  )}
-                </div>
-                <label className="agent-consent">
-                  <input
-                    type="checkbox"
-                    checked={consent}
-                    disabled={busy}
-                    onChange={(e) => setConsent(e.target.checked)}
-                  />
-                  <span>
-                    允许发送图表配置和字段摘要。不发送原始数据行，模型服务可能计费。
-                  </span>
-                </label>
-                <div className="agent-controls">
-                  <Button
-                    onClick={start}
-                    disabled={
-                      busy ||
-                      disconnected ||
-                      (!!session && session.remaining_budget < 2000) ||
-                      !provider.data?.available ||
-                      (!!result && !trusted) ||
-                      p.config.datasetVersionId !== p.data.id ||
-                      !consent ||
-                      !prompt.trim()
-                    }
-                  >
-                    {busy ? (
-                      <Loader2 size={15} className="agent-spin" />
-                    ) : (
-                      <MessageSquare size={15} />
-                    )}
-                    {busy
-                      ? "正在生成提案…"
-                      : result
-                        ? "继续修改提案"
-                        : "生成调整提案"}
-                  </Button>
-                  {active(run) && (
-                    <Button variant="outline" onClick={cancel}>
-                      <Square size={13} />
-                      取消运行
-                    </Button>
-                  )}
-                </div>
-              </div>
+              {!p.docked && composerView}
               {error && (
                 <p role="alert" className="inline-error">
                   {error}
                 </p>
               )}
               {run && (
-                <div className="agent-reply" aria-live="polite">
+                <div className="agent-reply" aria-live="polite" ref={reply}>
                   <div className="agent-run-status">
                     <strong>
                       {run.outcome &&
@@ -969,6 +1044,8 @@ export function AgentAssistant(p: {
             <aside className="quick-result" ref={proposalPreview}>
               {(!p.docked || !!result) && (
                 <ProposalPreview
+                  numbered
+                  showPlot={!p.docked}
                   config={snapshot?.config || p.config}
                   data={p.data}
                   preview={trusted ? result : undefined}
@@ -977,6 +1054,7 @@ export function AgentAssistant(p: {
               {!p.docked && proposalActions}
             </aside>
           </div>
+          {p.docked && composerVisible && composerView}
           {p.docked && proposalActions}
         </>
       )}
@@ -985,4 +1063,13 @@ export function AgentAssistant(p: {
       )}
     </AssistantSurface>
   );
+}
+
+function endpointHost(endpoint?: string) {
+  if (!endpoint) return "";
+  try {
+    return new URL(endpoint).host;
+  } catch {
+    return endpoint;
+  }
 }

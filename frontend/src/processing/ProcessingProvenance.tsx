@@ -22,7 +22,7 @@ export function ProcessingProvenance({
         open={open}
         onOpenChange={setOpen}
         title="数据处理来源"
-        description="以下来源与规则随派生数据版本保存，源文件不会被处理操作覆盖。"
+        description="以下来源与规则随派生版本保存，源文件不会被处理操作覆盖。"
       >
         <div className="source-summary">
           <strong>
@@ -32,7 +32,7 @@ export function ProcessingProvenance({
           <span>{new Date(source.created_at).toLocaleString()}</span>
         </div>
         <p>
-          源版本 #{s.datasetVersionId} · 内容指纹 {s.sha256}
+          内容指纹 {s.sha256}
         </p>
         <p>
           源数据 {source.counts.source_rows} 行 · 过滤后{" "}

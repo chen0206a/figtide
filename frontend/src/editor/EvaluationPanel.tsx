@@ -97,6 +97,16 @@ export function EvaluationPanel({
             onChange={(v) => set({ baseline: v.target.checked })}
           />
         </label>
+        <label className="toggle-label">
+          图例显示 {c.type === "pr" ? "AP" : "AUC"}
+          <input
+            type="checkbox"
+            role="switch"
+            aria-label="图例显示评估指标"
+            checked={!!e.legendMetric}
+            onChange={(v) => set({ legendMetric: v.target.checked })}
+          />
+        </label>
         <p className="tiny-note">
           ROC AUC 采用梯形积分；AP
           采用逐阈值召回增量加权精确率。并列分数一起处理，PR 阶梯线与 AP

@@ -1,0 +1,24 @@
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lf-space-2);
+  flex-shrink: 0;
+  font-family: var(--lf-font-sans);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.brand-mark-dark { color: var(--lf-text); }
+.brand-mark-light { color: var(--lf-text-on-inverse); }
+.brand-mark img { display: block; flex-shrink: 0; }
+.brand-wordmark { letter-spacing: var(--lf-tracking-brand); }
+.brand-wordmark b { font-weight: 800; }
+.brand-wordmark > span { font-weight: 400; }
+.brand-cn {
+  border-left: 1px solid currentColor;
+  padding-left: var(--lf-space-2);
+  font-weight: 700;
+}
+.intro-footer-brand { display: inline-flex; align-items: center; gap: var(--lf-space-3); flex-wrap: wrap; }
+.about-brand { margin-block: var(--lf-space-5); font-size: var(--lf-text-xl); }
+.about-links { display: flex; gap: var(--lf-space-5); margin-top: var(--lf-space-5); flex-wrap: wrap; }
+.about-links a { color: var(--lf-link); }

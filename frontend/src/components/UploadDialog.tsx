@@ -7,6 +7,8 @@ import {
   type ImportPreview,
   type ImportRules,
 } from "../lib/api";
+import { formatBytes } from "../lib/format";
+import { checkImportShape, shapeWarning } from "../lib/importChecks";
 import { Dialog } from "./ui/dialog";
 import { Button } from "./ui/button";
 const roles: Record<FieldRole, string> = {
@@ -27,7 +29,7 @@ export function UploadDialog({
   project: number;
   version: number | null;
   onClose: () => void;
-  onImported: (d: Dataset) => void;
+  onImported: (d: Dataset) => void | Promise<void>;
 }) {
   const [rules, setRules] = useState<ImportRules>(() => ({
     ...defaultImportRules(),
@@ -38,6 +40,7 @@ export function UploadDialog({
         : ",",
   }));
   const [preview, setPreview] = useState<ImportPreview | null>(null);
+  const [acceptShape, setAcceptShape] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -94,7 +97,7 @@ export function UploadDialog({
         `/projects/${project}/datasets${version ? `/${version}/versions` : ""}`,
         { method: "POST", body: form },
       );
-      onImported(result);
+      await onImported(result);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -120,13 +123,13 @@ export function UploadDialog({
         if (!v && !committing) onClose();
       }}
       title="确认数据导入"
-      description="预览 → 确认字段 → 保存版本。原始文件完整保留，调整解析不会修改原文件。"
+      description="文件只保存在这台电脑上，不会上传到任何外部服务器。预览 → 确认字段 → 保存版本。调整解析不会修改原文件。"
     >
       <div className="import-file">
         <strong>{file.name}</strong>
         <span>
-          {(file.size / 1024).toFixed(1)} KB ·{" "}
-          {version ? "追加数据版本" : "新数据集"}
+          {formatBytes(file.size)} ·{" "}
+          {version ? "新版本" : "新数据集"}
         </span>
       </div>
       <fieldset disabled={committing} className="import-options">
@@ -232,8 +235,26 @@ export function UploadDialog({
           </Button>
         </p>
       )}
-      {preview && (
+      {preview && (() => {
+        const shape = checkImportShape({
+          fieldNames: preview.fields.map((f) => f.name),
+          rowCount: preview.row_count,
+        });
+        return (
         <div aria-busy={busy}>
+          {!shape.looksLikeTable && (
+            <div className="import-warning" role="alert">
+              <p>{shapeWarning(shape)}</p>
+              <label className="import-acknowledge">
+                <input
+                  type="checkbox"
+                  checked={acceptShape}
+                  onChange={(e) => setAcceptShape(e.target.checked)}
+                />
+                我确认这是一份单列数据，仍要导入
+              </label>
+            </div>
+          )}
           <div className="section-caption">
             {preview.row_count} 行 · {preview.fields.length} 个字段 · 预览前 20
             行
@@ -247,7 +268,7 @@ export function UploadDialog({
               </p>
             )}
           <div className="import-fields">
-            <table>
+            <table className="lf-table">
               <thead>
                 <tr>
                   <th>原始字段</th>
@@ -292,10 +313,12 @@ export function UploadDialog({
                       {f.constant && <small>常量列</small>}
                     </td>
                     <td>
-                      <small>
-                        建议：{roles[f.suggestedRole || "none"]}（列名 / 类型 /
-                        唯一值）
-                      </small>
+                      {shape.looksLikeTable && (
+                        <small>
+                          建议：{roles[f.suggestedRole || "none"]}（列名 / 类型 /
+                          唯一值）
+                        </small>
+                      )}
                       <select
                         disabled={committing}
                         aria-label={`${f.name} 角色`}
@@ -334,7 +357,7 @@ export function UploadDialog({
           <details>
             <summary>查看数据预览</summary>
             <div className="table-scroll">
-              <table>
+              <table className="lf-table">
                 <thead>
                   <tr>
                     {preview.fields.map((f) => (
@@ -355,7 +378,8 @@ export function UploadDialog({
             </div>
           </details>
         </div>
-      )}
+        );
+      })()}
       <div className="dialog-actions">
         <Button variant="outline" disabled={committing} onClick={onClose}>
           取消
@@ -367,7 +391,12 @@ export function UploadDialog({
             !!error ||
             !preview ||
             preview.issues.length > 0 ||
-            confirmedRules !== rulesKey
+            confirmedRules !== rulesKey ||
+            (!checkImportShape({
+              fieldNames: preview.fields.map((f) => f.name),
+              rowCount: preview.row_count,
+            }).looksLikeTable &&
+              !acceptShape)
           }
           onClick={commit}
         >

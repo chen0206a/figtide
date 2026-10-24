@@ -1,9 +1,31 @@
-param([switch]$All, [string]$MySqlBin = 'C:\Program Files\MySQL\MySQL Server 8.0\bin')
+param([switch]$All, [string]$MySqlBin = '', [int]$FixturePort = 18769, [string[]]$Specs, [switch]$Production)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
+function Resolve-MySqlBin {
+    param([string]$Explicit)
+    if ($Explicit) {
+        if (Test-Path (Join-Path $Explicit 'mysql.exe')) { return $Explicit }
+        throw "-MySqlBin 指向的目录里没有 mysql.exe：$Explicit"
+    }
+    if ($env:LABFLOW_MYSQL_BIN) {
+        if (Test-Path (Join-Path $env:LABFLOW_MYSQL_BIN 'mysql.exe')) { return $env:LABFLOW_MYSQL_BIN }
+        throw "LABFLOW_MYSQL_BIN 指向的目录里没有 mysql.exe：$($env:LABFLOW_MYSQL_BIN)"
+    }
+    $onPath = Get-Command mysql.exe -ErrorAction SilentlyContinue
+    if ($onPath) { return (Split-Path $onPath.Source -Parent) }
+    $fallback = 'C:\Program Files\MySQL\MySQL Server 8.0\bin'
+    if (Test-Path (Join-Path $fallback 'mysql.exe')) { return $fallback }
+    throw @'
+找不到 mysql.exe。请任选一种方式指定 MySQL 的 bin 目录：
+  1. 加参数：.\scripts\test-agent.ps1 -MySqlBin "C:\Program Files\MySQL\MySQL Server 8.0\bin"
+  2. 设环境变量：$env:LABFLOW_MYSQL_BIN = "C:\Program Files\MySQL\MySQL Server 8.0\bin"
+  3. 把 MySQL 的 bin 目录加入 PATH
+'@
+}
+$MySqlBin = Resolve-MySqlBin -Explicit $MySqlBin
 # Dedicated ports and schema: never redirect or stop the user's running workspace.
-foreach ($port in @(8087, 5178, 18769)) {
+foreach ($port in @(8087, 5178, $FixturePort)) {
     if (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue) { throw "Test port $port is already occupied." }
 }
 if (!(Get-NetTCPConnection -LocalPort 33316 -State Listen -ErrorAction SilentlyContinue)) { throw 'Start the local MySQL instance with scripts/start.ps1 first.' }
@@ -22,13 +44,15 @@ $oldApi = $env:LABFLOW_API
 $oldWeb = $env:LABFLOW_WEB_URL
 $oldKey = $env:LABFLOW_AGENT_API_KEY
 $oldNoProxy = $env:NO_PROXY
+$oldFixturePort = $env:LABFLOW_FIXTURE_PORT
 $fixture = $null
 $backend = $null
+$ownedWeb = $null
 function Start-AgentTestBackend {
     Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList '-jar','.runtime/agent-e2e-build/labflow-0.1.0.jar',
         '--server.port=8087','--spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_e2e',
         '--labflow.test-support=true','--labflow.frontend-origin=http://127.0.0.1:5178',
-        '--LABFLOW_AGENT_BASE_URL=http://127.0.0.1:18769','--LABFLOW_AGENT_MODEL=labflow-fixture' -WorkingDirectory $root -WindowStyle Hidden -PassThru `
+        "--LABFLOW_AGENT_BASE_URL=http://127.0.0.1:$FixturePort",'--LABFLOW_AGENT_MODEL=labflow-fixture' -WorkingDirectory $root -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput '.runtime/agent-e2e.stdout.log' -RedirectStandardError '.runtime/agent-e2e.stderr.log'
 }
 function Wait-AgentTestBackend {
@@ -42,6 +66,7 @@ function Wait-AgentTestBackend {
 try {
     # Neither fixture process receives a real key. Build output also stays separate from the running app.
     $env:LABFLOW_AGENT_API_KEY = ''
+    $env:LABFLOW_FIXTURE_PORT = [string]$FixturePort
     $fixture = Start-Process (Get-Command node.exe).Source -ArgumentList 'frontend/e2e/fixtures/compatible-provider.cjs' -WorkingDirectory $root -WindowStyle Hidden -PassThru
     $backend = Start-AgentTestBackend
     $env:LABFLOW_AGENT_API_KEY = $oldKey
@@ -55,9 +80,23 @@ try {
     $env:LABFLOW_API = 'http://127.0.0.1:8087'
     $env:LABFLOW_WEB_URL = 'http://127.0.0.1:5178'
     $env:NO_PROXY = '127.0.0.1,localhost,::1'
+    if ($Production) {
+        if (!(Test-Path 'frontend/dist/index.html')) { throw 'Run npm run build in frontend before a production check.' }
+        $ownedWeb = Start-Process (Get-Command node.exe).Source -ArgumentList 'scripts/serve-test-build.cjs' -WorkingDirectory $root -WindowStyle Hidden -PassThru `
+            -RedirectStandardOutput '.runtime/production-test.stdout.log' -RedirectStandardError '.runtime/production-test.stderr.log'
+        $ready = $false
+        for ($attempt=0; $attempt -lt 40; $attempt++) {
+            & curl.exe --noproxy '*' --max-time 2 -fs 'http://127.0.0.1:5178/api/health' 2>$null | Out-Null
+            if ($LASTEXITCODE -eq 0) { $ready = $true; break }
+            Start-Sleep -Milliseconds 500
+        }
+        if (!$ready) { throw 'Production test server did not start; see .runtime/production-test.stderr.log.' }
+    }
     Push-Location frontend
     try {
-        if ($All) { & node node_modules/@playwright/test/cli.js test } else { & node node_modules/@playwright/test/cli.js test agent.spec.ts figure-tools.spec.ts model-connection.spec.ts chart-planner.spec.ts }
+        if ($All) { & node node_modules/@playwright/test/cli.js test }
+        elseif ($Specs) { & node node_modules/@playwright/test/cli.js test @Specs }
+        else { & node node_modules/@playwright/test/cli.js test agent.spec.ts figure-tools.spec.ts model-connection.spec.ts chart-planner.spec.ts }
         if ($LASTEXITCODE) { throw 'Browser verification failed.' }
     } finally { Pop-Location }
     & node frontend/e2e/fixtures/audit-restart.cjs prepare
@@ -76,7 +115,8 @@ try {
     $env:LABFLOW_WEB_URL = $oldWeb
     $env:LABFLOW_AGENT_API_KEY = $oldKey
     $env:NO_PROXY = $oldNoProxy
-    foreach ($owned in @($backend, $fixture)) {
+    $env:LABFLOW_FIXTURE_PORT = $oldFixturePort
+    foreach ($owned in @($backend, $fixture, $ownedWeb)) {
         if ($owned -and !( $owned.HasExited )) { Stop-Process -Id $owned.Id; Wait-Process -Id $owned.Id -ErrorAction SilentlyContinue }
     }
 }

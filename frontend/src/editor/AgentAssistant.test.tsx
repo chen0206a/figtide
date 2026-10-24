@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AgentAssistant, type AgentRun } from "./AgentAssistant";
@@ -15,6 +16,9 @@ import {
   type ToolOperation,
 } from "./figureTools";
 import type { Dataset } from "../lib/api";
+import { ApiError } from "../lib/api";
+import { agentConsent } from "./agentPresentation";
+import type {ComponentProps} from 'react';
 vi.mock("./StylePreview", () => ({
   StylePreview: ({ config }: any) => (
     <div aria-label="预览字号">{config.style.fontSize}</div>
@@ -105,6 +109,7 @@ it("permits explicit appearance edits in a structural batch without allowing oth
 function setup(
   mock?: (url: string, init?: RequestInit) => unknown,
   docked = false,
+  initialPrompt = "",
 ) {
   const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
     const body =
@@ -134,9 +139,10 @@ function setup(
     onApply,
     onClose,
     docked,
+    initialPrompt,
     open: true,
   };
-  const ui = (values = props) => (
+  const ui = (values:ComponentProps<typeof AgentAssistant> = props) => (
     <QueryClientProvider client={client}>
       <AgentAssistant {...values} />
     </QueryClientProvider>
@@ -144,6 +150,21 @@ function setup(
   const view = render(ui());
   return { fetcher, onApply, onClose, ...view, ui, props };
 }
+it('explicit input handoff starts once and only exposes a proposal while the apply guard is enabled',async()=>{
+ const s=setup(undefined,true),onPreview=vi.fn();
+ s.rerender(s.ui({...s.props,initialPrompt:'字号改为18',initialConsent:true,autoStart:true,onPreview}));
+ await waitFor(()=>expect(onPreview.mock.calls.at(-1)?.[0]?.preview.config.style.fontSize).toBe(18));
+ const posts=()=>s.fetcher.mock.calls.filter(([url,init])=>url.endsWith('/runs')&&init?.method==='POST');expect(posts()).toHaveLength(1);expect(JSON.parse(posts()[0][1]!.body as string).share_metadata).toBe(true);
+ expect(screen.getByRole('button',{name:'应用这组调整'})).toBeEnabled();
+ s.rerender(s.ui({...s.props,initialPrompt:'字号改为18',initialConsent:true,autoStart:true,onPreview,token:'manual-edit'}));
+ await waitFor(()=>expect(onPreview).toHaveBeenLastCalledWith(null));expect(screen.getByRole('button',{name:'应用这组调整'})).toBeDisabled();expect(posts()).toHaveLength(1);expect(s.onApply).not.toHaveBeenCalled();
+});
+it("prefills a home prompt without starting a model run", async () => {
+  const s = setup(undefined, true, "把图例放到右侧");
+  expect(await screen.findByRole("textbox", { name: "希望怎样调整？" })).toHaveValue("把图例放到右侧");
+  await waitFor(() => expect(s.fetcher).toHaveBeenCalled());
+  expect(s.fetcher.mock.calls.some(([url, init]) => /\/agent\/runs$/.test(url) && init?.method === "POST")).toBe(false);
+});
 it("keeps a docked proposal and conversation visible after applying, and hides without losing context", async () => {
   const s = setup(undefined, true);
   await start();
@@ -211,7 +232,7 @@ async function start() {
   fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
     target: { value: "字号改为18" },
   });
-  fireEvent.click(screen.getByRole("checkbox"));
+  fireEvent.click(screen.getByRole("checkbox", { name: agentConsent }));
   fireEvent.click(screen.getByRole("button", { name: "生成调整提案" }));
 }
 it("requires metadata consent and explicit confirmation, then uses the shared diff", async () => {
@@ -295,7 +316,12 @@ it("shows honest setup guidance when no provider is configured", async () => {
   }));
   await screen.findByText("连接模型后即可通过对话调整图表。");
   expect(screen.getByRole("button", { name: "生成调整提案" })).toBeDisabled();
-  expect(screen.getByRole("button", { name: "配置模型" })).toBeVisible();
+  expect(
+    within(screen.getByText("连接模型后即可通过对话调整图表。").closest(".agent-setup")!).getByRole(
+      "button",
+      { name: "模型设置" },
+    ),
+  ).toBeVisible();
   expect(screen.queryByText(/LABFLOW_AGENT_MODEL/)).not.toBeInTheDocument();
 });
 it("does not apply a draft if persisting the acceptance decision fails", async () => {
@@ -329,14 +355,14 @@ it("persists explicit rejection without changing the canvas", async () => {
   const s = setup();
   await start();
   await screen.findByText("提案已就绪");
-  fireEvent.click(screen.getByText("不采用这份提案"));
+  fireEvent.click(screen.getByRole("button", { name: "填写原因" }));
   fireEvent.change(screen.getByRole("textbox", { name: "拒绝原因（可选）" }), {
     target: { value: "字号过大" },
   });
   fireEvent.click(screen.getByRole("button", { name: "拒绝提案" }));
   await screen.findByText("已拒绝");
   expect(s.onApply).not.toHaveBeenCalled();
-  expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: "应用这组调整" })).toBeNull();
   const sent = s.fetcher.mock.calls.find(([url]) => url.endsWith("/decision"));
   expect(JSON.parse(sent![1]!.body as string)).toEqual({
     outcome: "rejected",
@@ -409,7 +435,8 @@ it("refines an unapplied proposal against the latest manual draft and applies th
     true,
   );
   await start();
-  await screen.findByRole("button", { name: "继续修改提案" });
+  await screen.findByRole("button", { name: "继续修改" });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
   s.rerender(s.ui({ ...s.props, config: manual, token: "manual-draft" }));
   expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled();
   fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
@@ -457,7 +484,8 @@ it.each(["failed", "answered", "cancelled"] as const)(
       true,
     );
     await start();
-    await screen.findByRole("button", { name: "继续修改提案" });
+    await screen.findByRole("button", { name: "继续修改" });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
     fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
       target: { value: "继续调整" },
     });
@@ -493,14 +521,17 @@ it("retires the previous proposal when the server validates a complete withdrawa
     true,
   );
   await start();
-  await screen.findByRole("button", { name: "继续修改提案" });
+  await screen.findByRole("button", { name: "继续修改" });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
   fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
     target: { value: "撤回全部调整" },
   });
   fireEvent.click(screen.getByRole("button", { name: "继续修改提案" }));
   await screen.findByText("累计调整已撤回");
   await waitFor(() =>
-    expect(screen.getByRole("button", { name: "应用这组调整" })).toBeDisabled(),
+    expect(
+      screen.queryByRole("button", { name: "应用这组调整" }),
+    ).toBeNull(),
   );
   expect(screen.getByRole("log")).toHaveTextContent("已由续改替代");
   expect(screen.getByRole("button", { name: "开始新对话" })).toBeEnabled();
@@ -513,7 +544,8 @@ it("retains the old proposal when refinement fails before a run is created", asy
       throw new Error("手动修改与原提案冲突");
   }, true);
   await start();
-  await screen.findByRole("button", { name: "继续修改提案" });
+  await screen.findByRole("button", { name: "继续修改" });
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
   fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
     target: { value: "继续" },
   });
@@ -548,6 +580,7 @@ it("restores a pending proposal using a server baseline without resubmitting or 
   );
   await screen.findByText("已恢复本次对话；尚未应用的提案仍需确认。");
   expect(screen.getByRole("log")).toHaveTextContent("恢复前的需求");
+  fireEvent.click(screen.getByRole("button", { name: "继续修改" }));
   expect(screen.getByRole("checkbox")).not.toBeChecked();
   expect(
     s.fetcher.mock.calls.some(
@@ -585,6 +618,24 @@ it("a lost start response reconnects by the preassigned identifier and never pos
   const baseline = { chart_id: 1, base_revision: 1, config };
   const s = setup((url) => {
     if (url.endsWith("/runs")) throw new Error("network interrupted");
+    if (url.endsWith("/resume"))
+      return { run, baseline, candidate: { run, baseline }, turns: [] };
+  }, true);
+  await start();
+  fireEvent.click(await screen.findByRole("button", { name: "重新连接" }));
+  await screen.findByText("已恢复本次对话；尚未应用的提案仍需确认。");
+  expect(
+    s.fetcher.mock.calls.filter(
+      ([url, init]) => url.endsWith("/runs") && init?.method === "POST",
+    ),
+  ).toHaveLength(1);
+  expect(screen.getByRole("button", { name: "应用这组调整" })).toBeEnabled();
+});
+
+it("keeps the reconnect entry when the start failure is an offline ApiError", async () => {
+  const baseline = { chart_id: 1, base_revision: 1, config };
+  const s = setup((url) => {
+    if (url.endsWith("/runs")) throw new ApiError("本地服务没有响应", 0, "offline");
     if (url.endsWith("/resume"))
       return { run, baseline, candidate: { run, baseline }, turns: [] };
   }, true);

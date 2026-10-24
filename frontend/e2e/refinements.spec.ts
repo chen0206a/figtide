@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { artifactPath } from "./artifacts";
+import { test, expect } from "./workspace-test";
 
 test("import preview → explicit rules → mapping → draft recovery → conflict copy → archive", async ({
   page,
@@ -16,6 +17,10 @@ test("import preview → explicit rules → mapping → draft recovery → confl
     project.id,
   );
   await page.goto("/");
+  // Wait for the shell before touching the hidden input: under parallel load the
+  // app mount can lag behind the document, and setInputFiles would sit on a
+  // detached node until the 90s timeout.
+  await expect(page.locator(".home")).toBeVisible();
   await page.getByTestId("file-upload").setInputFiles({
     name: "确认演示.csv",
     mimeType: "text/csv",
@@ -38,7 +43,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
     page.getByRole("button", { name: "确认导入", exact: true }),
   ).toBeEnabled();
   await page.screenshot({
-    path: "../docs/screenshots/import-confirm.png",
+    path: artifactPath(test.info(), "../docs/screenshots/import-confirm.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "确认导入", exact: true }).click();
@@ -111,7 +116,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
   await page.getByRole("link", { name: "项目概览", exact: true }).click();
-  await page.getByRole("button", { name: /草稿恢复验收 · 副本/ }).click();
+  await openHomeChart(page, "草稿恢复验收 · 副本");
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await expect(page.getByLabel("图表标题", { exact: true })).toHaveValue(
     "Learning accuracy · synthetic data",
@@ -119,7 +124,7 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await page.getByRole("button", { name: "关闭消息", exact: true }).click();
   await page.getByLabel("图表名称").blur();
   await page.screenshot({
-    path: "../docs/screenshots/editor-refined.png",
+    path: artifactPath(test.info(), "../docs/screenshots/editor-refined.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "管理项目", exact: true }).click();
@@ -133,9 +138,10 @@ test("import preview → explicit rules → mapping → draft recovery → confl
   await row.getByRole("button", { name: "归档", exact: true }).click();
   await expect(row.getByText("已归档", { exact: true })).toBeVisible();
   await row.getByRole("button", { name: "恢复", exact: true }).click();
-  await expect(row.getByText("工作区项目", { exact: true })).toBeVisible();
+  await expect(row.getByText("研究项目", { exact: true })).toBeVisible();
   expect(
     await (await request.get(`/api/projects/${project.id}/charts`)).json(),
   ).toHaveLength(2);
   expect(errors).toEqual([]);
 });
+import { openHomeChart } from "./fixtures/home-navigation";

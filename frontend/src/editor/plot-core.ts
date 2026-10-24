@@ -9,6 +9,12 @@ import { evaluationTraces } from "./evaluation";
 import { bandTraces } from "./bands";
 import { classificationReports } from "./classification";
 import { confusionPlot } from "./confusion";
+import {
+  traceEncoding,
+  type EncodingContext,
+  groupTraceName,
+  integerAxisStep,
+} from "./encoding";
 const plain = (s: string) =>
   s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 export function filteredRows(c: Config, d: Dataset) {
@@ -31,6 +37,7 @@ export function buildSinglePlot(
   d: Dataset,
   evaluationLabels?: Set<string>,
   samplingReference: Config = c,
+  encoding?: EncodingContext,
 ) {
   const rows = filteredRows(c, d);
   const warnings = [...d.warnings];
@@ -54,15 +61,15 @@ export function buildSinglePlot(
   )
     warnings.push("X 字段不存在，请重新映射");
   const assessed = evaluation
-    ? evaluationTraces(c, rows, evaluationLabels, samplingReference)
+    ? evaluationTraces(c, rows, evaluationLabels, samplingReference, encoding)
     : undefined;
   let heat: ReturnType<typeof vectorHeatmap> | undefined;
   const distribution = c.type === "box" || c.type === "violin";
   const empirical = c.type === "histogram" || c.type === "ecdf";
   const stats = empirical
-    ? empiricalTraces(c, rows)
+    ? empiricalTraces(c, rows, encoding)
     : distribution
-      ? distributionTraces(c, rows)
+      ? distributionTraces(c, rows, encoding)
       : undefined;
   if (classification) {
     heat = confusionPlot(c, classification.reports);
@@ -90,6 +97,7 @@ export function buildSinglePlot(
         const selected = c.group
           ? rows.filter((r) => r[c.group] === group)
           : rows;
+        const paint = traceEncoding(c, s, group, groups, encoding);
         const valid = selected.filter((r) => {
           if (c.axes.x.log && typeof r[c.x] === "number" && Number(r[c.x]) <= 0)
             return false;
@@ -99,7 +107,7 @@ export function buildSinglePlot(
         });
         const band = bandTraces(
           c,
-          s,
+          { ...s, color: paint.color },
           selected,
           s.id + ":" + JSON.stringify(group),
         );
@@ -113,17 +121,17 @@ export function buildSinglePlot(
         traces.push({
           type: c.type === "bar" ? "bar" : "scatter",
           mode: c.type === "scatter" ? "markers" : "lines+markers",
-          name: plain(s.name + (c.group ? " · " + String(group) : "")),
+          name: plain(groupTraceName(encoding?.config || c, s, group)),
           legendgroup: s.id + ":" + JSON.stringify(group),
           x: valid.map((r) => r[c.x]),
           y: valid.map((r) => r[s.y]),
           opacity: s.opacity,
-          line: { color: s.color, width: s.width, dash: s.dash },
+          line: { color: paint.color, width: s.width, dash: paint.dash },
           marker: {
-            color: s.color,
+            color: paint.color,
             size: s.size,
-            symbol: s.symbol,
-            line: { width: c.type === "scatter" ? 0 : 1, color: s.color },
+            symbol: paint.symbol,
+            line: { width: c.type === "scatter" ? 0 : 1, color: paint.color },
           },
           error_y:
             s.error &&
@@ -133,7 +141,7 @@ export function buildSinglePlot(
                   type: "data",
                   array: errors,
                   visible: true,
-                  color: s.color,
+                  color: paint.color,
                   thickness: 1,
                   width: 3,
                 }
@@ -182,6 +190,23 @@ export function buildSinglePlot(
       automargin: true,
     };
   };
+  // Heatmaps and confusion matrices draw no legend entries; do not reserve
+  // a legend band above them (it left a large empty gap under the title).
+  const legendShown =
+    c.legend.show && traces.some((t) => t.showlegend !== false);
+  const xStep =
+    !heat &&
+    !distribution &&
+    !empirical &&
+    !evaluation &&
+    !c.axes.x.log &&
+    !(c.axes.x.dtick && Number(c.axes.x.dtick) > 0)
+      ? integerAxisStep(
+          traces
+            .filter((t) => t.fill !== "toself")
+            .flatMap((t) => (Array.isArray(t.x) ? t.x : [])),
+        )
+      : undefined;
   const pos =
     c.legend.position === "bottom"
       ? { x: 0.5, y: -0.22, xanchor: "center", yanchor: "top" }
@@ -208,12 +233,13 @@ export function buildSinglePlot(
     paper_bgcolor: c.style.background,
     plot_bgcolor: c.style.background,
     margin: {
-      t: Math.max(
-        c.style.top,
-        c.legend.show && c.legend.position === "top"
-          ? c.style.fontSize * 3 + 40
-          : c.style.fontSize * 2 + 24,
-      ),
+      t:
+        Math.max(
+          c.style.top,
+          legendShown && c.legend.position === "top"
+            ? c.style.fontSize * 3 + 40
+            : c.style.fontSize * 2 + 24,
+        ) + (heat?.marginTop || 0),
       b: c.style.bottom,
       l: c.style.left,
       r: c.style.right,
@@ -225,6 +251,7 @@ export function buildSinglePlot(
           : c.axes.x,
       ),
       ...heat?.xaxis,
+      ...(xStep ? { dtick: xStep, tick0: 0 } : {}),
       ...(distribution ? { type: "category" } : {}),
       ...(empirical
         ? {
@@ -241,7 +268,7 @@ export function buildSinglePlot(
     },
     yaxis: { ...axis(c.axes.y), ...heat?.yaxis },
     shapes: heat?.shapes || [],
-    showlegend: c.legend.show,
+    showlegend: legendShown,
     legend: {
       ...pos,
       orientation: c.legend.orientation,
@@ -284,6 +311,28 @@ export function buildSinglePlot(
         title: { text: plain(title), standoff: 14 },
       });
     }
+    if (c.type === "roc") {
+      Object.assign(layout.yaxis, {
+        scaleanchor: "x",
+        scaleratio: 1,
+        constrain: "domain",
+      });
+      layout.xaxis.constrain = "domain";
+    }
+  }
+  if (layout.yaxis.scaleanchor === "x") {
+    const w = layout.width - layout.margin.l - layout.margin.r;
+    const h = layout.height - layout.margin.t - layout.margin.b;
+    const side = Math.min(w, h);
+    if (w > 0 && h > 0)
+      for (const trace of traces) {
+        if (trace.marker?.colorbar)
+          Object.assign(trace.marker.colorbar, {
+            x: 0.5 + side / (2 * w) + 0.03,
+            xanchor: "left",
+            len: side / h,
+          });
+      }
   }
   if (empirical) {
     const e = c.empirical || defaultEmpirical;

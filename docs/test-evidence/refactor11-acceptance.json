@@ -1,0 +1,58 @@
+{
+  "task": "11-6",
+  "date": "2026-10-24",
+  "timezone": "Asia/Tokyo",
+  "productBase": "0843ffd",
+  "command": "./scripts/test-agent.ps1 -All -FixturePort 18770",
+  "capture": false,
+  "workers": 1,
+  "manifest": 80,
+  "passed": 78,
+  "failed": 2,
+  "skipped": 0,
+  "flaky": 0,
+  "duration_ms": 271076.16000000003,
+  "unit": {
+    "files": 48,
+    "passed": 274,
+    "failed": 0,
+    "command": "npm test -- --maxWorkers=4"
+  },
+  "build": {
+    "passed": true,
+    "command": "npm run build"
+  },
+  "restartAudit": "not run in full acceptance: browser verification failed; passed in earlier targeted runs",
+  "baselineChanged": false,
+  "rawLog": "docs/test-evidence/refactor11-failures/full-run.txt",
+  "failures": [
+    {
+      "title": "import dialog stores the file in the project that is currently selected",
+      "file": "isolation.spec.ts",
+      "line": 106,
+      "errors": [
+        "docs/test-evidence/refactor11-failures/import-target.error.txt"
+      ],
+      "artifacts": [
+        "docs/test-evidence/refactor11-failures/import-target.failure.png",
+        "docs/test-evidence/refactor11-failures/import-target.error-context.md",
+        "docs/test-evidence/refactor11-failures/import-target.trace.zip",
+        "docs/test-evidence/refactor11-failures/import-target.error.txt"
+      ]
+    },
+    {
+      "title": "home charts and experiment lists stay isolated when switching projects",
+      "file": "isolation.spec.ts",
+      "line": 139,
+      "errors": [
+        "docs/test-evidence/refactor11-failures/experiment-isolation.error.txt"
+      ],
+      "artifacts": [
+        "docs/test-evidence/refactor11-failures/experiment-isolation.failure.png",
+        "docs/test-evidence/refactor11-failures/experiment-isolation.error-context.md",
+        "docs/test-evidence/refactor11-failures/experiment-isolation.trace.zip",
+        "docs/test-evidence/refactor11-failures/experiment-isolation.error.txt"
+      ]
+    }
+  ]
+}

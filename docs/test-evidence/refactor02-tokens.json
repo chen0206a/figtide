@@ -1,0 +1,110 @@
+{
+  "base_ref": "529ff1b",
+  "six_digit_colors_before": 417,
+  "six_digit_colors_after": 276,
+  "reduction_percent": 33.8,
+  "text_contrast": [
+    {
+      "text": "--lf-text",
+      "surface": "--lf-surface",
+      "ratio": 18.91
+    },
+    {
+      "text": "--lf-text",
+      "surface": "--lf-bg",
+      "ratio": 17.49
+    },
+    {
+      "text": "--lf-text-2",
+      "surface": "--lf-surface",
+      "ratio": 7.77
+    },
+    {
+      "text": "--lf-text-2",
+      "surface": "--lf-bg",
+      "ratio": 7.19
+    },
+    {
+      "text": "--lf-text-3",
+      "surface": "--lf-surface",
+      "ratio": 5.72
+    },
+    {
+      "text": "--lf-text-3",
+      "surface": "--lf-bg",
+      "ratio": 5.29
+    },
+    {
+      "text": "--lf-text-on-inverse",
+      "surface": "--lf-inverse",
+      "ratio": 18.91
+    },
+    {
+      "text": "--lf-text-on-inverse-2",
+      "surface": "--lf-inverse",
+      "ratio": 10.31
+    }
+  ],
+  "unchanged_layout_declarations": [
+    {
+      "file": "frontend/src/styles.css",
+      "declarations": 777
+    },
+    {
+      "file": "frontend/src/components/chart-planner.css",
+      "declarations": 96
+    },
+    {
+      "file": "frontend/src/components/experience.css",
+      "declarations": 137
+    },
+    {
+      "file": "frontend/src/components/home-workspace.css",
+      "declarations": 203
+    },
+    {
+      "file": "frontend/src/components/home.css",
+      "declarations": 210
+    },
+    {
+      "file": "frontend/src/components/model-connection.css",
+      "declarations": 99
+    },
+    {
+      "file": "frontend/src/components/navigation.css",
+      "declarations": 75
+    },
+    {
+      "file": "frontend/src/components/refinements.css",
+      "declarations": 95
+    },
+    {
+      "file": "frontend/src/components/showcase.css",
+      "declarations": 103
+    },
+    {
+      "file": "frontend/src/editor/agent-assistant.css",
+      "declarations": 213
+    },
+    {
+      "file": "frontend/src/editor/professional.css",
+      "declarations": 58
+    },
+    {
+      "file": "frontend/src/editor/quick-actions.css",
+      "declarations": 99
+    },
+    {
+      "file": "frontend/src/editor/styles-library.css",
+      "declarations": 201
+    },
+    {
+      "file": "frontend/src/experiments/experiments.css",
+      "declarations": 153
+    },
+    {
+      "file": "frontend/src/processing/processing.css",
+      "declarations": 51
+    }
+  ]
+}

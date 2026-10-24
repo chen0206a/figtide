@@ -1,0 +1,426 @@
+{
+  "home": {
+    ".masthead": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 64
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".workspace-nav": {
+      "box": {
+        "x": 158.0625,
+        "y": 11.5,
+        "width": 428,
+        "height": 40
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "11px",
+      "padding": "3px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(241, 243, 246)"
+    },
+    ".home-intro": {
+      "box": {
+        "x": 108,
+        "y": 104,
+        "width": 1224,
+        "height": 67.984375
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    ".home-continue": {
+      "box": {
+        "x": 108,
+        "y": 199.984375,
+        "width": 863.75,
+        "height": 529.796875
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "18px",
+      "padding": "0px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".home-assistant-form": {
+      "box": {
+        "x": 991.75,
+        "y": 382.78125,
+        "width": 340.25,
+        "height": 197.59375
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "8px 20px 0px",
+      "display": "flex",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgba(0, 0, 0, 0)"
+    }
+  },
+  "experiments": {
+    ".masthead": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 64
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".lf-page-header": {
+      "box": {
+        "x": 108,
+        "y": 96,
+        "width": 1224,
+        "height": 78.296875
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px 0px 20px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    ".experiment-record": {
+      "box": {
+        "x": 108,
+        "y": 278.296875,
+        "width": 1224,
+        "height": 244.375
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "14px",
+      "padding": "20px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".lf-chip": {
+      "box": {
+        "x": 1079.59375,
+        "y": 312.796875,
+        "width": 56,
+        "height": 24
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "12px",
+      "lineHeight": "19.2px",
+      "radius": "999px",
+      "padding": "0px 10px",
+      "display": "flex",
+      "color": "rgb(20, 108, 69)",
+      "background": "rgb(232, 245, 238)"
+    }
+  },
+  "data": {
+    ".masthead": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 64
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".lf-page-header": {
+      "box": {
+        "x": 108,
+        "y": 96,
+        "width": 1224,
+        "height": 78.296875
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px 0px 20px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    ".data-layout": {
+      "box": {
+        "x": 108,
+        "y": 198.296875,
+        "width": 1224,
+        "height": 615.140625
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "grid",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".dataset-list": {
+      "box": {
+        "x": 109,
+        "y": 199.296875,
+        "width": 268,
+        "height": 613.140625
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "18px",
+      "padding": "18px 14px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".data-detail": {
+      "box": {
+        "x": 377,
+        "y": 199.296875,
+        "width": 954,
+        "height": 613.140625
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "18px",
+      "padding": "0px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    ".data-table th": {
+      "box": {
+        "x": 377,
+        "y": 594.65625,
+        "width": 44.890625,
+        "height": 38.890625
+      },
+      "font": "\"JetBrains Mono Variable\", \"JetBrains Mono\", ui-monospace, SFMono-Regular, Menlo, monospace",
+      "fontSize": "11.5px",
+      "lineHeight": "18.4px",
+      "radius": "0px",
+      "padding": "10px 16px",
+      "display": "table-cell",
+      "color": "rgb(95, 103, 115)",
+      "background": "rgb(248, 249, 251)"
+    }
+  },
+  "editor": {
+    ".masthead": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 64
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".editor": {
+      "box": {
+        "x": 0,
+        "y": 64,
+        "width": 1440,
+        "height": 936
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".editor-toolbar": {
+      "box": {
+        "x": 0,
+        "y": 64,
+        "width": 1440,
+        "height": 66.578125
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "9px 18px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".editor-left": {
+      "box": {
+        "x": 0,
+        "y": 130.578125,
+        "width": 236,
+        "height": 843.421875
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(248, 249, 251)"
+    },
+    ".editor-right": {
+      "box": {
+        "x": 1148,
+        "y": 130.578125,
+        "width": 292,
+        "height": 843.421875
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(248, 249, 251)"
+    },
+    ".canvas-stage": {
+      "box": {
+        "x": 241,
+        "y": 168.578125,
+        "width": 902,
+        "height": 769.421875
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "28px 32px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(240, 241, 244)"
+    },
+    ".paper-wrap": {
+      "box": {
+        "x": 312,
+        "y": 303.28125,
+        "width": 760,
+        "height": 500
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".figure-info input": {
+      "box": {
+        "x": 62,
+        "y": 73,
+        "width": 320,
+        "height": 27.1875
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "17px",
+      "lineHeight": "27.2px",
+      "radius": "5px",
+      "padding": "0px",
+      "display": "block",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    ".inspector-tabs": {
+      "box": {
+        "x": 1149,
+        "y": 178.578125,
+        "width": 291,
+        "height": 87
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "9px",
+      "display": "grid",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(255, 255, 255)"
+    },
+    ".bottom-tabs": {
+      "box": {
+        "x": 241,
+        "y": 938,
+        "width": 902,
+        "height": 36
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "15px",
+      "lineHeight": "24px",
+      "radius": "0px",
+      "padding": "0px 16px",
+      "display": "flex",
+      "color": "rgb(14, 17, 22)",
+      "background": "rgb(248, 249, 251)"
+    },
+    ".editor-statusbar": {
+      "box": {
+        "x": 0,
+        "y": 974,
+        "width": 1440,
+        "height": 26
+      },
+      "font": "\"Inter Variable\", Inter, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", system-ui, sans-serif",
+      "fontSize": "11px",
+      "lineHeight": "17.6px",
+      "radius": "0px",
+      "padding": "0px 17px",
+      "display": "flex",
+      "color": "rgb(95, 103, 115)",
+      "background": "rgb(248, 249, 251)"
+    }
+  }
+}

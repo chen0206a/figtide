@@ -268,11 +268,16 @@ describe("figure tool preparation", () => {
 
 describe("figure description", () => {
   it("summarises a configuration in one bounded line", () => {
-    const text = describeFigure(config);
-    expect(text).toContain(`数据版本 #${config.datasetVersionId}`);
+    const text = describeFigure(config, { id: config.datasetVersionId, version: 4 });
+    expect(text).toContain("版本 v4");
+    expect(text).not.toContain(`版本 #${config.datasetVersionId}`);
     expect(text).toContain(`X=${config.x}`);
     expect(text).toContain(config.series[0].y);
     expect(text.length).toBeLessThanOrEqual(1024);
+  });
+  it("omits a version when metadata is missing or belongs to another dataset", () => {
+    expect(describeFigure(config)).not.toContain("版本");
+    expect(describeFigure(config, { id: config.datasetVersionId + 1, version: 4 })).not.toContain("版本");
   });
 
   it("builds a new figure from the shared defaults", () => {
@@ -421,6 +426,6 @@ describe("structural tools", () => {
     const add = screen.getByRole("button", { name: "加入调整清单" });
     expect(add).toBeEnabled();
     fireEvent.click(add);
-    expect(screen.getByRole("heading", { name: /待调整 · 1\/30/ })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "已选 1 项" })).toBeInTheDocument();
   });
 });

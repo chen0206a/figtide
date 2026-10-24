@@ -31,6 +31,16 @@ class ConfigValidatorTest {
 """);
     c.set("evaluation", e);
     assertDoesNotThrow(() -> ConfigValidator.validate(c));
+    // Optional legend metric switch (2026-10): absent, boolean ok; anything else rejected.
+    ((ObjectNode) e).put("legendMetric", true);
+    assertDoesNotThrow(() -> ConfigValidator.validate(c));
+    ((ObjectNode) e).put("legendMetric", false);
+    assertDoesNotThrow(() -> ConfigValidator.validate(c));
+    for (String invalid : new String[] {"\"yes\"", "1", "null", "[]", "{}"}) {
+      ((ObjectNode) e).set("legendMetric", new ObjectMapper().readTree(invalid));
+      assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
+    }
+    ((ObjectNode) e).remove("legendMetric");
     ((ObjectNode) e).put("algorithm", "unknown");
     assertThrows(ApiException.class, () -> ConfigValidator.validate(c));
     ((ObjectNode) e).put("algorithm", "binary-ranking-v1").put("threshold", "NaN");

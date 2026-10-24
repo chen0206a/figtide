@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, FlaskConical, Copy, ArrowUpRight } from "lucide-react";
 import { api, type Experiment, type Dataset } from "../lib/api";
 import { Button } from "../components/ui/button";
+import { PageHeader } from "../components/PageHeader";
 import {
   ExperimentForm,
   statuses,
@@ -10,7 +11,11 @@ import {
 } from "./ExperimentForm";
 import { Comparison } from "./Comparison";
 import { display } from "./compare";
+import { formatDateTime } from "../lib/format";
+import { ExperimentsTable } from "./ExperimentsTable";
+import { readView, writeView } from "./tableModel";
 import "./experiments.css";
+import "./experiments-table.css";
 export function Experiments({
   project,
   datasets,
@@ -56,6 +61,7 @@ export function Experiments({
     } catch {}
   }, [project, search, status, tag]);
   const [selected, setSelected] = useState<number[]>([]);
+  const [view, setView] = useState(readView);
   const [comparing, setComparing] = useState(false);
   const rows = query.data || [];
   const chosen = selected
@@ -103,22 +109,21 @@ export function Experiments({
         />
       ) : (
         <>
-          <div className="page-eyebrow">实验工作区</div>
-          <div className="page-heading">
-            <div>
-              <h1>把探索，沉淀为记录。</h1>
-              <p>把参数、指标和数据版本连在一起，从记录走向可追溯的对比。</p>
-            </div>
-            <div className="button-row">
-              <Button variant="outline" onClick={() => onData()}>
-                项目数据文件
-              </Button>
-              <Button onClick={create}>
-                <Plus size={16} />
-                记录实验
-              </Button>
-            </div>
-          </div>
+          <PageHeader
+            title="实验记录"
+            description="参数、指标和版本关联在一起，可以选择 2–8 个实验进行对比。"
+            actions={
+              <>
+                <Button variant="outline" onClick={() => onData()}>
+                  项目数据文件
+                </Button>
+                <Button onClick={create}>
+                  <Plus size={16} />
+                  记录实验
+                </Button>
+              </>
+            }
+          />
           <div className="experiment-filters">
             <input
               aria-label="搜索实验"
@@ -148,9 +153,27 @@ export function Experiments({
                 <option key={t}>{t}</option>
               ))}
             </select>
-            <span>
+            <span className="lf-mono">
               {filtered.length} / {rows.length} 条记录
             </span>
+            <div
+              className="experiment-view-switch"
+              role="group"
+              aria-label="实验视图"
+            >
+              {(["table", "cards"] as const).map((value) => (
+                <button
+                  key={value}
+                  aria-pressed={view === value}
+                  onClick={() => {
+                    setView(value);
+                    writeView(value);
+                  }}
+                >
+                  {value === "table" ? "表格" : "卡片"}
+                </button>
+              ))}
+            </div>
           </div>
           {query.isPending ? (
             <div className="empty-state">正在读取实验记录…</div>
@@ -163,9 +186,28 @@ export function Experiments({
             <div className="empty-state bordered">
               <FlaskConical size={36} />
               <h2>开始记录你的第一个实验</h2>
-              <p>保存参数、指标和研究笔记，随时回来继续。</p>
-              <Button onClick={create}>创建实验记录</Button>
+              <p>
+                保存参数、指标和研究笔记，随时回来继续。点击右上角「记录实验」开始。
+              </p>
             </div>
+          ) : view === "table" ? (
+            <ExperimentsTable
+              key={project}
+              project={project}
+              allRows={rows}
+              rows={filtered}
+              selected={selected}
+              onToggle={(r, checked) =>
+                setSelected(
+                  checked
+                    ? [...selected, r.id]
+                    : selected.filter((id) => id !== r.id),
+                )
+              }
+              onEdit={setEdit}
+              onCopy={copy}
+              onData={onData}
+            />
           ) : (
             <div className="experiment-records">
               {filtered.map((r) => (
@@ -195,12 +237,23 @@ export function Experiments({
                     />
                     <button className="record-title" onClick={() => setEdit(r)}>
                       <h3>{r.name}</h3>
-                      <span>
-                        {new Date(r.updated_at).toLocaleString()} · 修订{" "}
-                        {r.revision}
+                      <span className="lf-mono">
+                        {formatDateTime(r.updated_at)} · 修订 {r.revision}
                       </span>
                     </button>
-                    <span className={`experiment-status status-${r.status}`}>
+                    <span
+                      className="lf-chip"
+                      data-tone={
+                        (
+                          {
+                            planned: "neutral",
+                            running: "info",
+                            completed: "success",
+                            failed: "danger",
+                          } as const
+                        )[r.status]
+                      }
+                    >
                       {statuses[r.status]}
                     </span>
                     <Button
@@ -237,7 +290,7 @@ export function Experiments({
                           .map(([k, v]) => (
                             <span key={k}>
                               {k}
-                              <b>{display(v)}</b>
+                              <b className="lf-mono">{display(v)}</b>
                             </span>
                           ))}
                         {Object.keys(r.parameters).length > 4 && (
@@ -275,7 +328,7 @@ export function Experiments({
                           <ArrowUpRight size={12} />
                         </button>
                       ))}
-                      {!r.datasets.length && <small>尚未关联数据版本</small>}
+                      {!r.datasets.length && <small>尚未关联版本</small>}
                     </div>
                   </div>
                 </article>
@@ -287,27 +340,36 @@ export function Experiments({
               )}
             </div>
           )}
-          <div className="comparison-selection">
-            <span>
-              已选 {selected.length} / 8 个实验
-              {selected.some((id) => !filtered.some((r) => r.id === id))
-                ? "（含筛选外记录）"
-                : ""}
-            </span>
-            <Button
-              variant="ghost"
-              disabled={!selected.length}
-              onClick={() => setSelected([])}
+          {!!selected.length && (
+            <div
+              className="comparison-selection"
+              role="region"
+              aria-label="所选实验"
             >
-              清空选择
-            </Button>
-            <Button
-              disabled={chosen.length < 2}
-              onClick={() => setComparing(true)}
-            >
-              对比所选实验
-            </Button>
-          </div>
+              <span>
+                已选 {selected.length} 个实验（最多 8 个）
+                {selected.some((id) => !filtered.some((r) => r.id === id))
+                  ? "（含筛选外记录）"
+                  : ""}
+              </span>
+              <span className="selection-baseline">
+                基线 <b>{chosen[0]?.name || "—"}</b>
+              </span>
+              <Button
+                variant="ghost"
+                disabled={!selected.length}
+                onClick={() => setSelected([])}
+              >
+                清空选择
+              </Button>
+              <Button
+                disabled={chosen.length < 2}
+                onClick={() => setComparing(true)}
+              >
+                对比所选实验
+              </Button>
+            </div>
+          )}
         </>
       )}
       {edit && (

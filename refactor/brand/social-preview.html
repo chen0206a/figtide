@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>FigTide social preview</title>
+<style>
+  body { margin: 0; }
+  .card { width: 1280px; height: 640px; box-sizing: border-box; position: relative; overflow: hidden;
+    background: radial-gradient(120% 100% at 30% 30%, #151a22 0%, #0b0d11 70%);
+    font-family: Inter, "Noto Sans SC", "Noto Sans CJK SC", system-ui, sans-serif; color: #f3f5f8; }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 40px 40px; }
+  .left { position: absolute; left: 80px; top: 150px; width: 660px; display: flex; flex-direction: column; gap: 26px; }
+  .logo { display: flex; align-items: center; gap: 26px; }
+  .word { white-space: nowrap; font-size: 96px; letter-spacing: -.04em; line-height: 1; }
+  .word b { font-weight: 800; } .word span { font-weight: 400; }
+  .cn { white-space: nowrap; font-size: 36px; font-weight: 700; color: #a7afbb; padding-left: 22px; border-left: 2px solid #3a424e; }
+  .tag { font-size: 40px; font-weight: 800; letter-spacing: -.01em; line-height: 1.3; margin-top: 14px; }
+  .tag em { font-style: normal; background: linear-gradient(transparent 78%, rgba(213,94,0,.85) 78%, rgba(213,94,0,.85) 92%, transparent 92%); }
+  .meta { font: 500 20px "JetBrains Mono", "DejaVu Sans Mono", monospace; color: #9aa3b0; letter-spacing: .06em; }
+  .paper { position: absolute; left: 760px; top: 110px; width: 450px; height: 420px; background: #fff; border-radius: 10px; box-shadow: 0 40px 100px rgba(0,0,0,.5); transform: rotate(-2deg); }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="grid"></div>
+  <div class="left">
+    <div class="logo">
+      <svg width="112" height="112" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#ffffff"/><path d="M29 49 q4.5 -3 9 0 t9 0" fill="none" stroke="#0072B2" stroke-width="3.2" stroke-linecap="round"/><path d="M21 14 V50" fill="none" stroke="#0E1116" stroke-width="5.5" stroke-linecap="round"/><path d="M21 16 C26 11.5 31 20.5 36 16 C38.8 13.5 41.5 13 44 13.8" fill="none" stroke="#0E1116" stroke-width="5.5" stroke-linecap="round"/><path d="M21 32.5 C25.5 28 29.5 37 34 32.5 C35.8 30.7 37.6 30.4 39.5 31.2" fill="none" stroke="#0E1116" stroke-width="5.5" stroke-linecap="round"/><circle cx="50.5" cy="15" r="4.2" fill="#D55E00"/></svg>
+      <div class="word"><b>Fig</b><span>Tide</span></div>
+      <div class="cn">图汐</div>
+    </div>
+    <div class="tag">让实验数据，自然成为<em>论文图</em>。</div>
+    <div class="meta">本地优先 · 开源 · 科研数据与绘图工作台</div>
+  </div>
+  <div class="paper">
+    <svg width="450" height="420" viewBox="0 0 450 420" id="chart"></svg>
+  </div>
+</div>
+<script>
+  const svg = document.getElementById("chart");
+  const M = [["Baseline", "#0072B2", .862, 2.4], ["Proposed", "#D55E00", .903, 3.2], ["w/o module A", "#009E73", .881, 2.4]];
+  const l = 60, r = 24, t = 70, b = 56, w = 450, h = 420;
+  const X = e => l + e / 60 * (w - l - r), Y = a => h - b - (a - .5) / .5 * (h - t - b);
+  const acc = (m, e) => m[2] - (m[2] - .5) * Math.exp(-e / 9), sem = e => .004 + .022 * Math.exp(-e / 12);
+  let s = "";
+  for (let a = .5; a <= 1.0001; a += .1) s += `<line x1="${l}" x2="${w - r}" y1="${Y(a)}" y2="${Y(a)}" stroke="#eef0f3"/><text x="${l - 10}" y="${Y(a) + 5}" font-size="13" text-anchor="end" fill="#4a5361" font-family="DejaVu Sans Mono, monospace">${a.toFixed(1)}</text>`;
+  s += `<path d="M${l} ${t} V${h - b} H${w - r}" fill="none" stroke="#2b323c" stroke-width="1.5"/>`;
+  M.forEach(m => { let up = "", dn = ""; for (let e = 0; e <= 60; e += 2) up += `${e ? "L" : "M"}${X(e)},${Y(acc(m, e) + sem(e))}`; for (let e = 60; e >= 0; e -= 2) dn += `L${X(e)},${Y(acc(m, e) - sem(e))}`; s += `<path d="${up}${dn}Z" fill="${m[1]}" opacity=".14"/>`; });
+  M.forEach(m => { let d = ""; for (let e = 0; e <= 60; e++) d += `${e ? "L" : "M"}${X(e)},${Y(acc(m, e))}`; s += `<path d="${d}" fill="none" stroke="${m[1]}" stroke-width="${m[3]}" ${m[0].startsWith("w/o") ? 'stroke-dasharray="7 5"' : ""}/>`; });
+  s += `<circle cx="${X(60)}" cy="${Y(.903)}" r="6" fill="#D55E00" stroke="#fff" stroke-width="2"/>`;
+  let x = l; M.forEach(m => { s += `<line x1="${x}" x2="${x + 22}" y1="38" y2="38" stroke="${m[1]}" stroke-width="2.6"/><text x="${x + 28}" y="43" font-size="14" fill="#2b323c" font-family="Inter, sans-serif">${m[0]}</text>`; x += 28 + m[0].length * 8 + 22; });
+  s += `<text x="${w - r}" y="${h - 16}" font-size="12" text-anchor="end" fill="#9aa3b0" font-family="Inter, 'Noto Sans CJK SC', sans-serif">示意数据</text>`;
+  svg.innerHTML = s;
+</script>
+</body>
+</html>

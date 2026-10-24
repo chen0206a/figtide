@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { artifactPath } from "./artifacts";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 test("module navigation resumes the exact chart without save prompts or silent database writes", async ({
   page,
@@ -53,7 +54,7 @@ test("module navigation resumes the exact chart without save prompts or silent d
     .not.toBe(before);
   await dataLink.click();
   await expect(page).toHaveURL(new RegExp(`/projects/${project.id}/data`));
-  await expect(page.locator(".launch-home")).toHaveCount(0);
+  await expect(page.locator(".home")).toHaveCount(0);
   await expect(
     page.getByRole("heading", {
       name: "navigation-synthetic.csv",
@@ -69,7 +70,7 @@ test("module navigation resumes the exact chart without save prompts or silent d
   ).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.locator(".launch-home")).toBeVisible();
+  await expect(page.locator(".home")).toBeVisible();
   await page.goForward();
   await expect(page).toHaveURL(new RegExp(`/projects/${project.id}/data`));
   await page.getByRole("button", { name: "用于绘图", exact: true }).click();
@@ -87,7 +88,7 @@ test("module navigation resumes the exact chart without save prompts or silent d
   ).toBeVisible();
   await page.getByRole("link", { name: "项目概览", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await page.getByRole("button", { name: /导航体验 · 合成/ }).click();
+  await page.getByRole("button", { name: "继续编辑", exact: true }).click();
   const chartUrl = `/projects/${project.id}/figures/${chart.id}`;
   await expect(page).toHaveURL(new RegExp(chartUrl + "$"));
   await page.reload();
@@ -99,7 +100,7 @@ test("module navigation resumes the exact chart without save prompts or silent d
     .getByLabel("图表标题", { exact: true })
     .fill("Unsaved navigation title");
   await page.goBack();
-  await expect(page.locator(".launch-home")).toBeVisible();
+  await expect(page.locator(".home")).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("link", { name: "科研绘图", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(chartUrl + "$"));
@@ -125,9 +126,9 @@ test("module navigation resumes the exact chart without save prompts or silent d
   await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("已保存 v2", { exact: false })).toBeVisible();
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.screenshot({ path: "../docs/screenshots/routed-workbench.png" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/routed-workbench.png") });
   await page.getByRole("link", { name: "项目概览", exact: true }).click();
-  await expect(page.locator(".launch-home")).toBeVisible();
+  await expect(page.locator(".home")).toBeVisible();
   await page.evaluate(() =>
     Promise.all(
       document
@@ -136,13 +137,11 @@ test("module navigation resumes the exact chart without save prompts or silent d
         .map((a) => a.finished.catch(() => {})),
     ),
   );
-  await page.screenshot({ path: "../docs/screenshots/routed-home.png" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/routed-home.png") });
   await page.getByRole("link", { name: "实验记录", exact: true }).click();
   await expect(page).toHaveURL(`/projects/${project.id}/experiments`);
   await page.reload();
-  await expect(
-    page.getByRole("heading", { name: "把探索，沉淀为记录。" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "实验记录" })).toBeVisible();
   const other = (await (await request.get("/api/projects")).json()).find(
     (p: any) => p.id !== project.id && !p.archived,
   );

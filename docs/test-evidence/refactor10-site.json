@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-23T12:18:44.455Z",
+  "source": "direct file URL",
+  "page": "site/index.html",
+  "viewports": [
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "readmeLinks": 3,
+      "anchorsValid": true,
+      "headerHeight": 53
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "readmeLinks": 3,
+      "anchorsValid": true,
+      "headerHeight": 69
+    },
+    {
+      "width": 1280,
+      "scrollWidth": 1280,
+      "readmeLinks": 3,
+      "anchorsValid": true,
+      "headerHeight": 69
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "readmeLinks": 3,
+      "anchorsValid": true,
+      "headerHeight": 69
+    }
+  ],
+  "externalRequests": [
+    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap",
+    "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+    "https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2"
+  ],
+  "requestFailures": [],
+  "pageErrors": [],
+  "paidRequests": 0
+}

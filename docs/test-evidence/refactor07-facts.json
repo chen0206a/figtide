@@ -1,0 +1,35 @@
+{
+  "source": "read-only live Java catalog + Config.type",
+  "chart_types": [
+    "line",
+    "bar",
+    "scatter",
+    "heatmap",
+    "box",
+    "violin",
+    "histogram",
+    "ecdf",
+    "roc",
+    "pr",
+    "confusion"
+  ],
+  "read_tools": [
+    "get_figure_spec",
+    "lint_figure",
+    "get_dataset_profile"
+  ],
+  "preview_tools": [
+    "set_style",
+    "set_axis",
+    "set_legend",
+    "set_series",
+    "set_canvas",
+    "set_chart",
+    "set_mapping",
+    "map_series",
+    "add_series",
+    "remove_series"
+  ],
+  "execution": "preview-only",
+  "protocol_version": 1
+}

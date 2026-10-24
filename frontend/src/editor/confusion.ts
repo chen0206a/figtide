@@ -1,7 +1,16 @@
 import { defaultClassification, type Config } from "./model";
 import type { ClassificationReport } from "./classification";
 import { vectorHeatmap } from "./heatmap";
-import { labelColor, interpolate, scientificScales } from "./color";
+import { labelColor, interpolate } from "./color";
+
+/** Single-hue sequential scale: reads as "more" without viridis' yellow glare. */
+export const MATRIX_BLUES = [
+  "#f7fbff",
+  "#c6dbef",
+  "#6baed6",
+  "#2171b5",
+  "#08306b",
+];
 export function confusionPlot(c: Config, reports: ClassificationReport[]) {
   const k = c.classification || defaultClassification;
   const report = reports.find(
@@ -17,6 +26,13 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
   );
   const escape = (v: string) =>
     v.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  /** Colorbar labels follow the figure language (axis defaults are English). */
+  const colorbarTitle = {
+    count: "Count",
+    true: "Share of true class",
+    pred: "Share of predicted class",
+    all: "Share of all samples",
+  };
   const title = {
     count: "样本数",
     true: "真实类别内比例",
@@ -52,7 +68,7 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
       heatZ: title,
       axes: { x: { ...c.axes.x, log: false }, y: { ...c.axes.y, log: false } },
       heatmap: {
-        palette: "viridis",
+        palette: "viridis", // overridden below with a single-hue scale
         min: "0",
         max: String(max),
         center: "",
@@ -77,10 +93,7 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
   heat.annotations = report.classes.flatMap((_, i) =>
     report.classes.map((__, j) => {
       const v = report.matrix[i][j],
-        color =
-          v == null
-            ? "#f1f3f6"
-            : interpolate(scientificScales.viridis, v / max);
+        color = v == null ? "#f1f3f6" : interpolate(MATRIX_BLUES, v / max);
       if (v == null)
         heat.shapes.push({
           type: "rect",
@@ -117,17 +130,59 @@ export function confusionPlot(c: Config, reports: ClassificationReport[]) {
       };
     }),
   );
-  heat.yaxis = { ...heat.yaxis, range: [report.classes.length - 0.5, -0.5] };
+  heat.yaxis = {
+    ...heat.yaxis,
+    range: [report.classes.length - 0.5, -0.5],
+    // Square cells: a k×k matrix should look like one.
+    scaleanchor: "x",
+    scaleratio: 1,
+    constrain: "domain",
+  };
+  heat.xaxis = { ...heat.xaxis, constrain: "domain" };
+  // Recolor cells with the single-hue scale and separate them with hairlines
+  // in the background color, so adjacent equal values stay readable.
+  const cellValue = new Map(
+    report.classes.flatMap((_, i) =>
+      report.classes.map(
+        (__, j) => [`${j}:${i}`, report.matrix[i][j]] as const,
+      ),
+    ),
+  );
+  heat.shapes.forEach((shape) => {
+    const v = cellValue.get(`${shape.x0 + 0.5}:${shape.y0 + 0.5}`);
+    if (v != null) shape.fillcolor = interpolate(MATRIX_BLUES, v / max);
+    shape.line = { width: 2, color: c.style.background };
+  });
+  const marker = heat.traces[0]?.marker;
+  if (marker)
+    marker.colorscale = MATRIX_BLUES.map((stop, i) => [
+      i / (MATRIX_BLUES.length - 1),
+      stop,
+    ]);
+  // Anchor the subtitle's baseline above the plot area and reserve room for
+  // it, so it can never be painted underneath the first row of cells.
   heat.annotations.push({
     xref: "paper",
     yref: "paper",
     x: 0.5,
     y: 1,
-    yshift: 14,
+    yanchor: "bottom",
+    yshift: 6,
     showarrow: false,
-    text: escape(`${report.series} · ${report.group} · n=${report.n}`),
+    text: escape(
+      `${c.group ? `${report.series} · ${report.group}` : report.series} · n=${report.n}`,
+    ),
     font: { size: c.style.fontSize, color: "#566072" },
   });
+  heat.marginTop = c.style.fontSize + 14;
+  const colorbar = heat.traces[0]?.marker?.colorbar;
+  if (colorbar)
+    Object.assign(colorbar, {
+      title: { text: escape(colorbarTitle[k.normalization]), side: "right" },
+      ...(k.normalization === "count"
+        ? { tickformat: "d", dtick: Math.max(1, Math.ceil(max / 5)) }
+        : { tickformat: ".0%" }),
+    });
   heat.traces.forEach((t) => {
     t.customdata = t.x.map(() => report.seriesId);
     t.text = t.x.map((x: number, i: number) => {

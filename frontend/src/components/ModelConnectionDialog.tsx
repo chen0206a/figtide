@@ -127,7 +127,7 @@ export function ModelConnectionDialog({ onClose }: { onClose: () => void }) {
         if (!open && !busy) onClose();
       }}
       closeDisabled={!!busy}
-      title="模型连接"
+      title="模型设置"
       description="接入你选择的兼容模型服务。"
       className="model-connection-dialog"
     >
@@ -155,7 +155,7 @@ export function ModelConnectionDialog({ onClose }: { onClose: () => void }) {
                 {connection.data?.available
                   ? connection.data.verified_at
                     ? "已验证"
-                    : "已配置 · 尚未测试"
+                    : "已填写，尚未验证"
                   : "配置后即可使用绘图助手"}
               </span>
             </div>
@@ -237,7 +237,7 @@ export function ModelConnectionDialog({ onClose }: { onClose: () => void }) {
                 <p className="connection-hint">地址已更换，请填写新密钥。</p>
               )}
               <p className="connection-hint">
-                密钥仅用于当前后端会话，重启后需重新连接。更改仅影响新任务。
+                密钥只保存在本机 FigTide 服务的内存中，不写入磁盘；重启 FigTide 后需要重新填写。
               </p>
               <label className="connection-consent">
                 <input

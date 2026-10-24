@@ -7,10 +7,16 @@ import {
   lazy,
   Suspense,
 } from "react";
+import { flushSync } from "react-dom";
+import { introSeen, markIntroSeen } from "./lib/intro";
+import { useReducedMotion } from "./lib/useMotion";
+import { loadEditor } from "./lib/loadEditor";
 import { Link, useLocation, useNavigate, useBlocker } from "react-router-dom";
 import {
   readWorkspaceMemory,
+  rememberDataset,
   rememberWorkspace,
+  workspaceDataset,
   workspaceTargets,
 } from "./lib/workspaceMemory";
 import { WorkspaceNav } from "./components/WorkspaceNav";
@@ -21,64 +27,65 @@ import {
 } from "./lib/routes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Database,
   ChartNoAxesCombined,
   Plus,
-  ArrowUpRight,
-  ArrowRight,
-  Upload,
-  FileSpreadsheet,
-  Layers,
   Check,
   AlertCircle,
   PlugZap,
 } from "lucide-react";
 import { api, send, type Project, type Dataset } from "./lib/api";
+import {
+  createSampleProject,
+  SAMPLE_PROJECT_NAME,
+} from "./lib/sampleProject";
 import { Button } from "./components/ui/button";
 import { Dialog } from "./components/ui/dialog";
-import { DataTable } from "./components/DataTable";
-import { HomePage } from "./components/HomePage";
+import { DataPage } from "./data/DataPage";
+import { HomePage } from "./components/home/HomePage";
 import { WorkbenchSkeleton } from "./components/WorkbenchSkeleton";
-import { LabFlowMark } from "./components/LabFlowMark";
+import { BrandMark } from "./components/BrandMark";
 import { UploadDialog } from "./components/UploadDialog";
 import { ProjectManager } from "./components/ProjectManager";
 import { ModelConnectionDialog } from "./components/ModelConnectionDialog";
 import { useConfirm } from "./components/useConfirm";
-import "./components/refinements.css";
 import { Experiments } from "./experiments/Experiments";
-import { SourceProvenance } from "./experiments/SourceProvenance";
-import { ProcessingDialog } from "./processing/ProcessingDialog";
-const loadEditor = () => import("./editor/Editor");
 const Editor = lazy(loadEditor);
-const ChartPlanner = lazy(() => import("./components/ChartPlanner"));
+const ProductIntro = lazy(() => import("./welcome/ProductIntro"));
 export default function App() {
   const qc = useQueryClient();
   const location = useLocation();
   const routerGo = useNavigate();
   const go = useCallback(
-    (to: string, options: { replace?: boolean } = {}) => routerGo(to, options),
+    (to: string, options: { replace?: boolean; flushSync?: boolean } = {}) => routerGo(to, options),
     [routerGo],
   );
-  const [memory, setMemory] = useState(() =>
-    readWorkspaceMemory(sessionStorage),
-  );
+  const [memory, setMemory] = useState(() => {
+    try { return readWorkspaceMemory(sessionStorage); } catch { return {}; }
+  });
   const route = readWorkspaceRoute(location.pathname, location.search);
   const page = route.page;
   const chart = route.chart;
   const dataset = route.dataset;
+  const [seenIntro, setSeenIntro] = useState(introSeen);
+  const reducedMotion = useReducedMotion();
+  // The intro is address-driven: /welcome always renders it, and a first visit to / is
+  // redirected there once (replace) so the back button can return to it later.
+  const showIntro = route.valid && page === "welcome";
+  const needsIntroRedirect = route.valid && page === "home" && !seenIntro;
   const { confirm, dialog: confirmDialog } = useConfirm();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [manage, setManage] = useState(false);
   const [connectionOpen, setConnectionOpen] = useState(false);
   const [workspaceProject, setProject] = useState(
-    () => Number(localStorage.getItem("labflow-project")) || 0,
+    () => { try { return Number(localStorage.getItem("labflow-project")) || 0; } catch { return 0; } },
   );
   const project = route.project || workspaceProject;
-  const lastDataset = useRef(0);
+  const lastDataset = useRef({ project: 0, id: 0 });
   const [modal, setModal] = useState(false),
     [name, setName] = useState(""),
     [description, setDescription] = useState(""),
     [busy, setBusy] = useState(false),
+    [sampleBusy, setSampleBusy] = useState(false),
     [message, setMessage] = useState(""),
     [uploadVersion, setUploadVersion] = useState<number | null>(null);
   const upload = useRef<HTMLInputElement>(null);
@@ -122,6 +129,9 @@ export default function App() {
       );
     } catch {}
   }, [memory]);
+  useEffect(() => {
+    if (needsIntroRedirect) void routerGo("/welcome", { replace: true });
+  }, [needsIntroRedirect, routerGo]);
   const targets = workspaceTargets(memory, project);
   if (route.valid) targets[page] = location.pathname + location.search;
   const warmModule = (target: Page) => {
@@ -149,17 +159,14 @@ export default function App() {
       });
   };
   const setDataset = (id: number) => {
-    lastDataset.current = id;
+    lastDataset.current = { project, id };
+    setMemory((m) => rememberDataset(m, project, id));
     if (page === "data")
       void go(workspaceUrl("data", project, null, id), { replace: true });
   };
-  const previousProject = useRef(project);
   useEffect(() => {
-    if (previousProject.current !== project) lastDataset.current = 0;
-    previousProject.current = project;
     if (route.project) setProject(route.project);
-    if (route.dataset) lastDataset.current = route.dataset;
-  }, [project, route.project, route.dataset]);
+  }, [route.project]);
   const routeFocus = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const names = {
@@ -167,8 +174,9 @@ export default function App() {
       experiments: "实验记录",
       data: "数据管理",
       editor: "绘图工作台",
+      welcome: "欢迎",
     };
-    document.title = `${names[page]} · LabFlow`;
+    document.title = `${names[page]} · FigTide`;
     routeFocus.current?.focus({ preventScroll: true });
     window.scrollTo({
       top:
@@ -179,17 +187,27 @@ export default function App() {
   const projects = useQuery({
     queryKey: ["projects"],
     queryFn: () => api<Project[]>("/projects"),
+    enabled: !showIntro,
   });
   const datasets = useQuery({
     queryKey: ["datasets", project],
     queryFn: () => api<Dataset[]>(`/projects/${project}/datasets`),
-    enabled: !!project,
+    enabled: !!project && !showIntro,
   });
   const charts = useQuery({
     queryKey: ["charts", project],
     queryFn: () => api<any[]>(`/projects/${project}/charts`),
-    enabled: !!project,
+    enabled: !!project && !showIntro,
   });
+  // 数据集必须确认属于当前项目才写进记忆：从别的项目带过来的 ?dataset=
+  // 不能留在地址或记忆里，否则切换项目后会被带到下一个项目。
+  useEffect(() => {
+    if (page !== "data" || !dataset) return;
+    if (!datasets.data?.some((d) => d.id === dataset)) return;
+    setMemory((m) => rememberDataset(m, project, dataset));
+    if (lastDataset.current.project !== project || lastDataset.current.id !== dataset)
+      lastDataset.current = { project, id: dataset };
+  }, [page, dataset, project, datasets.data]);
   useEffect(() => {
     if (
       !route.project &&
@@ -197,11 +215,10 @@ export default function App() {
       !projects.data.some((p) => p.id === project && !p.archived)
     ) {
       setProject(projects.data.find((p) => !p.archived)?.id || 0);
-      lastDataset.current = 0;
     }
   }, [projects.data, project, route.project]);
   useEffect(() => {
-    localStorage.setItem("labflow-project", String(project));
+    try { localStorage.setItem("labflow-project", String(project)); } catch { /* optional preference */ }
   }, [project]);
   const current = projects.data?.find((p) => p.id === project);
   const navigate = (p: Page, id?: number, dataId?: number) =>
@@ -211,17 +228,17 @@ export default function App() {
         project,
         p === "editor" ? (id ?? chart) : null,
         dataId ??
-          (lastDataset.current ||
-            readWorkspaceRoute(...(targets.data.split("?") as [string, string]))
-              .dataset),
+          (lastDataset.current.project === project && lastDataset.current.id
+            ? lastDataset.current.id
+            : workspaceDataset(memory, project)),
       ),
     );
-  const refresh = () => {
-    qc.invalidateQueries({ queryKey: ["style-templates"] });
-    qc.invalidateQueries({ queryKey: ["projects"] });
-    qc.invalidateQueries({ queryKey: ["datasets", project] });
-    qc.invalidateQueries({ queryKey: ["charts", project] });
-  };
+  const refresh = () => Promise.all([
+    qc.invalidateQueries({ queryKey: ["style-templates"] }),
+    qc.invalidateQueries({ queryKey: ["projects"] }),
+    qc.invalidateQueries({ queryKey: ["datasets", project] }),
+    qc.invalidateQueries({ queryKey: ["charts", project] }),
+  ]);
   async function createProject(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -243,14 +260,47 @@ export default function App() {
       setBusy(false);
     }
   }
+  const sampleProject = projects.data?.find(
+    (p) => !p.archived && p.name === SAMPLE_PROJECT_NAME,
+  );
+  const openChart = (projectId: number, chartId: number) =>
+    routerGo(workspaceUrl("editor", projectId, chartId), {
+      state: { fromHome: true },
+    });
+  async function sampleAction() {
+    if (sampleBusy) return;
+    setSampleBusy(true);
+    try {
+      if (sampleProject) {
+        const charts = await api<{ id: number }[]>(
+          `/projects/${sampleProject.id}/charts`,
+        );
+        setProject(sampleProject.id);
+        if (charts[0]) openChart(sampleProject.id, charts[0].id);
+        else void go(workspaceUrl("data", sampleProject.id));
+        return;
+      }
+      const { project: created, chart } = await createSampleProject();
+      refresh();
+      setProject(created.id);
+      openChart(created.id, chart.id);
+    } catch (e) {
+      setMessage((e as Error).message);
+    } finally {
+      setSampleBusy(false);
+    }
+  }
   function importFile(file: File) {
     if (project) setPendingFile(file);
   }
-  function imported(d: Dataset) {
+  async function imported(d: Dataset) {
+    // Only announce completion after the committed version and project counts
+    // have reached the cache. The upload preview is not a successful import.
+    qc.setQueryData(["data", project, d.id], d);
+    await refresh();
     setPendingFile(null);
     setUploadVersion(null);
-    lastDataset.current = d.id;
-    refresh();
+    lastDataset.current = { project, id: d.id };
     void navigate("data", undefined, d.id);
     setMessage(`已导入 ${d.row_count} 行，原始文件与解析规则已归档`);
     if (upload.current) upload.current.value = "";
@@ -259,17 +309,31 @@ export default function App() {
     setUploadVersion(id);
     upload.current?.click();
   };
+  if (needsIntroRedirect)
+    return (
+      <main aria-label="正在载入FigTide介绍">正在载入…</main>
+    );
+  if (showIntro) return <Suspense fallback={<main aria-label="正在载入FigTide介绍">正在载入…</main>}><ProductIntro seen={seenIntro} onStart={(event) => {
+    markIntroSeen();
+    const update = () => flushSync(() => {setSeenIntro(true); void routerGo("/");});
+    if (reducedMotion || !document.startViewTransition) { update(); return; }
+    const root=document.documentElement;
+    root.style.setProperty("--lf-vt-x",`${event.clientX || innerWidth/2}px`);
+    root.style.setProperty("--lf-vt-y",`${event.clientY || innerHeight/2}px`);
+    root.dataset.vt="reveal";
+    const transition=document.startViewTransition(update);
+    void transition.finished.catch(()=>{}).finally(()=>{delete root.dataset.vt;root.style.removeProperty("--lf-vt-x");root.style.removeProperty("--lf-vt-y");});
+  }}/></Suspense>;
   return (
     <div
-      className={`app-shell refined-shell ${page === "home" ? "home-shell" : "workbench-shell"}`}
+      className={`app-shell ${page === "home" ? "home-shell" : "workbench-shell"}`}
       data-workspace-page={page}
     >
       <div className="main-shell">
         <header className="masthead">
           <div className="masthead-bar">
-            <Link className="brand" to="/" title="LabFlow 首页">
-              <LabFlowMark size={29} />
-              <span>LabFlow</span>
+            <Link className="brand" to="/" title="FigTide 首页">
+              <BrandMark size={29} />
             </Link>
             <WorkspaceNav
               page={page}
@@ -281,7 +345,7 @@ export default function App() {
               <span className="local-badge">
                 <span /> 本地工作区
               </span>
-              <select
+              {!projects.isError && <select
                 aria-label="当前项目"
                 value={project}
                 onChange={(e) => {
@@ -289,8 +353,7 @@ export default function App() {
                   if (nextProject === project) return;
                   if (page === "home") {
                     setProject(nextProject);
-                    lastDataset.current = 0;
-                  } else void go(workspaceTargets(memory, nextProject)[page]);
+                  } else void go(workspaceTargets(memory, nextProject)[page], { flushSync: true });
                 }}
               >
                 <option value={0} disabled>
@@ -303,23 +366,27 @@ export default function App() {
                       {p.name}
                     </option>
                   ))}
-              </select>
+              </select>}
+              <Link className="masthead-intro" to="/welcome">
+                产品介绍
+              </Link>
               <Button variant="ghost" onClick={() => setManage(true)}>
                 管理项目
               </Button>
               <Button
                 variant="ghost"
                 className="model-connection-trigger"
-                aria-label="模型连接"
+                aria-label="模型设置"
                 onClick={() => setConnectionOpen(true)}
               >
                 <PlugZap size={15} />
-                <span>模型连接</span>
+                <span>模型设置</span>
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
                 title="新建项目"
+                aria-label="新建项目"
                 onClick={() => setModal(true)}
               >
                 <Plus size={15} />
@@ -363,10 +430,11 @@ export default function App() {
               正在连接本地工作区…
             </div>
           ) : projects.isError ? (
-            <div className="empty-state">
+            <div className="empty-state offline-state">
+              <BrandMark size={40} />
               <AlertCircle />
-              <h2>无法连接 Java 服务</h2>
-              <p>{projects.error.message}</p>
+              <h2>无法连接本地服务</h2>
+              <p>请确认 FigTide 已经启动。你的数据保存在本机，没有丢失。</p>
               <Button onClick={() => projects.refetch()}>重新连接</Button>
             </div>
           ) : route.project && (!current || current.archived) ? (
@@ -421,7 +489,6 @@ export default function App() {
                   onCreate={() => setModal(true)}
                   onProject={(id) => {
                     setProject(id);
-                    lastDataset.current = 0;
                   }}
                   onPlot={() => {
                     void navigate("editor", 0);
@@ -430,7 +497,17 @@ export default function App() {
                   onExperiments={() => navigate("experiments")}
                   onData={() => navigate("data")}
                   onChart={(id) => navigate("editor", id)}
+                  onContinue={(id, pdf) => routerGo(workspaceUrl("editor",project,id), {viewTransition: !reducedMotion && !!document.startViewTransition,state:{fromHome:true,exportFormat:pdf?"pdf":undefined}})}
                   onRetry={() => charts.refetch()}
+                  onModelConnection={() => setConnectionOpen(true)}
+                  onSample={sampleAction}
+                  sampleExists={!!sampleProject}
+                  sampleBusy={sampleBusy}
+                  onAssistant={(chartId, prompt) =>
+                    routerGo(workspaceUrl("editor", project, chartId), {
+                      state: { assistantPrompt: prompt },
+                    })
+                  }
                 />
               ) : page === "data" ? (
                 <DataPage
@@ -452,6 +529,12 @@ export default function App() {
                   }}
                   onProcessed={(d, plot) => {
                     qc.setQueryData(["data", project, d.id], d);
+                    // The API has committed this version. Publish its project
+                    // membership before selecting it, so DataPage cannot reset
+                    // the route to the source while the list is refreshing.
+                    qc.setQueryData<Dataset[]>(["datasets", project], (previous) => [
+                      d, ...(previous || []).filter((item) => item.id !== d.id),
+                    ]);
                     setDataset(d.id);
                     refresh();
                     setMessage("处理结果已保存为独立数据集，源数据保持不变");
@@ -549,223 +632,5 @@ export default function App() {
         </form>
       </Dialog>
     </div>
-  );
-}
-function DataPage({
-  project,
-  selected,
-  onSelect,
-  datasets,
-  loading,
-  error,
-  onRetry,
-  onUpload,
-  busy,
-  onPlot,
-  onChartCreated,
-  onProcessed,
-}: {
-  project: number;
-  selected: number;
-  onSelect: (id: number) => void;
-  datasets: Dataset[];
-  loading: boolean;
-  error?: string;
-  onRetry: () => void;
-  onUpload: (id?: number | null) => void;
-  busy: boolean;
-  onPlot: () => void;
-  onChartCreated: (id: number) => void;
-  onProcessed: (data: Dataset, plot: boolean) => void;
-}) {
-  const [processing, setProcessing] = useState<Dataset | null>(null);
-  const [planning, setPlanning] = useState<Dataset | null>(null);
-  const id = selected || datasets[0]?.id;
-  const detail = useQuery({
-    queryKey: ["data", project, id],
-    queryFn: () => api<Dataset>(`/projects/${project}/data/${id}`),
-    enabled: !!id,
-  });
-  useEffect(() => {
-    if (!selected && id) onSelect(id);
-  }, [id, selected, onSelect]);
-  return (
-    <>
-      <div className="page-eyebrow">数据工作区</div>
-      <div className="page-heading">
-        <div>
-          <h1>每一份数据，都有来源。</h1>
-          <p>原始文件只读保存，使用独立版本追踪变化。</p>
-        </div>
-        <Button disabled={busy} onClick={() => onUpload()}>
-          <Upload size={16} />
-          {busy ? "解析中…" : "上传数据文件"}
-        </Button>
-      </div>
-      {loading ? (
-        <p>正在加载数据…</p>
-      ) : error ? (
-        <div className="empty-inline">
-          {error}
-          <Button onClick={onRetry}>重试</Button>
-        </div>
-      ) : datasets.length ? (
-        <div className="data-layout">
-          <aside className="dataset-list">
-            <h3>
-              数据版本 <span>{datasets.length}</span>
-            </h3>
-            {datasets.map((d) => (
-              <button
-                key={d.id}
-                className={id === d.id ? "active" : ""}
-                onClick={() => onSelect(d.id)}
-              >
-                <FileSpreadsheet size={18} />
-                <span>
-                  <b>{d.filename}</b>
-                  <small>
-                    v{d.version} · {d.row_count} 行
-                  </small>
-                </span>
-              </button>
-            ))}
-          </aside>
-          <section className="data-detail">
-            {detail.isPending ? (
-              <p>正在读取数据…</p>
-            ) : detail.isError ? (
-              <div className="empty-inline">
-                {detail.error.message}
-                <Button onClick={() => detail.refetch()}>重试</Button>
-              </div>
-            ) : (
-              detail.data && (
-                <>
-                  <div className="data-title">
-                    <div>
-                      <h2>{detail.data.filename}</h2>
-                      <span className="muted">
-                        版本 {detail.data.version} · 内容指纹{" "}
-                        {detail.data.sha256.slice(0, 12)}…
-                      </span>
-                    </div>
-                    <div className="button-row">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setProcessing(detail.data)}
-                      >
-                        处理与统计
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={busy}
-                        onClick={() => onUpload(detail.data.dataset_id)}
-                      >
-                        <Layers size={14} />
-                        新版本
-                      </Button>
-                      <Button variant="outline" size="sm" asChild>
-                        <a
-                          href={`/api/projects/${project}/data/${id}/original`}
-                        >
-                          {detail.data.source_meta?.kind === "data_processing"
-                            ? "结果 CSV"
-                            : "原始文件"}
-                        </a>
-                      </Button>
-                      <Button size="sm" onClick={onPlot}>
-                        用于绘图 <ArrowUpRight size={14} />
-                      </Button>
-                    </div>
-                  </div>
-                  <div
-                    className="planner-entry"
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      gap: 16,
-                      padding: 18,
-                      background: "#f6f6f7",
-                      borderRadius: 12,
-                      margin: "18px 0",
-                    }}
-                  >
-                    <div>
-                      <b>数据已就绪，下一步选择怎样表达。</b>
-                      <p style={{ margin: "6px 0 0", fontSize: 13 }}>
-                        让助手推荐图型，或自己选择字段，先预览再创建。
-                      </p>
-                    </div>
-                    <Button onClick={() => setPlanning(detail.data)}>
-                      选择绘图方案 <ArrowRight size={15} />
-                    </Button>
-                  </div>
-                  <div className="field-pills">
-                    {detail.data.fields.map((f) => (
-                      <span key={f.name}>
-                        <b>{f.type === "number" ? "#" : "Aa"}</b>
-                        {f.name}
-                        <small>
-                          {f.type === "number" ? "数值" : "文本"}
-                          {f.missing ? ` · ${f.missing} 个空值` : ""}
-                        </small>
-                      </span>
-                    ))}
-                  </div>
-                  {detail.data.warnings.map((w) => (
-                    <div className="warning" key={w}>
-                      {w}
-                    </div>
-                  ))}
-                  <SourceProvenance
-                    project={project}
-                    source={detail.data.source_meta}
-                  />
-                  <DataTable key={id} data={detail.data} />
-                </>
-              )
-            )}
-          </section>
-        </div>
-      ) : (
-        <div className="empty-state bordered">
-          <Database size={40} />
-          <h2>将实验结果带入工作区</h2>
-          <p>CSV / TSV / TXT / XLSX / JSON / JSONL · 最多 10 MB / 20,000 行</p>
-          <Button disabled={busy} onClick={() => onUpload()}>
-            <Upload size={16} />
-            选择数据文件
-          </Button>
-        </div>
-      )}
-      {processing && (
-        <ProcessingDialog
-          project={project}
-          data={processing}
-          onClose={() => setProcessing(null)}
-          onSaved={(d, plot) => {
-            setProcessing(null);
-            onProcessed(d, plot);
-          }}
-        />
-      )}
-      {planning && (
-        <Suspense fallback={<p role="status">正在打开选图工作区…</p>}>
-          <ChartPlanner
-            key={`${project}:${planning.id}`}
-            project={project}
-            data={planning}
-            onClose={() => setPlanning(null)}
-            onCreated={(id) => {
-              setPlanning(null);
-              onChartCreated(id);
-            }}
-          />
-        </Suspense>
-      )}
-    </>
   );
 }

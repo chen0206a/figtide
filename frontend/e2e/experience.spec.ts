@@ -1,9 +1,10 @@
+import { artifactPath } from "./artifacts";
 import {
   test,
   expect,
   type Page,
   type APIRequestContext,
-} from "@playwright/test";
+} from "./workspace-test";
 import fs from "node:fs";
 test.use({ reducedMotion: "reduce" });
 async function fixture(page: Page, request: APIRequestContext) {
@@ -43,7 +44,7 @@ async function fixture(page: Page, request: APIRequestContext) {
     project.id,
   );
   await page.goto("/");
-  await page.getByRole("button", { name: /体验回归图 · 合成/ }).click();
+  await openHomeChart(page, "体验回归图 · 合成");
   await expect(
     page.getByTestId("plot").locator(".main-svg").first(),
   ).toBeVisible();
@@ -257,14 +258,15 @@ test("focused inspector keeps data and appearance separate without changing the 
     await page.setViewportSize({ width, height: 900 });
     await paperFits(page);
     await page.screenshot({
-      path: `../docs/screenshots/focused-editor-${width}.png`,
+      path: artifactPath(test.info(), `../docs/screenshots/focused-editor-${width}.png`),
     });
   }
   await page.getByRole("button", { name: "图表", exact: true }).click();
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.screenshot({ path: "../docs/screenshots/focused-mapping.png" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/screenshots/focused-mapping.png") });
   const saved = await (
     await request.get(`/api/projects/${project.id}/charts/${chart.id}`)
   ).json();
   expect(saved.revision).toBe(chart.revision);
 });
+import { openHomeChart } from "./fixtures/home-navigation";

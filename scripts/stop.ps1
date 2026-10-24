@@ -2,7 +2,7 @@ param([string]$MySqlBin = 'C:\Program Files\MySQL\MySQL Server 8.0\bin')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $statePath = Join-Path $root '.runtime/processes.json'
-if (!(Test-Path $statePath)) { Write-Host 'No tracked LabFlow processes.'; exit }
+if (!(Test-Path $statePath)) { Write-Host 'No tracked FigTide processes.'; exit }
 $state = Get-Content $statePath -Raw | ConvertFrom-Json
 foreach ($entry in @(@{name='frontend';port=5176;match='vite'},@{name='backend';port=8086;match='labflow-0.1.0.jar'},@{name='mysql';port=33316;match='datadir=./.runtime/mysql'})) {
     $processId = $state.($entry.name)
@@ -16,4 +16,4 @@ foreach ($entry in @(@{name='frontend';port=5176;match='vite'},@{name='backend';
         finally { $env:MYSQL_PWD=$oldPassword }
     } else { Stop-Process -Id $processId }
 }
-Write-Host 'Tracked LabFlow services stopped. All database files preserved.'
+Write-Host 'Tracked FigTide services stopped. All database files preserved.'

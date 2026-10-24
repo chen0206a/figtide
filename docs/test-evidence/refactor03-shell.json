@@ -1,0 +1,128 @@
+[
+  {
+    "width": 1280,
+    "home": {
+      "brand": {
+        "x": 28,
+        "y": 17,
+        "width": 106.0625,
+        "height": 29
+      },
+      "nav": {
+        "x": 158.0625,
+        "y": 11.5,
+        "width": 428,
+        "height": 40
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 64
+      }
+    },
+    "experiments": {
+      "brand": {
+        "x": 28,
+        "y": 17,
+        "width": 106.0625,
+        "height": 29
+      },
+      "nav": {
+        "x": 158.0625,
+        "y": 11.5,
+        "width": 428,
+        "height": 40
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 64
+      }
+    },
+    "datasets": {
+      "brand": {
+        "x": 28,
+        "y": 17,
+        "width": 106.0625,
+        "height": 29
+      },
+      "nav": {
+        "x": 158.0625,
+        "y": 11.5,
+        "width": 428,
+        "height": 40
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 64
+      }
+    }
+  },
+  {
+    "width": 1920,
+    "home": {
+      "brand": {
+        "x": 28,
+        "y": 17,
+        "width": 106.0625,
+        "height": 29
+      },
+      "nav": {
+        "x": 158.0625,
+        "y": 11.5,
+        "width": 428,
+        "height": 40
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 64
+      }
+    },
+    "experiments": {
+      "brand": {
+        "x": 28,
+        "y": 17,
+        "width": 106.0625,
+        "height": 29
+      },
+      "nav": {
+        "x": 158.0625,
+        "y": 11.5,
+        "width": 428,
+        "height": 40
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 64
+      }
+    },
+    "datasets": {
+      "brand": {
+        "x": 28,
+        "y": 17,
+        "width": 106.0625,
+        "height": 29
+      },
+      "nav": {
+        "x": 158.0625,
+        "y": 11.5,
+        "width": 428,
+        "height": 40
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 64
+      }
+    }
+  }
+]

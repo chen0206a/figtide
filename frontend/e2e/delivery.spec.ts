@@ -1,6 +1,8 @@
-import { test, expect } from "@playwright/test";
+import { artifactPath } from "./artifacts";
+import { test, expect } from "./workspace-test";
 import fs from "node:fs";
 import { defaults } from "../src/editor/model";
+import { openHomeChart } from "./fixtures/home-navigation";
 test.use({ reducedMotion: "reduce" });
 // Only remove templates created by this run, including the restored backup's copies.
 const ownedProjects = new Set<number>();
@@ -60,9 +62,9 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   await page.getByLabel("图表标题", { exact: true }).fill("合成实验 · Model α");
   await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByLabel("字体", { exact: true }).selectOption("Noto Sans SC");
-  await page.getByRole("button", { name: "专业", exact: true }).click();
+  await page.getByRole("button", { name: "外观", exact: true }).click();
   await page.getByRole("switch", { name: "按论文物理尺寸输出" }).check();
-  await page.getByRole("button", { name: "单栏 89 mm" }).click();
+  await page.getByLabel("成品宽度 / mm").fill("89");
   await page.getByRole("button", { name: "保存", exact: true }).click();
   let original: any;
   await expect
@@ -110,7 +112,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   await page
     .getByRole("tab", { name: "复用到其他数据集", exact: true })
     .click();
-  await page.getByLabel("复用目标数据版本").selectOption(String(target.id));
+  await page.getByLabel("复用目标版本").selectOption(String(target.id));
   await expect(
     page.getByRole("button", { name: "确认映射并保存新图" }),
   ).toBeDisabled();
@@ -121,7 +123,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   }))
     await page.getByLabel(`映射 ${old}`, { exact: true }).selectOption(next);
   await page.screenshot({
-    path: "../docs/screenshots/figure-reuse.png",
+    path: artifactPath(test.info(), "../docs/screenshots/figure-reuse.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "确认映射并保存新图" }).click();
@@ -156,15 +158,15 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
     await page.getByLabel("文件格式").selectOption(format);
     const download = page.waitForEvent("download", { timeout: 60000 });
     await page.getByRole("button", { name: "下载图表", exact: true }).click();
-    await (await download).saveAs(`../docs/exports/reusable-figure.${format}`);
+    await (await download).saveAs(artifactPath(test.info(), `../docs/exports/reusable-figure.${format}`));
   }
   expect(
     fs
-      .readFileSync("../docs/exports/reusable-figure.pdf")
+      .readFileSync(artifactPath(test.info(), "../docs/exports/reusable-figure.pdf"))
       .subarray(0, 5)
       .toString(),
   ).toBe("%PDF-");
-  const svg = fs.readFileSync("../docs/exports/reusable-figure.svg", "utf8");
+  const svg = fs.readFileSync(artifactPath(test.info(), "../docs/exports/reusable-figure.svg"), "utf8");
   expect(svg).toContain('width="89mm"');
   expect(svg).toContain("合成实验");
   expect(svg).not.toContain("<image");
@@ -179,7 +181,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   const recoveredName = `成果恢复验收 ${p.id}`;
   await page.getByLabel("恢复项目名称").fill(recoveredName);
   await page.screenshot({
-    path: "../docs/screenshots/project-delivery.png",
+    path: artifactPath(test.info(), "../docs/screenshots/project-delivery.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "恢复为新项目" }).click();
@@ -210,10 +212,7 @@ test("personal style → explicit remap → vector PDF/SVG/PNG → project archi
   expect({ ...restoredConfig.config, datasetVersionId: target.id }).toEqual(
     reopened.config,
   );
-  await page
-    .getByRole("button", { name: copy.name, exact: false })
-    .first()
-    .click();
+  await openHomeChart(page, copy.name);
   await expect(page.getByLabel("图表名称", { exact: true })).toHaveValue(
     copy.name,
   );
@@ -285,19 +284,20 @@ test("vector PDF retains bold CJK multiline labels and heatmap cells", async ({
     p.id,
   );
   await page.goto("/");
-  await page
-    .getByRole("button", { name: "矢量热力图 · 合成", exact: false })
-    .first()
-    .click();
+  await openHomeChart(page, "矢量热力图 · 合成");
   await expect(page.getByTestId("plot")).toBeVisible();
   await page.getByRole("button", { name: "导出", exact: true }).click();
   await page.getByLabel("文件格式").selectOption("pdf");
   const waiting = page.waitForEvent("download");
   await page.getByRole("button", { name: "下载图表", exact: true }).click();
-  await (await waiting).saveAs("../.runtime/heatmap-vector.pdf");
+  await (await waiting).saveAs(artifactPath(test.info(), "../.runtime/heatmap-vector.pdf"));
   // Converter contract check, separate from the editor's deliberately plain-text inputs.
   const bytes = await page.evaluate(async (config) => {
-    const { vectorPdf } = await import("/src/editor/pdf.ts");
+    const moduleUrl = performance.getEntriesByType("resource")
+      .map(entry => entry.name)
+      .find(url => /\/src\/editor\/pdf\.ts(?:\?|$)|\/assets\/pdf-[^/]+\.js(?:\?|$)/.test(url));
+    if (!moduleUrl) throw new Error("PDF module was not loaded by the real export action");
+    const { vectorPdf } = await import(moduleUrl);
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="250"><text x="200" y="45" text-anchor="middle" style="font-family:Noto Sans SC;font-size:24px;font-weight:700;white-space:pre"><tspan x="200" dy="0">第一行 ±</tspan><tspan x="200" dy="35">Second line</tspan></text></svg>';
     const blob = await vectorPdf(
@@ -306,5 +306,5 @@ test("vector PDF retains bold CJK multiline labels and heatmap cells", async ({
     );
     return [...new Uint8Array(await blob.arrayBuffer())];
   }, c);
-  fs.writeFileSync("../.runtime/multiline-vector.pdf", Buffer.from(bytes));
+  fs.writeFileSync(artifactPath(test.info(), "../.runtime/multiline-vector.pdf"), Buffer.from(bytes));
 });

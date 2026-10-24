@@ -1,0 +1,18 @@
+:root {
+  --lf-ease-out: cubic-bezier(.22,1,.36,1);
+  --lf-ease-in-out: cubic-bezier(.65,0,.35,1);
+  --lf-dur-fast: 180ms;
+  --lf-dur-enter: 750ms;
+}
+@keyframes lf-up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+@keyframes lf-fade { from { opacity:0; } to { opacity:1; } }
+@keyframes lf-draw { to { stroke-dashoffset:0; } }
+@keyframes lf-pop { from { opacity:0; transform:scale(.4); } to { opacity:1; transform:scale(1); } }
+.lf-motion-on .lf-enter { animation:lf-up var(--lf-dur-enter) var(--lf-ease-out) both; animation-delay:var(--d,0ms); }
+.lf-motion-on[data-entrance="quick"] .lf-enter { animation:lf-fade var(--lf-dur-fast) var(--lf-ease-out) both; }
+:root[data-vt="reveal"]::view-transition-old(root) { animation:none; }
+:root[data-vt="reveal"]::view-transition-new(root) { animation:lf-reveal .8s var(--lf-ease-in-out) both; }
+@keyframes lf-reveal { from {clip-path:circle(0 at var(--lf-vt-x) var(--lf-vt-y));} to {clip-path:circle(150vmax at var(--lf-vt-x) var(--lf-vt-y));} }
+@media (prefers-reduced-motion:reduce) {
+  .lf-motion-on *, .lf-motion-on *::before, .lf-motion-on *::after { animation:none !important; transition:none !important; }
+}

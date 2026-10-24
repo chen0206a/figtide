@@ -1,11 +1,12 @@
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import { artifactPath } from "./artifacts";
+import { test, expect, type APIRequestContext } from "./workspace-test";
 import { defaults } from "../src/editor/model";
 test.use({ reducedMotion: "reduce" });
 async function setup(request: APIRequestContext) {
   const original = await (await request.get("/api/agent/connection")).json();
   test.skip(
     original.model !== "labflow-fixture" ||
-      !original.base_url.includes("127.0.0.1:18769"),
+      !original.base_url.includes(`127.0.0.1:${process.env.LABFLOW_FIXTURE_PORT || "18769"}`),
     "Only the isolated local fixture may receive these requests",
   );
   return original;
@@ -30,8 +31,11 @@ test("web connection settings → two real HTTP probes → verified apply → se
   const original = await setup(request);
   try {
     await page.goto("/");
-    await page.getByRole("button", { name: "模型连接", exact: true }).click();
-    const dialog = page.getByRole("dialog", { name: "模型连接" });
+    await page
+      .locator(".masthead")
+      .getByRole("button", { name: "模型设置", exact: true })
+      .click();
+    const dialog = page.getByRole("dialog", { name: "模型设置" });
     await expect(dialog.getByLabel("模型名称", { exact: true })).toHaveValue(
       "labflow-fixture",
     );
@@ -64,7 +68,7 @@ test("web connection settings → two real HTTP probes → verified apply → se
       dialog.getByRole("button", { name: "应用连接", exact: true }),
     ).toBeInViewport();
     await page.screenshot({
-      path: "../docs/screenshots/model-connection.png",
+      path: artifactPath(test.info(), "../docs/screenshots/model-connection.png"),
       fullPage: false,
     });
     await page.setViewportSize({ width: 390, height: 844 });
@@ -76,7 +80,10 @@ test("web connection settings → two real HTTP probes → verified apply → se
     ).toBeInViewport();
     await page.setViewportSize({ width: 1560, height: 1000 });
     await dialog.getByRole("button", { name: "关闭", exact: true }).click();
-    await page.getByRole("button", { name: "模型连接", exact: true }).click();
+    await page
+      .locator(".masthead")
+      .getByRole("button", { name: "模型设置", exact: true })
+      .click();
     await expect(dialog.getByText("已验证", { exact: true })).toBeVisible();
     await expect(dialog.getByLabel("API Key", { exact: true })).toHaveValue("");
     await dialog.getByRole("button", { name: "断开", exact: true }).click();
@@ -121,9 +128,9 @@ test("editor settings expose real authentication failure without replacing the w
   await page.getByRole("button", { name: "绘图助手", exact: true }).click();
   const assistant = page.getByRole("complementary", { name: "绘图助手" });
   await assistant
-    .getByRole("button", { name: "模型连接", exact: true })
+    .getByRole("button", { name: "模型设置", exact: true })
     .click();
-  const dialog = page.getByRole("dialog", { name: "模型连接" });
+  const dialog = page.getByRole("dialog", { name: "模型设置" });
   await dialog.getByLabel("API Key", { exact: true }).fill("fixture-rejected");
   await dialog.getByRole("checkbox").check();
   await dialog.getByRole("button", { name: "测试连接", exact: true }).click();
@@ -133,7 +140,7 @@ test("editor settings expose real authentication failure without replacing the w
     (await (await request.get("/api/agent/connection")).json()).revision,
   ).toBe(original.revision);
   await page.screenshot({
-    path: "../docs/screenshots/model-connection-error.png",
+    path: artifactPath(test.info(), "../docs/screenshots/model-connection-error.png"),
     fullPage: false,
   });
   await dialog.getByRole("button", { name: "关闭", exact: true }).click();

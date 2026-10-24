@@ -1,0 +1,43 @@
+{
+  "capturedAt": "2026-10-23T11:37:18.732Z",
+  "projectId": 1,
+  "runs": [
+    {
+      "calibratedFcp": 288,
+      "label": "dev",
+      "url": "http://127.0.0.1:5178/",
+      "entranceAt": 296,
+      "firstContentfulPaint": 288,
+      "largestContentfulPaint": 0,
+      "longTasks": [
+        {
+          "start": 114,
+          "duration": 59,
+          "name": "RunTask"
+        },
+        {
+          "start": 175,
+          "duration": 87,
+          "name": "RunTask"
+        }
+      ],
+      "longTasksInsideEntrance": []
+    },
+    {
+      "calibratedFcp": 140,
+      "label": "preview",
+      "url": "http://127.0.0.1:4399/",
+      "entranceAt": 143,
+      "firstContentfulPaint": 140,
+      "largestContentfulPaint": 0,
+      "longTasks": [
+        {
+          "start": 67,
+          "duration": 60,
+          "name": "RunTask"
+        }
+      ],
+      "longTasksInsideEntrance": []
+    }
+  ]
+}

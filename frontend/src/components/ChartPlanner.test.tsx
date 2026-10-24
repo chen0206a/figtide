@@ -102,7 +102,7 @@ it("requires consent, recommends only, and creates the chosen mapping after lint
   const { calls, onCreated } = setup();
   expect(screen.getByRole("button", { name: "分析并推荐" })).toBeDisabled();
   expect(calls.some((c) => c.url.endsWith("/runs"))).toBe(false);
-  fireEvent.click(screen.getByRole("checkbox", { name: /同意将字段名/ }));
+  fireEvent.click(screen.getByRole("checkbox", { name: /同意将字段摘要/ }));
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "分析并推荐" })).toBeEnabled(),
   );
@@ -133,7 +133,7 @@ it("blocks creation when lint fails and reports the error", async () => {
 });
 it("recovers a lost start response by reading its ID without a second model request", async () => {
   const { calls } = setup(true, false, true);
-  fireEvent.click(screen.getByRole("checkbox", { name: /同意将字段名/ }));
+  fireEvent.click(screen.getByRole("checkbox", { name: /同意将字段摘要/ }));
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "分析并推荐" })).toBeEnabled(),
   );
@@ -148,7 +148,7 @@ it("recovers a lost start response by reading its ID without a second model requ
 });
 it("cancels its owned run on unmount without starting a replacement", async () => {
   const { calls, unmount } = setup(true, true);
-  fireEvent.click(screen.getByRole("checkbox", { name: /同意将字段名/ }));
+  fireEvent.click(screen.getByRole("checkbox", { name: /同意将字段摘要/ }));
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "分析并推荐" })).toBeEnabled(),
   );

@@ -115,11 +115,12 @@ export const toolValueNames: Record<string, string> = {
   confusion: "混淆矩阵",
 };
 /** A chart description short enough to paste into a prompt (≤1 KB). */
-export function describeFigure(c: Config): string {
+export function describeFigure(c: Config, dataset?: Pick<Dataset, "id" | "version">): string {
   const parts = [
     `图表「${c.style.title || "未命名"}」`,
     `类型 ${toolValueNames[c.type] || c.type}`,
-    `数据版本 #${c.datasetVersionId}`,
+    ...(dataset?.id === c.datasetVersionId && Number.isInteger(dataset.version) && dataset.version > 0
+      ? [`版本 v${dataset.version}`] : []),
     `X=${c.x || "自动"}`,
     c.group ? `分组=${c.group}` : "未分组",
   ];

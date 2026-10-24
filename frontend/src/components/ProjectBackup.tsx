@@ -49,7 +49,7 @@ export function ProjectBackup({
     <section className="project-backup" aria-label="项目备份与恢复">
       <h3>项目备份与恢复</h3>
       <p className="tiny-note">
-        包含原始文件、数据与图表的全部版本、实验关联及本项目创建的样式模板。保存在本机的未提交草稿不包含在备份内。
+        备份包含原始文件、所有版本、实验关联和样式模板，不含未保存的草稿。
       </p>
       <label>
         备份项目
@@ -76,7 +76,7 @@ export function ProjectBackup({
             }
             downloadBlob(
               await res.blob(),
-              `labflow-project-${project}.labflow.zip`,
+              `figtide-project-${project}.labflow.zip`,
             );
             setDone("项目备份已下载；请保存在工作区以外的位置。");
           })
@@ -119,9 +119,9 @@ export function ProjectBackup({
           <b>{preview.name}</b>
           <p>
             {preview.counts.experiments} 条实验 ·{" "}
-            {preview.counts.dataset_versions} 个数据版本 ·{" "}
-            {preview.counts.charts} 张图 / {preview.counts.chart_versions}{" "}
-            个快照 · {preview.counts.style_templates} 个样式
+            {preview.counts.dataset_versions} 个版本 ·{" "}
+            {preview.counts.charts} 张图表 / {preview.counts.chart_versions}{" "}
+            个版本 · {preview.counts.style_templates} 个样式
           </p>
           <small>
             原文件合计 {(preview.original_bytes / 1024).toFixed(1)}{" "}

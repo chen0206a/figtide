@@ -8,6 +8,7 @@ export default defineConfig({
     baseURL: webUrl,
     viewport: { width: 1560, height: 1000 },
     headless: true,
+    reducedMotion: "reduce",
     acceptDownloads: true,
     // 本机没有下载 Playwright 自带 Chromium 时，复用系统 Chrome，
     // 避免测试依赖浏览器二进制下载（沙箱/离线环境可重复执行）。
@@ -15,7 +16,7 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
-  reporter: [["list"], ["html", { open: "never" }]],
+  reporter: [["list"], ["html", { open: "never" }], ["json", { outputFile: "test-results/results.json" }]],
   // 记录运行前的项目数量，结束后删掉本次新建的项目，避免测试数据堆进真实库。
   globalSetup: "./e2e/global-setup.ts",
   globalTeardown: "./e2e/global-teardown.ts",

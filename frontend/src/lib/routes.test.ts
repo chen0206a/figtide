@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { readWorkspaceRoute, workspaceUrl } from "./routes";
 describe("workspace routes", () => {
+  it("opens welcome without a project", () => {
+    expect(readWorkspaceRoute("/welcome")).toMatchObject({page:"welcome",valid:true,project:0});
+    expect(workspaceUrl("welcome",0)).toBe("/welcome");
+  });
   it("restores explicit project and saved figure regardless of local selection", () => {
     expect(readWorkspaceRoute("/projects/17/figures/23")).toMatchObject({
       page: "editor",

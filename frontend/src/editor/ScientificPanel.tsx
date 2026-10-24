@@ -1,12 +1,10 @@
 import {
-  defaultPublication,
   defaultEmpirical,
   defaultHeatmap,
   palettes,
   seriesEncoding,
   type Config,
 } from "./model";
-import { publicationMetrics } from "./publication";
 import { Button } from "../components/ui/button";
 
 export function ScientificPanel({
@@ -16,93 +14,13 @@ export function ScientificPanel({
   config: Config;
   onChange: (value: Partial<Config>) => void;
 }) {
-  const p = c.publication || defaultPublication,
-    e = c.empirical || defaultEmpirical,
-    h = c.heatmap || defaultHeatmap,
-    m = publicationMetrics(c);
-  const pub = (v: Partial<typeof p>) =>
-    onChange({ publication: { ...p, ...v } });
+  const e = c.empirical || defaultEmpirical,
+    h = c.heatmap || defaultHeatmap;
   const empirical = (v: Partial<typeof e>) =>
     onChange({ empirical: { ...e, ...v } });
   const heat = (v: Partial<typeof h>) => onChange({ heatmap: { ...h, ...v } });
   return (
     <>
-      <section className="property-section publication-section">
-        <h3>论文尺寸与输出</h3>
-        <label className="toggle-label">
-          按论文物理尺寸输出
-          <input
-            role="switch"
-            aria-label="按论文物理尺寸输出"
-            type="checkbox"
-            checked={p.enabled}
-            onChange={(event) => pub({ enabled: event.target.checked })}
-          />
-        </label>
-        <p className="tiny-note">
-          开启后按成品 mm / pt 预览和导出；屏幕缩放不会改变成品尺寸。
-        </p>
-        {p.enabled && (
-          <>
-            <div className="publication-presets">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => pub({ widthMm: 89 })}
-              >
-                单栏 89 mm
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => pub({ widthMm: 183 })}
-              >
-                双栏 183 mm
-              </Button>
-            </div>
-            <div className="form-grid">
-              <NumberField
-                label="成品宽度 / mm"
-                value={p.widthMm}
-                min={50}
-                max={300}
-                step={0.5}
-                onChange={(widthMm) => pub({ widthMm })}
-              />
-              <NumberField
-                label="成品基础字号 / pt"
-                value={p.fontPt}
-                min={4}
-                max={24}
-                step={0.5}
-                onChange={(fontPt) => pub({ fontPt })}
-              />
-            </div>
-            <NumberField
-              label="PNG 目标 DPI"
-              value={p.dpi}
-              min={72}
-              max={1200}
-              step={1}
-              onChange={(dpi) => pub({ dpi })}
-            />
-            <div className="publication-readout">
-              <strong>
-                {p.widthMm} × {m.heightMm.toFixed(1)} mm
-              </strong>
-              <span>高度随画布宽高比 · 字号 {p.fontPt} pt</span>
-              <span>
-                PNG {m.pixelWidth} × {m.pixelHeight} px · 约{" "}
-                {m.effectiveDpi.toFixed(0)} DPI
-              </span>
-            </div>
-            <p className="tiny-note">
-              89 / 183 mm
-              为排版起点，不代表期刊认证。修改画布高度可调整成品宽高比。
-            </p>
-          </>
-        )}
-      </section>
       {(c.type === "histogram" || c.type === "ecdf") && (
         <section className="property-section">
           <h3>{c.type === "histogram" ? "确定性分箱" : "经验累计分布"}</h3>

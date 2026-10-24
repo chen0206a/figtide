@@ -15,6 +15,8 @@ export type VectorPlot = {
   annotations: any[];
   xaxis: Record<string, unknown>;
   yaxis: Record<string, unknown>;
+  /** Extra top margin (px) a plot needs for text drawn above the axes. */
+  marginTop?: number;
 };
 export function vectorHeatmap(c: Config, rows: Dataset["rows"]): VectorPlot {
   const xs = [...new Set(rows.map((r) => r[c.x]).filter((v) => v != null))];

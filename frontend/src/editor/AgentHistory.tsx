@@ -73,7 +73,7 @@ export function AgentHistory(p: {
           </select>
         </div>
         {list.isPending ? (
-          <p role="status">正在读取历史记录…</p>
+          <p role="status">正在读取运行历史…</p>
         ) : list.isError ? (
           <div role="alert">
             {list.error.message}
@@ -194,9 +194,8 @@ export function AgentHistory(p: {
                 <dd title={detail.data.catalog_hash}>
                   {detail.data.catalog_hash.slice(0, 16)}
                 </dd>
-                <dt>数据版本</dt>
+                <dt>版本</dt>
                 <dd>
-                  #{detail.data.dataset_version_id} ·{" "}
                   <span title={detail.data.source_sha256}>
                     {detail.data.source_sha256.slice(0, 12)}
                   </span>
@@ -204,7 +203,7 @@ export function AgentHistory(p: {
                 <dt>保存基准</dt>
                 <dd>
                   {detail.data.chart_id
-                    ? `图表 #${detail.data.chart_id} · v${detail.data.base_revision}`
+                    ? `图表 · v${detail.data.base_revision}`
                     : "尚未保存的草稿"}
                 </dd>
               </dl>
