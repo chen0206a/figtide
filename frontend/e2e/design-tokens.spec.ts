@@ -90,9 +90,9 @@ test("four real workspace pages keep their layout while adopting shared tokens",
   for (const entry of pages) {
     await page.goto(entry.path);
     await expect(page.locator(entry.ready).first()).toBeVisible();
-    await expect(page.locator(".brand .labflow-mark")).toBeVisible();
+    await expect(page.locator(".brand .brand-mark img")).toBeVisible();
     expect(
-      (await page.locator(".brand .labflow-mark").boundingBox())!.width,
+      (await page.locator(".brand .brand-mark img").boundingBox())!.width,
     ).toBe(29);
     await page.evaluate(() => document.fonts.ready);
     await expect

@@ -1,3 +1,17 @@
+## 2026-10-24 · 任务 13 总验收：v0.1.0
+
+- `npm test -- --maxWorkers=4`：**52 files / 280 passed / 0 failed**；`npm run build`：通过（19.17s，保留既有 >500kB chunk 提示）。
+- `./scripts/test-agent.ps1 -All -FixturePort 18770`：**83 passed / 0 failed / 0 skipped（5.2 分钟）**，`audit-restart` 通过（已完成审计跨 JVM 不变、中断运行恢复、夹具清理）；teardown 清理 92 个测试项目。首次运行 81 passed / 2 failed，处理见下，修复后复跑一次全绿。
+- `node scripts/test-site.cjs`：4/4 宽度（390/768/1280/1440）无溢出、无 `href="#"`、无坏图、无页面错误；外部请求只有 Google Fonts，请求失败 0、付费请求 0。
+- 首次全量 E2E 的 2 处失败均为断言/基线随品牌改名变化，不是产品缺陷：
+  1. `frontend/e2e/design-tokens.spec.ts` 断言的 `.brand .labflow-mark` 已被 13-1 的 `.brand .brand-mark img` 取代 → 选择器改为图片节点，仍断言宽度 29。
+  2. `frontend/e2e/cleanup-visual.spec.ts` 的布局基线与新字标不符（`.workspace-nav.x` 158.0625 → 146.484375）。用 `LABFLOW_POLISH_UPDATE_BASELINE=1` 重新生成，逐字段 diff 只有 `.workspace-nav` 的 x 一个值变化，其他页面与元素均未变，符合「字标从 LabFlow 换成 FigTide 后宽度变化」的预期。
+- 截图（`docs/screenshots/`）：`release-0.1-home.png`、`release-0.1-editor.png`、`release-0.1-editor-header.png`、`release-0.1-intro-1440.png`、`release-0.1-intro-390.png`、`release-0.1-site-{390,768,1280,1440}.png`、`release-0.1-favicon.png`；静态站证据 `docs/test-evidence/release-0.1-site.json`。
+- favicon：无头浏览器无法截取浏览器标签栏，`release-0.1-favicon.png` 是浏览器实际请求到的 `site/favicon.svg` 渲染结果；`release-brand.spec.ts` 另行断言 `/favicon.svg`、`/favicon.ico`、`/apple-touch-icon.png` 均 200，且 SVG 含图标路径。
+- 截图复核方式：当前执行模型不支持图像输入，modlens 视觉桥的 claude-cli 提供方不可用（登录/额度），因此未做逐张目视；改以 Playwright 的可见性/溢出断言、E2E 文字断言和逐张像素边界检查（右/下边缘仅 1–3 种颜色，无内容被裁切）复核。人工目视可直接打开上述 PNG。
+- `grep -rn "LabFlow" frontend/src frontend/index.html site README.md`：仅 2 处，均为内部协议头 `X-LabFlow-Connection`（`frontend/src/components/ModelConnectionDialog.tsx:74` 及其测试），归为「内部标识」，用户不可见；`site/`、`README.md` 为 0。
+- `v0.1.0` 标签在本段提交后打。
+
 ## 2026-10-24 · 任务 13-4：版本与发布准备
 
 - 版本：`frontend/package.json` 为 `0.1.0`（补 `"license": "MIT"`），后端 `pom.xml` 已是 `0.1.0`（非 SNAPSHOT，未改后端代码）。`vite.config.ts` 用 `define: { __APP_VERSION__: JSON.stringify(version) }` 从 `package.json` 注入，`src/version.d.ts` 声明；关于弹窗显示「版本 0.1.0」并链到 MIT LICENSE，新增 `AboutDialog.test.tsx`。
