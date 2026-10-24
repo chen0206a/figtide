@@ -1,3 +1,40 @@
+## 2026-10-24 · 14-2b：桌面固定首选端口与重启草稿恢复
+
+在 `desktop/14-2@b392be6` 上继续，作为一个独立补充修复提交，未推送。**桌面总验收单轮全绿：84 passed / 0 failed / 0 skipped / 0 flaky**（原83条 + 新增1条真实JAR重启用例），没有刷新基线或修改既有E2E断言。
+
+### 行为与授权范围
+
+- 桌面启动器授权：新增 `desktop/DesktopPort.java`，在取得数据目录OS锁之后读取/首次原子写入 `desktop.json` 的 `preferred_port`。默认 **17861**，低于49152；已实际执行 `netsh int ipv4 show excludedportrange protocol=tcp`，本机保留范围不包含17861，完整范围见 `test-evidence/desktop14-2b-port-ranges.json`。
+- `--labflow.desktop.port=端口` 优先于已有首选；首次覆盖作为初始记录，已有desktop.json时只覆盖本次运行、不改文件。非法端口或损坏配置报错，不静默重选。桌面使用自身解析出的端口并强制127.0.0.1监听，不再用server.port=0作为常态；开发profile不变。
+- 首选端口被占用则本次请求随机端口0，desktop.json字节不变；实际端口仍写app.port。另处理可用性检查与Tomcat实际绑定之间的竞争：仅端口占用失败重试随机端口，其他启动错误仍报错。
+- 回退后日志和托盘气泡使用「端口被占用，本次无法沿用未保存的草稿和页面偏好」。回退气泡优先于首次运行提示，不被覆盖；下次启动仍重试首选。浏览器首次打开、第二实例打开、托盘重新打开均使用DesktopInstance的 `http://127.0.0.1:<端口>/`，不使用localhost打开。
+- 原有草稿键、草稿写入/恢复、业务API、MySQL迁移、H2格式、schema v1、预算/幂等/恢复业务语义均未修改。没有使用真实工作区或收费模型。
+- `SMOKE-14-2.md` 增补「重启后不再显示介绍页、草稿可恢复」及占用回退检查；`DESKTOP-PLAN.md` 第3节解释固定origin与占用时临时随机的原因。占用回退、显式换端口、更换浏览器配置文件仍无法跨origin读取草稿，原端口存储不删除。
+
+### 实际验证
+
+| 验证 | 命令 | passed | failed/errors | skipped |
+|---|---|---:|---:|---:|
+| 桌面Java单测/回归 | `mvn -B -f backend/pom.xml -Dtest=DesktopPortTest,DesktopLauncherTest,DesktopPagesTest,LocalOriginMatrixTest test` | 78 | 0 | 0 |
+| 前端 | `npm test -- --maxWorkers=4` | 280（52文件） | 0 | 0 |
+| 桌面真实进程探针 | `node scripts/check-desktop-launcher.cjs` | 19项 | 0 | 0 |
+| 完整桌面E2E | `./scripts/test-agent.ps1 -All -Desktop -FixturePort 18770` | 84 | 0 | 0 |
+
+- `npm run build` 通过（Vite 17.19s，既有>500kB chunk提示保留）；完整E2E脚本内的独立npm ci/build/Maven桌面JAR构建也通过。
+- 新增5条DesktopPortTest：连续两次选择并真实绑定相同端口；占用时随机绑定且文件不变、释放后恢复；默认值持久化；已有记录的显式覆盖不改原文件；非法/损坏配置拒绝。
+- 真实进程探针（不经过浏览器或托盘）：正常重启、保存后强杀重启均17870；人为占用时退到62137；释放后再开恢复17870。desktop.json字节一致，回退警告日志存在。原单实例、保存配置持久性、Host/Origin、中文/空格路径与日志无假密钥的检查保留。
+- 新增 `desktop-restart.spec.ts`：在同一浏览器上下文设置介绍页已读，真实导入CSV、编辑未保存草稿，强杀并重新启动另一个独立临时H2目录的真实figtide.jar。第二次不传端口覆盖，确认从desktop.json恢复17862、实例ID更新、页面刷新后恢复配置/名称/revision，图表列表仍为空，没有自动正式保存；再访问首页不会返回介绍页。保留全部现有83条，开发通道因不提供桌面JAR而跳过此新增用例。
+- 完整一轮开始 `2026-10-24T10:07:14.525Z`，耗时228881.881ms，workers=1、retries=0。真实桌面网页/API均来自127.0.0.1:17861的同一Java进程；测试库H2，模型使用18770本地协议夹具，不启动Vite。结束清理92个测试项目；独立JVM的audit-restart随后通过，临时H2目录已清理。
+- 结构化证据：`test-evidence/desktop14-2b-{unit,launcher,desktop,port-ranges}.json`。整轮原始日志 `.runtime/task14-2b-desktop-full.log`；本轮完整E2E无失败trace。
+
+### 前置失败与修正（不算作通过的验收轮次）
+
+- 初次无worker限制的 `npm test` 与Java/构建并行，出现5条5000ms超时（275 passed / 5 failed）；未改产品或断言，按此前验收配置限制为4 workers后完整280条通过，原始日志 `.runtime/task14-2b-frontend.log` / `task14-2b-frontend-4.log`。
+- 新增重启用例首次专项运行1 failed（180000ms timeout）。trace显示标题已经恢复；测试把含`at`时间戳的草稿字符串作全等比较，但正常恢复会更新时间戳，且finally再次等待已因信号结束的进程，掩盖断言并超时。修正为配置/名称/revision全等，并同时检查exitCode和signalCode；没有修改草稿产品代码。原trace保留 `.runtime/task14-2b-initial-restart-trace.zip`，错误日志 `.runtime/task14-2b-restart-e2e.log`。
+- 修正后先单跑新增用例1 passed（16.8s；自带独立JAR，无需外部后端，全局清理故意指向127.0.0.1:1并跳过）；随后上表84条完整单轮通过，未拼接结果。
+
+未执行：本轮双库全量Java与开发通道E2E（此次范围为桌面端口，78条相关回归和完整桌面84条已执行）；真实Windows默认浏览器唤起、托盘气泡目视与菜单点击等仍按SMOKE清单人工确认（自动化使用open-browser=false / tray=false），未虚构通过。未开始14-3/14-4。无需新增产品决策。
+
 ## 2026-10-24 · 14-2 总验收：自动化通过，Windows 人工项待确认
 
 分支 `desktop/14-2`，从 `desktop/14-1@d84e002` 继续；14-2-0 至 14-2-5 已分6次提交，未推送。总验收无失败、未重跑拼接结果、未刷新布局基线、未删除/放宽断言。

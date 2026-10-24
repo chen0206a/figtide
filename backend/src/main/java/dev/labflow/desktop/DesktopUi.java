@@ -27,7 +27,7 @@ final class DesktopUi {
     catch (Exception | AWTError ignored) { System.err.println("请打开文件夹：" + path); }
   }
 
-  void show(DesktopInstance instance, DesktopPaths paths, Runnable quit) {
+  void show(DesktopInstance instance, DesktopPaths paths, Runnable quit, boolean temporaryPort) {
     try {
       if (!SystemTray.isSupported()) { System.err.println("系统托盘不可用；关闭进程前请正常退出服务。"); return; }
       EventQueue.invokeAndWait(() -> {
@@ -45,7 +45,9 @@ final class DesktopUi {
             tray = new TrayIcon(image, "FigTide 图汐", menu); tray.setImageAutoSize(true);
             tray.addActionListener(event -> browse(instance.uri())); system.add(tray);
             Path notice = paths.data().resolve(".tray-notice-shown");
-            if (!Files.exists(notice)) {
+            if (temporaryPort) {
+              tray.displayMessage("FigTide 端口提示", DesktopPort.FALLBACK_NOTICE, TrayIcon.MessageType.WARNING);
+            } else if (!Files.exists(notice)) {
               tray.displayMessage("FigTide 正在运行", "关闭浏览器不会退出，可以从托盘图标退出", TrayIcon.MessageType.INFO);
               Files.writeString(notice, "1");
             }

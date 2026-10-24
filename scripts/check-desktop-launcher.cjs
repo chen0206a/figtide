@@ -13,12 +13,14 @@ const java = process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, 'bin/java.
 const children = [];
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const canary = 'local-launcher-test-canary-not-a-real-key';
+let preferredPort;
 fs.mkdirSync(directory, { recursive: true });
 function start() {
   const log = path.join(directory, `process-${children.length}.log`);
   const fd = fs.openSync(log, 'w');
   const child = spawn(java, ['-Duser.timezone=UTC', '-cp', classpath, 'dev.labflow.desktop.LauncherProcessProbe',
     '--spring.profiles.active=desktop', `--labflow.data-dir=${directory}`,
+    ...(children.length === 0 ? [`--labflow.desktop.port=${preferredPort}`] : []),
     '--labflow.desktop.open-browser=false', '--labflow.desktop.tray=false'], {
     cwd: root, windowsHide: true, stdio: ['pipe', fd, fd],
     env: { ...process.env, LABFLOW_AGENT_API_KEY: canary, LABFLOW_AGENT_MODEL: 'local-probe', LABFLOW_AGENT_BASE_URL: 'http://127.0.0.1:1' },
@@ -50,8 +52,19 @@ async function projects(record) {
   assert(response.ok); return response.json();
 }
 (async () => {
+  const net = require('node:net');
+  for (preferredPort = 17870; preferredPort < 17970; preferredPort++) {
+    const probe = net.createServer();
+    try { await new Promise((resolve, reject) => { probe.once('error', reject); probe.listen(preferredPort, '127.0.0.1', resolve); }); }
+    catch { continue; }
+    await new Promise(resolve => probe.close(resolve)); break;
+  }
+  assert(preferredPort < 17970);
   const first = start(), a = await ready(first);
-  assert(a.port > 0); assert.notEqual(a.port, 8086);
+  assert.equal(a.port, preferredPort);
+  const preferenceFile = path.join(directory, 'desktop.json');
+  const preference = fs.readFileSync(preferenceFile, 'utf8');
+  assert.equal(JSON.parse(preference).preferred_port, preferredPort);
   const base = `http://127.0.0.1:${a.port}`;
   // Node fetch normalizes Host; use the raw HTTP client so the attack header is actually sent.
   const badHost = await new Promise((resolve, reject) => {
@@ -83,6 +96,7 @@ async function projects(record) {
   assert.equal(first.exitCode, null); assert.equal(JSON.parse(fs.readFileSync(portFile, 'utf8')).instance_id, a.instance_id);
   await close(first);
   const third = start(), b = await ready(third, a.instance_id);
+  assert.equal(b.port, a.port, 'normal restart keeps the origin');
   assert((await projects(b)).some(p => p.id === project.id));
   const reopened = await (await fetch(`http://127.0.0.1:${b.port}/api/projects/${project.id}/charts/${chart.id}`)).json();
   assert.deepEqual(reopened.config, config);
@@ -94,19 +108,35 @@ async function projects(record) {
   await new Promise(resolve => third.once('exit', resolve));
   assert(fs.existsSync(portFile), 'forced exit leaves a stale record');
   const fourth = start(), c = await ready(fourth, b.instance_id);
+  assert.equal(c.port, a.port, 'forced restart keeps the origin');
   assert((await projects(c)).some(p => p.id === project.id));
   const recovered = await (await fetch(`http://127.0.0.1:${c.port}/api/projects/${project.id}/charts/${chart.id}`)).json();
   assert.deepEqual(recovered.config, config);
   assert.equal(recovered.revision, updated.revision);
   await close(fourth);
+  const blocker = net.createServer();
+  await new Promise((resolve, reject) => { blocker.once('error', reject); blocker.listen(preferredPort, '127.0.0.1', resolve); });
+  let fallback;
+  try {
+    const fifth = start(); fallback = await ready(fifth, c.instance_id);
+    assert.notEqual(fallback.port, preferredPort);
+    assert.equal(fs.readFileSync(preferenceFile, 'utf8'), preference, 'fallback must not modify desktop.json');
+    await close(fifth);
+  } finally { await new Promise(resolve => blocker.close(resolve)); }
+  const sixth = start(), d = await ready(sixth, fallback.instance_id);
+  assert.equal(d.port, preferredPort, 'next run retries the original preference');
+  assert.equal(fs.readFileSync(preferenceFile, 'utf8'), preference);
+  await close(sixth);
   const logs = path.join(path.dirname(directory), 'logs');
   assert(fs.existsSync(path.join(logs, 'figtide.log')));
+  assert(fs.readFileSync(path.join(logs, 'figtide.log'), 'utf8').includes('端口被占用，本次无法沿用未保存的草稿和页面偏好'));
   for (const file of fs.readdirSync(logs)) assert(!fs.readFileSync(path.join(logs, file), 'utf8').includes(canary), 'API key must not appear in logs');
-  const report = { checkedAt: new Date().toISOString(), passed: ['random port', 'same-JAR SPA', 'Chinese/spaced path',
+  const report = { checkedAt: new Date().toISOString(), passed: ['fixed preferred port', 'same-JAR SPA', 'Chinese/spaced path',
     'single instance', 'normal exit removes port', 'normal restart persists', 'forced restart persists', 'rotating log location', 'no model key in logs',
     'Host attack rejected', 'cross-port Origin rejected', 'same-origin write accepted',
-    'saved figure normal reopen', 'last-saved figure after forced exit'],
-    dataDirectory: path.relative(root, directory), ports: [a.port, b.port, c.port] };
+    'saved figure normal reopen', 'last-saved figure after forced exit', 'stable origin across restarts',
+    'occupied port falls back', 'fallback preserves desktop.json', 'next launch retries preferred port', 'fallback warning logged'],
+    dataDirectory: path.relative(root, directory), ports: [a.port, b.port, c.port, fallback.port, d.port] };
   fs.writeFileSync(path.join(root, '.runtime/desktop-launcher-probe.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report, null, 2));
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => {

@@ -2,7 +2,8 @@ labflow:
   data-dir: ${LOCALAPPDATA:${user.home}/AppData/Local}/FigTide/data
 server:
   address: 127.0.0.1
-  port: 0
+  # The desktop launcher resolves desktop.json / --labflow.desktop.port before starting Spring.
+  port: 17861
 logging:
   config: classpath:logback-desktop.xml
 spring:

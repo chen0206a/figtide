@@ -1,0 +1,27 @@
+{
+  "transport": {
+    "mode": "desktop-jar",
+    "web": "http://127.0.0.1:17861",
+    "fixture_port": 18770,
+    "started": "2026-10-24T10:07:13.9751606Z",
+    "api": "http://127.0.0.1:17861",
+    "database": "h2",
+    "pid": 52960
+  },
+  "cases_added": [
+    "desktop-restart.spec.ts: real JAR restart, stable origin, intro preference and unsaved draft restoration"
+  ],
+  "original_cases": 83,
+  "audit_restart_passed": true,
+  "command": "./scripts/test-agent.ps1 -All -Desktop -FixturePort 18770",
+  "workers": 1,
+  "stats": {
+    "startTime": "2026-10-24T10:07:14.525Z",
+    "duration": 228881.881,
+    "expected": 84,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": 84
+}

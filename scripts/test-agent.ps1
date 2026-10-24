@@ -75,7 +75,7 @@ function Start-AgentTestBackend {
         $h2Path = ($dataDir -replace '\\','/') + '/labflow_e2e'
         # WRITE_DELAY=0：audit-restart 会强杀后端再重启，H2 默认的写缓冲会丢掉
         # 强杀前最后约 1 秒已提交的数据（实测复现）；提交即落盘后重启不丢。
-        $launchArgs += @('.runtime/desktop-build/figtide.jar','--spring.profiles.active=desktop','--server.port=0',
+        $launchArgs += @('.runtime/desktop-build/figtide.jar','--spring.profiles.active=desktop',
             "--labflow.data-dir=$dataDir",'--labflow.desktop.open-browser=false','--labflow.desktop.tray=false',
             "--spring.datasource.url=jdbc:h2:file:$h2Path;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;WRITE_DELAY=0")
     } else {

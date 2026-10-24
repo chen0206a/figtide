@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.boot.web.server.PortInUseException;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.*;
 
 /** One JVM owns the server and file database. No background child Java process. */
@@ -41,19 +43,21 @@ public final class DesktopLauncher {
       try {
         Files.createDirectories(paths.logs());
         active = runtime;
-        var app = new SpringApplication(LabFlowApplication.class);
-        app.setHeadless(false);
-        app.setRegisterShutdownHook(false);
-        app.setDefaultProperties(Map.of("labflow.data-dir", paths.data().toString(),
-            "labflow.desktop.logs-dir", paths.logs().toString()));
-        app.addInitializers(context -> context.getBeanFactory().registerSingleton("desktopInstance", instance));
-        app.addListeners((ApplicationListener<WebServerInitializedEvent>) event -> {
-          try { instance.publish(event.getWebServer().getPort()); }
-          catch (Exception e) { throw new IllegalStateException("无法写入桌面端口文件", e); }
-        });
-        runtime.context = app.run(args);
+        var port = DesktopPort.select(paths.data(), args);
+        try {
+          runtime.context = start(args, paths, instance, port.requested());
+        } catch (RuntimeException failure) {
+          // Availability checks cannot reserve a Tomcat socket: another process may win
+          // the bind race. Spring closes the failed context before this retry.
+          if (port.temporary() || !portInUse(failure)) throw failure;
+          port = port.fallback();
+          runtime.context = start(args, paths, instance, 0);
+        }
+        if (port.temporary()) LoggerFactory.getLogger(DesktopLauncher.class).warn(
+            "{}；首选端口={}，本次端口={}，desktop.json 保持不变", DesktopPort.FALLBACK_NOTICE,
+            port.preferred(), instance.uri().getPort());
         if (Boolean.parseBoolean(runtime.context.getEnvironment().getProperty("labflow.desktop.tray", "true")))
-          runtime.ui.show(instance, paths, runtime::close);
+          runtime.ui.show(instance, paths, runtime::close, port.temporary());
         if (open) DesktopUi.browse(instance.uri());
       } catch (Throwable failure) {
         runtime.close();
@@ -61,6 +65,32 @@ public final class DesktopLauncher {
         throw failure;
       }
     } catch (Exception e) { throw new IllegalStateException("FigTide 桌面启动失败：" + e.getMessage(), e); }
+  }
+
+  private static ConfigurableApplicationContext start(String[] args, DesktopPaths paths,
+      DesktopInstance instance, int port) {
+    var effectiveArgs = new ArrayList<String>();
+    for (String arg : args)
+      if (!arg.startsWith("--server.port=") && !arg.startsWith("--server.address=")) effectiveArgs.add(arg);
+    effectiveArgs.add("--server.port=" + port);
+    effectiveArgs.add("--server.address=127.0.0.1");
+    var app = new SpringApplication(LabFlowApplication.class);
+    app.setHeadless(false);
+    app.setRegisterShutdownHook(false);
+    app.setDefaultProperties(Map.of("labflow.data-dir", paths.data().toString(),
+        "labflow.desktop.logs-dir", paths.logs().toString()));
+    app.addInitializers(context -> context.getBeanFactory().registerSingleton("desktopInstance", instance));
+    app.addListeners((ApplicationListener<WebServerInitializedEvent>) event -> {
+      try { instance.publish(event.getWebServer().getPort()); }
+      catch (Exception e) { throw new IllegalStateException("无法写入桌面端口文件", e); }
+    });
+    return app.run(effectiveArgs.toArray(String[]::new));
+  }
+
+  private static boolean portInUse(Throwable failure) {
+    for (Throwable cause = failure; cause != null; cause = cause.getCause())
+      if (cause instanceof PortInUseException || cause instanceof java.net.BindException) return true;
+    return false;
   }
 
   static boolean isRunning() { return active != null && !active.stopped.get(); }

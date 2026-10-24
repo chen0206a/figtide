@@ -1,0 +1,48 @@
+{
+  "frontend": {
+    "command": "npm test -- --maxWorkers=4",
+    "failed": 0,
+    "tests": 280,
+    "files": 52
+  },
+  "command": "mvn -B -f backend/pom.xml -Dtest=DesktopPortTest,DesktopLauncherTest,DesktopPagesTest,LocalOriginMatrixTest test",
+  "suites": [
+    {
+      "errors": 0,
+      "tests": 5,
+      "seconds": 0.121,
+      "suite": "DesktopPortTest",
+      "skipped": 0,
+      "failures": 0
+    },
+    {
+      "errors": 0,
+      "tests": 7,
+      "seconds": 0.755,
+      "suite": "DesktopLauncherTest",
+      "skipped": 0,
+      "failures": 0
+    },
+    {
+      "errors": 0,
+      "tests": 4,
+      "seconds": 1.026,
+      "suite": "DesktopPagesTest",
+      "skipped": 0,
+      "failures": 0
+    },
+    {
+      "errors": 0,
+      "tests": 62,
+      "seconds": 0.252,
+      "suite": "LocalOriginMatrixTest",
+      "skipped": 0,
+      "failures": 0
+    }
+  ],
+  "build": {
+    "passed": true,
+    "command": "npm run build",
+    "vite_seconds": 17.19
+  }
+}

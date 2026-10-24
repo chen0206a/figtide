@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-24T10:06:39.907Z",
+  "passed": [
+    "fixed preferred port",
+    "same-JAR SPA",
+    "Chinese/spaced path",
+    "single instance",
+    "normal exit removes port",
+    "normal restart persists",
+    "forced restart persists",
+    "rotating log location",
+    "no model key in logs",
+    "Host attack rejected",
+    "cross-port Origin rejected",
+    "same-origin write accepted",
+    "saved figure normal reopen",
+    "last-saved figure after forced exit",
+    "stable origin across restarts",
+    "occupied port falls back",
+    "fallback preserves desktop.json",
+    "next launch retries preferred port",
+    "fallback warning logged"
+  ],
+  "dataDirectory": ".runtime\\launcher-probe-0c1e97c3-cef1-4021-ad70-0a54e30b0acd\\中文 空间\\data",
+  "ports": [
+    17870,
+    17870,
+    17870,
+    62137,
+    17870
+  ]
+}
