@@ -1,3 +1,38 @@
+## 2026-10-24 · 14-3 迁移工具总验收：双库全绿，迁移四项全过
+
+分支 `desktop/14-3`，从 `desktop/14-2@b5ed551` 继续；14-3-0 至 14-3-5 分 6 次提交（4b4677c→817ce78→357c55f→cfcbf1e→0942b01→8ea61e1），另加本次总验收修复提交，未推送。**全程未在真实工作区（127.0.0.1:8086 / labflow 库 / 用户桌面数据目录）上运行过迁移工具或任何写操作**：旧库端只读（GET /api/projects + GET /api/projects/{p}/backup）；迁移 E2E 前后旧库 10 张表 COUNT(*) 与 CHECKSUM TABLE 完全一致；未修改任何 MySQL 迁移脚本与 API 请求/响应。
+
+| 验证 | 实际命令 | passed | failed/errors | skipped | 总数 |
+|---|---|---:|---:|---:|---:|
+| 后端 MySQL | `mvn -B -f backend/pom.xml test` | 263 | 0 | 1 | 264 |
+| 后端 H2 | `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test` | 257 | 0 | 1 | 258 |
+| 前端 | `npm test` | 280（52 文件） | 0 | 0 | 280 |
+| 迁移工具单测 | `node --test scripts/migration/normalize.test.cjs scripts/migration/zip.test.cjs` | 28 | 0 | 0 | 28 |
+| 开发 E2E | `./scripts/test-agent.ps1 -All -FixturePort 18770` | 83 | 0 | 4 | 87 |
+| 桌面 E2E | `./scripts/test-agent.ps1 -All -FixturePort 18770 -Desktop` | 84 | 0 | 3 | 87 |
+| 迁移 E2E（14-3-4 四项） | `./scripts/test-migration.ps1` | 全过（4 项目 × 首轮/复跑/篡改复核 + 3 浏览器用例） | 0 | 0 | — |
+
+- Java 两边 1 条跳过均为 ServerEvaluationTest（真实评测显式开关未开）；H2 另按 14-1 规则在 @BeforeAll 类级跳过 6 条评测（264−258=6）。新增 BackupLimitsIntegrationTest 1 条（默认 profile 仍拒绝超限）；本轮计数已含 14-2b 的 DesktopPortTest 5 条。`npm run build` 通过，仅既有 >500kB chunk 提示。
+- 开发 E2E 的 4 条 skipped = 1 条 desktop-restart（开发通道无桌面 JAR，14-2b 既有规则）+ 3 条 migration.spec.ts（仅在 test-migration.ps1 内置 LABFLOW_MIGRATION_E2E=1 时运行，两通道各自跑过）；桌面 E2E 的 3 条 skipped 即迁移专项。两轮 audit-restart 均通过（已完成审计跨 JVM 不变、中断运行恢复、预算结算保留）。
+- 迁移 E2E（20:12–20:15，一次性全过 exit 0）：种子 4 个代表性项目（多版本数据集与图表、ROC/混淆矩阵、派生数据集、样式模板、实验+对比快照、归档+中文特殊字符名、51.0 MiB 备份大项目）→ 首轮 4/4 成功 exit 0（含归档状态回写）→ 复跑 4/4 已迁移且项目数不变（幂等）→ 篡改桌面端一条图表后 `-Verify`：该项目建设「失败」并给出字段级 diff（`c:chart one`→`c:tampered chart`、revision 2→3、chart_versions +1）且 exit 1 → 旧库前后 COUNT/CHECKSUM 全等 → Playwright 3/3（图表渲染 .gtitle=Accuracy、实验列表、归档标记）。证据 `docs/test-evidence/desktop14-3-migration-{seed,first,second,verify}.json`。
+
+### 环境性失败与修正（不算作通过的验收轮次）
+
+- 开发 E2E 第 1、2 轮：Vite 5178 在运行中段静默退出（78 条 `net::ERR_CONNECTION_REFUSED` / 1 条 `read ECONNRESET`）。诊断：无孤儿进程、无 node 崩溃事件、页面文件未满，仅物理内存紧张（用户应用占用，空闲 2.5GB/15.8GB）——与 14-1 验收同模式的环境抖动，非代码回归；第 3 轮完整跑通。
+- 开发 E2E 第 3 轮 1 条 `intro.spec.ts:35` 负载超时（6.1s，正常 836ms）；专项重跑 5/5（1.0s）。
+- 桌面 E2E 第 1、2 轮：`test-agent.ps1:131` 的 `Invoke-WebRequest` 在 PS 5.1 非交互会话里需 IE 解析引擎，稳定抛空引用；修复为加 `-UseBasicParsing`（本机实测：无参数报 PSInvalidOperationException，带参数 200 OK；Invoke-RestMethod 不受影响）。第 3 轮完整跑通。修复随总验收提交，属测试设施类。
+- 桌面 E2E 第 3 轮 1 条 `motion.spec.ts:33`（opacity 期望 "1" 实收 "0.999996"，与 14-1 验收同一条 4e-6 动画时序竞态）；专项重跑 3/3 + audit-restart 通过。
+- 上述重跑均为「同一失败用例的完整专项重跑」，未拼接不同轮次的通过结果，未刷新基线、未删除/放宽断言。
+
+### 与任务书的偏差（详见汇报）
+
+- `--verify` 复核模式：任务书 14-3-4.3 要求「篡改后重新运行核对」，以独立 `-Verify` 参数实现（不重复 restore，只导出比对，结果记「已迁移/失败」），属最小扩展。
+- `test-agent.ps1:131` 增加 `-UseBasicParsing`（测试设施修复，见上）。
+- PowerShell 5.1 约束：`test-migration.ps1` 带 UTF-8 BOM、Join-Path 只用两参嵌套、中文断言放在 Node（assert-report.cjs）以免无 BOM 乱码吞引号。
+- 其余按任务书执行；助手运行记录/会话按备份格式既定范围不迁移（工具报告页脚已注明）。
+
+未执行：真实工作区上的 DryRun/正式迁移（硬约束禁止，留给主人按 `docs/desktop/MIGRATION.md` 自行执行，命令先 DryRun 后正式）；任何 `From` 指向 8086 的命令。无需新增产品决策。
+
 ## 2026-10-24 · 14-2b：桌面固定首选端口与重启草稿恢复
 
 在 `desktop/14-2@b392be6` 上继续，作为一个独立补充修复提交，未推送。**桌面总验收单轮全绿：84 passed / 0 failed / 0 skipped / 0 flaky**（原83条 + 新增1条真实JAR重启用例），没有刷新基线或修改既有E2E断言。

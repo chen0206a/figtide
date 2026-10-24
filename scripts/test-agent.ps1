@@ -128,7 +128,7 @@ try {
     $env:LABFLOW_DESKTOP_E2E = if ($desktopMode) { '1' } else { '' }
     $env:NO_PROXY = '127.0.0.1,localhost,::1'
     if ($desktopMode) {
-        $page = Invoke-WebRequest "$script:baseUrl/"
+        $page = Invoke-WebRequest "$script:baseUrl/" -UseBasicParsing
         if ($page.Content -notmatch 'FigTide') { throw 'Desktop JAR did not serve its frontend' }
         $owner = Get-NetTCPConnection -LocalPort ([Uri]$script:baseUrl).Port -State Listen | Select-Object -First 1
         if ($owner.OwningProcess -ne $backend.Id -or $owner.LocalAddress -ne '127.0.0.1') { throw 'Desktop transport is not the owned loopback Java process' }
