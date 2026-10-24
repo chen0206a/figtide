@@ -69,3 +69,7 @@ git add -A && git commit -m "refactor(NN): <一句话>"
 - 草稿：`lib/chartDraft.ts`、`lib/draftWriter.ts`
 - 助手：`editor/AgentAssistant.tsx`、`agent-assistant.css`
 - 全局样式：`styles.css` 和 `components/*.css`（任务 02 和 08 会整合）
+
+## 桌面版后端授权（任务 14）
+
+> **桌面版后端授权（任务 14）**：在任务 14 的任务书明确列出的范围内，允许修改后端：新增 H2 依赖、`desktop` profile、`db/migration/h2/` 迁移脚本；为了两种数据库通用而做的可移植性修改（如显式赋值 `updated_at`、用 Java 计算替代数据库专有函数）；测试数据源参数化。仍然禁止：修改已有的 MySQL 迁移脚本（`db/migration/V*.sql`）；改变 API 的请求和响应；改变乐观锁、预算、幂等、恢复的业务语义；连接或修改真实工作区数据库。每一处后端改动都要在汇报里写明属于哪一类授权。
