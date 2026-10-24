@@ -5,15 +5,16 @@ import path from "node:path";
 import net from "node:net";
 import { once } from "node:events";
 
-// Own a second real JAR and a separate H2 directory. Never restart the user's
+// Own a second desktop process and a separate H2 directory. Never restart the user's
 // workspace or the outer E2E service. The browser context stays alive throughout.
 test("desktop restart retains intro preference and restores the latest unsaved draft", async ({ page }, info) => {
-  test.skip(process.env.LABFLOW_DESKTOP_E2E !== "1", "Requires the desktop JAR transport");
+  test.skip(process.env.LABFLOW_DESKTOP_E2E !== "1", "Requires the desktop transport");
   test.setTimeout(180_000);
   const root = path.resolve("..");
   const directory = info.outputPath("desktop-data");
   fs.mkdirSync(directory, { recursive: true });
   const java = process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, "bin/java.exe") : "java";
+  const packaged = process.env.LABFLOW_PACKAGE_APP;
   const children: ChildProcess[] = [];
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   // Stay below Windows' ephemeral range and away from the outer desktop port.
@@ -29,12 +30,19 @@ test("desktop restart retains intro preference and restores the latest unsaved d
   const base = `http://127.0.0.1:${port}`;
   function start(first: boolean) {
     const fd = fs.openSync(info.outputPath(`desktop-${children.length}.log`), "w");
-    const child = spawn(java, ["-Duser.timezone=UTC", "-jar", path.join(root, ".runtime/desktop-build/figtide.jar"),
-      "--spring.profiles.active=desktop", `--labflow.data-dir=${directory}`,
+    const command = packaged ? path.join(packaged, "FigTide.exe") : java;
+    const env = { ...process.env, LABFLOW_AGENT_API_KEY: "", LABFLOW_AGENT_BASE_URL: "http://127.0.0.1:1" };
+    if (packaged) {
+      for (const key of Object.keys(env)) {
+        if (["path", "java_home", "java_tool_options", "jdk_java_options", "_java_options"].includes(key.toLowerCase())) delete env[key as keyof typeof env];
+      }
+      Object.assign(env, { Path: path.join(process.env.SystemRoot || "C:\\Windows", "System32"), JAVA_HOME: path.join(directory, "no-system-java") });
+    }
+    const child = spawn(command, [...(packaged ? [] : ["-Duser.timezone=UTC", "-jar", path.join(root, ".runtime/desktop-build/figtide.jar"), "--spring.profiles.active=desktop"]),
+      `--labflow.data-dir=${directory}`,
       ...(first ? [`--labflow.desktop.port=${port}`] : []),
       "--labflow.desktop.open-browser=false", "--labflow.desktop.tray=false"], {
-      cwd: root, windowsHide: true, stdio: ["ignore", fd, fd],
-      env: { ...process.env, LABFLOW_AGENT_API_KEY: "", LABFLOW_AGENT_BASE_URL: "http://127.0.0.1:1" },
+      cwd: directory, windowsHide: true, stdio: ["ignore", fd, fd], env,
     });
     fs.closeSync(fd); children.push(child); return child;
   }

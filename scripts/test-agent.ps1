@@ -1,4 +1,4 @@
-param([switch]$All, [string]$MySqlBin = '', [int]$FixturePort = 18769, [string[]]$Specs, [switch]$Production, [ValidateSet('mysql','h2')][string]$Database = 'mysql', [switch]$Desktop)
+param([switch]$All, [string]$MySqlBin = '', [int]$FixturePort = 18769, [string[]]$Specs, [switch]$Production, [ValidateSet('mysql','h2')][string]$Database = 'mysql', [switch]$Desktop, [switch]$Packaged, [string]$Application = '')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
@@ -23,7 +23,12 @@ function Resolve-MySqlBin {
   3. 把 MySQL 的 bin 目录加入 PATH
 '@
 }
-$desktopMode = $Desktop -or $Database -eq 'h2'
+$desktopMode = $Desktop -or $Packaged -or $Database -eq 'h2'
+if ($Packaged) {
+    if (!$Application) { throw '-Packaged requires -Application pointing to the folder containing FigTide.exe.' }
+    $Application = [IO.Path]::GetFullPath($Application)
+    if (!(Test-Path (Join-Path $Application 'FigTide.exe')) -or !(Test-Path (Join-Path $Application 'build-info.json'))) { throw 'Packaged application or metadata missing.' }
+} elseif ($Application) { throw '-Application is only valid with -Packaged.' }
 if ($desktopMode) { $Database = 'h2' }
 if ($Database -eq 'mysql') { $MySqlBin = Resolve-MySqlBin -Explicit $MySqlBin }
 # 14-1-4.5：-Database h2 用 desktop profile + 每次全新的临时数据目录（文件库，重启
@@ -42,8 +47,10 @@ foreach ($port in $ports) {
     if (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue) { throw "Test port $port is already occupied." }
 }
 if ($Database -eq 'mysql' -and !(Get-NetTCPConnection -LocalPort 33316 -State Listen -ErrorAction SilentlyContinue)) { throw 'Start the local MySQL instance with scripts/start.ps1 first.' }
-$env:JAVA_HOME = (Get-ChildItem .runtime/java -Directory | Select-Object -First 1).FullName
-$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+if (!$Packaged) {
+    $env:JAVA_HOME = (Get-ChildItem .runtime/java -Directory | Select-Object -First 1).FullName
+    $env:Path = "$env:JAVA_HOME\bin;$env:Path"
+}
 if ($Database -eq 'mysql') {
     $oldPassword = $env:MYSQL_PWD
     try {
@@ -63,9 +70,11 @@ $oldKey = $env:LABFLOW_AGENT_API_KEY
 $oldNoProxy = $env:NO_PROXY
 $oldFixturePort = $env:LABFLOW_FIXTURE_PORT
 $oldDesktopMode = $env:LABFLOW_DESKTOP_E2E
+$oldPackageApp = $env:LABFLOW_PACKAGE_APP
 $fixture = $null
 $backend = $null
 $ownedWeb = $null
+$script:ownedLaunchers = [Collections.Generic.List[Diagnostics.Process]]::new()
 $script:baseUrl = 'http://127.0.0.1:8087'
 function Start-AgentTestBackend {
     $launchArgs = @('-Duser.timezone=UTC','-jar')
@@ -75,7 +84,9 @@ function Start-AgentTestBackend {
         $h2Path = ($dataDir -replace '\\','/') + '/labflow_e2e'
         # WRITE_DELAY=0：audit-restart 会强杀后端再重启，H2 默认的写缓冲会丢掉
         # 强杀前最后约 1 秒已提交的数据（实测复现）；提交即落盘后重启不丢。
-        $launchArgs += @('.runtime/desktop-build/figtide.jar','--spring.profiles.active=desktop',
+        if ($Packaged) { $launchArgs = @() }
+        else { $launchArgs += @('.runtime/desktop-build/figtide.jar','--spring.profiles.active=desktop') }
+        $launchArgs += @(
             "--labflow.data-dir=$dataDir",'--labflow.desktop.open-browser=false','--labflow.desktop.tray=false',
             "--spring.datasource.url=jdbc:h2:file:$h2Path;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;WRITE_DELAY=0")
     } else {
@@ -84,8 +95,28 @@ function Start-AgentTestBackend {
     }
     $launchArgs += @('--labflow.test-support=true',"--LABFLOW_AGENT_BASE_URL=http://127.0.0.1:$FixturePort",'--LABFLOW_AGENT_MODEL=labflow-fixture')
     $quotedArgs = $launchArgs | ForEach-Object { if ($_ -match '\s') { '"' + $_.Replace('"','\"') + '"' } else { $_ } }
-    Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList $quotedArgs -WorkingDirectory $root -WindowStyle Hidden -PassThru `
-        -RedirectStandardOutput '.runtime/agent-e2e.stdout.log' -RedirectStandardError '.runtime/agent-e2e.stderr.log'
+    if ($Packaged) {
+        # Only the EXE child loses system Java; Node/Chrome in the developer harness
+        # keep their normal environment. Never inherit JVM injection options.
+        $saved = @{}
+        foreach ($name in @('Path','JAVA_HOME','JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS')) {
+            $saved[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+        }
+        try {
+            $env:Path = Join-Path $env:SystemRoot 'System32'
+            $env:JAVA_HOME = Join-Path $testRoot 'no-system-java'
+            $env:JAVA_TOOL_OPTIONS = ''; $env:JDK_JAVA_OPTIONS = ''; $env:_JAVA_OPTIONS = ''
+            $launcher = Start-Process (Join-Path $Application 'FigTide.exe') -ArgumentList $quotedArgs -WorkingDirectory $testRoot -WindowStyle Hidden -PassThru `
+                -RedirectStandardOutput (Join-Path $root '.runtime/agent-e2e.stdout.log') -RedirectStandardError (Join-Path $root '.runtime/agent-e2e.stderr.log')
+            $script:ownedLaunchers.Add($launcher)
+            $launcher
+        } finally {
+            foreach ($name in $saved.Keys) { [Environment]::SetEnvironmentVariable($name, $saved[$name], 'Process') }
+        }
+    } else {
+        Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList $quotedArgs -WorkingDirectory $root -WindowStyle Hidden -PassThru `
+            -RedirectStandardOutput '.runtime/agent-e2e.stdout.log' -RedirectStandardError '.runtime/agent-e2e.stderr.log'
+    }
 }
 function Wait-AgentTestBackend {
     for ($n=0; $n -lt 60; $n++) {
@@ -99,7 +130,21 @@ function Wait-AgentTestBackend {
                 if ($ping.instance_id -ne $record.instance_id) { throw 'Desktop identity mismatch' }
             }
             $health = Invoke-RestMethod "$script:baseUrl/api/health" -TimeoutSec 2
-            if ($health.status -eq 'ok') { return }
+            if ($health.status -eq 'ok') {
+                if ($Packaged) {
+                    $listener = Get-NetTCPConnection -LocalPort ([Uri]$script:baseUrl).Port -State Listen | Select-Object -First 1
+                    $process = Get-CimInstance Win32_Process -Filter "ProcessId = $($listener.OwningProcess)"
+                    # jpackage's Windows GUI launcher can fork another copy of itself.
+                    # Accept only that direct child and the exact packaged executable.
+                    if ($listener.LocalAddress -ne '127.0.0.1' -or
+                        $process.ExecutablePath -ne (Join-Path $Application 'FigTide.exe') -or
+                        ($process.ProcessId -ne $backend.Id -and $process.ParentProcessId -ne $backend.Id)) {
+                        throw 'Packaged listener is not our owned executable or its direct child.'
+                    }
+                    $script:backend = Get-Process -Id $process.ProcessId
+                }
+                return
+            }
         } catch { }
         Start-Sleep -Milliseconds 500
     }
@@ -110,7 +155,7 @@ try {
     $env:LABFLOW_AGENT_API_KEY = ''
     $env:LABFLOW_FIXTURE_PORT = [string]$FixturePort
     $env:NO_PROXY = '127.0.0.1,localhost,::1'
-    if ($desktopMode) {
+    if ($desktopMode -and !$Packaged) {
         & (Join-Path $PSScriptRoot 'build-desktop.ps1')
         if ($LASTEXITCODE) { throw 'Desktop package failed.' }
     }
@@ -126,12 +171,15 @@ try {
     $env:LABFLOW_API = $script:baseUrl
     $env:LABFLOW_WEB_URL = if ($desktopMode) { $script:baseUrl } else { 'http://127.0.0.1:5178' }
     $env:LABFLOW_DESKTOP_E2E = if ($desktopMode) { '1' } else { '' }
+    $env:LABFLOW_PACKAGE_APP = if ($Packaged) { $Application } else { '' }
     $env:NO_PROXY = '127.0.0.1,localhost,::1'
     if ($desktopMode) {
         $page = Invoke-WebRequest "$script:baseUrl/" -UseBasicParsing
         if ($page.Content -notmatch 'FigTide') { throw 'Desktop JAR did not serve its frontend' }
         $owner = Get-NetTCPConnection -LocalPort ([Uri]$script:baseUrl).Port -State Listen | Select-Object -First 1
-        if ($owner.OwningProcess -ne $backend.Id -or $owner.LocalAddress -ne '127.0.0.1') { throw 'Desktop transport is not the owned loopback Java process' }
+        if ($owner.OwningProcess -ne $backend.Id -or $owner.LocalAddress -ne '127.0.0.1') {
+            throw "Desktop transport mismatch: launched PID=$($backend.Id); listener PID=$($owner.OwningProcess), address=$($owner.LocalAddress), executable=$((Get-Process -Id $owner.OwningProcess -ErrorAction SilentlyContinue).Path)"
+        }
     } elseif ($Production) {
         if (!(Test-Path 'frontend/dist/index.html')) { throw 'Run npm run build in frontend before a production check.' }
         $ownedWeb = Start-Process (Get-Command node.exe).Source -ArgumentList 'scripts/serve-test-build.cjs' -WorkingDirectory $root -WindowStyle Hidden -PassThru `
@@ -144,7 +192,7 @@ try {
         }
         if (!$ready) { throw 'Production test server did not start; see .runtime/production-test.stderr.log.' }
     }
-    @{ mode = $(if ($desktopMode) { 'desktop-jar' } else { 'development-mysql' }); api = $env:LABFLOW_API; web = $env:LABFLOW_WEB_URL;
+    @{ mode = $(if ($Packaged) { 'packaged-exe' } elseif ($desktopMode) { 'desktop-jar' } else { 'development-mysql' }); api = $env:LABFLOW_API; web = $env:LABFLOW_WEB_URL;
        database = $Database; fixture_port = $FixturePort; pid = $backend.Id; started = [DateTime]::UtcNow.ToString('o') } |
        ConvertTo-Json | Set-Content '.runtime/test-agent-transport.json'
     Write-Host "E2E transport: $env:LABFLOW_WEB_URL ($Database, desktop=$desktopMode)"
@@ -174,7 +222,8 @@ try {
     $env:NO_PROXY = $oldNoProxy
     $env:LABFLOW_FIXTURE_PORT = $oldFixturePort
     $env:LABFLOW_DESKTOP_E2E = $oldDesktopMode
-    foreach ($owned in @($backend, $fixture, $ownedWeb)) {
+    $env:LABFLOW_PACKAGE_APP = $oldPackageApp
+    foreach ($owned in (@($backend, $fixture, $ownedWeb) + @($script:ownedLaunchers.ToArray()))) {
         if ($owned -and !( $owned.HasExited )) { Stop-Process -Id $owned.Id; Wait-Process -Id $owned.Id -ErrorAction SilentlyContinue }
     }
     # 14-1-4.5：H2 临时数据目录在进程停止后整体删除；删不掉只警告，不影响测试结论。

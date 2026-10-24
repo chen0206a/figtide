@@ -50,6 +50,13 @@ jobs:
         run: ./scripts/package-desktop.ps1
       - name: Verify bundled executable without system Java
         run: ./scripts/test-desktop-package.ps1 -Application "dist/desktop/FigTide-$env:FIGTIDE_VERSION-windows-x64/FigTide"
+      - name: Install browser for packaged acceptance
+        working-directory: frontend
+        run: npx playwright install chromium
+      - name: Full browser acceptance against packaged EXE
+        env:
+          PLAYWRIGHT_CHANNEL: chromium
+        run: ./scripts/test-agent.ps1 -All -Packaged -Application "dist/desktop/FigTide-$env:FIGTIDE_VERSION-windows-x64/FigTide" -FixturePort 18770
       - uses: actions/upload-artifact@v4
         with:
           name: FigTide-${{ env.FIGTIDE_VERSION }}-windows-x64
@@ -64,6 +71,9 @@ jobs:
             .runtime/package-smoke-*/process-*.log
             .runtime/package-smoke-*/**/logs/figtide.log
             backend/target/surefire-reports/
+            frontend/test-results/
+            frontend/playwright-report/
+            .runtime/agent-e2e*.log
           if-no-files-found: warn
       - name: Publish only a tested version tag
         if: github.event_name == 'push' && github.ref_type == 'tag'

@@ -1,3 +1,11 @@
+## 2026-10-25 · 14-5-1：真实EXE浏览器入口
+
+`./scripts/test-agent.ps1 -Packaged -Application 'dist/desktop/FigTide-0.1.0-windows-x64/FigTide' -FixturePort 18770 -Specs @('desktop-restart.spec.ts')`：1 passed / 0 failed / 0 skipped，随后审计强杀/恢复检查通过。EXE子进程PATH只保留System32、JAVA_HOME指向不存在目录，嵌套重启用例同样运行EXE；保留全部原始浏览器断言。日志`.runtime/task14-5-package-targeted-fixed.log`。
+
+诊断并修复测试入口适配：jpackage Windows GUI启动器会派生同路径EXE，Start-Process返回父PID，实际监听是直接子PID。原JAR入口的同PID断言导致预检失败（尚未跑浏览器）。实测launcher=28800/listener=20340/parent=28800；现在严格核对127.0.0.1、同一EXE完整路径、直接父子关系，并只重启/清理本轮子进程。诊断日志`.runtime/task14-5-package-process.log`。没有放开任意监听进程、修改产品或删除断言。
+
+新增CI产物完整E2E门槛，工作流YAML解析通过；实际GitHub执行未进行。完整产物整轮和旧入口兼容回归在总验收记录，不把本节专项拼为整轮通过。
+
 ## 2026-10-25 · 14-5-0：最后验收任务范围
 
 14-4通过后从4462198新建desktop/14-5，按DESKTOP-PLAN最后一项补充任务书，覆盖真实EXE全量E2E、使用文档和人工冒烟清单；此节只修改说明，无新执行测试。
