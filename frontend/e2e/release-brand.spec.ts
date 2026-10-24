@@ -1,6 +1,13 @@
+import { readFileSync } from "node:fs";
 import { test, expect } from "./workspace-test";
 import { artifactPath } from "./artifacts";
 import { defaults } from "../src/editor/model";
+
+// E2E files are ESM ("type": "module"), so resolve package.json next to this
+// file instead of depending on the process working directory.
+const { version } = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+) as { version: string };
 
 test.use({ reducedMotion: "reduce", viewport: { width: 1440, height: 1000 } });
 
@@ -31,6 +38,7 @@ test("FigTide branding, original workspace keys and current figure survive navig
   await page.getByRole("button", { name: "关于 FigTide", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "关于 FigTide 图汐" })).toBeVisible();
   await expect(page.getByRole("dialog").getByRole("img", { name: "FigTide" })).toBeVisible();
+  await expect(page.getByRole("dialog").getByText(`版本 ${version}`)).toBeVisible();
   await page.getByRole("button", { name: "关闭", exact: true }).click();
   await page.goto(`/projects/${project.id}/figures/${chart.id}`);
   await expect(page).toHaveTitle("绘图工作台 · FigTide");

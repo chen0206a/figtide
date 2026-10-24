@@ -1,3 +1,13 @@
+## 2026-10-24 · 任务 13-4：版本与发布准备
+
+- 版本：`frontend/package.json` 为 `0.1.0`（补 `"license": "MIT"`），后端 `pom.xml` 已是 `0.1.0`（非 SNAPSHOT，未改后端代码）。`vite.config.ts` 用 `define: { __APP_VERSION__: JSON.stringify(version) }` 从 `package.json` 注入，`src/version.d.ts` 声明；关于弹窗显示「版本 0.1.0」并链到 MIT LICENSE，新增 `AboutDialog.test.tsx`。
+- `CHANGELOG.md` 新建：`## 0.1.0 — 2026-10-24`，按「数据与版本 / 科研绘图 / 绘图助手 / 界面」分组，只写已实现功能，并注明桌面版未完成、模型调用可能计费。
+- 脚本：把验收实际用到的入口整理进 `scripts/`（`test-refactor09.ps1`、`test-refactor01c.ps1`、`test-refactor03-stable.ps1`、`serve-test-build.cjs`、`compare-refactor09.cjs`），全部复用 `test-agent.ps1`；`test-agent.ps1` 新增 `-Production`（构建产物 + 受控静态服务），`.runtime/` 仍被忽略。README「测试」一节写明用法。
+- MySQL 客户端改为三级查找：`-MySqlBin` → `LABFLOW_MYSQL_BIN` → `PATH` 的 `mysql.exe` → 默认安装目录；都找不到时中文报错并说明三种指定方式。README 同步。
+- 修复 13-2 遗留：`frontend/e2e/release-brand.spec.ts` 曾 `import { version } from "../package.json"`，Playwright 按 ESM 加载时报 `needs an import attribute of type: "json"`，`--list` 只剩 0 条。改为 `readFileSync(new URL("../package.json", import.meta.url), "utf8")`（不依赖 cwd），`npx playwright test --list` 恢复 **83 tests / 37 files**。
+- `npm test -- --maxWorkers=4`：**52 files / 280 passed / 0 failed**；`npm run build`：通过（17.45s，保留既有 >500kB chunk 提示）。
+- 本节未跑全量 E2E 与静态站，按任务安排在总验收执行；`v0.1.0` 标签待总验收通过后再打。
+
 ## 2026-10-24 · 任务 13-3：README、媒体与 MIT
 
 - README 按任务结构重写：FigTide 图汐 / social preview / 两张 GIF / 已实现功能 / 隐私 / 真实 Windows 启动步骤 / 技术栈 / 测试 / 结构 / 许可证。三段隐私说明与 `lib/privacy.ts` 逐字一致；补充备份下载位置、静态站字体和本地模式边界；明确桌面版正在开发，当前无安装包。

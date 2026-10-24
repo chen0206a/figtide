@@ -83,6 +83,8 @@ MySQL 安装位置不是默认值时：
 
 在仓库根目录，先启动本机 MySQL。常规测试及浏览器测试使用独立测试数据库与本机模型夹具，不调用收费模型。
 
+测试脚本按以下顺序查找 MySQL 客户端：`-MySqlBin` 参数 → `LABFLOW_MYSQL_BIN` 环境变量 → `PATH` 里的 `mysql` → 默认安装目录 `C:\Program Files\MySQL\MySQL Server 8.0\bin`。都找不到时会报错并提示如何指定。
+
 ```powershell
 # Java 单元与 MySQL 集成测试（需要 JDK 21 在 JAVA_HOME / PATH）
 mvn -B -f backend/pom.xml test
@@ -95,6 +97,15 @@ cd ..
 
 # 全量浏览器测试：隔离 Java 8087 / Vite 5178 / 夹具 18770 / labflow_e2e
 .\scripts\test-agent.ps1 -All -FixturePort 18770
+
+# 生产构建的任务 09 专项（已从 .runtime 整理为受版本控制的入口）
+.\scripts\test-refactor09.ps1 -FixturePort 18770
+# 等价通用入口：.\scripts\test-agent.ps1 -Production -Specs @('visual-polish.spec.ts') -FixturePort 18770
+
+# 历史图表修复 / 稳定隔离入口也已整理到 scripts，复用同一个运行器
+# .\scripts\test-refactor01c.ps1 -FixturePort 18770
+# .\scripts\test-refactor03-stable.ps1 -All -FixturePort 18770
+# node scripts/compare-refactor09.cjs  # 历史设计稿对比，仅写 .runtime
 
 # 独立静态展示页：390 / 768 / 1280 / 1440，使用本机 Chrome
 node scripts/test-site.cjs
