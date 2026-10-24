@@ -289,6 +289,7 @@
   align-items: center;
   gap: var(--lf-space-8);
 }
+.home-v2.home-first-run .home-top { grid-template-columns: minmax(0, 1fr); }
 .home-sample-copy { display: flex; flex-direction: column; gap: var(--lf-space-4); }
 .home-sample-preview { margin: 0; width: 100%; min-width: 0; }
 .home-sample-preview svg { display: block; width: 100%; height: auto; }
@@ -634,6 +635,7 @@
   color: var(--lf-text-3);
   font-size: var(--lf-text-xs);
 }
+.home-privacy-button { border: 0; background: none; padding: 0; text-align: left; text-decoration: underline; text-underline-offset: var(--lf-space-1); }
 
 @media (max-width: 640px) {
   .home-sample { grid-template-columns: minmax(0, 1fr); }

@@ -77,6 +77,8 @@ test("search and pagination switch real recent charts and experiments", async ({
   const searchBox = (await search.boundingBox())!;
   expect(searchBox.x + searchBox.width).toBeLessThan(box.x + box.width);
   await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-7-project-table-390.png"), fullPage: true, animations: "disabled" });
   await page.setViewportSize({ width: 1560, height: 1000 });
   await search.fill(projects[1].name);

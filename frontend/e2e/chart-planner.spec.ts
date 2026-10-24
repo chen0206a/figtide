@@ -38,7 +38,7 @@ test("JSONL import → actual agent recommendation → user selection → save/r
   await planner
     .getByRole("textbox", { name: "想观察什么？" })
     .fill("观察训练轮次与准确率的变化");
-  await planner.getByRole("checkbox", { name: /同意将字段名/ }).check();
+  await planner.getByRole("checkbox", { name: /同意将字段摘要/ }).check();
   await planner
     .getByRole("button", { name: "分析并推荐", exact: true })
     .click();

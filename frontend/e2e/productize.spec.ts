@@ -58,7 +58,7 @@ test("the offline page speaks about the local service, not the fetch error", asy
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator(".home h1")).toHaveCSS("opacity", "1");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
-  await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-3-home-390.png"), fullPage: true, animations: "disabled" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-7-home-390.png"), fullPage: true, animations: "disabled" });
 
   await page.route("**/api/**", (route) => route.abort("connectionrefused"));
   await page.reload();

@@ -231,3 +231,5 @@
  .product-intro .draw,.product-intro .underline,.product-intro .trace{stroke-dashoffset:0!important;}
  .product-intro [data-reveal="pending"]{opacity:1;transform:none;}
 }
+
+.product-intro .privacy-section p { max-width: var(--lf-page-max); color: var(--lf-text-2); font-size: var(--lf-text-md); line-height: 1.8; margin: var(--lf-space-4) 0 0; }

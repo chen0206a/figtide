@@ -4,6 +4,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { Project } from "../../lib/api";
 import { HomePage, type HomePageProps } from "./HomePage";
 import { MemoryRouter } from "react-router-dom";
+import { dataPrivacy, dataPrivacyDetails, dataPrivacyLocalService } from "../../lib/privacy";
 
 // Plotly is not needed to verify the home page wiring.
 vi.mock("../../editor/FigurePreview", () => ({
@@ -115,6 +116,15 @@ it("starts first-time users from a project or the sample", () => {
   expect(p.onCreate).toHaveBeenCalledOnce();
   expect(document.querySelector(".home-side, .home-bottom")).toBeNull();
   expect(screen.getByText("示意")).toBeVisible();
+});
+
+it("opens and closes the footer explanation with the shared privacy copy", () => {
+  fixture();
+  fireEvent.click(screen.getByRole("button", { name: "数据保存在本机" }));
+  expect(screen.getByRole("dialog", { name: "数据在哪里" })).toBeVisible();
+  for (const copy of [dataPrivacy, dataPrivacyDetails, dataPrivacyLocalService]) expect(screen.getByText(copy)).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "关闭" }));
+  expect(screen.queryByRole("dialog")).toBeNull();
 });
 
 it("opens the existing sample project instead of creating another", () => {

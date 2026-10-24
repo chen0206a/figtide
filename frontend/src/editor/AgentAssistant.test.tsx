@@ -17,6 +17,7 @@ import {
 } from "./figureTools";
 import type { Dataset } from "../lib/api";
 import { ApiError } from "../lib/api";
+import { agentConsent } from "./agentPresentation";
 import type {ComponentProps} from 'react';
 vi.mock("./StylePreview", () => ({
   StylePreview: ({ config }: any) => (
@@ -231,7 +232,7 @@ async function start() {
   fireEvent.change(screen.getByRole("textbox", { name: "希望怎样调整？" }), {
     target: { value: "字号改为18" },
   });
-  fireEvent.click(screen.getByRole("checkbox"));
+  fireEvent.click(screen.getByRole("checkbox", { name: agentConsent }));
   fireEvent.click(screen.getByRole("button", { name: "生成调整提案" }));
 }
 it("requires metadata consent and explicit confirmation, then uses the shared diff", async () => {

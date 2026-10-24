@@ -44,7 +44,10 @@ test("an empty workspace can create the sample project from scratch and open it 
       await expect(page.locator(".home h1")).toHaveCSS("opacity", "1");
       await expect(page.getByRole("button", { name: "创建研究项目", exact: true })).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
-      await page.screenshot({ path: artifactPath(test.info(), `../docs/product-audit/after/11-5-empty-home-${width}.png`), fullPage: true, animations: "disabled" });
+      const card = (await page.locator(".home-sample").boundingBox())!;
+      const row = (await page.locator(".home-top").boundingBox())!;
+      expect(card.width).toBeCloseTo(row.width, 0);
+      await page.screenshot({ path: artifactPath(test.info(), `../docs/product-audit/after/11-7-empty-home-${width}.png`), fullPage: true, animations: "disabled" });
     }
     await page.setViewportSize({ width: 1440, height: 1000 });
 
@@ -58,7 +61,7 @@ test("an empty workspace can create the sample project from scratch and open it 
     await page.evaluate(() => document.fonts.ready);
     await expect(page.locator(".editor-left")).toHaveCSS("opacity", "1");
     await expect(page.locator(".editor-right")).toHaveCSS("opacity", "1");
-    await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-5-sample-editor.png"), fullPage: true, animations: "disabled" });
+    await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-7-sample-editor.png"), fullPage: true, animations: "disabled" });
     const projectId = Number(page.url().match(/\/projects\/(\d+)\//)?.[1]);
     expect(projectId).toBeGreaterThan(0);
 
@@ -97,7 +100,7 @@ test("an empty workspace can create the sample project from scratch and open it 
       page.getByRole("heading", { name: "学习曲线 · 均值与标准误" }),
     ).toBeVisible();
     await expect(page.locator(".figure-preview").first()).toHaveAttribute("aria-busy", "false");
-    await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-5-sample-home.png"), fullPage: true, animations: "disabled" });
+    await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-7-sample-home.png"), fullPage: true, animations: "disabled" });
 
     await page.getByRole("button", { name: "打开示例项目" }).click();
     await expect(page).toHaveURL(/\/projects\/\d+\/figures\/\d+$/);

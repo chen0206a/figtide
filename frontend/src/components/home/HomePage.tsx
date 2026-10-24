@@ -7,7 +7,7 @@ import {
   Sigma,
   Upload,
 } from "lucide-react";
-import { type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { type Project } from "../../lib/api";
 import "./home.css";
@@ -19,6 +19,8 @@ import { ContinueCard } from "./ContinueCard";
 import { AssistantCard, RecentCharts } from "./HomeSide";
 import { ExperimentsPanel, ProjectsPanel } from "./HomeTables";
 import { SampleThumbnail } from "./SampleThumbnail";
+import { Dialog } from "../ui/dialog";
+import { dataPrivacy, dataPrivacyDetails, dataPrivacyLocalService } from "../../lib/privacy";
 export type HomePageProps = {
   projects: Project[];
   currentId: number;
@@ -45,6 +47,7 @@ export type HomePageProps = {
 };
 
 export function HomePage(p: HomePageProps) {
+  const [privacyOpen, setPrivacyOpen] = useState(false);
   const current = p.projects.find((project) => project.id === p.currentId);
   const latest = p.charts[0];
   const act = (callback: () => void) => (current ? callback() : p.onCreate());
@@ -52,7 +55,7 @@ export function HomePage(p: HomePageProps) {
   const now = new Date();
   const entrance=useEntrance("home");
   return (
-    <div className={`home home-v2 ${entrance=== "none" ? "" : "lf-motion-on"}`} data-entrance={entrance}>
+    <div className={`home home-v2 ${firstRun ? "home-first-run" : ""} ${entrance=== "none" ? "" : "lf-motion-on"}`} data-entrance={entrance}>
       <section className="home-intro" aria-label="欢迎">
         <div className="home-intro-text">
           <span className="lf-kicker">{dateLabel(now)} · 本地工作区</span>
@@ -247,9 +250,13 @@ export function HomePage(p: HomePageProps) {
       </div>}
 
       <footer className="home-footer lf-mono">
-        <span>数据保存在本机</span>
+        <button type="button" className="home-privacy-button" onClick={() => setPrivacyOpen(true)}>数据保存在本机</button>
         <Link to="/welcome">关于 LabFlow</Link>
       </footer>
+      <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen} title="数据在哪里" description={dataPrivacy}>
+        <p>{dataPrivacyDetails}</p>
+        <p>{dataPrivacyLocalService}</p>
+      </Dialog>
     </div>
   );
 }

@@ -268,7 +268,7 @@ export default function ChartPlanner(p: {
                 onChange={(e) => setConsent(e.target.checked)}
                 disabled={active || submitting}
               />
-              同意将字段名、类型、统计摘要及这段描述发送给已配置的模型；不发送原始行。
+              同意将字段摘要（字段名、类型、缺失数、数值范围）、版本元信息及这段描述发送给已配置的模型；不发送原始数据行和文件名，模型服务可能计费。
             </label>
             {pendingId ? (
               <Button

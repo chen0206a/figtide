@@ -1,0 +1,20 @@
+Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: getByRole('button', { name: '数据处理来源', exact: true })
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" getByRole('button', { name: '数据处理来源', exact: true }) with timeout 5000ms[22m
+[2m  - waiting for getByRole('button', { name: '数据处理来源', exact: true })[22m
+
+
+  292 |   await expect(
+  293 |     page.getByRole("button", { name: "数据处理来源", exact: true }),
+> 294 |   ).toBeVisible();
+      |     ^
+  295 |   expect(
+  296 |     await (
+  297 |       await request.get(`/api/projects/${p.id}/data/${source.id}/original`)
+    at D:\RAG-agent项目\LabFlow\frontend\e2e\processing.spec.ts:294:5

@@ -93,7 +93,7 @@ test("canvas consent → one real run → isolated marked preview → original �
   await expect(form.getByRole('button',{name:'发送给绘图助手'})).toBeDisabled();await expect(form.getByRole('checkbox')).not.toBeChecked();expect(posts).toHaveLength(0);
   const draftKey=`labflow-draft-v1:${f.project.id}:${f.chart.id}`;
   const beforeDraft=await page.evaluate(key=>localStorage.getItem(key),draftKey);
-  await form.getByRole('checkbox').check();await form.getByRole('button',{name:'发送给绘图助手'}).click();
+  await form.getByRole('checkbox', {name:'允许把图表配置和字段摘要（字段名、类型、缺失数、数值范围）发送给你配置的模型服务。不发送原始数据行和文件名；模型服务可能计费。',exact:true}).check();await form.getByRole('button',{name:'发送给绘图助手'}).click();
   const panel=page.getByRole('complementary',{name:'绘图助手',exact:true});await expect(panel.getByRole('button',{name:'应用这组调整'})).toBeEnabled();
   await expect(page.locator('.canvas-proposal-layer')).toHaveClass(/is-visible/);expect(posts).toHaveLength(1);
   await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText(f.config.style.title);

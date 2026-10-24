@@ -1,3 +1,27 @@
+## 2026-10-24 · 11-7 总验收：未通过，按约定停止
+
+- 命令 `./scripts/test-agent.ps1 -All -FixturePort 18770`，隔离 Java 8087 / Vite 5178 / 本地模型协议夹具 18770 / MySQL labflow_e2e，workers=1，未设置 LABFLOW_CAPTURE。**固定 81 条 / 36 文件；passed 80 / failed 1 / skipped 0 / flaky 0**，总耗时见 JSON stats（约 5.6 分钟）。原来的 80 条完整保留，唯一新增是 privacy.spec.ts 的完整流程外部网络断言。
+- 上轮两处失败 `isolation.spec.ts` 上传目标和实验页双向切换，在本轮全量中均通过；该文件 5/5。新隐私 E2E、空首页与示例项目、390px 项目表及离线页均通过。
+- 本轮唯一失败：`processing.spec.ts:238` 的“explicit filter and numeric stable sort save as an independent dataset”，失败断言在 **294 行**。错误原文：`Error: expect(locator).toBeVisible() failed`；`Locator: getByRole('button', { name: '数据处理来源', exact: true })`；`Expected: visible`；`Timeout: 5000ms`；`Error: element(s) not found`。
+- 此例对 POST /process 返回三行稳定排序结果的断言已通过，失败发生在其后的来源按钮可见性断言；更后的原始文件字节断言因本例提前失败未执行。根因尚未确认，不将其归为机器/杀软或截图抖动。遵照用户要求，没有在总验收之后修补、重跑、放宽断言或刷新基线。
+- JSON 原始报告：`docs/test-evidence/refactor11-7-acceptance.json`。错误原文、页面快照、失败截图、完整 trace、整轮日志分别为 `docs/test-evidence/refactor11-7-failures/processing.error.txt`、`processing.error-context.md`、`processing.png`、`processing.trace.zip`、`full-run.txt`。
+- 全量脚本因浏览器失败退出，本轮后续独立 JVM 的审计恢复校验**未执行**；此前本轮 16 条专项及 5 条重拍脚本中的 JVM 校验均通过，不能当作本次全量执行。测试新建项目已由 teardown 清理；没有修改用户工作区。
+- 最终 `npm test -- --maxWorkers=4`：**49 文件 / 276 passed**；`npm run build`：通过（19.97s，既有 chunk 告警）。与 92a0c1b 比较 backend 和 refactor09-layout-baseline.json 均无差异。4 个提交分别保存诊断修复、示例、窄屏、隐私与验收证据；当前以“修改已提交、总验收未通过”交付，等待后续指示。
+- 未执行：失败后重跑、真实收费模型、Java 单元/集成测试、Firefox/Safari、桌面打包。后续桌面程序是已确认的产品方向，本轮没有宣称已实现双击运行。
+
+## 2026-10-24 · 11-7 / 提交 4：数据与隐私说明
+
+- 先于隐私文案修改，用新增 privacy.spec.ts 真实走完首次介绍页 → 首页 → 新建项目 → 上传 CSV → 确认解析 → 编辑 → MySQL 保存 → SVG/PNG 导出；未使用助手。修改前记录 211 条请求（含本地 WS / blob URL），**非 127.0.0.1 / localhost 的 HTTP(S)/WS(S) 请求：无，列表 []**。应用 main.tsx 已从 @fontsource-variable/inter 与 jetbrains-mono 导入字体，未发现 Google Fonts 等运行时外链，无需再替换字体。
+- 修改后 LABFLOW_CAPTURE=1 重拍并重走同一流程，记录 **209 条请求，external=[]**，完整 URL / 方法清单为 `docs/test-evidence/refactor11-7-network.json`。新 E2E 对外部请求列表为空、助手运行 POST 为空以及 SVG 内容 / PNG 文件大小做断言；原 80 条全部保留，清单增加到 81 条。统计只是这条浏览器流程的观测，不将其扩大为安装依赖或主动访问外链时也绝不联网的承诺。site/index.html 按要求保留 Google Fonts，README 明示它是独立展示页。
+- 只读核对 Java：AgentRunService.profile（589–598 行）删除 head、filename 和每字段 samples；WorkspaceService.profile（274–317 行）仍保留字段 name/type/role/suggested_role/missing/unique/constant/min/max，以及 dataset/version 标识、sha256、row_count、truncated。execute（633–659 行及工具返回分支）发送图表配置、用户描述、会话上下文；get_dataset_profile 使用上述过滤结果，lint 的 report 在模型返回前删除。本轮未修改任何 Java、API、预算/恢复逻辑，也未调用真实模型。
+- 介绍页、首页“数据保存在本机”说明框使用 lib/privacy.ts 同一份文案；site 与 README 同步三段说明（逐段比对 3/3）。补充字段角色/唯一值、行数/版本/内容指纹和用户主动写入标题/注释/对话的传输边界，避免将“原始行不附带”误解成用户自己输入的内容也会过滤。模型连通性测试是用户单独同意的两条固定消息；备份保存在用户选择的下载位置。
+- 按实际本地架构校准两处措辞：“任何服务器”改“任何外部服务器”（上传要交给本机 Java）；“我们没有服务器”明确为“没有用于接收这些数据的云端服务器”。助手勾选文案按用户给定原句更新。选图助手勾选文案另明确字段摘要、版本元信息、描述与可能计费，不声称推荐阶段必发图表配置。README 记录未来双击启动桌面程序、本机保存数据的方向；当前仍是脚本启动，未冒充已提供安装包。
+- 断言变化逐项：AgentAssistant.test 的勾选操作改按完整 agentConsent 查找；agent.spec.ts 的画布同意框改按完整新文案查找；ChartPlanner.test.tsx 三处及 chart-planner.spec.ts 一处从 /同意将字段名/ 改为 /同意将字段摘要/；ProductIntro 单测补三段正文与“数据在哪里”；HomePage 新增说明框开关测试；privacy E2E 检查介绍页、页脚弹窗、导入新文案与真实网络。没有删掉已有安全或绘图断言。
+- `npm test -- --maxWorkers=4`：**49 文件 / 276 passed**；`npm run build`：通过（19.97s；既有 >500kB chunk 告警）。`./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('privacy.spec.ts','intro.spec.ts','agent.spec.ts','chart-planner.spec.ts')`：**16 passed / 0 failed / 0 skipped**（1.0m，intro 的文件名筛选也匹配 product-intro.spec.ts）；新 JVM 审计恢复通过。
+- 重拍命令：`$env:LABFLOW_CAPTURE='1'; ./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('sample-project.spec.ts','home-workspace.spec.ts','productize.spec.ts','privacy.spec.ts'); Remove-Item Env:LABFLOW_CAPTURE`。**5 passed / 0 failed / 0 skipped（21.8s）**，新 JVM 审计恢复通过，reducedMotion=reduce；所有输出先写 testInfo.outputPath，再额外复制到 docs。重拍时修正截图前滚回顶部（避免粘性导航出现在长截图中段），空首页示例卡占满整行；新增等宽断言，未改一般首页布局或验收基线。
+- 截图 `docs/product-audit/after/11-7-{empty-home-1440,empty-home-390,sample-editor,project-table-390,offline-390}.png` 已逐张目视检查，标题、按钮、三条真实 SEM 带完整可见；另保留 home-390 / sample-home。SVG / PNG 导出样本为 docs/exports/privacy-check.*。
+- 未执行：真实/收费模型、Firefox/Safari、桌面打包、Java 单元/集成测试（本轮无后端改动，隔离脚本只执行 Maven package -DskipTests）。全量验收结果单列，不用上述专项替代。
+
 ## 2026-10-24 · 11-7 / 提交 3：390px 与离线页
 
 - 项目表明确保留 420px 的表格最小宽度，由卡片内 width/max-width:100% 的 overflow-x:auto 容器滚动；搜索框占满卡片内容区，输入框可收缩。390px 实测文档 scrollWidth=390，卡片在屏内，表格可水平滚动且搜索框在卡片内。
