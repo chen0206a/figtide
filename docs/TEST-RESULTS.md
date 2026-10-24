@@ -1,3 +1,7 @@
+## 2026-10-25 · 14-4-3：CI与发布说明；14-4自动验收通过
+
+新增Windows2022/Temurin21的desktop-release工作流、便携使用/发布说明。手动执行仅artifact；标签匹配版本才创建草稿并附资产后发布，已有正式Release拒绝覆盖。Python PyYAML成功解析工作流；这是静态校验，不是GitHub实际运行。未推送/打标签/发布，未执行远端Actions。14-4实际构建和7组EXE探针通过，未修改前后端产品代码；托盘/SmartScreen人工项不计为通过。按用户最新指令进入总方案最后14-5：产物完整E2E、安装说明及人工冒烟清单。
+
 ## 2026-10-25 · 14-4-2：真实EXE隔离冒烟通过
 
 `./scripts/test-desktop-package.ps1 -Application 'dist/desktop/FigTide-0.1.0-windows-x64/FigTide'`：7组断言全部通过。ZIP结构及SHA256、EXE版本和四尺寸品牌图标、启动参数UTC/desktop、许可及无用户数据检查均通过；PATH仅System32且JAVA_HOME无效、中文带空格数据路径、与安装目录无关的cwd，真实CSV上传/图表保存、第二EXE正常退出、强杀重启端口17920不变且图表配置/revision一致。该轮是未提交源代码首次构建，manifest明确source_dirty=true，不冒充干净发布包；最终干净提交产物在14-5验收。

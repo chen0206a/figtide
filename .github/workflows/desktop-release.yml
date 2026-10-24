@@ -1,0 +1,86 @@
+name: Windows desktop package
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: desktop-package-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  windows:
+    runs-on: windows-2022
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Check version and trigger
+        run: |
+          $version = (Get-Content frontend/package.json -Raw | ConvertFrom-Json).version
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -ne "v$version") { throw 'Tag must match the source version vX.Y.Z.' }
+          "FIGTIDE_VERSION=$version" >> $env:GITHUB_ENV
+      - name: Test source
+        env:
+          LABFLOW_TEST_DB: h2
+        run: |
+          npm ci --prefix frontend
+          if ($LASTEXITCODE) { throw 'npm ci failed' }
+          npm --prefix frontend test -- --maxWorkers=2
+          if ($LASTEXITCODE) { throw 'Frontend tests failed' }
+          node --test scripts/migration/*.test.cjs
+          if ($LASTEXITCODE) { throw 'Migration tests failed' }
+          mvn -B -f backend/pom.xml verify
+          if ($LASTEXITCODE) { throw 'H2 tests failed' }
+      - name: Build portable application
+        run: ./scripts/package-desktop.ps1
+      - name: Verify bundled executable without system Java
+        run: ./scripts/test-desktop-package.ps1 -Application "dist/desktop/FigTide-$env:FIGTIDE_VERSION-windows-x64/FigTide"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FigTide-${{ env.FIGTIDE_VERSION }}-windows-x64
+          path: dist/desktop/FigTide-${{ env.FIGTIDE_VERSION }}-windows-x64/release/*
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desktop-package-evidence
+          path: |
+            .runtime/desktop-package-smoke.json
+            .runtime/package-smoke-*/process-*.log
+            .runtime/package-smoke-*/**/logs/figtide.log
+            backend/target/surefire-reports/
+          if-no-files-found: warn
+      - name: Publish only a tested version tag
+        if: github.event_name == 'push' && github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $files = @(Get-ChildItem "dist/desktop/FigTide-$env:FIGTIDE_VERSION-windows-x64/release" -File | ForEach-Object FullName)
+          $existing = gh release view $tag --json isDraft 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            if (!(($existing | ConvertFrom-Json).isDraft)) { throw 'A published release already exists; refusing to overwrite its assets.' }
+          } else {
+            gh release create $tag --verify-tag --draft --title "FigTide $env:FIGTIDE_VERSION" --notes-file packaging/windows/release-notes.md
+            if ($LASTEXITCODE) { throw 'Cannot create draft release' }
+          }
+          gh release upload $tag @files --clobber
+          if ($LASTEXITCODE) { throw 'Cannot attach draft assets' }
+          gh release edit $tag --draft=false
+          if ($LASTEXITCODE) { throw 'Cannot publish prepared release' }
