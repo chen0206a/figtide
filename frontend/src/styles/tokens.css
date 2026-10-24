@@ -86,6 +86,7 @@
   --lf-leading: 1.5;
   --lf-leading-relaxed: 1.6;
   --lf-tracking-tight: -0.02em;
+  --lf-tracking-brand: -0.03em;
   --lf-tracking-mono: 0.04em;
 
   /* ---- radius ---- */

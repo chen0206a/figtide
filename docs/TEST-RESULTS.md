@@ -1,3 +1,13 @@
+## 2026-10-24 · 任务 13-1：图标与品牌组件
+
+- 分支：从 `refactor/frontend` 的 `f13b69c` 创建 `release/v0.1.0`。任务包品牌源资产与任务说明入库，媒体文件留到 13-3。
+- 新增 `BrandMark`，24px 及以下使用 small，较大使用主图标，light 使用 reverse；英文 Fig 800 / Tide 400，中文可选；图标 alt 为空，组件 aria-label 为 FigTide。统一顶栏、介绍页导航/页脚、编辑器状态栏、离线页与关于弹窗，删除旧 LF 图标。首屏标题与动效保留。
+- `npm test -- --maxWorkers=4`：51 files / 279 passed / 0 failed。新增两条图标资源/尺寸/反白/无障碍单测。首次新测试误按文件名断言 Vite 内联 SVG URL，修正为对实际导入资源做等值断言后全绿。
+- `npm run build`：通过；保留已有大于 500kB chunk 提示。
+- `./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('intro.spec.ts','home.spec.ts')`：7 passed / 0 failed / 0 skipped（文件名匹配同时包含 product-intro.spec.ts）；真实隔离 Java/MySQL + 本机夹具，重启审计检查通过。
+- 等价调整断言：intro.spec 首页“关于 LabFlow”链接改为“关于 FigTide”按钮，先断言关于弹窗可见，再通过弹窗“产品介绍”链接进入介绍页；原先进入介绍页断言保留。
+- 本节未执行全量 E2E、静态站验收；按计划在 13-2 和总验收执行。后端/API/schema/草稿键未改。
+
 ## 2026-10-24 · 11-8 总验收：任务 11 总验收通过
 
 - 从 7ba209e 继续，分两次提交完成派生数据选中竞态修复和首页细节。最终命令 **`./scripts/test-agent.ps1 -All -FixturePort 18770`**，workers=1，隔离 Java 8087 / Vite 5178 / 本地模型夹具 18770 / MySQL labflow_e2e，未开启 LABFLOW_CAPTURE。

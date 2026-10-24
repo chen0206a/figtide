@@ -8,7 +8,6 @@ import {
   Upload,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
 import { type Project } from "../../lib/api";
 import "./home.css";
 import "./home-motion.css";
@@ -18,6 +17,7 @@ import { dateLabel, greeting, type ChartSummary } from "./homeData";
 import { ContinueCard } from "./ContinueCard";
 import { AssistantCard, RecentCharts } from "./HomeSide";
 import { ExperimentsPanel, ProjectsPanel } from "./HomeTables";
+import { AboutDialog } from "../AboutDialog";
 import { SampleThumbnail } from "./SampleThumbnail";
 import { Dialog } from "../ui/dialog";
 import { dataPrivacy, dataPrivacyDetails, dataPrivacyLocalService } from "../../lib/privacy";
@@ -48,6 +48,7 @@ export type HomePageProps = {
 
 export function HomePage(p: HomePageProps) {
   const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const current = p.projects.find((project) => project.id === p.currentId);
   const latest = p.charts[0];
   const act = (callback: () => void) => (current ? callback() : p.onCreate());
@@ -251,8 +252,9 @@ export function HomePage(p: HomePageProps) {
 
       <footer className="home-footer lf-mono">
         <button type="button" className="home-privacy-button" onClick={() => setPrivacyOpen(true)}>数据保存在本机</button>
-        <Link to="/welcome">关于 LabFlow</Link>
+        <button type="button" className="home-privacy-button" onClick={() => setAboutOpen(true)}>关于 FigTide</button>
       </footer>
+      <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
       <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen} title="数据在哪里" description={dataPrivacy}>
         <p>{dataPrivacyDetails}</p>
         <p>{dataPrivacyLocalService}</p>

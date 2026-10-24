@@ -43,7 +43,7 @@ import { Dialog } from "./components/ui/dialog";
 import { DataPage } from "./data/DataPage";
 import { HomePage } from "./components/home/HomePage";
 import { WorkbenchSkeleton } from "./components/WorkbenchSkeleton";
-import { LabFlowMark } from "./components/LabFlowMark";
+import { BrandMark } from "./components/BrandMark";
 import { UploadDialog } from "./components/UploadDialog";
 import { ProjectManager } from "./components/ProjectManager";
 import { ModelConnectionDialog } from "./components/ModelConnectionDialog";
@@ -333,8 +333,7 @@ export default function App() {
         <header className="masthead">
           <div className="masthead-bar">
             <Link className="brand" to="/" title="LabFlow 首页">
-              <LabFlowMark size={29} />
-              <span>LabFlow</span>
+              <BrandMark size={29} />
             </Link>
             <WorkspaceNav
               page={page}
@@ -432,6 +431,7 @@ export default function App() {
             </div>
           ) : projects.isError ? (
             <div className="empty-state offline-state">
+              <BrandMark size={40} />
               <AlertCircle />
               <h2>无法连接本地服务</h2>
               <p>请确认 LabFlow 已经启动。你的数据保存在本机，没有丢失。</p>

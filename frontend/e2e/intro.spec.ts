@@ -12,7 +12,10 @@ test("first visit redirects to /welcome, start pushes the workspace, and back re
   await expect(page.locator('.product-intro header .cta')).toHaveText(/进入工作区/);
   await page.goForward();await expect(page.locator('.home')).toBeVisible();
   await page.reload();await expect(page.locator('.home')).toBeVisible();
-  await page.getByRole('link',{name:'关于 LabFlow'}).click();await expect(page.locator('.product-intro')).toBeVisible();
+  await page.getByRole('button',{name:'关于 FigTide',exact:true}).click();
+  await expect(page.getByRole('dialog',{name:'关于 FigTide 图汐'})).toBeVisible();
+  await page.getByRole('dialog').getByRole('link',{name:'产品介绍'}).click();
+  await expect(page.locator('.product-intro')).toBeVisible();
 });
 test("the global header keeps a product intro entry",async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('labflow-intro-seen','1'));
