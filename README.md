@@ -66,6 +66,7 @@ MySQL 安装位置不是默认值时：
 - 本地开发账号为 `labflow` / `labflow-local`，独立实例 root 密码为 `labflow-root-local`；仅用于当前本机模式。
 - 已构建过可使用 `.\scripts\start.ps1 -SkipBuild`；停止使用 `.\scripts\stop.ps1`，保留数据。
 - 模型设置可在网页中填写地址、模型 ID 与 API Key。密钥仅保存在后端进程内存；后端重启需重新配置。普通科研绘图不需要密钥。详见 [模型连接说明](docs/MODEL-CONNECTIONS.md)。
+- 从 MySQL 网页版把项目搬到桌面版：见 [桌面版迁移指南](docs/desktop/MIGRATION.md)。
 
 ## 技术栈
 
@@ -97,6 +98,9 @@ cd ..
 
 # 全量浏览器测试：隔离 Java 8087 / Vite 5178 / 夹具 18770 / labflow_e2e
 .\scripts\test-agent.ps1 -All -FixturePort 18770
+
+# 桌面版迁移端到端：隔离 MySQL 测试库 + 临时目录桌面 jar，不触碰真实工作区
+.\scripts\test-migration.ps1
 
 # 生产构建的任务 09 专项（已从 .runtime 整理为受版本控制的入口）
 .\scripts\test-refactor09.ps1 -FixturePort 18770
