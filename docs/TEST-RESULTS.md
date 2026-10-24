@@ -1,3 +1,7 @@
+## 2026-10-25 · 14-5-2：安装与人工冒烟说明
+
+README新增便携ZIP安装/升级、固定origin、数据与日志位置、备份/迁移、退出和未签名说明，移除“桌面版仍在开发且无包”的过时描述，但明确本轮未公开发布。SMOKE-14-5逐项区分自动覆盖和未执行人工UI项。PACKAGING同步CI完整E2E入口。文档链接及`git diff --check`通过；未新增或改写UI断言，未将人工项预先标记通过。没有新执行组件/Java测试，产品源码不变。
+
 ## 2026-10-25 · 14-5-1：真实EXE浏览器入口
 
 `./scripts/test-agent.ps1 -Packaged -Application 'dist/desktop/FigTide-0.1.0-windows-x64/FigTide' -FixturePort 18770 -Specs @('desktop-restart.spec.ts')`：1 passed / 0 failed / 0 skipped，随后审计强杀/恢复检查通过。EXE子进程PATH只保留System32、JAVA_HOME指向不存在目录，嵌套重启用例同样运行EXE；保留全部原始浏览器断言。日志`.runtime/task14-5-package-targeted-fixed.log`。

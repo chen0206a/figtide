@@ -21,7 +21,7 @@
 
 ## 自动化发布
 
-`.github/workflows/desktop-release.yml`：Windows2022 + Node22 + Temurin21，先运行前端/H2/迁移测试，再打包、进行真实EXE探针、上传workflow artifact。后续14-5补充产物完整浏览器E2E。
+`.github/workflows/desktop-release.yml`：Windows2022 + Node22 + Temurin21，先运行前端/H2/迁移测试，再打包、进行真实EXE探针和完整产物浏览器E2E、上传workflow artifact。浏览器安装仅用于CI验证，不进入用户便携包。
 
 - 手动workflow_dispatch只生成artifact。
 - 推送匹配源码版本的`vX.Y.Z`标签后才走Release：先建草稿、附三个文件、最后公开；已有正式Release拒绝覆盖。
