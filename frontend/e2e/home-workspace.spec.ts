@@ -1,5 +1,6 @@
 import { test, expect } from "./workspace-test";
 import fs from "node:fs";
+import { artifactPath } from "./artifacts";
 
 test("search and pagination switch real recent charts and experiments", async ({
   page,
@@ -62,6 +63,22 @@ test("search and pagination switch real recent charts and experiments", async ({
   await page.getByRole("button", { name: /显示更多项目/ }).click();
   await expect(page.locator(".home-project")).toHaveCount(12);
   const search = page.getByRole("textbox", { name: "搜索研究项目" });
+  await page.setViewportSize({ width: 390, height: 1000 });
+  const projectsCard = page.getByRole("region", { name: /研究项目/ });
+  const scroll = projectsCard.locator(".home-table-scroll");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  const box = (await projectsCard.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(390);
+  expect(await scroll.evaluate((el) => el.scrollWidth > el.clientWidth && getComputedStyle(el).overflowX === "auto")).toBe(true);
+  await scroll.evaluate((el) => { el.scrollLeft = el.scrollWidth; });
+  expect(await scroll.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+  await scroll.evaluate((el) => { el.scrollLeft = 0; });
+  const searchBox = (await search.boundingBox())!;
+  expect(searchBox.x + searchBox.width).toBeLessThan(box.x + box.width);
+  await page.evaluate(() => document.fonts.ready);
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-7-project-table-390.png"), fullPage: true, animations: "disabled" });
+  await page.setViewportSize({ width: 1560, height: 1000 });
   await search.fill(projects[1].name);
   await expect(page.locator(".home-project")).toHaveCount(1);
   await page.locator(".home-project").click();

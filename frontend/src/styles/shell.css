@@ -381,3 +381,8 @@
     display: none;
   }
 }
+.offline-state {
+  padding-inline: var(--lf-space-4);
+  box-sizing: border-box;
+}
+.offline-state p { max-width: 100%; overflow-wrap: anywhere; }

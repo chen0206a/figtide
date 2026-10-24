@@ -1,3 +1,11 @@
+## 2026-10-24 · 11-7 / 提交 3：390px 与离线页
+
+- 项目表明确保留 420px 的表格最小宽度，由卡片内 width/max-width:100% 的 overflow-x:auto 容器滚动；搜索框占满卡片内容区，输入框可收缩。390px 实测文档 scrollWidth=390，卡片在屏内，表格可水平滚动且搜索框在卡片内。
+- 离线页左右 padding=16px，隐藏顶栏当前项目下拉框；保留重连按钮与原有中文错误说明。home-workspace.spec 原用例中追加窄屏断言和截图；productize.spec 原离线用例中追加下拉框不存在、16px 边距断言，未减少测试。
+- `npm test -- --maxWorkers=4`：49 文件 / 275 passed；`npm run build`：通过（23.17s）。`./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('home-workspace.spec.ts','productize.spec.ts')`：3 passed / 0 failed / 0 skipped（8.7s）。完整截图在提交 4 后用 LABFLOW_CAPTURE=1 集中重拍。
+- 调试运行未算通过：首次启动这轮时，上轮脚本仍在 JVM 重启检查后的清理阶段，两轮端口清理交叠，导致本轮 Vite 5178 退出，3 条报 ECONNRESET/ECONNREFUSED。等待上轮脚本完全退出后串行运行通过，没有改用例断言、重试次数或基线。原日志 .runtime/task11-7-3-e2e.log，最终 .runtime/task11-7-3-e2e-final.log。
+- 偏差：没有。未执行：跨浏览器、真实模型。
+
 ## 2026-10-24 · 11-7 / 提交 2：示例项目与空首页
 
 - 示例处理规则仍为 model / epoch 分组、seed 独立重复、mean ± SEM；图表显式保留 accuracy__sem 映射，使用实际 lower / upper 列画三条区间带，透明度 0.35。标题为 Grouped means ± SEM。仅内置合成 CSV 使用确定性种子偏移以展示可见的重复观测差异，不改任何用户数据，不直接编造误差列；CSV 数值和实验指标统一三位小数精度。

@@ -346,7 +346,7 @@ export default function App() {
               <span className="local-badge">
                 <span /> 本地工作区
               </span>
-              <select
+              {!projects.isError && <select
                 aria-label="当前项目"
                 value={project}
                 onChange={(e) => {
@@ -367,7 +367,7 @@ export default function App() {
                       {p.name}
                     </option>
                   ))}
-              </select>
+              </select>}
               <Link className="masthead-intro" to="/welcome">
                 产品介绍
               </Link>
@@ -431,7 +431,7 @@ export default function App() {
               正在连接本地工作区…
             </div>
           ) : projects.isError ? (
-            <div className="empty-state">
+            <div className="empty-state offline-state">
               <AlertCircle />
               <h2>无法连接本地服务</h2>
               <p>请确认 LabFlow 已经启动。你的数据保存在本机，没有丢失。</p>

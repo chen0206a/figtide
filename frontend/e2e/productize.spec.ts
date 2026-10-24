@@ -65,9 +65,11 @@ test("the offline page speaks about the local service, not the fetch error", asy
 
   await expect(page.getByRole("heading", { name: "无法连接本地服务" })).toBeVisible();
   await expect(page.getByText(/请确认 LabFlow 已经启动/)).toBeVisible();
+  await expect(page.getByLabel("当前项目", { exact: true })).toHaveCount(0);
+  expect(await page.locator(".offline-state").evaluate((el) => getComputedStyle(el).paddingLeft)).toBe("16px");
   const body = await page.locator("body").innerText();
   expect(body).not.toContain("Failed to fetch");
   expect(body).not.toContain("Java");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
-  await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-3-offline-390.png"), fullPage: true, animations: "disabled" });
+  await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-7-offline-390.png"), fullPage: true, animations: "disabled" });
 });
