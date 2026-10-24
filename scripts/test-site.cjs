@@ -52,11 +52,17 @@ const REPO = 'https://github.com/chen0206a/figtide';
       }, README);
       assert.equal(await page.title(), '从实验数据到论文插图 · FigTide');
       assert.equal(await page.locator('header [role="img"][aria-label="FigTide"]').count(), 1);
+      assert.equal(await page.locator('header a[aria-label="FigTide"]').getAttribute('href'), '#top');
       assert.equal(await page.locator('meta[property="og:title"]').getAttribute('content'), await page.title());
       assert.equal(await page.locator('meta[property="og:image"]').getAttribute('content'), 'https://raw.githubusercontent.com/chen0206a/figtide/main/docs/media/social-preview.png');
       assert.equal(await page.locator('meta[name="twitter:card"]').getAttribute('content'), 'summary_large_image');
       assert.equal(checks.scrollWidth, checks.width, `${width}px page overflows`);
       assert(checks.anchors.every(link => link.href !== '#'), 'Placeholder href="#" must not ship');
+      assert.deepEqual(
+        checks.anchors.filter(link => link.href.startsWith('#') && !link.exists).map(link => link.href),
+        [],
+        'Every in-page anchor must resolve to an element id',
+      );
       assert.deepEqual(checks.brokenImages, []);
       assert.deepEqual(checks.unresolvedTokens, []);
       assert.equal(checks.rawUIColors, 0);
