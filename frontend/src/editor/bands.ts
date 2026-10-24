@@ -87,7 +87,5 @@ export function bandTraces(
     warnings.push(
       `${s.name}：${missing} 行区间数据缺失或不适用于对数轴，区间带在此断开`,
     );
-  if (s.error)
-    warnings.push(`${s.name}：区间带已启用，误差棒映射保留但不同时显示`);
   return { traces, warnings };
 }

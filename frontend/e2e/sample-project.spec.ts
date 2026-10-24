@@ -68,8 +68,23 @@ test("an empty workspace can create the sample project from scratch and open it 
     expect(experiments).toHaveLength(3);
     const charts = (await (
       await request.get(`/api/projects/${projectId}/charts`)
-    ).json()) as unknown[];
+    ).json()) as { id: number }[];
     expect(charts).toHaveLength(1);
+    const chart = await (await request.get(`/api/projects/${projectId}/charts/${charts[0].id}`)).json();
+    expect(chart.config.style.title).toBe("Grouped means ± SEM");
+    expect(chart.config.series[0].error).toBe("accuracy__sem");
+    expect(chart.config.series[0].band.enabled).toBe(true);
+    const dataset = await (await request.get(`/api/projects/${projectId}/data/${chart.config.datasetVersionId}`)).json();
+    for (const row of dataset.rows) {
+      expect(row.accuracy__sem).toBeGreaterThan(0);
+      expect(row.accuracy__upper - row.accuracy__mean).toBeCloseTo(row.accuracy__sem, 10);
+      expect(row.accuracy__mean - row.accuracy__lower).toBeCloseTo(row.accuracy__sem, 10);
+    }
+    await expect.poll(() => page.getByTestId("plot").evaluate((el: any) => el.data.filter((t: any) => t.fill === "toself").length)).toBe(3);
+    expect(await page.getByTestId("plot").evaluate((el: any) => el.data.filter((t: any) => t.fill === "toself").every((t: any) => t.y[0] > t.y.at(-1) && t.fillcolor.endsWith(",0.35)")))).toBe(true);
+    const polygons = page.getByTestId("plot").locator(".js-fill");
+    expect(await polygons.count()).toBeGreaterThanOrEqual(3);
+    for (const polygon of (await polygons.all()).slice(0, 3)) await expect(polygon).toBeVisible();
 
     await page.goto("/");
     await expect(

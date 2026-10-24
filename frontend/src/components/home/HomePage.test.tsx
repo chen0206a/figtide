@@ -111,6 +111,10 @@ it("starts first-time users from a project or the sample", () => {
   ).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "载入示例项目" }));
   expect(p.onSample).toHaveBeenCalledOnce();
+  fireEvent.click(screen.getByRole("button", { name: "创建研究项目" }));
+  expect(p.onCreate).toHaveBeenCalledOnce();
+  expect(document.querySelector(".home-side, .home-bottom")).toBeNull();
+  expect(screen.getByText("示意")).toBeVisible();
 });
 
 it("opens the existing sample project instead of creating another", () => {

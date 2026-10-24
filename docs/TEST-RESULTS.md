@@ -1,3 +1,13 @@
+## 2026-10-24 · 11-7 / 提交 2：示例项目与空首页
+
+- 示例处理规则仍为 model / epoch 分组、seed 独立重复、mean ± SEM；图表显式保留 accuracy__sem 映射，使用实际 lower / upper 列画三条区间带，透明度 0.35。标题为 Grouped means ± SEM。仅内置合成 CSV 使用确定性种子偏移以展示可见的重复观测差异，不改任何用户数据，不直接编造误差列；CSV 数值和实验指标统一三位小数精度。
+- 原“告警 1”来自 DataProcessor 的统计解释：样本 SD 使用 n−1，SEM=SD/√n，依赖独立观测假设、不是置信区间。保留它。删除 bands.ts 的“启用区间带时不同时画误差棒”冗余状态通知（专业面板已有同一说明）；真正的缺失、反向界限和不递增 X 告警保留。
+- 空首页示例卡内放主按钮“载入示例项目”和次按钮“创建研究项目”，右侧静态 SVG 由同一份 CSV 计算并标记“示意”；隐藏快速开始、最近图表、最近实验、研究项目。home.spec 原四个空页入口的循环断言等价改为新建按钮键盘操作、示例入口、缩略图和四块隐藏断言；HomePage 单测保留示例回调并补创建回调。
+- `npm test -- --maxWorkers=4`：49 文件 / 275 passed；`npm run build` 通过（19.30s；既有 chunk 告警）。隔离命令 `./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('sample-project.spec.ts','home.spec.ts','evaluation.spec.ts','privacy.spec.ts')`：6 passed / 0 failed / 0 skipped（29.4s）；其中 privacy 是提交 4 的预先取证用例，尚未修改隐私文案。
+- 浏览器验证保存后的 SEM 字段、每一行 mean±SEM 上下界、三条闭合 SVG 区间带与可见填充。截图目视检查可见半透明带。没有刷新布局基线或删旧断言。
+- 调试记录：新增断言首次误取 config.title（实际是 config.style.title），随后比较区间首尾方向写反（实际先上界后下界），均纠正测试访问方式；CSV 精度测试适配 Windows CRLF 的 trim。另一次 ROC 专项在等待 PR 按钮时超时；该轮同时发生源码 HMR，未改其测试/断言，冻结源码后重跑通过。原始日志在 .runtime/task11-7-2-*，不计作全量验收。
+- 未执行：收费模型、跨浏览器；偏差：仅重建内置合成示例的种子差异，以便示范真实 SEM；统计规则未变。
+
 # LabFlow 测试与验收记录
 
 ## 2026-10-24 · 11-7 / 提交 1：先诊断两项隔离失败

@@ -96,22 +96,13 @@ test("empty workspace entries create a project and keyboard actions work with re
   );
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  for (const name of [
-    /^创建研究项目/,
-    /^新建图表.*11 类/,
-    /^对比实验/,
-    /^处理与汇总/,
-  ]) {
-    await page.getByRole("button", { name }).focus();
-    await page.keyboard.press("Enter");
-    await expect(
-      page.getByRole("dialog", { name: "新建研究项目" }),
-    ).toBeVisible();
-    await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "关闭", exact: true })
-      .click();
-  }
+  await page.getByRole("button", { name: "创建研究项目", exact: true }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog", { name: "新建研究项目" })).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(page.getByRole("button", { name: "载入示例项目" })).toBeVisible();
+  await expect(page.getByRole("img", { name: /学习曲线与标准误区间示意/ })).toBeVisible();
+  await expect(page.locator(".home-side, .home-bottom")).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: /导入数据/ }),
   ).toHaveCount(0);

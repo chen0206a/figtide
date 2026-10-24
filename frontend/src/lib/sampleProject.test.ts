@@ -6,6 +6,7 @@ import {
   SAMPLE_PARTIAL_FAILURE,
   SAMPLE_PROJECT_NAME,
   sampleExperiment,
+  sampleFile,
   sampleRows,
   sampleRules,
 } from "./sampleProject";
@@ -125,9 +126,9 @@ describe("示例项目", () => {
       expect(experiment.parameters.seeds).toBe(3);
       expect(experiment.dataset_version_ids).toEqual([4]);
     }
-    expect(experiments[0].metrics.final_accuracy).toBeCloseTo(0.8465, 4);
-    expect(experiments[1].metrics.final_accuracy).toBeCloseTo(0.9307, 4);
-    expect(experiments[2].metrics.final_loss).toBeCloseTo(0.6378, 4);
+    expect(experiments[0].metrics.final_accuracy).toBeCloseTo(0.847, 3);
+    expect(experiments[1].metrics.final_accuracy).toBeCloseTo(0.931, 3);
+    expect(experiments[2].metrics.final_loss).toBeCloseTo(0.638, 3);
   });
 
   it("aggregates the seeds into a banded line chart of the same data", async () => {
@@ -147,6 +148,7 @@ describe("示例项目", () => {
     expect(chart.config.group).toBe("model");
     expect(chart.config.datasetVersionId).toBe(9);
     expect(chart.config.series[0].y).toBe("accuracy__mean");
+    expect(chart.config.series[0].error).toBe("accuracy__sem");
     expect(chart.config.series[0].band).toMatchObject({
       enabled: true,
       lower: "accuracy__lower",
@@ -163,6 +165,9 @@ describe("示例项目", () => {
 
   it("keeps the sample file free of the note line the importer cannot read", async () => {
     expect(sampleRows()).toHaveLength(108);
+    for (const line of sampleFile().split("\n").slice(1)) {
+      expect(line.trim()).toMatch(/^[^,]+,\d+,\d+,\d+\.\d{3},\d+\.\d{3}$/);
+    }
     expect(sampleRows()[0]).toMatchObject({ model: "linear", epoch: 0 });
     expect(sampleExperiment("mlp").name).toBe("mlp · 学习曲线");
   });

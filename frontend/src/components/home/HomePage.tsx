@@ -18,6 +18,7 @@ import { dateLabel, greeting, type ChartSummary } from "./homeData";
 import { ContinueCard } from "./ContinueCard";
 import { AssistantCard, RecentCharts } from "./HomeSide";
 import { ExperimentsPanel, ProjectsPanel } from "./HomeTables";
+import { SampleThumbnail } from "./SampleThumbnail";
 export type HomePageProps = {
   projects: Project[];
   currentId: number;
@@ -67,7 +68,7 @@ export function HomePage(p: HomePageProps) {
             </h1>
           )}
         </div>
-        <div className="home-intro-actions">
+        {!firstRun && <div className="home-intro-actions">
           {!firstRun && (
             <button
               type="button"
@@ -107,7 +108,7 @@ export function HomePage(p: HomePageProps) {
                   : "载入示例项目"}
             </button>
           )}
-        </div>
+        </div>}
       </section>
 
       <AssistantCard chartId={latest?.id} onAssistant={p.onAssistant} onModelConnection={p.onModelConnection}/>
@@ -115,11 +116,21 @@ export function HomePage(p: HomePageProps) {
         {!current ? (
           firstRun ? (
             <section className="home-card home-continue home-empty-hero home-sample">
+              <div className="home-sample-copy">
               <FileSpreadsheet size={32} aria-hidden="true" />
               <h2>先用示例数据走一遍。</h2>
               <p>
                 3 个模型、3 个种子、12 个 epoch 的合成学习曲线，创建后可随时归档。
               </p>
+              <div className="home-row">
+                <button type="button" className="home-btn home-btn-primary" disabled={p.busy || p.sampleBusy} onClick={p.onSample || p.onCreate}>
+                  {p.sampleBusy ? "正在载入…" : p.sampleExists ? "打开示例项目" : "载入示例项目"}
+                  <ArrowRight size={16} aria-hidden="true" />
+                </button>
+                <button type="button" className="home-btn" onClick={p.onCreate}>创建研究项目</button>
+              </div>
+              </div>
+              <figure className="home-sample-preview"><SampleThumbnail /><figcaption>示意</figcaption></figure>
             </section>
           ) : (
             <section className="home-card home-continue home-empty-hero">
@@ -178,7 +189,7 @@ export function HomePage(p: HomePageProps) {
           </section>
         )}
 
-        <div className="home-side">
+        {!firstRun && <div className="home-side">
           <RecentCharts
             charts={p.charts.slice(1)}
             total={p.charts.length}
@@ -217,11 +228,11 @@ export function HomePage(p: HomePageProps) {
           />
         </div>
       </section>
-        </div>
+        </div>}
 
       </div>
 
-      <div className="home-bottom">
+      {!firstRun && <div className="home-bottom">
         <ExperimentsPanel
           project={current}
           onExperiments={() => act(p.onExperiments)}
@@ -233,7 +244,7 @@ export function HomePage(p: HomePageProps) {
           onCreate={p.onCreate}
         />
 
-      </div>
+      </div>}
 
       <footer className="home-footer lf-mono">
         <span>数据保存在本机</span>

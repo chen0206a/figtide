@@ -77,7 +77,7 @@ export function sampleRules(): ProcessingRules {
   };
 }
 
-const round4 = (value: number) => Math.round(value * 1e4) / 1e4;
+const round3 = (value: number) => Math.round(value * 1e3) / 1e3;
 
 /** Parameters and metrics are derived from the same CSV the project imports. */
 export function sampleExperiment(model: string) {
@@ -96,8 +96,8 @@ export function sampleExperiment(model: string) {
       optimizer: "adam",
     },
     metrics: {
-      final_accuracy: round4(mean(finals.map((row) => row.accuracy))),
-      final_loss: round4(mean(finals.map((row) => row.loss))),
+      final_accuracy: round3(mean(finals.map((row) => row.accuracy))),
+      final_loss: round3(mean(finals.map((row) => row.loss))),
     },
     notes: SAMPLE_NOTE,
     tags: ["示例数据"],
@@ -146,9 +146,21 @@ export async function createSampleProject(
         rules: sampleRules(),
       }),
     );
+    const config = defaults(derived);
+    const metadata = derived.source_meta;
+    if (metadata?.kind === "data_processing") {
+      config.series = config.series.map((series) => {
+        const statistic = metadata.statistics.find((s) => s.columns.mean === series.y);
+        return {
+          ...series,
+          error: statistic?.columns.sem || "",
+          band: series.band ? { ...series.band, opacity: 0.35 } : series.band,
+        };
+      });
+    }
     const chart = await request<{ id: number; name: string }>(
       `/projects/${project.id}/charts`,
-      send("POST", { name: SAMPLE_CHART_NAME, config: defaults(derived) }),
+      send("POST", { name: SAMPLE_CHART_NAME, config }),
     );
     return { project, chart };
   } catch (error) {
