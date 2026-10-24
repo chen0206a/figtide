@@ -1,0 +1,16 @@
+[WebServer] (node:6516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[e2e] 清理水位：运行结束后删除 id > 108 的项目
+
+Running 3 tests using 1 worker
+
+(node:38872) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 e2e\processing.spec.ts:22:1 › raw repeated observations → exact SEM preview → MySQL → auto mapped figure → reopen/export (9.1s)
+  ok 2 e2e\processing.spec.ts:152:1 › duplicate run guard → repair groups → interval preview invalidation → real band mapping (3.2s)
+  ok 3 e2e\processing.spec.ts:238:1 › explicit filter and numeric stable sort save as an independent dataset (1.3s)
+[e2e] 已清理 3 个测试项目：重复实验汇总验收 1792814107598、统计区间验收 1792814116721、数据排序验收 1792814119941
+
+  3 passed (17.3s)
+[audit-restart] Prepared terminal audit and an in-flight run.
+[audit-restart] Completed audit survived a new JVM unchanged; interrupted run recovered; fixture cleaned.

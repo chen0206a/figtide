@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 D:/RAG-agent项目/LabFlow/frontend
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  12:56:06
+   Duration  2.55s (environment 46%, tests 17%, import 14%, setup 13%, transform 9%)
+

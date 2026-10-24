@@ -529,6 +529,12 @@ export default function App() {
                   }}
                   onProcessed={(d, plot) => {
                     qc.setQueryData(["data", project, d.id], d);
+                    // The API has committed this version. Publish its project
+                    // membership before selecting it, so DataPage cannot reset
+                    // the route to the source while the list is refreshing.
+                    qc.setQueryData<Dataset[]>(["datasets", project], (previous) => [
+                      d, ...(previous || []).filter((item) => item.id !== d.id),
+                    ]);
                     setDataset(d.id);
                     refresh();
                     setMessage("处理结果已保存为独立数据集，源数据保持不变");

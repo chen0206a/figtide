@@ -1,3 +1,23 @@
+## 2026-10-24 · 11-8 / 提交 1：派生数据保存后的选中状态
+
+- 在独立 checkout（物理依赖副本、独立构建输出）依次执行用户指定的 `./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('processing.spec.ts')`，每轮完整退出后才切下一个提交，后端 8087 / 前端 5178 / 夹具 18770 / labflow_e2e。原 spec 及其断言没有修改。
+
+| 提交 | passed | failed | skipped | 耗时 | 新 JVM 审计恢复 |
+| --- | ---: | ---: | ---: | --- | --- |
+| 92a0c1b | 3 | 0 | 0 | 21.4s | 通过 |
+| 6f45961 | 3 | 0 | 0 | 11.5s | 通过 |
+| 419a087 | 3 | 0 | 0 | 17.5s | 通过 |
+| 605d4f8 | 3 | 0 | 0 | 16.6s | 通过 |
+| 7ba209e | 3 | 0 | 0 | 17.3s | 通过 |
+
+- **版本对照没有得到“第一个失败提交”**：五次单跑均通过，不能将该时序问题归因于 6f45961 或另一个提交。逐轮原始 JSON / 日志见 docs/test-evidence/refactor11-8-history/{sha}/，汇总 refactor11-8-bisect.json。最初共享 node_modules 的环境调试出现字体文件被 Vite allow-list 拒绝，已改用物理依赖副本重新做完五次；该次不混入此表。
+- 旧失败 trace 的事实：GET 项目 732 列表仅 [673]；POST /data/673/process 于 03:36:06.707Z 返回派生版本 **674 / data_processing / 3 行**；03:36:06.725Z 的列表 GET 返回 [674,673]，但失败页面仍为 ?dataset=673，没有来源按钮。这不是数据没保存，也不是缺少 source_meta。
+- 根因：**App.tsx:530–543 的 onProcessed** 在只更新详情缓存后立即 setDataset，再刷新版本列表；**DataPage.tsx:51–59** 用列表验证 selected 归属，刷新尚未完成时看不到新版本，退回源版本并调用 onSelect，覆写刚刚设置的路由。列表随后返回也不会恢复之前的选择。上传走 imported（已 await refresh），派生保存走 onProcessed，并不调用 imported；因此不能把上传回调等待刷新当成根因。
+- 代码对照：DataPage 的这段守卫在 92a0c1b→7ba209e 没有改动；git blame 指向更早的 fceb652，onProcessed 原顺序更早来自 bc2fcc6。为确认竞态，在 **92a0c1b 与 7ba209e** 上分别运行同一新增组件回归（挂起 datasets 刷新、使用真实 App/DataPage），都稳定报找不到“数据处理来源”；红日志保存在各 sha 的 controlled-refresh.txt。它证明基线已存在该条件，不能等同于完整历史首次引入提交的二分证明。
+- 修复仅在 App：用接口已确认保存的 d 同步更新当前项目 datasets 列表，再选择 d.id，然后正常失效刷新计数/列表。不是伪造乐观数据，也没有删除/放宽 DataPage 的跨项目归属守卫。新增 App.processing-selection.test.tsx 保证刷新挂起及返回后均保持派生版本、来源按钮可见、源数据不变。修前红 / 修后绿日志见 history/regression-{before,after}.txt。
+- `npm test -- --maxWorkers=4`：**50 文件 / 277 passed**；`npm run build`：通过（14.89s，既有 chunk 告警）；修后 `./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('processing.spec.ts','isolation.spec.ts')`：**8 passed / 0 failed / 0 skipped（25.3s）**，新 JVM 审计恢复通过；processing.spec.ts 零 diff。
+- 偏差：指定五个历史单跑未复现失败，明确报告“首个失败提交未确定”，改以旧 trace + 两端受控回归证明根因；不虚构首个坏提交。未执行：真实模型、Java 单测、跨浏览器；用户工作区未改。
+
 ## 2026-10-24 · 11-7 总验收：未通过，按约定停止
 
 - 命令 `./scripts/test-agent.ps1 -All -FixturePort 18770`，隔离 Java 8087 / Vite 5178 / 本地模型协议夹具 18770 / MySQL labflow_e2e，workers=1，未设置 LABFLOW_CAPTURE。**固定 81 条 / 36 文件；passed 80 / failed 1 / skipped 0 / flaky 0**，总耗时见 JSON stats（约 5.6 分钟）。原来的 80 条完整保留，唯一新增是 privacy.spec.ts 的完整流程外部网络断言。
