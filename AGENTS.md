@@ -81,3 +81,7 @@ git add -A && git commit -m "refactor(NN): <一句话>"
 ## 桌面启动器授权（任务 14-2）
 
 按 `refactor/tasks/14-2-launcher.md`，允许新增 desktop 启动/托盘/静态页面配置、仅 desktop profile 的 `GET /api/desktop/ping`、desktop 的 Host/Origin 校验和测试/构建脚本；默认开发 profile 的行为、已有 API、MySQL 迁移与业务语义不变。
+
+## 桌面迁移工具授权（任务 14-3）
+
+按 `refactor/tasks/14-3-migration.md`，允许：`BackupService` 的备份大小上限改为配置项（默认值不变，仅 `desktop` profile 调大）及配套 multipart 配置；新增 `scripts/migrate-to-desktop.ps1`（及其 Node 实现）与 `docs/desktop/MIGRATION.md`；恢复后用现有 `PUT /api/projects/{p}` 接口补齐归档状态（不改 `restore()` 语义）；在隔离测试库上验证迁移的测试设施。**仍然禁止**：对旧版发任何写请求（只用 `GET /api/projects` 与 `GET /api/projects/{p}/backup`）；连接或修改真实工作区（`labflow` 库 / 8086）与用户桌面数据目录；在任何真实数据上运行迁移工具；修改已有 MySQL 迁移脚本或 API 的请求/响应。
