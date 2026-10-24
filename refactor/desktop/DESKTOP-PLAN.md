@@ -50,7 +50,7 @@ FigTide.exe（jpackage 生成的启动器）
    **固定 origin 的原因**：浏览器 localStorage 按协议、主机、端口隔离。每次随机端口会让介绍页已读、视图与列设置、按项目记住的数据集、未保存草稿无法沿用。固定首选端口可在同一浏览器配置文件中保持这些状态；浏览器地址始终使用 `http://127.0.0.1:<端口>/`，不使用 localhost 打开。端口占用回退、显式覆盖、更换浏览器配置文件仍可能切换 origin，不做跨 origin 草稿迁移。
 3. Flyway 迁移 H2（`db/migration-h2/`，与 `db/migration/` 平级——Flyway 11 的 classpath 位置递归扫描子目录，`db/migration/h2/` 会让默认 MySQL profile 重复扫到两套 V1，详见 `docs/desktop/H2-PROBE.md`），MySQL 继续用原来的 `db/migration/`（按 profile 选择 `spring.flyway.locations`）。
 4. 服务就绪后，用系统默认浏览器打开 `http://127.0.0.1:<端口>/`。
-5. 系统托盘图标，菜单：「打开 FigTide」「打开数据文件夹」「导出诊断日志」「退出」。退出时正常关闭服务和数据库。
+5. 系统托盘图标，菜单：「打开 FigTide」「打开数据文件夹」「打开日志文件夹」「退出」。退出时正常关闭服务和数据库。当前提供日志目录入口，没有“导出诊断日志”功能。
 
 **时区**：14-2 main 第一行固定 UTC；14-4 的打包启动参数仍必须包含 `-Duser.timezone=UTC`，在 JVM 初始化早期即统一时区。H2 的 `TIMESTAMP` 不带时区，按 JVM 默认时区换算；MySQL 侧会话固定 UTC（`serverTimezone=UTC`），桌面 JVM 统一 UTC 才能保证备份导入导出与将来跨库迁移时 `created_at` 等时间戳逐毫秒一致。
 
@@ -100,4 +100,4 @@ FigTide.exe（jpackage 生成的启动器）
 | 14-4 | jlink + jpackage 打包脚本、图标、版本号；GitHub Actions 在打标签时自动构建并挂到 Release | 中 |
 | 14-5 | 在打包产物上跑全量 E2E；手工冒烟清单；README「安装」一节 | 低 |
 
-14-1 之后的任务书，等 14-0 的盘点结果出来再写细。
+14-0至14-5均已细化。2026-10-25：14-4便携包构建与EXE探针通过，14-5完整产物E2E一次84通过/0失败/3迁移专项条件跳过/0 flaky，审计重启恢复通过。现有任务列表到14-5结束；真实托盘/默认浏览器/SmartScreen人工项仍待仓库主人确认，GitHub工作流已提交但未远端执行，不推送/不发布。实际交付与命令见docs/desktop/PACKAGING.md和SMOKE-14-5.md。

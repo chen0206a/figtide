@@ -7,7 +7,7 @@
 - Windows x64，版本从frontend/package.json读取并与backend/pom.xml核对；当前0.1.0。
 - `jlink` 裁剪JDK21，`jpackage --type app-image` 生成真正的GUI `FigTide.exe`；便携ZIP解压后双击即可使用，无需安装JDK/MySQL，无管理员要求。不宣称单文件EXE或安装向导已完成。
 - 不修改API、数据库迁移、图表语义、草稿/预算/幂等/恢复。数据仍在LOCALAPPDATA，与安装目录分离。
-- 本机无WiX；第一版交付app-image便携ZIP。MSI/EXE安装向导和完整产物浏览器E2E列入后续14-5，不虚报验收。
+- 本机无WiX；第一版交付app-image便携ZIP。完整产物浏览器E2E在14-5执行；MSI/EXE安装向导不属于既有桌面计划，不虚报验收。
 
 ## 14-4-1 本地打包
 

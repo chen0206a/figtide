@@ -1,3 +1,26 @@
+## 2026-10-25 · 14-4 / 14-5 自动总验收通过，现有任务到此暂停
+
+最终便携包从干净提交`8a1902f`完整构建，manifest的`source_dirty=false`。真正运行包内`FigTide.exe`，没有用本机JAR/Vite冒充产物；EXE子进程不依赖系统Java，所有数据均在独立临时H2目录。既有5176/8086工作区服务PID保持不变，未访问真实用户桌面目录，收费模型请求0。分节提交见Git历史。
+
+| 本轮实际验证 | 命令（仓库根目录） | passed | failed | skipped / flaky |
+|---|---|---:|---:|---|
+| 前端组件与交互 | `npm --prefix frontend test -- --maxWorkers=4` | 280（52文件） | 0 | 0 |
+| 完整生产构建与打包 | `./scripts/package-desktop.ps1 -OutputDirectory dist/desktop/final` | 成功（tsc/Vite、Maven、jdeps、jlink、jpackage） | 0 | 不适用 |
+| EXE/ZIP冒烟 | `./scripts/test-desktop-package.ps1 -Application 'dist/desktop/final/FigTide-0.1.0-windows-x64/FigTide'` | 7组 | 0 | 0 |
+| **完整产物E2E** | `./scripts/test-agent.ps1 -All -Packaged -Application 'dist/desktop/final/FigTide-0.1.0-windows-x64/FigTide' -FixturePort 18770` | **84** | **0** | **3 skipped / 0 flaky** |
+| 旧JAR入口兼容 | `./scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('desktop-restart.spec.ts','home.spec.ts')` | 3 | 0 | 0 / 0 |
+| 旧开发入口兼容 | `./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('home.spec.ts')` | 2 | 0 | 0 / 0 |
+
+完整87条一次运行通过，workers=1、无重试拼接；3条条件跳过均为migration.spec.ts，需专用迁移数据，已在14-3隔离迁移专项3/3通过。本轮没有重新运行迁移专项。完整产物、旧JAR、旧开发三轮结束后各自的审计强杀/新进程恢复检查均通过。没有删除断言、刷新布局基线或更改产品业务代码。
+
+证据：`docs/test-evidence/desktop14-5-acceptance.json`与`desktop14-5-release-manifest.json`。原始结果/日志在`.runtime/task14-5-{packaged-full,jar-compat,development-compat}*`；完整浏览器产物保留`.runtime/task14-5-packaged-test-results/`和`task14-5-packaged-playwright-report/`，没有被后续专项覆盖。机器证据记录原始JSON SHA256、跳过项目、workers及审计检查。
+
+最终ZIP：`dist/desktop/final/FigTide-0.1.0-windows-x64/release/FigTide-0.1.0-windows-x64.zip`，97,208,005 bytes（约92.7MiB），SHA256=`c34a7321227e3aa94423fb682f751501657fad1d01989bc21aa85a4912d9b28c`。同目录有manifest和SHA256SUMS。ZIP包含完整程序/runtime，不是单文件EXE，没有安装向导。本机无WiX；14-4任务书中曾把安装向导误列入14-5，已按原DESKTOP-PLAN修正为不属于既有计划。计划托盘描述也改为实际的“打开日志文件夹”，不再声称存在诊断导出按钮。
+
+未新运行Java全量：`git diff --quiet 61d7ccd HEAD -- backend/src frontend/src`确认产品代码不变，沿用本轮紧邻14-3的MySQL263 passed/0 failed/1 skipped、H2 257/0/1。完整生产构建本节新执行通过（既有大chunk提示、jlink compress弃用提示保留，均非失败）。
+
+**未执行且不计通过**：真实Windows托盘/默认浏览器/SmartScreen/注销关机人工操作（清单`SMOKE-14-5.md`）；GitHub Actions远端运行；推送、打标签、公开Release。当前所有可自动执行的14-4/14-5验收通过，现有任务列表没有后续编号；按用户指令暂停。无需新的产品范围决定，人工系统集成检查留给仓库主人。
+
 ## 2026-10-25 · 14-5-2：安装与人工冒烟说明
 
 README新增便携ZIP安装/升级、固定origin、数据与日志位置、备份/迁移、退出和未签名说明，移除“桌面版仍在开发且无包”的过时描述，但明确本轮未公开发布。SMOKE-14-5逐项区分自动覆盖和未执行人工UI项。PACKAGING同步CI完整E2E入口。文档链接及`git diff --check`通过；未新增或改写UI断言，未将人工项预先标记通过。没有新执行组件/Java测试，产品源码不变。

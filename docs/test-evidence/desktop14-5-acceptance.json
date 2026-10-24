@@ -1,0 +1,193 @@
+{
+  "at": "2026-10-24T15:27:35.685Z",
+  "artifact": {
+    "product": "FigTide",
+    "version": "0.1.0",
+    "architecture": "windows-x64",
+    "source_revision": "8a1902ff094de9d9ab5e420576638ae3b52e21ba",
+    "source_dirty": false,
+    "java_version": "21.0.12.1",
+    "jar_sha256": "39c0b7f0173aa6a9d8aac4c0e7019e2795391a0794fa6b9a20f580fb0f9f45be",
+    "frontend_lock_sha256": "ae7cb771b813adac5edea9256eab23790e49273206bb369dd9f838878bac641a",
+    "detected_modules": [
+      "java.base",
+      "java.compiler",
+      "java.desktop",
+      "java.instrument",
+      "java.management",
+      "java.net.http",
+      "java.prefs",
+      "java.rmi",
+      "java.scripting",
+      "java.security.jgss",
+      "java.sql.rowset",
+      "java.xml.crypto",
+      "jdk.jfr",
+      "jdk.net",
+      "jdk.unsupported"
+    ],
+    "reflective_modules": [
+      "java.desktop",
+      "java.net.http",
+      "java.sql",
+      "java.naming",
+      "java.management",
+      "java.xml",
+      "java.xml.crypto",
+      "jdk.charsets",
+      "jdk.crypto.ec",
+      "jdk.unsupported",
+      "jdk.zipfs"
+    ],
+    "runtime_modules": [
+      "java.base",
+      "java.compiler",
+      "java.datatransfer",
+      "java.desktop",
+      "java.instrument",
+      "java.logging",
+      "java.management",
+      "java.naming",
+      "java.net.http",
+      "java.prefs",
+      "java.rmi",
+      "java.scripting",
+      "java.security.jgss",
+      "java.security.sasl",
+      "java.sql",
+      "java.sql.rowset",
+      "java.transaction.xa",
+      "java.xml",
+      "java.xml.crypto",
+      "jdk.charsets",
+      "jdk.crypto.ec",
+      "jdk.jfr",
+      "jdk.net",
+      "jdk.unsupported",
+      "jdk.zipfs"
+    ],
+    "main_class": "org.springframework.boot.loader.launch.JarLauncher",
+    "java_options": [
+      "-Duser.timezone=UTC",
+      "-Dspring.profiles.active=desktop"
+    ],
+    "archive": {
+      "name": "FigTide-0.1.0-windows-x64.zip",
+      "bytes": 97208005,
+      "sha256": "c34a7321227e3aa94423fb682f751501657fad1d01989bc21aa85a4912d9b28c"
+    }
+  },
+  "build_command": "./scripts/package-desktop.ps1 -OutputDirectory dist/desktop/final",
+  "probe_command": "./scripts/test-desktop-package.ps1 -Application 'dist/desktop/final/FigTide-0.1.0-windows-x64/FigTide'",
+  "smoke": {
+    "at": "2026-10-24T15:18:29.716Z",
+    "version": "0.1.0",
+    "source_revision": "8a1902ff094de9d9ab5e420576638ae3b52e21ba",
+    "system_java_available_to_child": false,
+    "browser_or_tray_invoked": false,
+    "paid_model_calls": 0,
+    "passed": [
+      "release ZIP/checksums, EXE version and four embedded brand icon sizes",
+      "launcher fixes UTC and desktop profile even with user arguments",
+      "runtime modules, project and dependency notices, no workspace files",
+      "starts without system Java from an unrelated directory and serves same-process SPA",
+      "real CSV upload and chart save use embedded H2",
+      "second EXE exits without creating another server",
+      "forced restart keeps preferred origin and saved figure configuration"
+    ],
+    "ports": [
+      17920,
+      17920
+    ],
+    "evidence": ".runtime\\package-smoke-03537e6e-8d37-4e06-98b0-c5780fecb954"
+  },
+  "packaged": {
+    "command": "./scripts/test-agent.ps1 -All -Packaged -Application 'dist/desktop/final/FigTide-0.1.0-windows-x64/FigTide' -FixturePort 18770",
+    "raw": ".runtime/task14-5-packaged-full-results.json",
+    "raw_sha256": "87f238323be0a49ec85cf7ac9b18ca2d5614c6d7957ba799c8672815b6bfc350",
+    "stats": {
+      "startTime": "2026-10-24T15:18:42.238Z",
+      "duration": 201905.46500000003,
+      "expected": 84,
+      "skipped": 3,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "workers": 1,
+    "audit_restart": "passed",
+    "skipped_specs": [
+      {
+        "file": "migration.spec.ts",
+        "title": "迁移后的多版本图表在桌面版浏览器里正常渲染"
+      },
+      {
+        "file": "migration.spec.ts",
+        "title": "迁移后的实验项目在桌面版浏览器里显示实验列表"
+      },
+      {
+        "file": "migration.spec.ts",
+        "title": "迁移后的归档项目保留归档标记"
+      }
+    ]
+  },
+  "jar_compatibility": {
+    "command": "./scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('desktop-restart.spec.ts','home.spec.ts')",
+    "raw": ".runtime/task14-5-jar-compat-results.json",
+    "raw_sha256": "656ef5e94430f40ad23eb15ac5a7f3f451f43d854fb506d6a3302525e4764b17",
+    "stats": {
+      "startTime": "2026-10-24T15:23:35.697Z",
+      "duration": 15547.391,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "workers": 1,
+    "audit_restart": "passed",
+    "skipped_specs": []
+  },
+  "development_compatibility": {
+    "command": "./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('home.spec.ts')",
+    "raw": ".runtime/task14-5-development-compat-results.json",
+    "raw_sha256": "472f3f78f7aff8ef2df3d39c36245f09fcccaa577317dd9de0dc8549c9027661",
+    "stats": {
+      "startTime": "2026-10-24T15:24:26.781Z",
+      "duration": 8023.8240000000005,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "workers": 1,
+    "audit_restart": "passed",
+    "skipped_specs": []
+  },
+  "transport": {
+    "pid": 44876,
+    "database": "h2",
+    "fixture_port": 18770,
+    "web": "http://127.0.0.1:17861",
+    "api": "http://127.0.0.1:17861",
+    "mode": "packaged-exe",
+    "started": "2026-10-24T15:18:41.6937912Z"
+  },
+  "components": {
+    "command": "npm --prefix frontend test -- --maxWorkers=4",
+    "passed": 280,
+    "files": 52,
+    "failed": 0,
+    "skipped": 0,
+    "raw": ".runtime/task14-5-components.log",
+    "raw_sha256": "6a1eb7c2436b1c9f491cb708f042efb9677e9be69b3bd44e169dbb43f52a2664"
+  },
+  "backend_tests_reused_from": "docs/test-evidence/desktop14-3-fixes.json (61d7ccd; backend/src unchanged)",
+  "assertions_removed": 0,
+  "baselines_refreshed": 0,
+  "paid_model_calls": 0,
+  "not_executed": [
+    "interactive tray/default-browser/SmartScreen/shutdown checks",
+    "GitHub Actions remote run",
+    "pushing tags or publishing a release",
+    "MSI installer/signing (outside portable ZIP scope)"
+  ]
+}
