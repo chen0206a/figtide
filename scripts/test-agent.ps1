@@ -67,8 +67,10 @@ function Start-AgentTestBackend {
         # desktop profile 提供 H2 数据源与 db/migration-h2 迁移；URL 改指向本次
         # 临时目录下的 labflow_e2e 文件库（TestSupportController 守卫只放行测试库）。
         $h2Path = ($dataDir -replace '\\','/') + '/labflow_e2e'
+        # WRITE_DELAY=0：audit-restart 会强杀后端再重启，H2 默认的写缓冲会丢掉
+        # 强杀前最后约 1 秒已提交的数据（实测复现）；提交即落盘后重启不丢。
         $args += @('--spring.profiles.active=desktop',
-            "--spring.datasource.url=jdbc:h2:file:$h2Path;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE")
+            "--spring.datasource.url=jdbc:h2:file:$h2Path;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;WRITE_DELAY=0")
     } else {
         $args += '--spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_e2e'
     }

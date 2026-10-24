@@ -1,3 +1,17 @@
+## 2026-10-24 · 任务 14-1：H2 数据库兼容（desktop/14-1 分支，6 个提交，未推送）
+
+- 提交序列：`63cc987`（14-1-0 AGENTS 授权+任务书入库）→ `70cb2d5`（14-1-1 H2 依赖+desktop profile）→ `e6eae35`（14-1-2 兼容性探针+db/migration-h2 V1–V8+版本对齐测试）→ `eb7bcd5`（14-1-3 双库可移植性）→ `abc2b11`（14-1-4 测试基础设施）→ 末尾强杀落盘修复提交（WRITE_DELAY=0）。
+- 后端 MySQL：`mvn test`（LabFlow/backend，JDK .runtime/java，MySQL 33316 labflow_test）— **28 类 / 184 tests / 0 失败 / 0 错误 / 1 跳过**（`eval/ServerEvaluationTest`，`@EnabledIfSystemProperty(labflow.eval.server)` 实测开关，原有跳过，与数据库无关）。曾出现 surefire 旧报告虚增计数（已删除类的残留 .txt），清理后复跑得到上述干净数字。
+- 后端 H2：`LABFLOW_TEST_DB=h2 mvn test` — **28 类 / 178 tests / 0 失败 / 0 错误 / 1 跳过**；差值 6 = `eval/AgentEvaluationTest`(1) + `eval/EvaluationRunnerIntegrationTest`(5) 在 H2 下按 14-1-4.3 要求 `@BeforeAll assumeTrue` 类级跳过（评测依赖真实 MySQL，日志写明原因）。184−178=6 对账一致。
+- 前端（本轮无前端改动）：`npm test` — **52 files / 280 passed / 0 failed**；`npm run build` — 通过（保留既有 >500kB chunk 提示）。
+- E2E MySQL：`.\scripts\test-agent.ps1 -All -FixturePort 18770` — **83 passed / 0 failed（5.9m）**，`audit-restart` 通过，teardown 清理 92 个测试项目。
+- E2E H2：`.\scripts\test-agent.ps1 -All -FixturePort 18770 -Database h2` — 最终 **83 passed / 0 failed（4.3m）** + `audit-restart` 通过。过程记录（均为环境/时序波动或实测修复，无断言放宽、无基线刷新）：
+  1. 首次 H2 全量：浏览器 83 全绿，但 `audit-restart` 在强杀后重启 404——H2 默认写缓冲丢失强杀前约 1 秒内已提交数据（实测复现：`Runtime.halt(137)` 后重开，默认 URL 数据库为空，`;WRITE_DELAY=0` 则数据完好，证据与结论补进 `docs/desktop/H2-PROBE.md`）。修复：`application-desktop.yml` 与 E2E 脚本的 H2 文件库 URL 统一加 `WRITE_DELAY=0`（提交即落盘，桌面写入频率低代价可忽略）。
+  2. 修复后全量重跑：81/83，2 处失败为 `figure-tools`（Chromium worker 崩溃 0xC0000409，环境性）与 `motion` 首页入场 opacity `0.999996`（4e-6 时序差）；定向重跑 `figure-tools+motion` 9/9 全绿。
+  3. 第三次全量：vite 开发服务器（5178）运行中死亡 → 72 处 `ERR_CONNECTION_REFUSED`；前后无代码变化，属机器负载下环境故障；直接复跑全量即全绿。
+- 与任务书的偏差（两条，均已写入代码注释与 H2-PROBE.md）：H2 迁移目录用与 `db/migration/` 平级的 `db/migration-h2/`（任务书写 `db/migration/h2/`）——Flyway 11 `classpath:` 递归扫描会与默认 MySQL profile 冲突报 `Found more than one migration with version 1`；未添加 `flyway-database-h2` 依赖——flyway-core 11.7.2 自带 H2 支持且 Boot 3.5.7 BOM 不管理该 artifact。
+- `docs/desktop/DB-AUDIT-glm-5.3.md` 按任务 14-0 规则保持不入库。
+
 ## 2026-10-24 · 任务 13 总验收：v0.1.0
 
 - `npm test -- --maxWorkers=4`：**52 files / 280 passed / 0 failed**；`npm run build`：通过（19.17s，保留既有 >500kB chunk 提示）。

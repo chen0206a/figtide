@@ -83,3 +83,16 @@
 | 其余语句 | — | 逐字与 MySQL 版一致 |
 
 每个 h2 脚本文件头一行注释写明对应 MySQL 文件与改动内容。`MigrationParityTest`（`backend/src/test/java/dev/labflow/desktop/MigrationParityTest.java`）校验两个目录的版本号集合完全相同；AGENTS.md「桌面版后端授权」一节已补：「新增迁移必须同时提供 MySQL 和 H2 两个版本」。
+
+## 强杀落盘实测（`WRITE_DELAY`，14-1-4 验收发现）
+
+`scripts/test-agent.ps1` 的 audit-restart 环节会在写入两条 agent 运行记录后**立刻强杀**后端进程再重启验证数据仍在。H2 默认不这样做：MVStore 把已提交的数据缓存在内存、延迟约 1 秒才写盘（`org.h2.mvstore.MVStore` 的 auto-commit delay），进程被 `TerminateProcess`（崩溃、断电、任务管理器结束进程都是同类）时这段数据丢失。实测（H2 2.3.232，`Runtime.halt(137)` 后重开同一个文件库）：
+
+| URL | 强杀后重开 |
+|---|---|
+| `jdbc:h2:file:…;MODE=MySQL;DATABASE_TO_LOWER=TRUE`（默认写缓冲） | 数据库为空——建表和提交过的 INSERT 全部丢失 |
+| 同上 + `;WRITE_DELAY=0` | 提交过的行全部仍在 |
+
+E2E 里的现象与此一致：重启后 Flyway 报 `Current version of schema "public": 8`（旧数据早已落盘），但强杀前最后写入的项目 94 和两条运行记录没了，`GET /projects/94/agent/runs/{id}/audit` 返回 404。
+
+结论：`application-desktop.yml` 和 `test-agent.ps1` 的 H2 文件库 URL 统一带 `WRITE_DELAY=0`（提交即落盘）。桌面应用写入频率是人手速级别，同步写盘的代价可以忽略；换来的是崩溃/强杀不丢已提交数据。

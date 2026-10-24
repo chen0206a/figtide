@@ -2,7 +2,10 @@ labflow:
   data-dir: ./.runtime/desktop-data
 spring:
   datasource:
-    url: jdbc:h2:file:${labflow.data-dir}/figtide;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    # WRITE_DELAY=0：提交即落盘。H2 默认把已提交数据缓存在内存里延迟约 1 秒写盘，
+    # 进程被强杀（崩溃/断电/任务管理器）时这段数据会丢——E2E 的 audit-restart
+    # 复现了这个问题（见 docs/desktop/H2-PROBE.md）。桌面应用写入频率低，代价可忽略。
+    url: jdbc:h2:file:${labflow.data-dir}/figtide;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;WRITE_DELAY=0
     username: sa
     password: ""
   flyway:
