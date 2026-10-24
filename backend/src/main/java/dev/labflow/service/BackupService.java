@@ -10,6 +10,7 @@ import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.zip.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
@@ -17,7 +18,10 @@ import org.springframework.transaction.annotation.*;
 /** Versioned, bounded archive. Uploaded paths are never extracted to the filesystem. */
 @Service
 public class BackupService {
-  static final int COMPRESSED_LIMIT = 64 * 1024 * 1024, EXPANDED_LIMIT = 96 * 1024 * 1024;
+  // 任务 14-3-1：备份大小上限改为配置项，默认值与原来的 64/96 MiB 完全一致；
+  // desktop profile 在 application-desktop.yml 里调大到 512/768 MiB。
+  private final int compressedLimit;
+  private final int expandedLimit;
   static final LinkedHashMap<String, List<String>> COLUMNS = new LinkedHashMap<>();
 
   static {
@@ -74,8 +78,15 @@ public class BackupService {
   private final ObjectMapper json;
   private final WorkspaceService workspace;
 
-  public BackupService(WorkspaceRepository db, ObjectMapper json, WorkspaceService workspace) {
+  public BackupService(
+      WorkspaceRepository db,
+      ObjectMapper json,
+      WorkspaceService workspace,
+      @Value("${labflow.backup.compressed-limit:67108864}") int compressedLimit,
+      @Value("${labflow.backup.expanded-limit:100663296}") int expandedLimit) {
     this.db = db;
+    this.compressedLimit = compressedLimit;
+    this.expandedLimit = expandedLimit;
     this.json = json.copy().enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
     this.json.enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
     this.json
@@ -85,7 +96,7 @@ public class BackupService {
         .getFactory()
         .setStreamReadConstraints(
             com.fasterxml.jackson.core.StreamReadConstraints.builder()
-                .maxStringLength(EXPANDED_LIMIT)
+                .maxStringLength(expandedLimit)
                 .maxNestingDepth(100)
                 .build());
     this.workspace = workspace;
@@ -93,6 +104,10 @@ public class BackupService {
 
   private static void require(boolean valid, String message) {
     if (!valid) throw ApiException.bad("项目备份：" + message);
+  }
+
+  private static String mib(int bytes) {
+    return String.valueOf(bytes / (1024 * 1024));
   }
 
   private static String hash(byte[] b) {
@@ -141,7 +156,7 @@ public class BackupService {
     }
     try {
       byte[] manifest = json.writeValueAsBytes(root);
-      require(manifest.length <= EXPANDED_LIMIT - 65, "项目过大，超过 96 MiB 展开上限");
+      require(manifest.length <= expandedLimit - 65, "项目过大，超过 " + mib(expandedLimit) + " MiB 展开上限");
       var bytes = new ByteArrayOutputStream();
       try (var zip = new ZipOutputStream(bytes, StandardCharsets.UTF_8)) {
         zip.putNextEntry(new ZipEntry("manifest.json"));
@@ -151,7 +166,7 @@ public class BackupService {
         zip.write(hash(manifest).getBytes(StandardCharsets.US_ASCII));
         zip.closeEntry();
       }
-      require(bytes.size() <= COMPRESSED_LIMIT, "项目超过 64 MiB 备份上限");
+      require(bytes.size() <= compressedLimit, "项目超过 " + mib(compressedLimit) + " MiB 备份上限");
       return bytes.toByteArray();
     } catch (IOException e) {
       throw new IllegalStateException(e);
@@ -170,7 +185,7 @@ public class BackupService {
   }
 
   ObjectNode read(byte[] bytes) {
-    require(bytes.length > 0 && bytes.length <= COMPRESSED_LIMIT, "压缩文件须在 64 MiB 以内");
+    require(bytes.length > 0 && bytes.length <= compressedLimit, "压缩文件须在 " + mib(compressedLimit) + " MiB 以内");
     var entries = new HashMap<String, byte[]>();
     int total = 0;
     try (var zip = new ZipInputStream(new ByteArrayInputStream(bytes), StandardCharsets.UTF_8)) {
@@ -187,7 +202,7 @@ public class BackupService {
         int n;
         while ((n = zip.read(buffer)) != -1) {
           total += n;
-          require(total <= EXPANDED_LIMIT, "展开内容超过 96 MiB");
+          require(total <= expandedLimit, "展开内容超过 " + mib(expandedLimit) + " MiB");
           if (name.equals("sha256.txt")) require(out.size() + n <= 64, "无效校验文件");
           out.write(buffer, 0, n);
         }

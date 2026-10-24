@@ -1,5 +1,10 @@
 labflow:
   data-dir: ${LOCALAPPDATA:${user.home}/AppData/Local}/FigTide/data
+  # 任务 14-3-1：desktop 只放大备份上限（迁移工具要经 /api/backups/restore 整包
+  # 恢复旧项目），multipart 同步放大；默认 profile 的 64/96 MiB 不变。
+  backup:
+    compressed-limit: 536870912
+    expanded-limit: 805306368
 server:
   address: 127.0.0.1
   # The desktop launcher resolves desktop.json / --labflow.desktop.port before starting Spring.
@@ -7,6 +12,10 @@ server:
 logging:
   config: classpath:logback-desktop.xml
 spring:
+  servlet:
+    multipart:
+      max-file-size: 512MB
+      max-request-size: 513MB
   datasource:
     # WRITE_DELAY=0：提交即落盘。H2 默认把已提交数据缓存在内存里延迟约 1 秒写盘，
     # 进程被强杀（崩溃/断电/任务管理器）时这段数据会丢——E2E 的 audit-restart
