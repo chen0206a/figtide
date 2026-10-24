@@ -1,3 +1,26 @@
+## 2026-10-24 · 14-3 独立复核：需要修改，暂不通过总验收
+
+审阅 `desktop/14-3@01fa0c6`（基线b5ed551）；本轮没有修改产品代码，真实工作区8086 / labflow库 / 用户桌面目录均未访问。详细根因、行号与修复要求见 `docs/desktop/REVIEW-14-3.md`；机器证据 `docs/test-evidence/desktop14-3-review.json`。
+
+- **R1 / P1**：normalize.cjs只以图表名、模板名建唯一键，合法的同名对象会导致核对抛错。两份真实合成备份在本轮隔离桌面服务preview均HTTP200（charts=2 / templates=2），核对器却报稳定键冲突。
+- **R2 / P2**：Verify只找原名项目，遗漏正式迁移选中的「（迁移）」副本。相同HTTP夹具下实际CLI正常模式已迁移exit0，Verify却选错项目、误报差异exit1。
+- **R3 / P2**：120字符合法项目名遇到冲突时追加后缀变124字符，restore请求超出API的120字限制，CLI失败。已用HTTP夹具捕获实际提交的name长度及错误。
+- **R4 / P2**：BackupLimitsIntegrationTest只以非法随机ZIP断言400，无法证明默认64MiB大小边界。将compressed-limit覆盖到128MiB后，该测试仍1/1通过。此为测试缺口，当前产品默认配置仍是64MiB。
+
+| 本轮实际验证 | 命令 | 结果 |
+|---|---|---|
+| Node工具单测 | `node --test scripts/migration/normalize.test.cjs scripts/migration/zip.test.cjs` | 28 passed / 0 failed |
+| MySQL备份回归 | `LABFLOW_TEST_DB=mysql mvn -B -f backend/pom.xml -Dtest=BackupLimitsIntegrationTest,DeliveryIntegrationTest test` | 7 passed / 0 failed / 0 skipped |
+| H2备份回归 | `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml -Dtest=BackupLimitsIntegrationTest,DeliveryIntegrationTest test` | 7 passed / 0 failed / 0 skipped |
+| 标准迁移E2E | `./scripts/test-migration.ps1 -Keep` | exit0；首轮4成功、复跑4已迁移、篡改正确失败退出、旧库10表行数/CHECKSUM不变、浏览器3 passed / 0 failed |
+| 上限测试诊断 | `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml -Dtest=BackupLimitsIntegrationTest -Dlabflow.backup.compressed-limit=134217728 test` | 1 passed，确认R4测试缺口，不计作大小边界通过 |
+
+迁移脚本内的默认后端package、独立前端npm ci/build、desktop package均通过。正常路径通过不覆盖上述边界。完整迁移原始证据保留在 `.runtime/migration-e2e-20261024-230839/`；日志 `.runtime/review14-3-*.log`。测试改写的原报告样例已还原，不混入这次复核结果。浏览器teardown有HTTP405清理提示（测试桌面没开启清理路由），脚本仍退出0并清理自己创建的临时H2目录。
+
+**原总验收记录需补正**：下方原14-3表格称两通道全绿，环境失败段却写第3轮各失败1条、随后仅专项重跑通过；现有记录不能证明完整一次全绿。保留原记录供核对，不将它计为本轮独立验证通过。修复后需重新完整运行开发与桌面两通道并保留整轮JSON。
+
+未执行：本轮双库全量Java、单独前端组件测试/单独build、完整开发/桌面E2E；没有把原报告或专项重跑当作全量结果。无断言删除、无基线更新、无收费模型调用、无真实数据迁移。未推进14-4；无需新增产品决策，应先修复R1–R4。
+
 ## 2026-10-24 · 14-3 迁移工具总验收：双库全绿，迁移四项全过
 
 分支 `desktop/14-3`，从 `desktop/14-2@b5ed551` 继续；14-3-0 至 14-3-5 分 6 次提交（4b4677c→817ce78→357c55f→cfcbf1e→0942b01→8ea61e1），另加本次总验收修复提交，未推送。**全程未在真实工作区（127.0.0.1:8086 / labflow 库 / 用户桌面数据目录）上运行过迁移工具或任何写操作**：旧库端只读（GET /api/projects + GET /api/projects/{p}/backup）；迁移 E2E 前后旧库 10 张表 COUNT(*) 与 CHECKSUM TABLE 完全一致；未修改任何 MySQL 迁移脚本与 API 请求/响应。
