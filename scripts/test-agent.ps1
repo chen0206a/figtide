@@ -1,4 +1,4 @@
-param([switch]$All, [string]$MySqlBin = '', [int]$FixturePort = 18769, [string[]]$Specs, [switch]$Production)
+param([switch]$All, [string]$MySqlBin = '', [int]$FixturePort = 18769, [string[]]$Specs, [switch]$Production, [ValidateSet('mysql','h2')][string]$Database = 'mysql')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
@@ -23,21 +23,31 @@ function Resolve-MySqlBin {
   3. 把 MySQL 的 bin 目录加入 PATH
 '@
 }
-$MySqlBin = Resolve-MySqlBin -Explicit $MySqlBin
+if ($Database -eq 'mysql') { $MySqlBin = Resolve-MySqlBin -Explicit $MySqlBin }
+# 14-1-4.5：-Database h2 用 desktop profile + 每次全新的临时数据目录（文件库，重启
+# 持久，供 audit-restart 验证），结束后删除；数据库名仍叫 labflow_e2e 以满足
+# TestSupportController 的测试库守卫（真实工作区库无论 MySQL/H2 都拒绝）。
+$dataDir = $null
+if ($Database -eq 'h2') {
+    $dataDir = Join-Path $root ('.runtime/agent-e2e-h2-' + [guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Path $dataDir -Force | Out-Null
+}
 # Dedicated ports and schema: never redirect or stop the user's running workspace.
 foreach ($port in @(8087, 5178, $FixturePort)) {
     if (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue) { throw "Test port $port is already occupied." }
 }
-if (!(Get-NetTCPConnection -LocalPort 33316 -State Listen -ErrorAction SilentlyContinue)) { throw 'Start the local MySQL instance with scripts/start.ps1 first.' }
+if ($Database -eq 'mysql' -and !(Get-NetTCPConnection -LocalPort 33316 -State Listen -ErrorAction SilentlyContinue)) { throw 'Start the local MySQL instance with scripts/start.ps1 first.' }
 $env:JAVA_HOME = (Get-ChildItem .runtime/java -Directory | Select-Object -First 1).FullName
 $env:Path = "$env:JAVA_HOME\bin;$env:Path"
-$oldPassword = $env:MYSQL_PWD
-try {
-    $env:MYSQL_PWD = 'labflow-root-local'
-    "CREATE DATABASE IF NOT EXISTS labflow_e2e CHARACTER SET utf8mb4; GRANT ALL ON labflow_e2e.* TO 'labflow'@'127.0.0.1';" |
-        & "$MySqlBin/mysql.exe" --host=127.0.0.1 --port=33316 --user=root
-    if ($LASTEXITCODE) { throw 'Cannot prepare isolated labflow_e2e database.' }
-} finally { $env:MYSQL_PWD = $oldPassword }
+if ($Database -eq 'mysql') {
+    $oldPassword = $env:MYSQL_PWD
+    try {
+        $env:MYSQL_PWD = 'labflow-root-local'
+        "CREATE DATABASE IF NOT EXISTS labflow_e2e CHARACTER SET utf8mb4; GRANT ALL ON labflow_e2e.* TO 'labflow'@'127.0.0.1';" |
+            & "$MySqlBin/mysql.exe" --host=127.0.0.1 --port=33316 --user=root
+        if ($LASTEXITCODE) { throw 'Cannot prepare isolated labflow_e2e database.' }
+    } finally { $env:MYSQL_PWD = $oldPassword }
+}
 & mvn.cmd -q -f backend/pom.xml package -DskipTests "-Dlabflow.build.directory=$root/.runtime/agent-e2e-build"
 if ($LASTEXITCODE) { throw 'Backend package failed.' }
 $oldApi = $env:LABFLOW_API
@@ -49,10 +59,20 @@ $fixture = $null
 $backend = $null
 $ownedWeb = $null
 function Start-AgentTestBackend {
-    Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList '-jar','.runtime/agent-e2e-build/labflow-0.1.0.jar',
-        '--server.port=8087','--spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_e2e',
+    $args = @('-jar','.runtime/agent-e2e-build/labflow-0.1.0.jar',
+        '--server.port=8087',
         '--labflow.test-support=true','--labflow.frontend-origin=http://127.0.0.1:5178',
-        "--LABFLOW_AGENT_BASE_URL=http://127.0.0.1:$FixturePort",'--LABFLOW_AGENT_MODEL=labflow-fixture' -WorkingDirectory $root -WindowStyle Hidden -PassThru `
+        "--LABFLOW_AGENT_BASE_URL=http://127.0.0.1:$FixturePort",'--LABFLOW_AGENT_MODEL=labflow-fixture')
+    if ($Database -eq 'h2') {
+        # desktop profile 提供 H2 数据源与 db/migration-h2 迁移；URL 改指向本次
+        # 临时目录下的 labflow_e2e 文件库（TestSupportController 守卫只放行测试库）。
+        $h2Path = ($dataDir -replace '\\','/') + '/labflow_e2e'
+        $args += @('--spring.profiles.active=desktop',
+            "--spring.datasource.url=jdbc:h2:file:$h2Path;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE")
+    } else {
+        $args += '--spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_e2e'
+    }
+    Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList $args -WorkingDirectory $root -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput '.runtime/agent-e2e.stdout.log' -RedirectStandardError '.runtime/agent-e2e.stderr.log'
 }
 function Wait-AgentTestBackend {
@@ -118,5 +138,10 @@ try {
     $env:LABFLOW_FIXTURE_PORT = $oldFixturePort
     foreach ($owned in @($backend, $fixture, $ownedWeb)) {
         if ($owned -and !( $owned.HasExited )) { Stop-Process -Id $owned.Id; Wait-Process -Id $owned.Id -ErrorAction SilentlyContinue }
+    }
+    # 14-1-4.5：H2 临时数据目录在进程停止后整体删除；删不掉只警告，不影响测试结论。
+    if ($dataDir -and (Test-Path $dataDir)) {
+        try { Remove-Item -Recurse -Force $dataDir -ErrorAction Stop }
+        catch { Write-Warning "H2 临时数据目录未删除（可能仍被占用）：$dataDir" }
     }
 }

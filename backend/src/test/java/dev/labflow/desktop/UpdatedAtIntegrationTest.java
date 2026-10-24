@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import dev.labflow.LabflowIntegrationTest;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -13,7 +14,6 @@ import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,9 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * 更新后 updated_at 严格变大，且列表排序（ORDER BY updated_at DESC）随之变化。
  * MySQL 下跑一次；14-1-4 引入 LABFLOW_TEST_DB=h2 参数化后，同一用例在 H2 再跑一次。
  */
-@SpringBootTest(
-    properties =
-        "spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC")
+@LabflowIntegrationTest
 @AutoConfigureMockMvc
 class UpdatedAtIntegrationTest {
   @Autowired MockMvc mvc;

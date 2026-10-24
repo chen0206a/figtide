@@ -24,7 +24,11 @@ public class TestSupportController {
 
   public TestSupportController(WorkspaceRepository db, @Value("${spring.datasource.url}") String url) {
     this.db = db;
-    this.isolated = url.matches("jdbc:mysql://[^/]+/labflow_(test|e2e)(\\?.*)?");
+    // 14-1-4.2：保留原 MySQL 规则，同时接受 H2 测试库（desktop profile / LABFLOW_TEST_DB=h2 的 E2E）。
+    // 真实工作区库无论 MySQL（labflow）还是 H2（figtide）都必须拒绝。
+    this.isolated =
+        url.matches("jdbc:mysql://[^/]+/labflow_(test|e2e)(\\?.*)?")
+            || url.matches("jdbc:h2:(mem|file):[^;]*/?labflow_(test|e2e)([;].*)?");
   }
 
   /** Deletes every project with {@code id > after}, children first (no cascades in the schema). */

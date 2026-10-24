@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.*;
 import com.sun.net.httpserver.HttpServer;
 import dev.labflow.LabFlowApplication;
+import dev.labflow.TestDatasourceInitializer;
 import dev.labflow.agent.*;
 import dev.labflow.service.*;
 import java.net.InetSocketAddress;
@@ -17,17 +18,18 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(
     classes = LabFlowApplication.class,
     properties = {
-      "spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC",
       "LABFLOW_AGENT_BASE_URL=http://127.0.0.1:1",
       "LABFLOW_AGENT_MODEL=",
       "labflow.test-support=false"
     })
+@ContextConfiguration(initializers = TestDatasourceInitializer.class)
 class EvaluationRunnerIntegrationTest {
   @Autowired ObjectMapper json;
   @Autowired WorkspaceService workspace;
@@ -39,6 +41,13 @@ class EvaluationRunnerIntegrationTest {
   JsonNode suite;
   EvaluationRunner runner;
   int projects, runs;
+
+  @BeforeAll
+  static void evaluationRunsOnlyOnRealMysql() {
+    Assumptions.assumeTrue(
+        TestDatasourceInitializer.isMysql(),
+        "评测依赖真实 MySQL（LABFLOW_TEST_DB=" + TestDatasourceInitializer.TEST_DB + "），H2 跳过（任务 14-1-4.3）");
+  }
 
   @BeforeEach
   void setup() throws Exception {

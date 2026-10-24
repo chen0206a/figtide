@@ -4,27 +4,31 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.databind.*;
 import dev.labflow.LabFlowApplication;
+import dev.labflow.TestDatasourceInitializer;
 import dev.labflow.agent.*;
 import dev.labflow.service.*;
 import java.nio.file.*;
 import java.util.*;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(
     classes = LabFlowApplication.class,
     properties = {
-      "spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC",
       // Context construction can never activate an external provider; live uses an explicit
       // instance.
       "LABFLOW_AGENT_BASE_URL=http://127.0.0.1:1",
       "LABFLOW_AGENT_MODEL=",
       "labflow.test-support=false"
     })
+@ContextConfiguration(initializers = TestDatasourceInitializer.class)
 class AgentEvaluationTest {
   @Autowired ObjectMapper json;
   @Autowired WorkspaceService workspace;
@@ -32,6 +36,13 @@ class AgentEvaluationTest {
   @Autowired AgentAuditService audit;
   @Autowired JdbcTemplate db;
   @Autowired PlatformTransactionManager transactions;
+
+  @BeforeAll
+  static void evaluationRunsOnlyOnRealMysql() {
+    Assumptions.assumeTrue(
+        TestDatasourceInitializer.isMysql(),
+        "评测依赖真实 MySQL（LABFLOW_TEST_DB=" + TestDatasourceInitializer.TEST_DB + "），H2 跳过（任务 14-1-4.3）");
+  }
 
   @Test
   void runThirtyCasesOfflineUnlessLiveIsExplicitlyEnabled() throws Exception {

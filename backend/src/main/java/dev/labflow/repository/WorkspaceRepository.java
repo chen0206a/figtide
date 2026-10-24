@@ -37,6 +37,28 @@ public class WorkspaceRepository {
           return ps;
         },
         key);
-    return Objects.requireNonNull(key.getKey()).longValue();
+    // 14-1 可移植性：H2（含 MODE=MySQL）的 RETURN_GENERATED_KEYS 会把 DEFAULT
+    // CURRENT_TIMESTAMP(3) 的 created_at 等带默认值列也算作生成列，返回 {id, created_at}；
+    // MySQL 只返回自增 id（列名可能是 GENERATE_* 或 id）。统一按列名（忽略大小写）取 id，
+    // 取不到再回退第一个数值列，两种库行为一致。
+    var rows = key.getKeyList();
+    if (rows.isEmpty()) throw new IllegalStateException("INSERT 未返回生成键: " + sql);
+    var row = rows.getFirst();
+    Object id = null;
+    for (var e : row.entrySet()) {
+      if ("id".equalsIgnoreCase(e.getKey())) {
+        id = e.getValue();
+        break;
+      }
+    }
+    if (id == null) {
+      for (var v : row.values()) {
+        if (v instanceof Number number) {
+          id = number;
+          break;
+        }
+      }
+    }
+    return ((Number) Objects.requireNonNull(id, () -> "生成键里没有数值列: " + row)).longValue();
   }
 }
