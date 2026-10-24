@@ -1,3 +1,10 @@
+## 2026-10-24 · 14-2-5：Windows 冒烟清单
+
+- 新增 `docs/desktop/SMOKE-14-2.md`：构建/启动命令、数据与日志位置、app.port JSON和空锁文件语义、已自动验证的8组事项、11条待人工确认项、进程探针复跑方法。
+- 自动证据来自前述7例启动器单测、12项真实子进程检查、安全矩阵62例及同JAR专项20/20。未重复执行这些测试，不将复用证据描述为本节新运行。
+- 真实默认浏览器、托盘图标/首次气泡、四个菜单、浏览器关闭仍驻留、任务管理器强杀后的图表检查、系统关机/注销待人工确认；没有虚构OS交互验收。正常清理和强杀持久性已有测试入口验证，仍需真实托盘点击核对。
+- DESKTOP-PLAN明确main的UTC与14-4打包JVM参数各自职责。本节仅文档，npm test / build / Java / E2E 未另跑；下一步总验收统一执行。
+
 ## 2026-10-24 · 14-2-4：桌面 JAR 浏览器测试入口
 
 - 测试设施授权：test-agent.ps1 新增 -Desktop，调用 build-desktop.ps1，在新建临时目录用 H2 / WRITE_DELAY=0 / open-browser=false / tray=false 启动 figtide.jar，从 app.port 读取随机端口并核对 ping 实例 ID。网页与 API 同端口，脚本核对监听者是自己启动的 loopback Java PID，Playwright 桌面模式不注册 Vite webServer。

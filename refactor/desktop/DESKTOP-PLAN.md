@@ -50,7 +50,7 @@ FigTide.exe（jpackage 生成的启动器）
 4. 服务就绪后，用系统默认浏览器打开 `http://127.0.0.1:<端口>/`。
 5. 系统托盘图标，菜单：「打开 FigTide」「打开数据文件夹」「导出诊断日志」「退出」。退出时正常关闭服务和数据库。
 
-**时区**：启动器必须以 `-Duser.timezone=UTC` 启动 JVM（14-2 执行）。H2 的 `TIMESTAMP` 不带时区，按 JVM 默认时区换算；MySQL 侧会话固定 UTC（`serverTimezone=UTC`），桌面 JVM 统一 UTC 才能保证备份导入导出与将来跨库迁移时 `created_at` 等时间戳逐毫秒一致。
+**时区**：14-2 main 第一行固定 UTC；14-4 的打包启动参数仍必须包含 `-Duser.timezone=UTC`，在 JVM 初始化早期即统一时区。H2 的 `TIMESTAMP` 不带时区，按 JVM 默认时区换算；MySQL 侧会话固定 UTC（`serverTimezone=UTC`），桌面 JVM 统一 UTC 才能保证备份导入导出与将来跨库迁移时 `created_at` 等时间戳逐毫秒一致。
 
 **本机安全**（桌面版新增的要求）：本地服务虽然只监听 127.0.0.1，但浏览器里打开的其他网站也能向它发请求。必须：
 - 校验 `Host` 头只能是 `127.0.0.1:<端口>` 或 `localhost:<端口>`，防 DNS 重绑定；
