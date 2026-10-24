@@ -1,3 +1,9 @@
+## 2026-10-25 · 14-4-2：真实EXE隔离冒烟通过
+
+`./scripts/test-desktop-package.ps1 -Application 'dist/desktop/FigTide-0.1.0-windows-x64/FigTide'`：7组断言全部通过。ZIP结构及SHA256、EXE版本和四尺寸品牌图标、启动参数UTC/desktop、许可及无用户数据检查均通过；PATH仅System32且JAVA_HOME无效、中文带空格数据路径、与安装目录无关的cwd，真实CSV上传/图表保存、第二EXE正常退出、强杀重启端口17920不变且图表配置/revision一致。该轮是未提交源代码首次构建，manifest明确source_dirty=true，不冒充干净发布包；最终干净提交产物在14-5验收。
+
+证据`docs/test-evidence/desktop14-4-smoke.json`，日志`.runtime/task14-4-probe-final.log`，独立进程目录见证据。收费模型请求0、用户数据目录访问0。未执行：真实托盘点击、默认浏览器打开、SmartScreen、原生安装向导。完整产物浏览器E2E在14-5执行。
+
 ## 2026-10-25 · 14-4-1：Windows便携包构建
 
 `./scripts/package-desktop.ps1`成功：jlink精简JDK21.0.12.1（25模块）+ jpackage无控制台app-image，版本0.1.0，便携ZIP约92.7MiB。从现有品牌PNG生成16/32/48/256 ICO，运行时legal和74个生产前端依赖的许可说明随包保留。输入只有JAR、运行时与指定文档，未读取用户目录。

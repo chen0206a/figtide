@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-24T15:10:14.488Z",
+  "version": "0.1.0",
+  "source_revision": "499f72e339c18cd37b93b9bbd3ea797972acd76b",
+  "system_java_available_to_child": false,
+  "browser_or_tray_invoked": false,
+  "paid_model_calls": 0,
+  "passed": [
+    "release ZIP/checksums, EXE version and four embedded brand icon sizes",
+    "launcher fixes UTC and desktop profile even with user arguments",
+    "runtime modules, project and dependency notices, no workspace files",
+    "starts without system Java from an unrelated directory and serves same-process SPA",
+    "real CSV upload and chart save use embedded H2",
+    "second EXE exits without creating another server",
+    "forced restart keeps preferred origin and saved figure configuration"
+  ],
+  "ports": [
+    17920,
+    17920
+  ],
+  "evidence": ".runtime\\package-smoke-cab993e0-a558-4644-86d6-e86f0a750abd"
+}
