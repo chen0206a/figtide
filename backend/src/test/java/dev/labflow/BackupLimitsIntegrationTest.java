@@ -1,11 +1,18 @@
 package dev.labflow;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.security.SecureRandom;
+import dev.labflow.service.BackupService;
+import dev.labflow.service.WorkspaceService;
+import dev.labflow.repository.WorkspaceRepository;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.zip.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,20 +28,35 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 class BackupLimitsIntegrationTest {
   @Autowired MockMvc mvc;
+  @Autowired BackupService backups;
+  @Autowired WorkspaceService workspace;
+  @Autowired WorkspaceRepository db;
+  static final int MIB = 1024 * 1024;
+
+  byte[] validBackup() {
+    var project = workspace.createProject("边界测试 · 合成", "test only");
+    return backups.export(((Number) project.get("id")).longValue());
+  }
+
+  long projectCount() { return ((Number) db.one("SELECT COUNT(*) n FROM projects").get("n")).longValue(); }
 
   @Test
   void oversizedBackupIsRejectedByDefaultProfileLimits() throws Exception {
-    // 64 MiB + 1 字节、内容为随机数（不可压缩）。随机内容保证将来即使有人把
-    // multipart 上限调得比 compressed-limit 更大，这条路径仍由 BackupService
-    // 自己的 read() 尺寸检查挡住，而不是碰巧被别的层拦截。
-    byte[] oversized = new byte[64 * 1024 * 1024 + 1];
-    new SecureRandom().nextBytes(oversized);
+    // A real two-entry backup plus trailing padding remains readable by the
+    // product's ZipInputStream. Acceptance at 64 MiB rules out format failures.
+    byte[] valid = validBackup();
+    byte[] atLimit = Arrays.copyOf(valid, 64 * MIB);
+    mvc.perform(multipart("/api/backups/preview")
+        .file(new MockMultipartFile("file", "limit.zip", "application/zip", atLimit)))
+        .andExpect(status().isOk());
+    byte[] oversized = Arrays.copyOf(valid, 64 * MIB + 1);
     var file = new MockMultipartFile("file", "oversized.labflow.zip", "application/zip", oversized);
 
-    // preview 与 restore 都必须被拒绝，且不留下任何新项目。
+    long before = projectCount();
     mvc.perform(multipart("/api/backups/preview").file(file))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.code").value("REQUEST_400"));
+        .andExpect(jsonPath("$.code").value("REQUEST_400"))
+        .andExpect(jsonPath("$.message").value("项目备份：压缩文件须在 64 MiB 以内"));
 
     var restore =
         multipart("/api/backups/restore")
@@ -42,9 +64,51 @@ class BackupLimitsIntegrationTest {
             .param("name", "超限备份不应恢复");
     mvc.perform(restore)
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.code").value("REQUEST_400"));
+        .andExpect(jsonPath("$.code").value("REQUEST_400"))
+        .andExpect(jsonPath("$.message").value("项目备份：压缩文件须在 64 MiB 以内"));
+    assertEquals(before, projectCount());
+  }
 
-    // 空项目列表这类的全局断言交给其余测试；这里只确认拒绝路径是确定性的。
-    assertEquals(oversized.length, 64 * 1024 * 1024 + 1);
+  @Test
+  void expandedLimitAcceptsExactly96MiBAndRejectsOneExtraByte() throws Exception {
+    byte[] original = validBackup(), manifest;
+    try (var input = new ZipInputStream(new ByteArrayInputStream(original))) {
+      assertEquals("manifest.json", input.getNextEntry().getName());
+      manifest = input.readAllBytes();
+    }
+    // Trailing JSON whitespace keeps the manifest valid without inflating a
+    // field, row count or string beyond its independent validation limit.
+    byte[] exact = expandedZip(manifest, 96 * MIB - 64);
+    mvc.perform(multipart("/api/backups/preview")
+        .file(new MockMultipartFile("file", "exact.zip", "application/zip", exact)))
+        .andExpect(status().isOk());
+    byte[] tooLarge = expandedZip(manifest, 96 * MIB - 64 + 1);
+    long before = projectCount();
+    for (String endpoint : List.of("preview", "restore")) {
+      mvc.perform(multipart("/api/backups/" + endpoint)
+          .file(new MockMultipartFile("file", "expanded.zip", "application/zip", tooLarge))
+          .param("name", "超限不恢复"))
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message").value("项目备份：展开内容超过 96 MiB"));
+    }
+    assertEquals(before, projectCount());
+  }
+
+  byte[] expandedZip(byte[] manifest, int expandedBytes) throws Exception {
+    var output = new ByteArrayOutputStream();
+    var digest = MessageDigest.getInstance("SHA-256");
+    try (var zip = new ZipOutputStream(output)) {
+      zip.putNextEntry(new ZipEntry("manifest.json"));
+      zip.write(manifest); digest.update(manifest);
+      byte[] spaces = new byte[8192]; Arrays.fill(spaces, (byte) ' ');
+      for (int remaining = expandedBytes - manifest.length; remaining > 0; ) {
+        int count = Math.min(remaining, spaces.length);
+        zip.write(spaces, 0, count); digest.update(spaces, 0, count); remaining -= count;
+      }
+      zip.closeEntry(); zip.putNextEntry(new ZipEntry("sha256.txt"));
+      zip.write(HexFormat.of().formatHex(digest.digest()).getBytes(StandardCharsets.US_ASCII));
+      zip.closeEntry();
+    }
+    return output.toByteArray();
   }
 }

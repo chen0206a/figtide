@@ -76,6 +76,42 @@ function requireFields(row, fields, context) {
   }
 }
 
+/** Duplicate names are legal. Fingerprint duplicate objects (including their history),
+ * then number identical copies so multiplicity and references survive ID remapping. */
+function stableKeys(rows, baseKey, content, context) {
+  const groups = new Map(), keys = new Map();
+  for (const row of rows) {
+    if (keys.has(row.id)) fail(`${context} ID 重复：${row.id}`);
+    keys.set(row.id, null);
+    const base = baseKey(row);
+    if (!groups.has(base)) groups.set(base, []);
+    groups.get(base).push(row);
+  }
+  for (const [base, group] of groups) {
+    const copies = new Map();
+    for (const row of group) {
+      if (group.length === 1) { keys.set(row.id, base); continue; }
+      const hash = crypto.createHash('sha256').update(stableString(content(row))).digest('hex');
+      const copy = (copies.get(hash) || 0) + 1;
+      copies.set(hash, copy);
+      keys.set(row.id, `${base}/${hash}/${copy}`);
+    }
+  }
+  return keys;
+}
+
+function chartConfig(row, versionKeyById) {
+  const config = canonicalize(parseJsonColumn(row.config_json, `chart_versions#${row.id}.config_json`));
+  if (config && typeof config.datasetVersionId === 'number') {
+    const referenced = versionKeyById.get(config.datasetVersionId);
+    if (!referenced) fail(`chart_versions#${row.id} 配置引用了未知 datasetVersionId=${config.datasetVersionId}`);
+    config.datasetVersionId = referenced;
+  } else if (config && config.datasetVersionId !== undefined && config.datasetVersionId !== null) {
+    fail(`chart_versions#${row.id} 配置的 datasetVersionId 不是数字`);
+  }
+  return config;
+}
+
 /**
  * 规范化整份备份清单。manifest 来自旧版导出（A）或桌面版再导出（B），
  * 两边调用同一函数，输出结构可直接深度比较。
@@ -112,25 +148,6 @@ function normalizeManifest(manifest) {
     experimentKeyById.set(row.id, key);
     experimentsRaw.push({ row, key });
   }
-
-  const chartKeyById = new Map();
-  const charts = [];
-  for (const row of table(manifest, 'charts')) {
-    requireFields(row, ['id', 'name', 'revision', 'created_at', 'updated_at'], 'charts');
-    const key = `c:${row.name}`;
-    if (chartKeyById.has(row.id) || charts.some((c) => c.key === key)) {
-      fail(`图表稳定键冲突：${key}`);
-    }
-    chartKeyById.set(row.id, key);
-    charts.push({
-      key,
-      name: row.name,
-      revision: num(row.revision, 'charts.revision'),
-      created_at: iso(row.created_at, 'charts.created_at'),
-      updated_at: iso(row.updated_at, 'charts.updated_at'),
-    });
-  }
-  charts.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
 
   const versionKeyById = new Map();
   const versionRowByKey = new Map();
@@ -182,6 +199,27 @@ function normalizeManifest(manifest) {
   }
   datasetVersions.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
 
+  const chartRows = table(manifest, 'charts');
+  const history = new Map();
+  for (const row of table(manifest, 'chart_versions')) {
+    if (!history.has(row.chart_id)) history.set(row.chart_id, []);
+    history.get(row.chart_id).push(row);
+  }
+  const chartFields = row => {
+    requireFields(row, ['id', 'name', 'revision', 'created_at', 'updated_at'], 'charts');
+    return { name: row.name, revision: num(row.revision, 'charts.revision'),
+      created_at: iso(row.created_at, 'charts.created_at'), updated_at: iso(row.updated_at, 'charts.updated_at') };
+  };
+  const chartKeyById = stableKeys(chartRows, row => `c:${row.name}`, row => ({
+    ...chartFields(row),
+    history: asSortedSet((history.get(row.id) || []).map(v => ({
+      version: v.version, schema_version: v.schema_version, created_at: v.created_at,
+      dataset: versionKeyById.get(v.dataset_version_id), config: chartConfig(v, versionKeyById),
+    })), 'chart history'),
+  }), 'charts');
+  const charts = chartRows.map(row => ({ key: chartKeyById.get(row.id), ...chartFields(row) }));
+  charts.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+
   // ---- 实验（含链接的稳定键集合）----
   const linksByExperiment = new Map();
   for (const row of table(manifest, 'experiment_datasets')) {
@@ -224,16 +262,7 @@ function normalizeManifest(manifest) {
     if (!chartKey) fail(`chart_versions#${row.id} 引用了未知 chart_id=${row.chart_id}`);
     const versionKey = versionKeyById.get(row.dataset_version_id);
     if (!versionKey) fail(`chart_versions#${row.id} 引用了未知 dataset_version_id=${row.dataset_version_id}`);
-    const config = canonicalize(parseJsonColumn(row.config_json, `chart_versions#${row.id}.config_json`));
-    if (config && typeof config.datasetVersionId === 'number') {
-      const referenced = versionKeyById.get(config.datasetVersionId);
-      if (!referenced) {
-        fail(`chart_versions#${row.id} 配置引用了未知 datasetVersionId=${config.datasetVersionId}`);
-      }
-      config.datasetVersionId = referenced;
-    } else if (config && config.datasetVersionId !== undefined && config.datasetVersionId !== null) {
-      fail(`chart_versions#${row.id} 配置的 datasetVersionId 不是数字`);
-    }
+    const config = chartConfig(row, versionKeyById);
     chartVersions.push({
       key: `${chartKey}/v${num(row.version, 'chart_versions.version')}`,
       chartKey,
@@ -247,19 +276,18 @@ function normalizeManifest(manifest) {
   chartVersions.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
 
   // ---- 样式模板 ----
-  const styleTemplates = [];
-  for (const row of table(manifest, 'style_templates')) {
+  const styleRows = table(manifest, 'style_templates');
+  const templateFields = row => {
     requireFields(row, ['id', 'name', 'schema_version', 'profile_json', 'created_at'], 'style_templates');
-    const key = `s:${row.name}`;
-    if (styleTemplates.some((s) => s.key === key)) fail(`样式模板稳定键冲突：${key}`);
-    styleTemplates.push({
-      key,
+    return {
       name: row.name,
       schema_version: num(row.schema_version, 'style_templates.schema_version'),
       profile: canonicalize(parseJsonColumn(row.profile_json, `style_templates#${row.id}.profile_json`)),
       created_at: iso(row.created_at, 'style_templates.created_at'),
-    });
-  }
+    };
+  };
+  const templateKeys = stableKeys(styleRows, row => `s:${row.name}`, templateFields, 'style_templates');
+  const styleTemplates = styleRows.map(row => ({ key: templateKeys.get(row.id), ...templateFields(row) }));
   styleTemplates.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
 
   return {

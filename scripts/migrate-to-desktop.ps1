@@ -5,7 +5,7 @@
 #   ./scripts/migrate-to-desktop.ps1 -From http://127.0.0.1:8086 -To http://127.0.0.1:17861 [-DryRun] [-Out <报告目录>] [-Verify]
 #
 # 设计原则：旧版侧只发 GET（/api/projects、/api/projects/{p}/backup）；
-# 不要把 -From 指向真实工作区之外还想当然——工具会拒绝 From==To 和 From 是桌面版的情况。
+# 工具拒绝相同服务地址并确认 To 是桌面版；不会额外探测旧端的数据库类型。
 
 param(
   [Parameter(Mandatory = $true)][string]$From,

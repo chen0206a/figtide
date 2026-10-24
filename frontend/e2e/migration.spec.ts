@@ -1,4 +1,5 @@
 import { test, expect } from "./workspace-test";
+import type { APIRequestContext } from "@playwright/test";
 
 // 14-3-4 浏览器验收：迁移完成后，在桌面版（figtide.jar 静态页面）里打开已迁移项目，
 // 确认图表渲染、数据与实验列表、归档标记都还在。
@@ -8,7 +9,7 @@ test.skip(
   "迁移验收专用（scripts/test-migration.ps1 设置 LABFLOW_MIGRATION_E2E=1）",
 );
 
-async function findProject(request: string, name: string) {
+async function findProject(request: APIRequestContext, name: string) {
   const projects = await (await request.get(`/api/projects`)).json();
   return projects.find((p: { name: string }) => p.name === name);
 }
@@ -24,6 +25,7 @@ test("迁移后的多版本图表在桌面版浏览器里正常渲染", async ({
   ).json();
   const line = charts.find((c: { name: string }) => c.name === "准确率曲线");
   test.expect(line, "折线图应存在").toBeTruthy();
+  expect(charts.filter((c: { name: string }) => c.name === "准确率曲线")).toHaveLength(2);
 
   await page.goto(`/projects/${project.id}/figures/${line.id}`);
   await expect(page.getByTestId("plot")).toBeVisible();

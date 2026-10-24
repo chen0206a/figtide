@@ -101,6 +101,9 @@ try {
     }
     Write-Host "Desktop side ready: $desktopUrl"
 
+    & $node scripts/migration/target-collision.cjs --api $desktopUrl --out (Join-Path $evidence 'target-collision.json')
+    if ($LASTEXITCODE) { throw 'Cannot prepare the longest-name target collision.' }
+
     # 迁移（第一次：全部成功，退出码 0；中文断言在 assert-report.cjs 里做，
     # 因为 PowerShell 5.1 会把无 BOM UTF-8 脚本里的中文字面量错误解码）
     & $node scripts/migration/migrate.cjs --from http://127.0.0.1:8087 --to $desktopUrl --out (Join-Path $evidence 'report-first')
@@ -116,6 +119,14 @@ try {
     if ($LASTEXITCODE) { throw 'Idempotent rerun assertions failed.' }
     $after = Invoke-RestMethod "$desktopUrl/api/projects"
     if (@($after).Count -ne @($before).Count) { throw "Rerun changed project count: $(@($before).Count) -> $(@($after).Count)." }
+
+    # Verify must resolve the same renamed copy (including a 120-character name).
+    & $node scripts/migration/migrate.cjs --from http://127.0.0.1:8087 --to $desktopUrl --verify --out (Join-Path $evidence 'report-verify-clean')
+    if ($LASTEXITCODE) { throw 'Clean renamed migration must verify successfully.' }
+    & $node scripts/migration/assert-report.cjs --file (Join-Path (Join-Path $evidence 'report-verify-clean') 'migration-report.json') --mode second
+    if ($LASTEXITCODE) { throw 'Clean renamed verification assertions failed.' }
+    & $node scripts/migration/target-collision.cjs --api $desktopUrl --out (Join-Path $evidence 'target-collision.json') --verify
+    if ($LASTEXITCODE) { throw 'The pre-existing target was modified.' }
 
     # 故障路径：篡改一条桌面记录 → --verify 必须失败并给出差异
     & $node scripts/migration/tamper.cjs --api $desktopUrl --project 'rep-experiments'
@@ -166,7 +177,7 @@ try {
     Copy-Item (Join-Path $evidence 'seed.json') (Join-Path $root 'docs/test-evidence/desktop14-3-migration-seed.json') -Force
 
     Write-Host ''
-    Write-Host 'MIGRATION E2E PASSED: 4/4 成功 → 幂等重跑 → 篡改检出 → 旧库只读 → 浏览器渲染。'
+    Write-Host 'MIGRATION E2E PASSED: 5/5 成功（同名对象/120字冲突）→ 幂等重跑 → 改名复核 → 篡改检出 → 旧库只读 → 浏览器渲染。'
     Write-Host "Evidence: $evidence"
 } finally {
     foreach ($owned in @($oldBackend, $desktopBackend)) {

@@ -24,7 +24,7 @@ const fail = (msg) => {
 };
 
 if (mode === 'first') {
-  if (projects.length !== 4) fail(`项目数应为 4，实际 ${projects.length}`);
+  if (projects.length !== 5) fail(`项目数应为 5，实际 ${projects.length}`);
   for (const p of projects) {
     if (p.result !== '成功') fail(`项目「${p.name}」result=${p.result}，应为 成功`);
     if ((p.diffs || []).length) fail(`项目「${p.name}」不应有差异：${p.diffs[0]}`);
@@ -34,7 +34,7 @@ if (mode === 'first') {
     console.log('（提示）归档状态说明：', JSON.stringify(projects.find((p) => p.name.includes('归档'))?.note));
   }
 } else if (mode === 'second') {
-  if (projects.length !== 4) fail(`项目数应为 4，实际 ${projects.length}`);
+  if (projects.length !== 5) fail(`项目数应为 5，实际 ${projects.length}`);
   for (const p of projects) {
     if (p.result !== '已迁移') fail(`项目「${p.name}」result=${p.result}，应为 已迁移`);
   }
@@ -43,6 +43,15 @@ if (mode === 'first') {
   if (!tampered) fail('缺少 rep-experiments');
   if (tampered.result !== '失败') fail(`rep-experiments result=${tampered.result}，应为 失败`);
   if (!(tampered.diffs || []).length) fail('rep-experiments 应给出差异列表');
+}
+
+const longest = projects.find(p => p.name.length === 120);
+if (!longest || longest.result !== '已迁移' && longest.result !== '成功') fail('最长名称项目应迁移/核对成功');
+if (longest.target_name === longest.name || longest.target_name.length > 120) fail('最长名称冲突后应产生合法改名');
+const duplicates = projects.find(p => p.name === '代表·图表全家福');
+if (!duplicates || duplicates.counts.source.charts !== 4 || duplicates.counts.target.charts !== 4 ||
+    duplicates.counts.source.style_templates !== 2 || duplicates.counts.target.style_templates !== 2) {
+  fail('同名图表/模板必须全部保留并核对');
 }
 
 console.log(`assert-report [${mode}] OK：${projects.map((p) => `${p.name}=${p.result}`).join('，')}`);

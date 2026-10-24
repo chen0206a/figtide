@@ -1,3 +1,29 @@
+## 2026-10-24 · 14-3 修复后总验收通过（R1–R4）
+
+从独立审阅5225b8e继续，四项问题均已修复。未连接真实8086/labflow库或用户桌面目录，未修改业务API、迁移、草稿键、预算/幂等/恢复语义。
+
+| 验证 | 命令 | passed | failed/errors | skipped |
+|---|---|---:|---:|---:|
+| MySQL全量Java | `LABFLOW_TEST_DB=mysql mvn -B -f backend/pom.xml test` | 263 | 0 | 1 |
+| H2全量Java | `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test` | 257 | 0 | 1 |
+| 前端组件 | `npm test -- --maxWorkers=4` | 280（52文件） | 0 | 0 |
+| 迁移Node测试 | `node --test scripts/migration/normalize.test.cjs scripts/migration/zip.test.cjs scripts/migration/targets.test.cjs scripts/migration/cli.test.cjs` | 40 | 0 | 0 |
+| 开发完整E2E | `./scripts/test-agent.ps1 -All -FixturePort 18770` | 83 | 0 | 4 |
+| 桌面完整E2E | `./scripts/test-agent.ps1 -All -Desktop -FixturePort 18770` | 84 | 0 | 3 |
+
+- `npm run build`通过（12.59s，既有大chunk提示保留）。两通道最后各完整一轮通过，workers=1、0 flaky、无重试拼接；原始整轮JSON保留`.runtime/fix14-3-{development,desktop}-results.json`，命令日志`.runtime/fix14-3-{development,desktop}-final.log`。整轮stats/hash见`docs/test-evidence/desktop14-3-fixes.json`。开发4跳过=桌面重启1+迁移专项3；桌面3跳过=迁移专项3，专项另实际运行3/3通过。Java两边1条跳过为显式真实评测开关；H2另沿用14-1类级6条评测跳过，不计入258总数。
+- R1：同名图表/模板改用内容与历史指纹及重复序号建立稳定引用，保留全部重复对象与图表版本；ID变化、行重排、完全相同副本、任一历史/模板差异都有测试。没有改名或丢掉重复对象。
+- R2/R3：Migrate与Verify共享候选目标匹配和重命名规范化，遍历所有同名目标及跨空档后缀；120字名称为后缀预留空间，避免截断代理对。HTTP协议CLI测试覆盖成功、幂等、复核及真实副本篡改失败。
+- R4：使用产品能够解析的真实备份，明确断言64MiB/96MiB边界原因；恰好上限成功、多1字节失败，且失败不增加项目。负向对照把上限配置改为128MiB后测试明确失败（期望400实收200），证明能检测回归；随后恢复默认环境，相关Java8/8重新通过。该预期失败不计作产品失败或通过数。
+- `./scripts/test-migration.ps1 -Keep`通过：5个源项目→首轮5成功→重复5已迁移且数量不增→包含120字冲突副本的Verify全5通过→篡改后准确失败exit1→旧库10表行数/CHECKSUM不变→浏览器3/3。种子包含2个同名图表、2个同名不同样式模板及一个最长名称冲突；目标原有同名异内容项目未改动。新增清洁复核样例`desktop14-3-migration-verify-clean.json`，整轮原始目录`.runtime/migration-e2e-20261024-233246/`保留。
+- 旧端请求收紧为任务书规定的GET项目列表/备份，不再额外探测旧端ping；相同服务检查规范化localhost与127.0.0.1别名、默认端口及尾斜杠。迁移说明同步，不声称能通过这两个只读端点识别源数据库类型。
+
+### 整轮失败与修正保留
+
+第一次桌面整轮83 passed / 1 failed / 3 skipped：motion.spec.ts在标题820ms结束后立即采样1180ms才结束的home-stage，读到opacity=0.999998。修复的是测试同步：等待页面有限入场动画的finished信号，排除无限脉冲；原精确opacity=1、transform、点击性等断言全部保留，没有调整产品动效、超时、断言或布局基线。失败trace保留`.runtime/fix14-3-desktop-first-trace.zip`，原结果`fix14-3-desktop-first-results.json`。随后两通道重新各完整运行并通过（不是只跑motion后拼接）。
+
+未执行：真实用户迁移、收费模型调用、托盘人工点击。Windows便携打包属于接续14-4，当前14-3验收已满足进入条件。无待决策事项；未推送。
+
 ## 2026-10-24 · 14-3 独立复核：需要修改，暂不通过总验收
 
 审阅 `desktop/14-3@01fa0c6`（基线b5ed551）；本轮没有修改产品代码，真实工作区8086 / labflow库 / 用户桌面目录均未访问。详细根因、行号与修复要求见 `docs/desktop/REVIEW-14-3.md`；机器证据 `docs/test-evidence/desktop14-3-review.json`。

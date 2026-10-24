@@ -18,6 +18,7 @@ const path = require('node:path');
 const { getJson, putJson, download, postZip, trimSlash, ApiError } = require('./api.cjs');
 const { parseManifest } = require('./zip.cjs');
 const { normalizeManifest, diffCanonical } = require('./normalize.cjs');
+const { candidates, freeName, serviceAddress } = require('./targets.cjs');
 
 const LIMIT_HINT = /MiB|MB|大小|上限|超过/;
 
@@ -75,7 +76,7 @@ async function main() {
   const args = parseArgs(process.argv);
   const from = trimSlash(args.from);
   const to = trimSlash(args.to);
-  if (from.toLowerCase() === to.toLowerCase()) {
+  if (serviceAddress(from) === serviceAddress(to)) {
     console.error('错误：-From 与 -To 指向同一个服务，无法迁移。');
     process.exitCode = 2;
     return;
@@ -90,16 +91,6 @@ async function main() {
     console.error(`错误：旧版 ${from} 不可用（GET /api/projects：${e.message}）。先启动旧版再运行迁移。`);
     process.exitCode = 2;
     return;
-  }
-  try {
-    const ping = await getJson(from, '/api/desktop/ping');
-    if (ping && ping.instance_id) {
-      console.error('错误：-From 指向的是一个桌面版实例（响应了 /api/desktop/ping）；-From 必须是旧版（MySQL）。');
-      process.exitCode = 2;
-      return;
-    }
-  } catch {
-    // 旧版没有 /api/desktop/ping —— 符合预期。
   }
   try {
     const ping = await getJson(to, '/api/desktop/ping');
@@ -218,38 +209,14 @@ async function migrateProject({ from, to, project, result, reportDir, index, arg
     return;
   }
 
-  if (args.verify) {
-    // --verify：只核对同名项目，不恢复。
-    const target = await findSameName(to, project.name);
-    if (!target) {
-      result.note = '核对模式：桌面版没有同名项目。';
-      return;
-    }
-    result.target_id = target.id;
-    result.target_name = target.name;
-    const zipB = await download(to, `/api/projects/${target.id}/backup`);
-    const diffs = compareManifests(manifestA, parseManifest(zipB));
-    result.counts.target = countsOf(parseManifest(zipB));
-    if (diffs.length === 0) {
-      result.result = '已迁移';
-    } else {
-      result.diffs = diffs;
-      result.note = '核对模式：内容不一致。';
-    }
-    return;
-  }
-
-  // 3. 同名项目比较：完全一致 → 已迁移；否则换名恢复。
-  let targetName = project.name;
+  // 3. Both migrate and verify resolve the same candidates and rename rules.
+  const projects = await getJson(to, '/api/projects');
+  if (!Array.isArray(projects)) throw new Error('桌面项目列表格式错误');
+  const targetName = freeName(projects, project.name);
   let reused = null;
   let reusedCounts = null;
-  for (let suffix = 0; ; suffix += 1) {
-    const candidate = suffix === 0 ? project.name : `${project.name}（迁移${suffix > 1 ? suffix : ''}）`;
-    const existing = await findSameName(to, candidate);
-    if (!existing) {
-      targetName = candidate;
-      break;
-    }
+  let mismatch = null;
+  for (const { project: existing, index: suffix } of candidates(projects, project.name)) {
     const zipExisting = await download(to, `/api/projects/${existing.id}/backup`);
     const manifestExisting = parseManifest(zipExisting);
     // 候选名与源名不同（「（迁移）」后缀）时，项目名差异按已知重命名处理，比较其余内容。
@@ -259,17 +226,27 @@ async function migrateProject({ from, to, project, result, reportDir, index, arg
         : compareManifests(manifestA, manifestExisting, '__RENAMED__');
     if (diffs.length === 0) {
       reused = existing;
-      targetName = candidate;
       reusedCounts = countsOf(manifestExisting);
       break;
     }
-    // 内容不一致 → 试下一个候选名（「（迁移）」「（迁移2）」…）。
+    mismatch = { existing, counts: countsOf(manifestExisting), diffs };
+  }
+
+  if (args.verify) {
+    const target = reused || mismatch?.existing;
+    if (!target) { result.note = '核对模式：桌面版没有原名或迁移副本。'; return; }
+    result.target_id = target.id;
+    result.target_name = target.name;
+    result.counts.target = reused ? reusedCounts : mismatch.counts;
+    if (reused) result.result = '已迁移';
+    else { result.diffs = mismatch.diffs; result.note = '核对模式：内容不一致。'; }
+    return;
   }
 
   if (reused) {
     result.result = '已迁移';
     result.target_id = reused.id;
-    result.target_name = targetName;
+    result.target_name = reused.name;
     result.counts.target = reusedCounts;
     result.note = '桌面版已有内容一致的同名项目，跳过恢复。';
     await syncArchivedState(to, reused, wantArchived, project, result);
@@ -297,11 +274,6 @@ async function migrateProject({ from, to, project, result, reportDir, index, arg
     result.diffs = diffs;
     result.note = '往返比较发现差异。';
   }
-}
-
-async function findSameName(to, name) {
-  const list = await getJson(to, '/api/projects');
-  return Array.isArray(list) ? list.find((p) => p.name === name) || null : null;
 }
 
 function compareManifests(a, b, nameOverride) {

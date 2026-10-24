@@ -1,0 +1,75 @@
+{
+  "first_desktop_failure": {
+    "all_assertions_preserved": true,
+    "reason": "motion.spec.ts sampled home-stage before its later entrance ended",
+    "failed": 1,
+    "skipped": 3,
+    "trace": ".runtime/fix14-3-desktop-first-trace.zip",
+    "passed": 83
+  },
+  "mysql": {
+    "tests": 264,
+    "passed": 263,
+    "skipped": 1,
+    "failed": 0
+  },
+  "reviewed_from": "5225b8e",
+  "development": {
+    "command": "./scripts/test-agent.ps1 -All -FixturePort 18770",
+    "raw_sha256": "7A88E219C68A75E79B2D444520D7E17342EB30F421105E90298D6486D76F8C96",
+    "workers": 1,
+    "stats": {
+      "startTime": "2026-10-24T14:47:28.596Z",
+      "duration": 318804.005,
+      "expected": 83,
+      "skipped": 4,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "node": {
+    "failed": 0,
+    "passed": 40
+  },
+  "negative_control": {
+    "command": "mvn -B -f backend/pom.xml -Dtest=BackupLimitsIntegrationTest -Dlabflow.backup.compressed-limit=134217728 test",
+    "expected_exit": 1,
+    "reason": "Status expected 400 but was 200",
+    "default_config_retest_passed": 8
+  },
+  "h2": {
+    "tests": 258,
+    "passed": 257,
+    "skipped": 1,
+    "failed": 0
+  },
+  "migration": {
+    "verify_clean": 5,
+    "rerun": 5,
+    "old_db_unchanged": true,
+    "first": 5,
+    "evidence": ".runtime/migration-e2e-20261024-233246",
+    "browser_passed": 3,
+    "command": "./scripts/test-migration.ps1 -Keep",
+    "tamper_detected": true
+  },
+  "desktop": {
+    "command": "./scripts/test-agent.ps1 -All -Desktop -FixturePort 18770",
+    "raw_sha256": "EAFFEB6FA98073FC29673525671EF3AD0F461170923069B0DE75C9616490EDC6",
+    "workers": 1,
+    "stats": {
+      "startTime": "2026-10-24T14:54:00.678Z",
+      "duration": 205745.21,
+      "expected": 84,
+      "skipped": 3,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "frontend": {
+    "passed": 280,
+    "build_passed": true,
+    "files": 52,
+    "failed": 0
+  }
+}

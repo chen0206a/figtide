@@ -147,6 +147,8 @@ async function main() {
   // 多版本折线图：POST 创建 revision 1，PUT 提升到 revision 2
   const line1 = await j('POST', `/api/projects/${p1}/charts`, { name: '准确率曲线', config: chartConfig(v1) });
   await j('PUT', `/api/projects/${p1}/charts/${line1.id}`, { name: '准确率曲线', revision: line1.revision, config: chartConfig(v1) });
+  // Duplicate names are valid: preserve both objects and their different data mappings.
+  await j('POST', `/api/projects/${p1}/charts`, { name: '准确率曲线', config: chartConfig(d1b.id) });
   // ROC 图 + 混淆矩阵图（同 CLASS_CSV 数据集）
   const dc = await uploadCsv(p1, CLASS_CSV, 'classification.csv');
   await j('POST', `/api/projects/${p1}/charts`, { name: 'ROC 曲线', config: rocConfig(dc.id) });
@@ -162,6 +164,8 @@ async function main() {
     },
   });
   await j('POST', `/api/projects/${p1}/style-templates`, { name: '论文样式', config: chartConfig(v1) });
+  const otherStyle = chartConfig(v1); otherStyle.style.fontSize = 18;
+  await j('POST', `/api/projects/${p1}/style-templates`, { name: '论文样式', config: otherStyle });
   summary.projects.push({ name: '代表·图表全家福', id: p1 });
 
   // 2) 实验 + 数据链接 + 实验对比快照
@@ -198,6 +202,12 @@ async function main() {
     await uploadCsv(p4, bigCsv(1234 + i), `big-${i + 1}.csv`);
   }
   summary.projects.push({ name: 'rep-大项目', id: p4, datasets: uploads, rows_per_dataset: MAX_ROWS });
+
+  const longName = '研'.repeat(120);
+  const p5 = (await j('POST', '/api/projects', { name: longName, description: 'source longest valid name' })).id;
+  const d5 = await uploadCsv(p5, csv, 'long-name.csv');
+  await j('POST', `/api/projects/${p5}/charts`, { name: 'long-name chart', config: chartConfig(d5.id) });
+  summary.projects.push({ name: longName, id: p5 });
 
   if (OUT) fs.writeFileSync(OUT, JSON.stringify(summary, null, 2));
   console.log(JSON.stringify(summary, null, 2));

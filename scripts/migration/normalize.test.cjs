@@ -302,3 +302,54 @@ test('diffCanonical 截断超长差异并停止在 maxDiffs', () => {
   const diffs = diffCanonical(a, b, 10);
   assert.equal(diffs.length, 10);
 });
+
+function withDuplicates(shift = 0) {
+  const m = manifest({ shift });
+  const chart = m.tables.charts[0];
+  m.tables.charts.push({ ...chart, id: chart.id + 50 });
+  const version = m.tables.chart_versions[0];
+  m.tables.chart_versions.push({ ...version, id: version.id + 50, chart_id: chart.id + 50 });
+  const template = m.tables.style_templates[0];
+  m.tables.style_templates.push({ ...template, id: template.id + 50 });
+  return m;
+}
+
+test('同名且完全相同的图表和模板保留重复数量，ID和行顺序变化仍一致', () => {
+  const a = withDuplicates(), b = withDuplicates(3);
+  b.tables.charts.reverse(); b.tables.chart_versions.reverse(); b.tables.style_templates.reverse();
+  assert.deepEqual(compare(a, b), []);
+  const n = normalizeManifest(a);
+  assert.equal(n.charts.length, 2);
+  assert.equal(new Set(n.charts.map(c => c.key)).size, 2);
+  assert.equal(new Set(n.chart_versions.map(c => c.chartKey)).size, 2);
+  assert.equal(n.style_templates.length, 2);
+});
+
+test('同名不同外观的图表与模板在重排后保持对应', () => {
+  const edit = m => {
+    const cfg = JSON.parse(m.tables.chart_versions[1].config_json);
+    cfg.style.fontSize = 22;
+    m.tables.chart_versions[1].config_json = JSON.stringify(cfg);
+    m.tables.style_templates[1].profile_json = JSON.stringify({ schema_version: 1, style: { fontSize: 22 } });
+  };
+  const a = withDuplicates(), b = withDuplicates(3); edit(a); edit(b);
+  b.tables.charts.reverse(); b.tables.chart_versions.reverse(); b.tables.style_templates.reverse();
+  assert.deepEqual(compare(a, b), []);
+});
+
+test('同名图表的任一历史配置变化仍能检出', () => {
+  const a = withDuplicates(), b = withDuplicates(3);
+  const cfg = JSON.parse(b.tables.chart_versions[1].config_json);
+  cfg.style.fontSize = 99;
+  b.tables.chart_versions[1].config_json = JSON.stringify(cfg);
+  assert.ok(compare(a, b).length > 0);
+});
+
+test('同名模板删除一份或修改一份不能被去重掩盖', () => {
+  const a = withDuplicates(), b = withDuplicates(3);
+  b.tables.style_templates.pop();
+  assert.ok(compare(a, b).length > 0);
+  const c = withDuplicates(3);
+  c.tables.style_templates[1].profile_json = '{"schema_version":1,"style":{"fontSize":99}}';
+  assert.ok(compare(a, c).length > 0);
+});
