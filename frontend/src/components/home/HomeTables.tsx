@@ -145,6 +145,7 @@ export function ExperimentsPanel({
     <section
       className="home-card home-table-card"
       aria-labelledby="home-experiments-title"
+      data-home-experiments="true"
     >
       <div className="home-card-head">
         <h2 id="home-experiments-title">
@@ -175,7 +176,7 @@ export function ExperimentsPanel({
           </button>
         </div>
       ) : (
-        <div className="home-table-scroll">
+        <div className="home-table-scroll home-experiment-scroll" role="region" aria-label="最近实验表格" tabIndex={0}>
           <table className="lf-table home-table">
             <thead>
               <tr>

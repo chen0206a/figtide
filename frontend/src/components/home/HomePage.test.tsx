@@ -115,6 +115,9 @@ it("starts first-time users from a project or the sample", () => {
   fireEvent.click(screen.getByRole("button", { name: "创建研究项目" }));
   expect(p.onCreate).toHaveBeenCalledOnce();
   expect(document.querySelector(".home-side, .home-bottom")).toBeNull();
+  expect(screen.queryByRole("region", { name: "绘图助手" })).toBeNull();
+  expect(screen.getByRole("group", { name: "模型图例" })).toHaveTextContent("linearmlptransformer");
+  expect(document.querySelectorAll("[data-sample-x-ticks] text")).toHaveLength(7);
   expect(screen.getByText("示意")).toBeVisible();
 });
 

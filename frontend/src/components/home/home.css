@@ -290,6 +290,7 @@
   gap: var(--lf-space-8);
 }
 .home-v2.home-first-run .home-top { grid-template-columns: minmax(0, 1fr); }
+.home-sample h2 { font-weight: 700; }
 .home-sample-copy { display: flex; flex-direction: column; gap: var(--lf-space-4); }
 .home-sample-preview { margin: 0; width: 100%; min-width: 0; }
 .home-sample-preview svg { display: block; width: 100%; height: auto; }
@@ -514,6 +515,10 @@
 .home-table-card {
   overflow: hidden;
 }
+[data-home-experiments] .home-card-head { align-items: flex-start; }
+[data-home-experiments] .home-card-head h2 { min-width: 0; overflow-wrap: anywhere; }
+[data-home-experiments] .home-card-head .home-link { flex-shrink: 0; white-space: nowrap; }
+.home-experiment-scroll { overscroll-behavior-x: contain; }
 .home-search {
   width: calc(100% - 2 * var(--lf-space-5));
   display: flex;

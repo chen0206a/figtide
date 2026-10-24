@@ -1,3 +1,24 @@
+## 2026-10-24 · 11-8 总验收：任务 11 总验收通过
+
+- 从 7ba209e 继续，分两次提交完成派生数据选中竞态修复和首页细节。最终命令 **`./scripts/test-agent.ps1 -All -FixturePort 18770`**，workers=1，隔离 Java 8087 / Vite 5178 / 本地模型夹具 18770 / MySQL labflow_e2e，未开启 LABFLOW_CAPTURE。
+- **81 条 / 36 文件：passed 81 / failed 0 / skipped 0 / flaky 0，耗时 240.937s（约 4.0 分钟）。任务 11 总验收通过。** processing.spec.ts 三条、isolation.spec.ts 五条、新隐私流程、空首页 1440/390、窄屏实验/项目表检查全部通过。本轮不新增或删除 E2E，用例数仍 81；仅增强首页相关断言，processing.spec.ts 零 diff。
+- 完整 JSON 为 `docs/test-evidence/refactor11-8-acceptance.json`，整轮原始日志 `refactor11-8-full-run.txt`。浏览器结束后的独立新 JVM 审计持久化、未完成运行恢复校验均通过；teardown 清理本轮 91 个测试项目，没有操作用户的日常数据库。
+- 最终前端验证：`npm test -- --maxWorkers=4` **50 文件 / 277 passed**；`npm run build` 通过（14.76s，既有 >500kB chunk 告警）。新增一条组件回归，在列表刷新挂起期间与完成后均保留派生数据选择，修前红、修后绿。
+- 五个指定历史提交的原样 processing 单跑均 3/3；因此**首个失败提交未从这五次单跑中确定**，不虚构二分结论。两端（92a0c1b、7ba209e）的受控延迟组件回归均红，结合旧 trace 确认基线已有竞态。详细根因、代码行号和证据见下方提交 1。
+- 截图已经 reducedMotion=reduce 重拍并逐张检查：`docs/product-audit/after/11-8-empty-home-1440.png`、`11-8-empty-home-390.png`、`11-8-home-with-project-390.png`；另留示例编辑器/有示例项目首页。布局基线、后端、API 与 schema v1 均未改动。
+- 未执行：真实/收费模型、Java 单元/集成测试、Firefox/Safari、桌面安装包；本轮全部模型流量为本地协议夹具，桌面打包仍是后续工作。没有继续下一个任务或推送远端。
+
+## 2026-10-24 · 11-8 / 提交 2：首页细节
+
+- 空首页不再挂载 AssistantCard，避免没有数据和图表时出现无效的助手入口；已有项目的助手入口、提案与同意流程保持原样。示例标题字重 700。
+- SampleThumbnail 的图例移到绘图区右上角；上方预留空白，仍从同一份 CSV 绘制均值与实际 SEM。X 轴补 0/2/4/6/8/10/11 整数刻度，epoch 标题单独置底，图例不与数据、轴标题混排。只改缩略图坐标布局，不改任何保存图表配置或实验数据。
+- 最近实验保留卡片内 overflow-x:auto 容器，并增加可聚焦的“最近实验表格”区域；卡片标题可折行，全部实验按钮不收缩、不换行，避免窄屏被项目名挤压。390px 下同时验证实验/项目两张表可独立滚动、卡片在屏内、文档 scrollWidth=390。
+- 断言调整逐项：HomePage.test 补空首页无绘图助手、三模型图例与七个 X 刻度；sample-project.spec 补 1440/390 两种宽度下的助手隐藏、标题字重、图例在图内右上、与 X 轴标题不重叠、刻度文字；home-workspace.spec 保留原项目表所有断言并补最近实验滚动与“全部实验” nowrap。没有修改 processing.spec.ts、删除原断言或更新布局基线，E2E 数量仍为 81。
+- `npm test -- --maxWorkers=4`：**50 文件 / 277 passed**；`npm run build`：通过（14.76s，既有 chunk 告警）。首次重拍专项 3 passed / 1 failed，原因是新增几何检查的 `.home-sample svg` 同时命中图标、箭头、缩略图三个 SVG；改为按缩略图的准确 img 可访问名称定位，所有几何断言保留。
+- 最终重拍命令：`$env:LABFLOW_CAPTURE='1'; ./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('sample-project.spec.ts','home-workspace.spec.ts'); Remove-Item Env:LABFLOW_CAPTURE`：**2 passed / 0 failed / 0 skipped（8.8s）**，新 JVM 审计恢复校验通过。此前 home.spec.ts 两条也已通过；初轮失败未粉饰为全绿。
+- reducedMotion=reduce、等待字体与最终布局、滚回页顶后重拍。用户指定截图为 `docs/product-audit/after/11-8-empty-home-1440.png`、`11-8-empty-home-390.png`、`11-8-home-with-project-390.png`，逐张目视确认完整可见；另保留 11-8-sample-editor/home。11-7 的历史截图保持不动，初轮额外覆盖的通用 home.png 已恢复为原提交内容。
+- 全量命令 `./scripts/test-agent.ps1 -All -FixturePort 18770` 的结果单列，不用专项替代；未执行真实模型、跨浏览器、Java 单元/集成测试和桌面打包。本轮不改后端、API、schema v1、助手预算/恢复逻辑。
+
 ## 2026-10-24 · 11-8 / 提交 1：派生数据保存后的选中状态
 
 - 在独立 checkout（物理依赖副本、独立构建输出）依次执行用户指定的 `./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('processing.spec.ts')`，每轮完整退出后才切下一个提交，后端 8087 / 前端 5178 / 夹具 18770 / labflow_e2e。原 spec 及其断言没有修改。

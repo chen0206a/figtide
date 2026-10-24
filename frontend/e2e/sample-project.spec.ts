@@ -34,6 +34,7 @@ test("an empty workspace can create the sample project from scratch and open it 
       page.getByRole("heading", { name: /从一个研究项目开始/ }),
     ).toBeVisible();
     await expect(page.getByText("项目里放数据、图表和实验记录。")).toBeVisible();
+    await expect(page.getByRole("region", { name: "绘图助手", exact: true })).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: /导入数据/ }),
     ).toHaveCount(0);
@@ -47,7 +48,19 @@ test("an empty workspace can create the sample project from scratch and open it 
       const card = (await page.locator(".home-sample").boundingBox())!;
       const row = (await page.locator(".home-top").boundingBox())!;
       expect(card.width).toBeCloseTo(row.width, 0);
-      await page.screenshot({ path: artifactPath(test.info(), `../docs/product-audit/after/11-7-empty-home-${width}.png`), fullPage: true, animations: "disabled" });
+      await expect(page.getByRole("heading", { name: "先用示例数据走一遍。", exact: true })).toHaveCSS("font-weight", "700");
+      const geometry = await page.getByRole("img", { name: "三个模型的学习曲线与标准误区间示意", exact: true }).evaluate((svg) => {
+        const legend = svg.querySelector("[data-sample-legend]")!.getBoundingClientRect();
+        const title = svg.querySelector("[data-sample-x-title]")!.getBoundingClientRect();
+        const bounds = svg.getBoundingClientRect();
+        return { legend: { x: legend.x, y: legend.y, right: legend.right, bottom: legend.bottom }, titleTop: title.top, plot: { x: bounds.x + bounds.width * 52 / 420, y: bounds.y + bounds.height * 48 / 280, right: bounds.x + bounds.width * 380 / 420, midX: bounds.x + bounds.width / 2 } };
+      });
+      expect(geometry.legend.x).toBeGreaterThan(geometry.plot.midX);
+      expect(geometry.legend.y).toBeGreaterThanOrEqual(geometry.plot.y);
+      expect(geometry.legend.right).toBeLessThanOrEqual(geometry.plot.right + 1);
+      expect(geometry.legend.bottom).toBeLessThan(geometry.titleTop);
+      await expect(page.locator("[data-sample-x-ticks] text")).toHaveText(["0", "2", "4", "6", "8", "10", "11"]);
+      await page.screenshot({ path: artifactPath(test.info(), `../docs/product-audit/after/11-8-empty-home-${width}.png`), fullPage: true, animations: "disabled" });
     }
     await page.setViewportSize({ width: 1440, height: 1000 });
 
@@ -61,7 +74,7 @@ test("an empty workspace can create the sample project from scratch and open it 
     await page.evaluate(() => document.fonts.ready);
     await expect(page.locator(".editor-left")).toHaveCSS("opacity", "1");
     await expect(page.locator(".editor-right")).toHaveCSS("opacity", "1");
-    await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-7-sample-editor.png"), fullPage: true, animations: "disabled" });
+    await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-8-sample-editor.png"), fullPage: true, animations: "disabled" });
     const projectId = Number(page.url().match(/\/projects\/(\d+)\//)?.[1]);
     expect(projectId).toBeGreaterThan(0);
 
@@ -100,7 +113,7 @@ test("an empty workspace can create the sample project from scratch and open it 
       page.getByRole("heading", { name: "学习曲线 · 均值与标准误" }),
     ).toBeVisible();
     await expect(page.locator(".figure-preview").first()).toHaveAttribute("aria-busy", "false");
-    await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-7-sample-home.png"), fullPage: true, animations: "disabled" });
+    await page.screenshot({ path: artifactPath(test.info(), "../docs/product-audit/after/11-8-sample-home.png"), fullPage: true, animations: "disabled" });
 
     await page.getByRole("button", { name: "打开示例项目" }).click();
     await expect(page).toHaveURL(/\/projects\/\d+\/figures\/\d+$/);

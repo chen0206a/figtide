@@ -114,7 +114,7 @@ export function HomePage(p: HomePageProps) {
         </div>}
       </section>
 
-      <AssistantCard chartId={latest?.id} onAssistant={p.onAssistant} onModelConnection={p.onModelConnection}/>
+      {!firstRun && <AssistantCard chartId={latest?.id} onAssistant={p.onAssistant} onModelConnection={p.onModelConnection}/>}
       <div className="home-top">
         {!current ? (
           firstRun ? (
