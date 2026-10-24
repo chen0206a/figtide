@@ -20,8 +20,8 @@ java -Duser.timezone=UTC -jar .runtime/desktop-build/figtide.jar --spring.profil
 - [x] 默认目录计算、缺失环境变量回退、显式覆盖，以及中文/空格目录（单测与实际子进程）。
 - [x] 随机端口仅监听 loopback；网页和 API 来自同一个 Java 进程，桌面 E2E 不启动 Vite。
 - [x] 再运行同一数据目录时，第二个进程核对 ping 身份后退出，第一实例与端口记录保持不变（关闭自动浏览器的子进程探针）。
-- [x] 正常退出路径关闭 Spring/数据源，删除本实例端口文件、释放锁；再启动成功且保存的项目仍在。
-- [x] 强杀后留下陈旧端口记录；再启动覆盖它，已提交数据仍在（WRITE_DELAY=0）。
+- [x] 正常退出路径关闭 Spring/数据源，删除本实例端口文件、释放锁；再启动成功且保存的项目、图表配置仍在。
+- [x] 强杀后留下陈旧端口记录；再启动覆盖它，已提交数据仍在（WRITE_DELAY=0）；新增检查在 PUT 保存图表后立即强杀，再开核对最新配置与 revision 一致。
 - [x] 桌面文件日志存在；按大小保留5个归档的配置测试通过；日志无测试模型密钥。
 - [x] 正确 Host 与同源写入可用，错误 Host / 跨端口 Origin 返回403；开发 profile 原规则不变。
 - [x] 首页和深链接、真实生产静态资源、缓存与未知API JSON404均经过验证。
@@ -35,7 +35,7 @@ mvn -q -f backend/pom.xml dependency:build-classpath "-Dmdep.outputFile=$PWD/.ru
 node scripts/check-desktop-launcher.cjs
 ```
 
-证据见 `docs/test-evidence/desktop14-2-launcher.json`、`desktop14-2-security.json` 和 `desktop14-2-scoped.json`。正常退出由测试专用 stdin 入口调用与托盘相同的生命周期关闭逻辑；这验证服务清理，不等于真实点击托盘菜单。完整 E2E 结果以 TEST-RESULTS 顶部总验收为准。
+证据见 `docs/test-evidence/desktop14-2-launcher.json`、`desktop14-2-security.json` 、`desktop14-2-final-launcher.json` 和 `desktop14-2-scoped.json`。正常退出由测试专用 stdin 入口调用与托盘相同的生命周期关闭逻辑；这验证服务清理，不等于真实点击托盘菜单。完整 E2E 结果以 TEST-RESULTS 顶部总验收为准。
 
 ## 需要仓库主人在交互式 Windows 桌面确认
 
@@ -52,3 +52,9 @@ node scripts/check-desktop-launcher.cjs
 - [ ] 不传数据目录覆盖时，数据和日志确实位于本账户的LOCALAPPDATA目录；不要用真实重要数据做强杀测试。
 
 托盘与默认浏览器属于OS集成，本轮自动验证使用open-browser=false / tray=false，以上人工项不预先勾选。
+
+## 已知设计边界
+
+桌面按任务书每次选择随机端口。浏览器 localStorage 按 origin（含端口）隔离，现有草稿/页面偏好仍存浏览器，未实现跨端口迁移；重启后换端口时，这些本机草稿与偏好不能自动恢复。已保存项目、数据、图表、图表版本由 H2 持久保存，正常与强杀重启的保存配置已经验证。请在退出前保存图表。后续需要单独确定桌面草稿持久化方案，不能把这轮83条同端口测试当成跨端口草稿验收。
+
+这一步还不是安装包；JDK随包、双击EXE与签名说明属于14-4，迁移工具属于14-3。

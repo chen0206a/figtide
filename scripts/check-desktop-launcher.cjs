@@ -70,23 +70,42 @@ async function projects(record) {
   const created = await fetch(`http://127.0.0.1:${a.port}/api/projects`, { method: 'POST',
     headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'launcher persistence probe', description: 'Synthetic local test' }) });
   assert(created.ok); const project = await created.json();
+  const form = new FormData();
+  form.append('file', new Blob(['epoch,accuracy,error\n1,0.700,0.010\n2,0.850,0.020\n'], { type: 'text/csv' }), 'synthetic-launcher.csv');
+  const uploaded = await fetch(`${base}/api/projects/${project.id}/datasets`, { method: 'POST', body: form });
+  assert(uploaded.ok); const dataset = await uploaded.json();
+  const config = JSON.parse(fs.readFileSync(path.join(root, 'backend/src/test/resources/config-v1.json'), 'utf8'));
+  config.datasetVersionId = dataset.id;
+  const saved = await fetch(`${base}/api/projects/${project.id}/charts`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Saved launcher probe figure', config }) });
+  assert(saved.ok); const chart = await saved.json();
   const second = start(); await exited(second);
   assert.equal(first.exitCode, null); assert.equal(JSON.parse(fs.readFileSync(portFile, 'utf8')).instance_id, a.instance_id);
   await close(first);
   const third = start(), b = await ready(third, a.instance_id);
   assert((await projects(b)).some(p => p.id === project.id));
+  const reopened = await (await fetch(`http://127.0.0.1:${b.port}/api/projects/${project.id}/charts/${chart.id}`)).json();
+  assert.deepEqual(reopened.config, config);
+  config.style.title = 'Saved immediately before forced exit';
+  const edited = await fetch(`http://127.0.0.1:${b.port}/api/projects/${project.id}/charts/${chart.id}`, { method: 'PUT',
+    headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: chart.name, revision: reopened.revision, config }) });
+  assert(edited.ok); const updated = await edited.json();
   third.kill();
   await new Promise(resolve => third.once('exit', resolve));
   assert(fs.existsSync(portFile), 'forced exit leaves a stale record');
   const fourth = start(), c = await ready(fourth, b.instance_id);
   assert((await projects(c)).some(p => p.id === project.id));
+  const recovered = await (await fetch(`http://127.0.0.1:${c.port}/api/projects/${project.id}/charts/${chart.id}`)).json();
+  assert.deepEqual(recovered.config, config);
+  assert.equal(recovered.revision, updated.revision);
   await close(fourth);
   const logs = path.join(path.dirname(directory), 'logs');
   assert(fs.existsSync(path.join(logs, 'figtide.log')));
   for (const file of fs.readdirSync(logs)) assert(!fs.readFileSync(path.join(logs, file), 'utf8').includes(canary), 'API key must not appear in logs');
   const report = { checkedAt: new Date().toISOString(), passed: ['random port', 'same-JAR SPA', 'Chinese/spaced path',
     'single instance', 'normal exit removes port', 'normal restart persists', 'forced restart persists', 'rotating log location', 'no model key in logs',
-    'Host attack rejected', 'cross-port Origin rejected', 'same-origin write accepted'],
+    'Host attack rejected', 'cross-port Origin rejected', 'same-origin write accepted',
+    'saved figure normal reopen', 'last-saved figure after forced exit'],
     dataDirectory: path.relative(root, directory), ports: [a.port, b.port, c.port] };
   fs.writeFileSync(path.join(root, '.runtime/desktop-launcher-probe.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report, null, 2));

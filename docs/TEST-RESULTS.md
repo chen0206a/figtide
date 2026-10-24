@@ -1,3 +1,40 @@
+## 2026-10-24 · 14-2 总验收：自动化通过，Windows 人工项待确认
+
+分支 `desktop/14-2`，从 `desktop/14-1@d84e002` 继续；14-2-0 至 14-2-5 已分6次提交，未推送。总验收无失败、未重跑拼接结果、未刷新布局基线、未删除/放宽断言。
+
+| 验证 | 实际命令 | passed | failed/errors | skipped | 总数 |
+|---|---|---:|---:|---:|---:|
+| 后端MySQL | `LABFLOW_TEST_DB=mysql mvn -B -f backend/pom.xml test` | 256 | 0 | 1 | 257 |
+| 后端H2 | `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test` | 250 | 0 | 1 | 251 |
+| 前端 | `npm test -- --maxWorkers=4` | 280 | 0 | 0 | 280（52文件） |
+| 开发E2E | `./scripts/test-agent.ps1 -All -FixturePort 18770` | 83 | 0 | 0 | 83 |
+| 桌面E2E | `./scripts/test-agent.ps1 -All -FixturePort 18770 -Desktop` | 83 | 0 | 0 | 83 |
+
+- Java：MySQL 38.084s / H2 23.179s。两边报告的1条跳过都是 ServerEvaluationTest（真实评测显式开关未开）；H2 另按14-1原规则在@BeforeAll类级跳过 AgentEvaluationTest(1) 与 EvaluationRunnerIntegrationTest(5)，这6条不计入JUnit总数，257−251=6，原测试保留。新增静态页/启动器/安全矩阵共73条，没有修改业务测试断言。
+- 前端 `npm run build` 通过（13.01s），保留既有>500kB chunk提示；产品前端源码零diff，仅Playwright通道和审计重启夹具读动态地址。
+- 开发完整一轮（Asia/Tokyo）：2026-10-24T18:30:36.823000+09:00 → 2026-10-24T18:35:46.190554+09:00，309367.554ms，workers=1，83 passed / 0 failed / 0 skipped / 0 flaky；MySQL labflow_e2e，8087/5178/18770。
+- 桌面完整一轮（Asia/Tokyo）：2026-10-24T18:38:33.451000+09:00 → 2026-10-24T18:42:20.169645+09:00，226718.64500000002ms，workers=1，83 passed / 0 failed / 0 skipped / 0 flaky；临时H2，真实figtide.jar网页/API同端口59040，Playwright没有Vite webServer。两轮结束后audit-restart均通过：已完成审计跨JVM不变，中断运行恢复，预算结算保留；92个本轮测试项目清理，桌面临时库目录移除。
+- `node scripts/check-desktop-launcher.cjs` 最终14项通过：包括真正创建数据和保存图表、正常重开配置一致、PUT保存后立即强杀并重开，最新配置与revision一致。该脚本使用test-only进程入口调用与托盘相同的正常关闭逻辑；非人工点击托盘。没有模型收费调用，API key测试canary不出现在日志。
+- 证据：`docs/test-evidence/desktop14-2-final-{mysql,h2,development,desktop,launcher}.json`；整轮原始日志在忽略目录 `.runtime/task14-2-final-*.log`。没有失败trace；不是缺失失败证据。
+
+### 改动分类与边界
+
+| 分类 | 位置 | 内容 |
+|---|---|---|
+| 桌面启动器 | LabFlowApplication.java:8、desktop/DesktopLauncher.java:21、DesktopPaths/Instance/Ui/Ping；application-desktop.yml、logback-desktop.xml、desktop-icons | UTC、用户目录、单实例/端口身份、浏览器/托盘、关闭与滚动日志；新接口仅GET /api/desktop/ping |
+| 本机安全 | api/LocalOriginFilter.java:28 | desktop检查实际socket端口的Host与写Origin，开发白名单保留 |
+| 静态页面 | desktop/DesktopPages.java:15、pom.xml desktop profile、scripts/build-desktop.ps1:1 | 独立desktop-static资源、SPA回退、API404、缓存、生产JAR |
+| 测试设施 | scripts/test-agent.ps1:70、check-desktop-launcher.cjs、desktop测试3类/测试进程入口、Playwright配置/重启夹具 | 双通道、动态端口、真实子进程、安全矩阵及临时库边界 |
+
+已有MySQL迁移、API业务字段、配置schema v1、预算/幂等/恢复算法、编辑器草稿与撤销源码均未改动；没有连接日常8086服务或labflow数据库，也没有修改其他工程。
+
+### 偏差、人工事项与后续
+
+- 构建资源使用desktop-static而不是Boot默认static目录，确保默认profile不提供UI；npm ci在独立.runtime源副本执行，避免Windows运行中Vite锁文件；原-Database h2测试入口改为同JAR通道，符合desktop只允许当前端口Origin。活动OS锁不抢占；仅陈旧文件/空闲锁会正常启动。这些选择均已验证并在各节说明。
+- 11条交互式Windows冒烟项仍待人工确认，见 `docs/desktop/SMOKE-14-2.md`：真实浏览器唤起、托盘图标/气泡/菜单、真实任务管理器及系统关机。自动化不能冒充已完成这些人工项。
+- 已知设计边界：随机端口改变浏览器origin，现有localStorage草稿与页面偏好不能自动跨端口恢复。保存的项目/数据/图表在H2持久保存已验证。后续需单独决定桌面草稿方案，本轮按任务书server.port=0实现，没有擅自新增草稿API或迁移。
+- 未执行：收费/真实模型、macOS/Linux OS集成、jlink/jpackage安装包、数据迁移工具。未开始14-3/14-4。
+
 ## 2026-10-24 · 14-2-5：Windows 冒烟清单
 
 - 新增 `docs/desktop/SMOKE-14-2.md`：构建/启动命令、数据与日志位置、app.port JSON和空锁文件语义、已自动验证的8组事项、11条待人工确认项、进程探针复跑方法。
