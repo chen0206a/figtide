@@ -85,3 +85,7 @@ git add -A && git commit -m "refactor(NN): <一句话>"
 ## 桌面迁移工具授权（任务 14-3）
 
 按 `refactor/tasks/14-3-migration.md`，允许：`BackupService` 的备份大小上限改为配置项（默认值不变，仅 `desktop` profile 调大）及配套 multipart 配置；新增 `scripts/migrate-to-desktop.ps1`（及其 Node 实现）与 `docs/desktop/MIGRATION.md`；恢复后用现有 `PUT /api/projects/{p}` 接口补齐归档状态（不改 `restore()` 语义）；在隔离测试库上验证迁移的测试设施。**仍然禁止**：对旧版发任何写请求（只用 `GET /api/projects` 与 `GET /api/projects/{p}/backup`）；连接或修改真实工作区（`labflow` 库 / 8086）与用户桌面数据目录；在任何真实数据上运行迁移工具；修改已有 MySQL 迁移脚本或 API 的请求/响应。
+
+## 桌面打包范围（任务14-4）
+
+用户已授权14-3修复通过后进入14-4。现有DESKTOP-PLAN第6节已定义jlink/jpackage、图标/版本及标签Release构建；仓库没有既有14-4单独任务书，按该范围细化为`refactor/tasks/14-4-packaging.md`。允许新增打包/产物探针/CI脚本与图标格式转换、给desktop构建记录产物元数据；不改后端业务或数据格式，不读写用户目录。仅本地提交，不替用户推送、打标签或发布。
