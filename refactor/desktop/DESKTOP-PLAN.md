@@ -58,6 +58,8 @@ FigTide.exe（jpackage 生成的启动器）
 
 **目录**：数据库和上传文件放 `%LOCALAPPDATA%\FigTide\data`，日志放 `%LOCALAPPDATA%\FigTide\logs`。卸载程序不删除数据目录，README 写明数据位置和备份方法。
 
+**H2 落盘**：H2 文件数据源必须带 `WRITE_DELAY=0`，否则强制结束进程可能丢失尚在写缓冲中的已提交数据；实测依据见 H2-PROBE.md。
+
 ## 4. 老用户的数据迁移
 
 仓库已有 `GET /projects/{p}/backup`（导出）和 `POST /backups/restore`（恢复）。迁移工具做法：

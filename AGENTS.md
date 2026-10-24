@@ -77,3 +77,7 @@ git add -A && git commit -m "refactor(NN): <一句话>"
 > 新增迁移必须同时提供 MySQL 和 H2 两个版本（`db/migration/` 与 `db/migration-h2/`，版本号与文件名一一对应；`MigrationParityTest` 会校验）。
 >
 > H2 迁移脚本放在 `db/migration-h2/`（与任务书写的 `db/migration/h2/` 不同）：Flyway 11 的 `classpath:` 位置会**递归扫描子目录**，H2 目录若放在 `db/migration/` 之下，默认 MySQL profile（locations=`classpath:db/migration`，一行不改）会同时扫到两套 V1–V8 并报 `Found more than one migration with version 1`。因此 H2 脚本目录必须与 `db/migration/` 平级。实测证据见 `docs/desktop/H2-PROBE.md`。
+
+## 桌面启动器授权（任务 14-2）
+
+按 `refactor/tasks/14-2-launcher.md`，允许新增 desktop 启动/托盘/静态页面配置、仅 desktop profile 的 `GET /api/desktop/ping`、desktop 的 Host/Origin 校验和测试/构建脚本；默认开发 profile 的行为、已有 API、MySQL 迁移与业务语义不变。

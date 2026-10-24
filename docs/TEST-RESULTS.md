@@ -1,3 +1,11 @@
+## 2026-10-24 · 14-2-0：14-1 收尾与启动基线
+
+- 从 `desktop/14-1` 的 `d84e002` 创建 `desktop/14-2`；开工时跟踪文件干净，唯一未跟踪项为前轮按约定留下的 DB-AUDIT-glm-5.3.md，本节按新任务要求入库。
+- 14-1 最终 H2 E2E 是一次完整运行：命令 `./scripts/test-agent.ps1 -All -FixturePort 18770 -Database h2`（命令来源为上轮报告）；开工时留存的 Playwright 完整报告记录 start=2026-10-24T17:44:39.358000+09:00、end=2026-10-24T17:48:57.821206+09:00（Asia/Tokyo）、duration=258463.206ms、83 passed / 0 failed / 0 skipped / 0 flaky，workers=1。报告统计和原报告 SHA-256 留在 `docs/test-evidence/desktop14-1-h2-retained-summary.json`，不是把定向重跑拼成全绿。本节未重新运行它。
+- 上轮在文件 H2、单 worker、全量浏览器负载下曾出现 Chromium 0xC0000409 与 motion opacity=0.999996 两个偶发；原报告保留它们及定向 9/9 结果。机器资源/动画采样相关性仅是原报告判断，目前无确定性最小复现，不把环境判断当已证实根因；最终完整一轮报告的 flaky=0 不抹去此前失败。
+- DESKTOP-PLAN 已使用与 MySQL 迁移平级的 `db/migration-h2/`，原因是 Flyway 递归扫描嵌套目录造成重复版本；本节补 WRITE_DELAY=0 必需性。AGENTS 追加任务书已明确授予的 14-2 范围。
+- 验证：留存 JSON 解析及统计对账通过；无产品代码改动，Java/前端单测、build、E2E 本节未执行，后续分节及总验收另列。
+
 ## 2026-10-24 · 任务 14-1：H2 数据库兼容（desktop/14-1 分支，6 个提交，未推送）
 
 - 提交序列：`63cc987`（14-1-0 AGENTS 授权+任务书入库）→ `70cb2d5`（14-1-1 H2 依赖+desktop profile）→ `e6eae35`（14-1-2 兼容性探针+db/migration-h2 V1–V8+版本对齐测试）→ `eb7bcd5`（14-1-3 双库可移植性）→ `abc2b11`（14-1-4 测试基础设施）→ 末尾强杀落盘修复提交（WRITE_DELAY=0）。

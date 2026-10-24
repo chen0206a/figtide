@@ -1,0 +1,17 @@
+{
+  "source": "frontend/test-results/results.json retained at start of task 14-2",
+  "sha256": "3ab3844301f11cd3473fbebe57a7718e39c0cbb8f9c17ebfb0dccda4f254489f",
+  "recordedCommand": "./scripts/test-agent.ps1 -All -FixturePort 18770 -Database h2",
+  "commandSource": "docs/TEST-RESULTS.md task 14-1 final H2 run",
+  "stats": {
+    "startTime": "2026-10-24T08:44:39.358Z",
+    "duration": 258463.206,
+    "expected": 83,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "startAsiaTokyo": "2026-10-24T17:44:39.358000+09:00",
+  "endAsiaTokyo": "2026-10-24T17:48:57.821206+09:00",
+  "workers": 1
+}
