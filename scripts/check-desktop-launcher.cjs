@@ -52,6 +52,19 @@ async function projects(record) {
 (async () => {
   const first = start(), a = await ready(first);
   assert(a.port > 0); assert.notEqual(a.port, 8086);
+  const base = `http://127.0.0.1:${a.port}`;
+  // Node fetch normalizes Host; use the raw HTTP client so the attack header is actually sent.
+  const badHost = await new Promise((resolve, reject) => {
+    const req = require('node:http').get(`${base}/api/desktop/ping`, { headers: { Host: `attacker.example:${a.port}` } }, response => {
+      response.resume(); resolve(response.statusCode);
+    }); req.on('error', reject);
+  });
+  assert.equal(badHost, 403);
+  assert.equal((await fetch(`${base}/api/projects`, { method: 'POST', headers: { Origin: `http://127.0.0.1:${a.port + 1}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'must not be created', description: '' }) })).status, 403);
+  const accepted = await fetch(`${base}/api/projects`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'same-origin probe', description: 'Synthetic local test' }) });
+  assert(accepted.ok);
   const home = await fetch(`http://127.0.0.1:${a.port}/projects/3/figures/7`);
   assert.match(await home.text(), /FigTide/);
   const created = await fetch(`http://127.0.0.1:${a.port}/api/projects`, { method: 'POST',
@@ -72,7 +85,8 @@ async function projects(record) {
   assert(fs.existsSync(path.join(logs, 'figtide.log')));
   for (const file of fs.readdirSync(logs)) assert(!fs.readFileSync(path.join(logs, file), 'utf8').includes(canary), 'API key must not appear in logs');
   const report = { checkedAt: new Date().toISOString(), passed: ['random port', 'same-JAR SPA', 'Chinese/spaced path',
-    'single instance', 'normal exit removes port', 'normal restart persists', 'forced restart persists', 'rotating log location', 'no model key in logs'],
+    'single instance', 'normal exit removes port', 'normal restart persists', 'forced restart persists', 'rotating log location', 'no model key in logs',
+    'Host attack rejected', 'cross-port Origin rejected', 'same-origin write accepted'],
     dataDirectory: path.relative(root, directory), ports: [a.port, b.port, c.port] };
   fs.writeFileSync(path.join(root, '.runtime/desktop-launcher-probe.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report, null, 2));

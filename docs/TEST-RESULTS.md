@@ -1,3 +1,11 @@
+## 2026-10-24 · 14-2-3：桌面 Host / Origin 边界
+
+- 本机安全授权：LocalOriginFilter 仅在 desktop profile 对所有请求检查 Host=127.0.0.1:<实际socket端口> / localhost:<实际socket端口>。不使用 Host 自带端口或 X-Forwarded-* 作为可信端口；写请求有 Origin 时仅放行该端口的两个本机来源。无 Origin 保持本机程序调用可用，GET/HEAD/OPTIONS 的 Origin 不做写请求检查，但 Host 必须正确。
+- 默认 profile 原来的四个开发来源 + frontend-origin 配置、无 Origin 放行、不检查 Host 的行为保留；没有开放 CORS。这是浏览器本机边界，不是本机用户认证。
+- `mvn -B -f backend/pom.xml -Dtest=LocalOriginMatrixTest,DesktopLauncherTest,DesktopPagesTest test`：73 passed / 0 failed / 0 skipped。安全矩阵62例，覆盖两个profile、正确/错误/缺失Host，同源/其他端口/其他域名/无Origin，GET/POST及HEAD/OPTIONS/localhost/伪造转发头。
+- 桌面 Maven package 通过；`node scripts/check-desktop-launcher.cjs` 12项通过，真实HTTP错误Host与跨端口Origin返回403，同源写入成功，生命周期与落盘检查再次通过；证据 `docs/test-evidence/desktop14-2-security.json`。首次探针使用 Node fetch 设置 Host，实际被客户端规范化，修为原生HTTP客户端真正发送攻击头后通过，未放宽断言或产品规则。
+- 前端无修改，未重复跑此前280项与build；全量双库后端、开发83条与桌面83条留总验收。不访问8086日常工作区。
+
 ## 2026-10-24 · 14-2-2：单进程桌面启动器
 
 - 桌面启动授权：main 第一行设 UTC，只有 desktop profile 进入 DesktopLauncher；用户 LOCALAPPDATA / 用户主目录回退、可覆盖数据目录、随机 loopback 端口、OS 文件锁、app.port JSON（port + instance_id）、仅 desktop 的 GET /api/desktop/ping。重复启动先验证 ping 的实例 ID，成功后打开原页面并退出；活动锁但 ping 不通时等待并报错，绝不抢锁再开数据库。陈旧“锁文件”无 OS 锁则可正常恢复。
