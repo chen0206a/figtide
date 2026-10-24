@@ -1,3 +1,12 @@
+## 2026-10-24 · 任务 13-3：README、媒体与 MIT
+
+- README 按任务结构重写：FigTide 图汐 / social preview / 两张 GIF / 已实现功能 / 隐私 / 真实 Windows 启动步骤 / 技术栈 / 测试 / 结构 / 许可证。三段隐私说明与 `lib/privacy.ts` 逐字一致；补充备份下载位置、静态站字体和本地模式边界；明确桌面版正在开发，当前无安装包。
+- 用户已明确选择 MIT，因此按用户指示新增根目录 LICENSE（2026 chen0206a），替代任务包中“未选择时不要添加”的兜底规则。CONTRIBUTING 同步 MIT 与隔离 E2E 清理说明。LANDING-SITE 只在顶部追加新状态，保留下方旧记录。
+- 包内媒体直接入库：1280×640 social-preview.png，960×540 助手 GIF（165 帧）和绘图 GIF（135 帧）。两张 GIF 下均标注示意数据；无 MP4 入库。已目视检查社交预览图。
+- README 校验：8 个本地链接/媒体均存在，3 段隐私精确匹配，桌面版边界和 MIT 文件检查通过。
+- `npm test -- --maxWorkers=4`：51 files / 279 passed / 0 failed；`npm run build`：通过（已有 chunk 提示）。`node scripts/test-site.cjs`：4/4 宽度通过，0 字体请求失败。
+- 本节只改文档与媒体，未重跑浏览器工作区 E2E；13-2 的 9 条及最终全量验证另列，不冒充本节测试。无断言改动。
+
 ## 2026-10-24 · 任务 13-2：文案与公开展示页
 
 - 盘点见 `docs/BRAND-RENAME.md`：用户可见品牌、内部协议、历史记录逐处分类。界面/无障碍名称/动态标题/隐私声明/脚本提示改为 FigTide；请求头、存储键、环境变量、API 和历史记录保留。下载显示名改为 figtide，备份 `.labflow.zip` 扩展名及结构不变。

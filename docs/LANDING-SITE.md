@@ -1,3 +1,9 @@
+## 2026-10-24 · FigTide v0.1.0 发布准备
+
+当前仓库地址为 https://github.com/chen0206a/figtide ，所有者已选 MIT，根目录 LICENSE 已添加。展示页使用新品牌与 og:image / Twitter 大卡片；README 安装入口指向新仓库。旧发布记录保留在下面，代表当时状态。远端尚为空，需所有者推送 main 后使 README 与 raw 媒体可用；本轮不推送、不合并、不执行远端部署。
+
+---
+
 # 独立静态展示页
 
 `site/index.html` 是与 React 工作台分开的单文件页面，不需要后端或构建。直接用浏览器打开；工作台本身仍按 README 在本机启动。页面没有在线 Demo，也不会发起模型请求。真实编辑器截图位于 `site/assets/editor.png`；图型小图和助手流程是示意图，页面有明确标注。
