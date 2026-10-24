@@ -89,3 +89,7 @@ git add -A && git commit -m "refactor(NN): <一句话>"
 ## 桌面打包范围（任务14-4）
 
 用户已授权14-3修复通过后进入14-4。现有DESKTOP-PLAN第6节已定义jlink/jpackage、图标/版本及标签Release构建；仓库没有既有14-4单独任务书，按该范围细化为`refactor/tasks/14-4-packaging.md`。允许新增打包/产物探针/CI脚本与图标格式转换、给desktop构建记录产物元数据；不改后端业务或数据格式，不读写用户目录。仅本地提交，不替用户推送、打标签或发布。
+
+## 桌面最终验收（任务14-5）
+
+用户授权14-4通过后继续现有计划的后续任务并在全部验收后暂停。按DESKTOP-PLAN第6节细化为`refactor/tasks/14-5-acceptance.md`，允许扩展隔离测试入口以运行真实EXE、补CI/文档/验收证据。不得修改产品业务语义或使用真实数据，未实际执行的系统托盘/SmartScreen人工项必须注明。
