@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -22,9 +23,11 @@ class DesktopPagesTest {
   }
 
   @Test void hashedAssetsHaveLongCacheAndMissingAssetsAre404() throws Exception {
+    byte[] expected = new ClassPathResource("desktop-static/assets/test-12345678.js").getContentAsByteArray();
+    assertTrue(expected.length > 0, "The static asset fixture must not be empty");
     mvc.perform(get("/assets/test-12345678.js")).andExpect(status().isOk())
         .andExpect(header().string("Cache-Control", "max-age=31536000, public, immutable"))
-        .andExpect(content().string("window.desktopTest = true;\n"));
+        .andExpect(content().bytes(expected));
     mvc.perform(get("/assets/missing.js")).andExpect(status().isNotFound());
   }
 

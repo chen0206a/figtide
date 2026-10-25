@@ -66,7 +66,7 @@ test("data page never shows the previous project's file after switching", async 
   );
 
   await page.goto(`/projects/${a.project}/data`);
-  await expect(page.getByText(a.file)).toBeVisible();
+  await expect(page.getByRole("heading", { name: a.file, exact: true })).toBeVisible();
 
   await page.getByLabel("当前项目").selectOption(String(b.project));
   const sampled = await sampleBody(page);

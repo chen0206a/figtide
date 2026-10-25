@@ -1,0 +1,269 @@
+{
+  "windows_frontend": {
+    "failed": 0,
+    "passed": 280
+  },
+  "run": {
+    "conclusion": "failure",
+    "headSha": "a59ca64f8d2468a4a8f91df8c2cb33a39c81b9c1",
+    "jobs": [
+      {
+        "completedAt": "2026-10-25T06:46:44Z",
+        "conclusion": "failure",
+        "databaseId": 121098875332,
+        "name": "windows",
+        "startedAt": "2026-10-25T06:42:31Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-25T06:42:33Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-25T06:42:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:42:39Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-25T06:42:33Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:42:45Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 3,
+            "startedAt": "2026-10-25T06:42:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:42:46Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-java@v4",
+            "number": 4,
+            "startedAt": "2026-10-25T06:42:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:42:46Z",
+            "conclusion": "success",
+            "name": "Check version and trigger",
+            "number": 5,
+            "startedAt": "2026-10-25T06:42:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:44:44Z",
+            "conclusion": "success",
+            "name": "Test source",
+            "number": 6,
+            "startedAt": "2026-10-25T06:42:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:45:51Z",
+            "conclusion": "success",
+            "name": "Build portable application",
+            "number": 7,
+            "startedAt": "2026-10-25T06:44:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:39Z",
+            "conclusion": "failure",
+            "name": "Verify bundled executable without system Java",
+            "number": 8,
+            "startedAt": "2026-10-25T06:45:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:39Z",
+            "conclusion": "skipped",
+            "name": "Install browser for packaged acceptance",
+            "number": 9,
+            "startedAt": "2026-10-25T06:46:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:39Z",
+            "conclusion": "skipped",
+            "name": "Full browser acceptance against packaged EXE",
+            "number": 10,
+            "startedAt": "2026-10-25T06:46:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:39Z",
+            "conclusion": "skipped",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 11,
+            "startedAt": "2026-10-25T06:46:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:40Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 12,
+            "startedAt": "2026-10-25T06:46:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:40Z",
+            "conclusion": "skipped",
+            "name": "Prepare draft only for a tested version tag",
+            "number": 13,
+            "startedAt": "2026-10-25T06:46:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:40Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-java@v4",
+            "number": 24,
+            "startedAt": "2026-10-25T06:46:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:40Z",
+            "conclusion": "skipped",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 25,
+            "startedAt": "2026-10-25T06:46:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:42Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 26,
+            "startedAt": "2026-10-25T06:46:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-25T06:46:42Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 27,
+            "startedAt": "2026-10-25T06:46:42Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/chen0206a/figtide/actions/runs/40170049640/job/121098875332"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/chen0206a/figtide/actions/runs/40170049640"
+  },
+  "old_tag_target": "63f01283cebacd63fd3833f586f90054a1247c31",
+  "pr": {
+    "headRefOid": "a59ca64f8d2468a4a8f91df8c2cb33a39c81b9c1",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T06:46:44Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40170049640/job/121098875332",
+        "name": "windows",
+        "startedAt": "2026-10-25T06:42:31Z",
+        "status": "COMPLETED",
+        "workflowName": "Windows desktop package"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T06:43:34Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40170049650/job/121098875205",
+        "name": "frontend",
+        "startedAt": "2026-10-25T06:42:31Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T06:43:14Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40170041535/job/121098851451",
+        "name": "frontend",
+        "startedAt": "2026-10-25T06:42:23Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T06:44:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40170049650/job/121098875427",
+        "name": "backend",
+        "startedAt": "2026-10-25T06:42:31Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T06:43:49Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40170041535/job/121098851204",
+        "name": "backend",
+        "startedAt": "2026-10-25T06:42:23Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T06:43:28Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40170049650/job/121098875357",
+        "name": "backend-h2",
+        "startedAt": "2026-10-25T06:42:31Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T06:43:12Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40170041535/job/121098851352",
+        "name": "backend-h2",
+        "startedAt": "2026-10-25T06:42:23Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      }
+    ],
+    "url": "https://github.com/chen0206a/figtide/pull/3"
+  },
+  "package_build": "success",
+  "local_crlf": {
+    "failed": 0,
+    "passed": 4
+  },
+  "exe_internal_root_cause": "not established; process logs absent in downloaded artifact",
+  "windows_h2": {
+    "passed": 257,
+    "failed": 0,
+    "skipped": 1
+  },
+  "exe_probe": "readiness timeout",
+  "normalization_commit": "8ab780f",
+  "task15_5_executed": false,
+  "remote_branch_cleanup": false,
+  "retag_executed": false,
+  "local_lf": {
+    "failed": 0,
+    "passed": 4
+  },
+  "local_zip_uploaded": false,
+  "raw_log_sha256": "00ca74ab7e4075e2ce21b41989550b3310334247a867e292416ab5340f3b499a",
+  "status": "stopped_at_windows_pr_gate",
+  "fix_commit": "a59ca64",
+  "release_created": false,
+  "windows_node": {
+    "failed": 0,
+    "passed": 40
+  },
+  "pr_merged": false
+}

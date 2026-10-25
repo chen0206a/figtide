@@ -1,0 +1,58 @@
+2026-10-25T07:22:27.1232706Z # Original Unicode launch preserved: false
+2026-10-25T07:22:27.9856777Z # Subtest: real jpackage launcher preserves Unicode arguments and paths after manifest update
+2026-10-25T07:22:27.9869929Z not ok 1 - real jpackage launcher preserves Unicode arguments and paths after manifest update
+2026-10-25T07:22:27.9870812Z   ---
+2026-10-25T07:22:27.9871158Z   duration_ms: 15905.3944
+2026-10-25T07:22:27.9871541Z   type: 'test'
+2026-10-25T07:22:27.9872212Z   location: 'D:\\a\\figtide\\figtide\\scripts\\desktop\\launcher-utf8.test.cjs:8:1'
+2026-10-25T07:22:27.9873355Z   failureType: 'testCodeFailure'
+2026-10-25T07:22:27.9874516Z   error: 'spawnSync C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\figtide-launcher-unicode-BOtk5K\\中文 安装 Δ café\\app\\UnicodeProbe.exe ENOENT'
+2026-10-25T07:22:27.9875140Z   code: 'ENOENT'
+2026-10-25T07:22:27.9875333Z   stack: |-
+2026-10-25T07:22:27.9875616Z     Object.spawnSync (node:internal/child_process:1120:20)
+2026-10-25T07:22:27.9875971Z     spawnSync (node:child_process:902:24)
+2026-10-25T07:22:27.9876293Z     execFileSync (node:child_process:945:15)
+2026-10-25T07:22:27.9876700Z     run (D:\a\figtide\figtide\scripts\desktop\launcher-utf8.test.cjs:15:31)
+2026-10-25T07:22:27.9877299Z     TestContext.<anonymous> (D:\a\figtide\figtide\scripts\desktop\launcher-utf8.test.cjs:47:3)
+2026-10-25T07:22:27.9877817Z     Test.runInAsyncScope (node:async_hooks:214:14)
+2026-10-25T07:22:27.9878177Z     Test.run (node:internal/test_runner/test:1047:25)
+2026-10-25T07:22:27.9878549Z     Test.start (node:internal/test_runner/test:944:17)
+2026-10-25T07:22:27.9879002Z     startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+2026-10-25T07:22:27.9879374Z   ...
+2026-10-25T07:22:27.9962785Z # [desktop probe] {"at":"2026-10-25T07:22:12.075Z","elapsed_ms":1,"event":"process-start","pid":123}
+2026-10-25T07:22:27.9964076Z # [desktop probe] {"at":"2026-10-25T07:22:12.077Z","elapsed_ms":2,"event":"readiness-timeout","port_file_seen":false}
+2026-10-25T07:22:27.9965186Z # [desktop probe] {"at":"2026-10-25T07:22:12.084Z","elapsed_ms":0,"event":"diagnostics-start","reason":"simulated failure"}
+2026-10-25T07:22:27.9966217Z # Subtest: diagnostic events persist UTC timestamps and monotonic elapsed time
+2026-10-25T07:22:27.9968055Z ok 2 - diagnostic events persist UTC timestamps and monotonic elapsed time
+2026-10-25T07:22:27.9968600Z   ---
+2026-10-25T07:22:27.9968811Z   duration_ms: 7.0256
+2026-10-25T07:22:27.9969093Z   type: 'test'
+2026-10-25T07:22:27.9969373Z   ...
+2026-10-25T07:22:27.9969981Z # Subtest: comparison uses the bundled jar with explicit desktop, isolated data and no UI flags
+2026-10-25T07:22:27.9971002Z ok 3 - comparison uses the bundled jar with explicit desktop, isolated data and no UI flags
+2026-10-25T07:22:27.9971722Z   ---
+2026-10-25T07:22:27.9972041Z   duration_ms: 2.7099
+2026-10-25T07:22:27.9972364Z   type: 'test'
+2026-10-25T07:22:27.9972936Z   ...
+2026-10-25T07:22:27.9973568Z # [desktop probe] {"at":"2026-10-25T07:22:21.759Z","elapsed_ms":9675,"event":"diagnostics-complete"}
+2026-10-25T07:22:27.9974606Z # Subtest: Windows failure snapshot records process exit status, listener and excluded port commands
+2026-10-25T07:22:27.9976564Z ok 4 - Windows failure snapshot records process exit status, listener and excluded port commands
+2026-10-25T07:22:27.9977202Z   ---
+2026-10-25T07:22:27.9977385Z   duration_ms: 9676.8625
+2026-10-25T07:22:27.9977599Z   type: 'test'
+2026-10-25T07:22:27.9977862Z   ...
+2026-10-25T07:22:27.9978279Z 1..4
+2026-10-25T07:22:27.9979195Z # tests 4
+2026-10-25T07:22:27.9980266Z # suites 0
+2026-10-25T07:22:27.9981183Z # pass 3
+2026-10-25T07:22:27.9982156Z # fail 1
+2026-10-25T07:22:27.9983140Z # cancelled 0
+2026-10-25T07:22:27.9984169Z # skipped 0
+2026-10-25T07:22:27.9985131Z # todo 0
+2026-10-25T07:22:27.9986199Z # duration_ms 15990.4827
+2026-10-25T07:22:28.1872723Z [31;1mException: [0mD:\a\_temp\a4bf502c-8b0e-4883-b7be-df57868985b0.ps1:9[0m
+2026-10-25T07:22:28.1873591Z [31;1m[0m[36;1mLine |[0m
+2026-10-25T07:22:28.1874703Z [31;1m[0m[36;1m[36;1m   9 | [0m if ($LASTEXITCODE) { [36;1mthrow 'Desktop probe diagnostic tests failed'[0m }[0m
+2026-10-25T07:22:28.1875572Z [31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m     | [31;1m                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+2026-10-25T07:22:28.1876365Z [31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m     | [31;1mDesktop probe diagnostic tests failed[0m
+2026-10-25T07:22:28.2038949Z ##[error]Process completed with exit code 1.

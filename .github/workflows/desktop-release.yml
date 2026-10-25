@@ -1,5 +1,7 @@
 name: Windows desktop package
 on:
+  pull_request:
+    branches: [main]
   push:
     tags: ['v*']
   workflow_dispatch:
@@ -44,6 +46,8 @@ jobs:
           if ($LASTEXITCODE) { throw 'Frontend tests failed' }
           node --test scripts/migration/*.test.cjs
           if ($LASTEXITCODE) { throw 'Migration tests failed' }
+          node --test scripts/desktop/*.test.cjs
+          if ($LASTEXITCODE) { throw 'Desktop probe diagnostic tests failed' }
           mvn -B -f backend/pom.xml verify
           if ($LASTEXITCODE) { throw 'H2 tests failed' }
       - name: Build portable application
@@ -66,10 +70,10 @@ jobs:
         if: always()
         with:
           name: desktop-package-evidence
+          include-hidden-files: true
           path: |
             .runtime/desktop-package-smoke.json
-            .runtime/package-smoke-*/process-*.log
-            .runtime/package-smoke-*/**/logs/figtide.log
+            .runtime/package-smoke-*/
             backend/target/surefire-reports/
             frontend/test-results/
             frontend/playwright-report/

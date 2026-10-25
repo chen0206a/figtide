@@ -1,3 +1,117 @@
+## 2026-10-25 · v0.2.0再次授权发布：准备第1轮（最多2轮PR CI）
+
+补充CHANGELOG中文用户名/数据路径启动修复及Windows10 1903要求、GUIDE安装目录不含emoji，推送既有1dd7ed2精确标题定位及Node22 ZIP复制修复。修改限测试定位和文档，未改产品代码。文档一致性/差异检查通过；本地隔离5/5与审计重启已在上一节实际执行，本节不重复；全量源码/打包/E2E由新Windows CI执行，结果待记录。产品失败立即停，只允许测试定位/时序问题再修一次；不加.first、不删断言、不调长超时。PR全部检查绿之前标签和Release保持原状。
+
+## 2026-10-25 · Windows发布复验：中文路径与EXE门槛通过，E2E定位冲突后停止
+
+用户“可以，确认一下”后推送29e16a4，复用PR #3。[Windows运行40176372166](https://github.com/chen0206a/figtide/actions/runs/40176372166)已完成failure。常规push/PR六项成功；Windows前端280/0/0、Node迁移40/0/0、新Unicode启动器4/0/0、H2后端257/0/1（总258，ServerEvaluationTest真实模型模式未启用）均通过，生产前端/Maven/jlink/jpackage全部通过。**原来的中文数据路径失真和测试复制ENOENT已在Windows真实CI通过**；EXE7组探针全过，首ping从spawn起5.579秒，原45秒循环不变，paid_model_calls=0。
+
+完整87条产物E2E结果：**83 passed / 1 failed / 3 skipped / 0 flaky**。3条仍为迁移专项，条件LABFLOW_MIGRATION_E2E未开启，并非新增跳过。唯一失败isolation.spec.ts:69：
+
+```text
+Error: strict mode violation: getByText('isolation-a-synthetic.csv') resolved to 2 elements:
+1) <b>isolation-a-synthetic.csv</b> — sidebar dataset button
+2) <h2>isolation-a-synthetic.csv</h2> — dataset detail heading
+```
+
+失败发生在**切换项目之前**的准备断言。已查看CI截图、error-context与trace（ZIP CRC完整）：当前项目A被选中，列表和详情都是A的同一文件名，没有据此判定为串项目数据。局部修复为`getByRole("heading", { name: a.file, exact: true })`，等待数据详情真正就绪；切换项目、20×50ms全页采样、不得出现A文件名、空态与URL断言全部保留。不加.first()、不删除断言、不刷新基线、不改产品。
+
+实际本地复验：`./scripts/test-agent.ps1 -Packaged -Application 'dist/desktop/utf8-fix/FigTide-0.2.0-windows-x64/FigTide' -FixturePort 18770 -Specs @('isolation.spec.ts')` **5 passed/0 failed/0 skipped**，审计重启通过，独立临时H2的10个项目已清理，没有访问用户工作区/模型。业务与组件未改，npm test/build未本地重跑；Windows上的280组件及完整构建已实际执行。不把本地5/5当作修复后的全量CI通过。
+
+证据：完整artifact 12592317107（84,606,243字节）由GitHub保留；选择性下载5项到.runtime/release02-confirm-selected-evidence（EXE报告、Playwright JSON、失败截图/error-context/trace），逐项ZIP CRC校验。原始job日志.runtime/release02-confirm-pr-job.log，机器结果与SHA256见docs/test-evidence/release02-confirm.json。失败trace路径为该目录下frontend/test-results/isolation-data-page-never--2526f-ject-s-file-after-switching/trace.zip。
+
+按本轮开始时的失败处理约定停止远端后续动作：PR #3未合并，v0.2.0未删除/重打，仍指63f0128；没有草稿/发布/15-5下载复核/远端分支清理。仅将定位修复与记录本地提交，不推送、不自行触发下一轮CI。待下一次完整门槛验证，不能宣布发布完成。
+
+## 2026-10-25 · Windows剩余ENOENT：本机复现、定位并修正测试复制流程
+
+用户要求自主判断修法，不必沿用旧任务步骤。本轮只本机排查、修复、提交，不推送、不触发第4轮CI、不合并或操作标签/Release。
+
+**根因实证**：下载官方Node22.23.4并与SHASUMS256验证二进制SHA256（dccc52de…dec14f），用CI相同版本单跑旧launcher-utf8.test.cjs，0 passed/1 failed，精确复现第47行spawnSync中文安装目录ENOENT。检查复制前后：源102文件、源EXE存在，目标目录不存在、目标0文件。Node24.15.0同一旧用例通过。Node官方[nodejs/node#61878](https://github.com/nodejs/node/issues/61878)描述同样的Windows非ASCII目标fs.cpSync静默不复制行为，修复[nodejs/node#61950](https://github.com/nodejs/node/pull/61950)。因此第三轮剩余失败来自**新增测试复制步骤**，不是此次测试已经证实的产品中文安装失败；与之前真实的JDK ANSI参数问题是两件事，UTF-8产品修复保留。
+
+修复仅launcher-utf8.test.cjs：以Windows .NET ZIP创建/解压替代fs.cpSync，真实模拟用户解压便携包；启动前完整文件清单及逐文件SHA256比对，缺文件直接给出明确断言；保留中文安装/Unicode数据路径的启动与内容断言；fixture移入.runtime/package-smoke-unicode-*，即便失败也能由既有CI artifact收集整个目录。没有改断言为忽略中文/只接受英文，也没有增加超时或删除既有检查。
+
+| 本机实际命令/验证 | passed | failed | skipped |
+|---|---:|---:|---:|
+| `.runtime/node22/node.exe --test scripts/desktop/*.test.cjs` | 4 | 0 | 0 |
+| `node --test scripts/desktop/*.test.cjs`（24.15.0） | 4 | 0 | 0 |
+| UTF-8 FigTide实际ZIP解压到中文/空格/希腊字母/重音安装目录，`test-desktop-package.ps1`（Node22.23.4） | 7组 | 0 | 0 |
+| 相同完整便携包冒烟（Node24.15.0） | 7组 | 0 | 0 |
+
+完整便携包沿用此前本地UTF-8修复产物（其JAR/业务未变，manifest记录source_revision=b72ee61/source_dirty=true），没有冒充最新CI构建或最终发布包。探针用全新隔离H2，上传CSV/保存配置/第二实例/强制重启均通过；真实工作区和模型服务未使用。前后端源码未改，npm test/build/H2全量/E2E本轮未重跑；远端全量Windows门槛仍待后续检查，不能据本机通过宣称发布验收已通过。原始日志.runtime/release02-{node22-repro,copyfix-*}.log与机器摘要docs/test-evidence/release02-copyfix.json保存。
+
+## 2026-10-25 · v0.2.0第二阻塞：第3轮仍失败，达到授权上限后停止
+
+最后提交69376ff；[第3轮40172406890](https://github.com/chen0206a/figtide/actions/runs/40172406890)在2026-10-25 16:22:32（UTC+09）failure。3轮运行：40170951898（只诊断）、40171662432（进一步定位）、40172406890（UTF-8修复）。没有第4轮、没有手动dispatch、没有延长45秒循环。
+
+| 本轮Windows实际执行 | passed | failed | skipped |
+|---|---:|---:|---:|
+| 前端组件52文件 | 280 | 0 | 0 |
+| Node迁移测试 | 40 | 0 | 0 |
+| 原生启动器/诊断测试 | 3 | 1 | 0 |
+| H2后端、完整打包、产品EXE探针、浏览器E2E | 未执行 | — | Test source在Maven之前失败 |
+
+新增真实启动器测试中：旧launcher确实丢失Unicode参数；UTF-8 manifest后的同位置启动与Unicode文件内容一致检查已通过（执行流程越过第39行）；但复制到`中文 安装 Δ café/app`后的第47行启动报错，不能把整个测试算通过。原文：
+
+```text
+not ok 1 - real jpackage launcher preserves Unicode arguments and paths after manifest update
+error: 'spawnSync C:\Users\RUNNER~1\AppData\Local\Temp\figtide-launcher-unicode-BOtk5K\中文 安装 Δ café\app\UnicodeProbe.exe ENOENT'
+code: 'ENOENT'
+at TestContext.<anonymous> (.../scripts/desktop/launcher-utf8.test.cjs:47:3)
+# pass 3
+# fail 1
+# skipped 0
+```
+
+原45秒失败的ANSI→问号→InvalidPathException根因已证实；新的安装目录ENOENT尚未确定是文件复制、OS加载器或启动路径问题，不宣称只是测试环境。原始job日志.runtime/release02-round3-job.log及状态release02-round3-{state,pr-state}.json保留，失败原文提交到docs/test-evidence/release02-round3-error.txt；总证据/哈希release02-startup.json。因为未进入浏览器阶段，没有Playwright trace；本轮新fixture在系统Temp，不在当前artifact路径里，artifact提示无文件，不能声称已保全该目录。后续如获追加授权需先补此现场，不移除安装目录断言。
+
+常规push/PR另6项CI均成功，但Windows门槛未过，**PR #3保持OPEN，标签v0.2.0仍指63f0128，没有删除/重打，没有v0.2.0草稿/发布，没有15-5下载/冒烟和远端分支清理**。此次只追加本地记录提交、不推送，以免自动触发第4轮。前后端业务/API/用户数据未改，收费模型调用0。
+
+## 2026-10-25 · v0.2.0第二阻塞，根因已证实；第3轮修复待CI
+
+[第2轮40171662432](https://github.com/chen0206a/figtide/actions/runs/40171662432)仍失败，但证据已完整：GUI错误窗口为“Failed to launch JVM”；控制台jpackage的jli arg[8]中中文目录成为`?? ??`，随后Java main在`DesktopPaths.java:18 Path.of(custom)`抛`InvalidPathException: Illegal char <?>`，0.502秒退出1；同一包内java.exe也是0.508秒退出1。服务尚未初始化数据和日志，因此原GUI进程一直等错误窗口，45秒只是探针观察到的表象。不是托盘/浏览器/保留端口/单纯启动慢。实际jli参数包含tray=false/open-browser=false。原始证据及SHA256见release02-startup.json，完整目录.runtime/release02-round2-evidence。
+
+根因机制：OpenJDK21 JvmLauncher.cpp copyStringArray经toACP转换宽参数，在English Windows ANSI代码页中丢失中文。[OpenJDK源码](https://github.com/openjdk/jdk21u/blob/master/src/jdk.jpackage/share/native/applauncher/JvmLauncher.cpp)、[Microsoft进程UTF-8 manifest说明](https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page)。修复仅在打包阶段保留原PE manifest并加入activeCodePage=UTF-8；保留asInvoker、DPI、兼容性、图标、版本及文件属性，Java业务/API/数据格式不变，系统全局区域设置不变。需要支持进程UTF-8的Windows10 1903及以后；CI Windows2022适用。原180×250ms循环完全不变，本机及CI均未调长。
+
+实际本机：`node --test scripts/desktop/*.test.cjs` 4 passed/0 failed/0 skipped；新测试真实javac/jlink/jpackage，修复前含中文/希腊字母/emoji的数据路径未保全，修复后逐字一致，另验证中文/空格/希腊字母安装目录。`./scripts/package-desktop.ps1 -SkipBuild -OutputDirectory dist/desktop/utf8-fix`成功（复用未改业务JAR，不冒充全量构建）；`./scripts/test-desktop-package.ps1 -Application 'dist/desktop/utf8-fix/FigTide-0.2.0-windows-x64/FigTide'` 7组通过，首ping距EXE启动4.86秒，完整图标/版本/CSV/保存/重启检查通过。首次新脚本本地编译缺Xml引用、EXE只读均在推送前修复；全量源码测试交由第3轮CI执行。额外探索：JDK21在**安装目录含emoji**时有classpath URL解码限制，本轮未修此扩展场景；安装目录测试范围为中文/空格/常用BMP字符，数据参数包含emoji，未删除任何既有断言。
+
+第3轮为本次最后一轮诊断/修复PR检查；若仍失败即停。PR全部检查通过前不合并、不改标签、不创建/发布Release。后续结果另记，不预写通过。
+
+## 2026-10-25 · v0.2.0第二阻塞，第1轮证据与第2轮诊断
+
+第1轮[40170951898](https://github.com/chen0206a/figtide/actions/runs/40170951898)，commit39dbfb5：前端280、迁移40、诊断2、H2 257 passed/0 failed/1 skipped及构建通过；原EXE46.0秒超时，没有数据目录/app.port/desktop.json/figtide.log，监听中无17920，netsh排除范围不包含17920。父6496与子3820存活，父未加载JVM（jpackage正常父子模式），子jcmd附加10秒超时；不足以认定根因，更不能断言只是启动慢。参数在Windows进程命令行中存在，Java实际接收尚不能确认。证据完整下载到.runtime/release02-round1-evidence，原日志release02-round1-job.log。隐含.runtime上传缺口已修复。
+
+第2轮仍不加长就绪超时：失败时读取该EXE拥有的GUI窗口文本，并用同一包内runtime/JAR对照“控制台jpackage启动器”与“runtime/bin/java.exe”，每次独立临时数据目录，均关闭托盘/浏览器；对照通过也不会把生产EXE失败改成成功。诊断变体放在独立launcher-diagnostic目录，不修改/发布产品EXE，artifact只收集日志/测试数据。实际本机`node --test scripts/desktop/*.test.cjs` 3/0/0；两个对照启动均产生端口文件（约4.5秒、4秒）。没有改产品业务代码和断言。第2轮CI待执行，最多再有第3轮，不操作标签/Release。
+
+## 2026-10-25 · v0.2.0第二阻塞，第1轮：仅诊断（CI待运行）
+
+用户授权最多3轮Windows诊断/修复检查；本轮不调整180×250ms就绪循环，不改产品启动逻辑，不动标签/Release。探针新增UTC/单调计时事件（启动、端口文件、ping、退出、失败），失败前采集owned EXE/CIM父子进程/退出码、netstat监听、netsh排除端口、jcmd VM.command_line；仅针对本次EXE，不收集其他进程参数或环境密钥。artifact启用include-hidden-files，上传完整独立package-smoke目录（包括Unicode数据目录、logs、app.port、desktop.json、崩溃文件）。此前隐藏.runtime未上传是证据缺口，并非已认定的启动根因。
+
+实际本机验证：`node --test scripts/desktop/*.test.cjs` 2 passed/0 failed/0 skipped（含模拟失败采集）；`./scripts/test-desktop-package.ps1 -Application 'dist/desktop/v02/FigTide-0.2.0-windows-x64/FigTide'` 7组通过，首个ping相对启动约5.1秒（整个探针5.368秒）；jcmd实际java_command包含tray=false/open-browser=false，native父进程无JVM、子EXE有JVM，均已记录。使用旧本机包验证采集能力，不冒充新CI产物。前端/后端未改，本地未重跑组件和全量E2E，Windows工作流将完整执行。第一轮CI结果和实测根因后续补记。
+
+## 2026-10-25 · v0.2.0恢复发布：原问题修复，Windows PR暴露EXE启动失败后停止
+
+提交8ab780f单独换行规范，a59ca64修复响应字节断言及Windows PR触发；连同1bb9a0c推送并创建PR #3。六项常规CI全绿。Windows PR工作流40170049640：前端280 passed、Node40 passed、H2 258总计257 passed/0 failed/1 skipped、生产前端/Maven/jlink/jpackage均通过。原CRLF/LF失败已在Windows真实CI中消除。
+
+**EXE探针失败**：`Packaged EXE was not ready`（probe.cjs:55/84，约45秒未就绪），工作流4m13s后failure，浏览器安装/完整E2E及草稿准备全部跳过。本轮不能确认EXE内部失败原因，artifact只有67份后端报告，没有进程启动日志；没有修改产品、探针时限或弱化断言来掩盖它。原始全日志`.runtime/release02-retry-windows-full.log`、错误步骤`release02-retry-windows-failed.log`、artifact `release02-retry-failed-evidence/`及机器摘要release02-retry.json保留。
+
+按用户“失败就再次停下”停止：PR #3未合并；**v0.2.0未删除/未重打**，仍指向63f0128；其他标签与分支未改写；仅v0.1.0为公开Release；没有本地ZIP替代上传，没有远端分支清理，没有15-5重新下载/冒烟。RELEASE-0.2-STOPPED末尾处理结果记录根因修复、重打原因、未执行状态及失败时间，不捏造重打时间。追加报告本地提交，不推送/重跑。
+
+## 2026-10-25 · v0.2.0 Windows发布恢复：本地修复验证
+
+按用户新授权从release/v0.2.0（包含未推送失败记录1bb9a0c）继续。8ab780f仅新增.gitattributes：默认text=auto/eol=lf、bat/cmd为CRLF、图片/字体/归档/JAR等二进制关闭文本转换。实际执行`git add --renormalize .`后没有已有文件字节差异（Git对象原已规范化），忽略行尾比较确认无非换行变更；未混入产品修改。
+
+DesktopPagesTest改为ClassPathResource读取实际字节并用content().bytes比较，保留非空资源、缓存头、缺失资源404检查；仅测试代码改变，没有改API或生产代码。Windows工作流新增PR到main触发，沿用完整源码/打包/EXE/浏览器检查，草稿步骤仍严格限定tag push。
+
+实际Windows本地回归：`mvn -B -f backend/pom.xml -Dtest=DesktopPagesTest test` 4 passed/0 failed/0 skipped；将**生成目录**测试资源改为CRLF后`mvn -B -f backend/pom.xml -Dtest=DesktopPagesTest surefire:test`同样4/0/0，finally恢复生成资源，未改源码夹具。日志`.runtime/release02-retry-{lf,crlf}.log`。YAML/PR触发与tag-only草稿门槛检查另实测。后续远端结果见处理结果，不提前宣称发布成功。
+
+## 2026-10-25 · 15-4 Windows发布失败，按任务书停止；15-5未执行
+
+PR #2在push/PR两轮共6项frontend/MySQL/H2检查全部通过后普通merge，main=`63f01283cebacd63fd3833f586f90054a1247c31`，标签v0.2.0已推送；没有强推或改写旧提交。main及标签的常规CI和Pages部署均成功。
+
+**Windows工作流40161500613失败**：Test source的H2全量258项=256 passed/1 failed/1 skipped，唯一失败DesktopPagesTest.java:27，静态JS响应的实际CRLF与写死的LF预期不同，JUnit XML CDATA原始字节已核实。打包/EXE探针/完整浏览器检查/草稿创建全部跳过，不能算通过。没有v0.2.0 Release，也没有本地ZIP替代上传。
+
+按15-4“工作流失败就停下汇报”停止，不修复或重发、不改标签、不删除远端分支、不执行15-5。详细链接、错误原文和证据在`docs/desktop/RELEASE-0.2-STOPPED.md`；原始下载日志`.runtime/task15-4-windows-failed.log`及JUnit报告`task15-4-failed-evidence/`保留。失败记录只在本地release/v0.2.0提交，不推送；已发布的v0.1.0未改。
+
 ## 2026-10-25 · 15-4：受限发布准备（远端检查待执行）
 
 按新任务要求将desktop-release改为只创建草稿/附件，不自动公开；标题FigTide vX.Y.Z、正文直接提取CHANGELOG对应版本，日志打印SHA256SUMS。YAML解析、草稿标志/无自动发布检查、0.2.0正文实际提取均通过。此前的14-4自动发布描述为历史行为，本节取代之。

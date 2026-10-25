@@ -1,0 +1,64 @@
+{
+  "authorized_max_diagnostic_fix_rounds": 3,
+  "rounds": [
+    {
+      "round": 1,
+      "commit": "39dbfb5",
+      "run": 40170951898,
+      "conclusion": "failure",
+      "evidence": "46s; no data/app.port; native child jcmd times out"
+    },
+    {
+      "round": 2,
+      "commit": "b72ee61",
+      "run": 40171662432,
+      "conclusion": "failure",
+      "evidence": "GUI Failed to launch JVM; console and bundled Java both InvalidPathException on ?? ??/data"
+    },
+    {
+      "round": 3,
+      "commit": "69376ff89634aecd21314a79df443a3d56acffaf",
+      "run": 40172406890,
+      "job": 121105840514,
+      "conclusion": "failure",
+      "failure": "new Unicode installation-directory regression: spawnSync .../中文 安装 Δ café/app/UnicodeProbe.exe ENOENT",
+      "location": "scripts/desktop/launcher-utf8.test.cjs:47",
+      "windows_results": {
+        "frontend_passed": 280,
+        "migration_passed": 40,
+        "launcher_tests_passed": 3,
+        "launcher_tests_failed": 1,
+        "launcher_tests_skipped": 0
+      },
+      "windows_h2_build_probe_and_e2e": "not executed; Test source failed before Maven",
+      "full_job_log_sha256": "5e8ea7078f9b0e1d8c60e01f1afc1ea66f796f9c5c98c1a1dd32ac11b7130192",
+      "error_excerpt": "docs/test-evidence/release02-round3-error.txt",
+      "no_playwright_trace": "E2E did not start",
+      "remaining_root_cause": "ENOENT could be copied file/loader/path; not yet established"
+    }
+  ],
+  "root_cause": {
+    "location": "backend/src/main/java/dev/labflow/desktop/DesktopPaths.java:18",
+    "reason": "JDK21 native launcher converts Unicode args using process ANSI code page; English Windows loses Chinese characters; Path.of rejects question marks before data/log initialization",
+    "raw_error": "java.nio.file.InvalidPathException: Illegal char <?> at index 98: .../console-launcher/?? ??/data"
+  },
+  "fix": "Preserve jpackage PE manifest and add process activeCodePage UTF-8; no timeout increase, no product Java changes",
+  "raw_evidence_sha256": {
+    "console-launcher.log": "653072bb04073d5fb7e173cc5e748556bd10ee16c3014a14e5005bca88c553cc",
+    "bundled-java.log": "b391f475882fa548b054f01e4a0c8d499ed65a453b46516e5a22fb117dda239f",
+    "events.jsonl": "2adecc1d8c015137ef31e1287cb833e79a84f65f0ba144b121d9cdd882205aa6",
+    "native-windows.txt": "8a89151fc575293743c5e3ab3b081d75acd90a3c2dd3d4f7089b8be682ea94b7"
+  },
+  "local_validation": {
+    "launcher_tests": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "packaged_probe_groups": 7,
+    "first_ping_from_process_start_ms": 4860
+  },
+  "tags_and_releases_untouched": true,
+  "stopped_at": "2026-10-25T16:26:00+09:00",
+  "reruns_after_limit": 0
+}
