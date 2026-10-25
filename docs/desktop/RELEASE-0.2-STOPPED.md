@@ -73,3 +73,9 @@ Process completed with exit code 1.
 ### 第二个问题：第1轮结果与第2轮补充定位
 
 [第1轮40170951898](https://github.com/chen0206a/figtide/actions/runs/40170951898)约46秒无数据目录和app.port，端口17920未排除且未监听；父子EXE存活，但对子JVM附加超时，没有证据允许延长超时。启动参数存在于进程命令行，尚未确认进入Java main。根因仍未定。第2轮新增受限GUI错误窗口文本和相同runtime/JAR的控制台/直接Java对照启动（失败也保持原门槛失败）；不修改产品或等待时限。标签和Release继续冻结。
+
+### 第二个问题：根因、证据与第3轮修复
+
+第2轮控制台变体和包内Java均在约0.5秒退出1，完整异常为`InvalidPathException: Illegal char <?>`：jpackage JLI参数把`中文 空间`变成`?? ??`，DesktopPaths.java:18在数据目录/日志创建之前失败。GUI错误框“Failed to launch JVM”保持进程存活，造成原45秒超时。参数已带tray=false/open-browser=false，netsh无17920排除，故不调长超时。
+
+修复：打包脚本在原PE manifest加入进程UTF-8，保留提权/DPI/兼容性/图标/版本，不改Java业务、不改系统区域设置、不移除中文用例。Microsoft文档要求Windows10 1903及以后。新真实启动器测试和原探针本机4项+7组通过，首ping4.86秒。原始错误文件SHA256与运行ID见docs/test-evidence/release02-startup.json。第3轮为授权的最后一次PR诊断/修复运行，结果待CI；标签/Release仍未操作。

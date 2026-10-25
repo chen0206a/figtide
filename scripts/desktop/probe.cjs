@@ -84,6 +84,7 @@ const post = data => ({ method: 'POST', headers: { 'Content-Type': 'application/
   checks.push('release ZIP/checksums, EXE version and four embedded brand icon sizes');
   const cfg = fs.readFileSync(path.join(app, 'app/FigTide.cfg'), 'utf8');
   assert(cfg.includes('-Duser.timezone=UTC')); assert(cfg.includes('-Dspring.profiles.active=desktop'));
+  assert(executable.includes(Buffer.from('>UTF-8</activeCodePage>')), 'Native launcher must opt into UTF-8 for Unicode CLI paths');
   checks.push('launcher fixes UTC and desktop profile even with user arguments');
   for (const module of ['java.desktop','java.sql','java.net.http','jdk.crypto.ec','jdk.charsets','jdk.unsupported','jdk.zipfs'])
     assert(metadata.runtime_modules.includes(module), module);

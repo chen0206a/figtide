@@ -86,6 +86,10 @@ $imageRoot = Join-Path $work 'image'
 & "$jdk/bin/jpackage.exe" --type app-image --name FigTide --app-version $Version --vendor chen0206a --description 'Local scientific plotting workspace' --icon $icon --input $inputDir --main-jar figtide.jar --main-class $mainClass --runtime-image $runtime --dest $imageRoot --java-options '-Duser.timezone=UTC' --java-options '-Dspring.profiles.active=desktop'
 if ($LASTEXITCODE) { throw 'jpackage failed.' }
 $staged = Join-Path $imageRoot 'FigTide'
+# JDK 21 jpackage converts wide arguments through the process ANSI code page.
+# A UTF-8 process manifest preserves Chinese/emoji paths on English Windows too.
+$launcherManifest = & (Join-Path $PSScriptRoot 'desktop/set-launcher-utf8.ps1') -Executable (Join-Path $staged 'FigTide.exe')
+[IO.File]::WriteAllText((Join-Path $staged 'launcher-manifest.xml'), $launcherManifest, [Text.UTF8Encoding]::new($false))
 Copy-Item -LiteralPath (Join-Path $root 'LICENSE') -Destination $staged
 Copy-Item -LiteralPath (Join-Path $root 'packaging/windows/README.txt') -Destination $staged
 & node (Join-Path $PSScriptRoot 'desktop/notices.cjs') --lock (Join-Path $root 'frontend/package-lock.json') --modules (Join-Path $build.frontend_stage 'node_modules') --out (Join-Path $staged 'THIRD-PARTY-NOTICES.txt')

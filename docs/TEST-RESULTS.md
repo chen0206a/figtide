@@ -1,3 +1,13 @@
+## 2026-10-25 · v0.2.0第二阻塞，根因已证实；第3轮修复待CI
+
+[第2轮40171662432](https://github.com/chen0206a/figtide/actions/runs/40171662432)仍失败，但证据已完整：GUI错误窗口为“Failed to launch JVM”；控制台jpackage的jli arg[8]中中文目录成为`?? ??`，随后Java main在`DesktopPaths.java:18 Path.of(custom)`抛`InvalidPathException: Illegal char <?>`，0.502秒退出1；同一包内java.exe也是0.508秒退出1。服务尚未初始化数据和日志，因此原GUI进程一直等错误窗口，45秒只是探针观察到的表象。不是托盘/浏览器/保留端口/单纯启动慢。实际jli参数包含tray=false/open-browser=false。原始证据及SHA256见release02-startup.json，完整目录.runtime/release02-round2-evidence。
+
+根因机制：OpenJDK21 JvmLauncher.cpp copyStringArray经toACP转换宽参数，在English Windows ANSI代码页中丢失中文。[OpenJDK源码](https://github.com/openjdk/jdk21u/blob/master/src/jdk.jpackage/share/native/applauncher/JvmLauncher.cpp)、[Microsoft进程UTF-8 manifest说明](https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page)。修复仅在打包阶段保留原PE manifest并加入activeCodePage=UTF-8；保留asInvoker、DPI、兼容性、图标、版本及文件属性，Java业务/API/数据格式不变，系统全局区域设置不变。需要支持进程UTF-8的Windows10 1903及以后；CI Windows2022适用。原180×250ms循环完全不变，本机及CI均未调长。
+
+实际本机：`node --test scripts/desktop/*.test.cjs` 4 passed/0 failed/0 skipped；新测试真实javac/jlink/jpackage，修复前含中文/希腊字母/emoji的数据路径未保全，修复后逐字一致，另验证中文/空格/希腊字母安装目录。`./scripts/package-desktop.ps1 -SkipBuild -OutputDirectory dist/desktop/utf8-fix`成功（复用未改业务JAR，不冒充全量构建）；`./scripts/test-desktop-package.ps1 -Application 'dist/desktop/utf8-fix/FigTide-0.2.0-windows-x64/FigTide'` 7组通过，首ping距EXE启动4.86秒，完整图标/版本/CSV/保存/重启检查通过。首次新脚本本地编译缺Xml引用、EXE只读均在推送前修复；全量源码测试交由第3轮CI执行。额外探索：JDK21在**安装目录含emoji**时有classpath URL解码限制，本轮未修此扩展场景；安装目录测试范围为中文/空格/常用BMP字符，数据参数包含emoji，未删除任何既有断言。
+
+第3轮为本次最后一轮诊断/修复PR检查；若仍失败即停。PR全部检查通过前不合并、不改标签、不创建/发布Release。后续结果另记，不预写通过。
+
 ## 2026-10-25 · v0.2.0第二阻塞，第1轮证据与第2轮诊断
 
 第1轮[40170951898](https://github.com/chen0206a/figtide/actions/runs/40170951898)，commit39dbfb5：前端280、迁移40、诊断2、H2 257 passed/0 failed/1 skipped及构建通过；原EXE46.0秒超时，没有数据目录/app.port/desktop.json/figtide.log，监听中无17920，netsh排除范围不包含17920。父6496与子3820存活，父未加载JVM（jpackage正常父子模式），子jcmd附加10秒超时；不足以认定根因，更不能断言只是启动慢。参数在Windows进程命令行中存在，Java实际接收尚不能确认。证据完整下载到.runtime/release02-round1-evidence，原日志release02-round1-job.log。隐含.runtime上传缺口已修复。
