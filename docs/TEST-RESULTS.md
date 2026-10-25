@@ -1654,3 +1654,11 @@ E2E 生成的 3 个测试项目（`配置交互验收`、`实验记录验收`、
 - 验证：文档审阅与路径/接口源码核对；本节没有产品代码，npm、Maven、E2E 未执行。
 - 与任务文件的偏差：开发模式在显式 `FIGTIDE_URL` 下以 `/api/health` 作为 desktop ping 404 后的确认路径；否则开发 profile 没有 `/api/desktop/ping`，无法同时满足开发模式。
 
+## 2026-10-25 · 任务 17-1：MCP 包结构与连接
+
+- 新增 `mcp/` TypeScript 包；精确锁定 `@modelcontextprotocol/sdk 1.32.2`、`zod 4.6.7`，esbuild 输出单文件 `dist/figtide-mcp.cjs`，运行时要求 Node 18+。
+- 连接顺序实现为 `FIGTIDE_URL` → `%LOCALAPPDATA%\FigTide\data\app.port` → `127.0.0.1:17861`；只接受 loopback HTTP。桌面 ping 和显式开发地址 health 回退均在请求前校验，网络错误不返回堆栈。
+- 后端生产过滤器未修改；新增专门回归测试固定 `Host=127.0.0.1:<监听端口>`、无 `Origin` 的 Node POST 可通过。
+- 验证：`npm run check` 通过；`npm run build` 通过（单个 812171 字节 CJS bundle）；`LocalOriginMatrixTest` 63/63 通过。首次 Maven 命令因 PowerShell 未给 `-Dtest` 参数加引号而未运行测试，修正后成功。
+- 与任务文件的偏差：没有；开发 profile 的确认方式沿用 17-0 记录的显式 health 回退。
+

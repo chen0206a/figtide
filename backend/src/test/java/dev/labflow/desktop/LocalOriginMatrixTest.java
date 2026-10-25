@@ -69,4 +69,8 @@ class LocalOriginMatrixTest {
       assertTrue(allowed(true, method, "localhost:49201", "https://attacker.example"));
     }
   }
+
+  @Test void desktopAllowsOriginlessNodePostWithLocalHostForMcp() throws Exception {
+    assertTrue(allowed(true, "POST", "127.0.0.1:49201", null));
+  }
 }
