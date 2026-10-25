@@ -1,5 +1,7 @@
 package dev.labflow.desktop;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
@@ -18,6 +20,8 @@ import org.slf4j.LoggerFactory;
 final class DesktopWindow {
   /** 与 %LOCALAPPDATA%\FigTide\data 平级的窗口数据目录名。 */
   static final String WINDOW_DIR_NAME = "window";
+  /** desktop.json 里记录「升级提示已展示」的字段。 */
+  static final String NOTICE_FIELD = "app_window_notice_shown";
 
   enum Mode { APP, BROWSER }
 
@@ -151,5 +155,31 @@ final class DesktopWindow {
       if (!process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS)) return null;
       return text.toString();
     } catch (Exception e) { return null; }
+  }
+
+  // ---- 升级提示（16-3）：记录在 desktop.json，只提示一次 ----
+
+  /** desktop.json 是否还没有展示过升级提示；文件不存在（新装）返回 false。 */
+  static boolean noticeDue(Path dataDir) throws IOException {
+    Path file = dataDir.resolve("desktop.json");
+    if (!Files.exists(file)) return false;
+    if (Files.size(file) > 4096) return false;
+    var tree = new ObjectMapper().readTree(Files.readString(file));
+    return !tree.path(NOTICE_FIELD).asBoolean(false);
+  }
+
+  /** 在 desktop.json 里标记提示已展示，保留其它字段（preferred_port 等）。文件不存在时不创建。 */
+  static void markNotice(Path dataDir) throws IOException {
+    Path file = dataDir.resolve("desktop.json");
+    if (!Files.exists(file)) return;
+    var mapper = new ObjectMapper();
+    var tree = (ObjectNode) mapper.readTree(Files.readString(file));
+    tree.put(NOTICE_FIELD, true);
+    Path temporary = Files.createTempFile(dataDir, "desktop-", ".tmp");
+    try {
+      Files.writeString(temporary, mapper.writeValueAsString(tree) + "\n");
+      try { Files.move(temporary, file, StandardCopyOption.ATOMIC_MOVE); }
+      catch (AtomicMoveNotSupportedException e) { Files.move(temporary, file); }
+    } finally { Files.deleteIfExists(temporary); }
   }
 }

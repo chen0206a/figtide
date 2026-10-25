@@ -150,4 +150,22 @@ class DesktopWindowTest {
     assertThrows(IllegalArgumentException.class, () -> DesktopWindow.mode("nope"));
     assertThrows(IllegalArgumentException.class, () -> DesktopWindow.mode(""));
   }
+
+  // ---- 升级提示（16-3）----
+
+  @Test void upgradeNoticeShowsOnlyOnceAndKeepsThePortPreference() throws IOException {
+    Path data = Files.createDirectories(temp.resolve("data"));
+    assertFalse(DesktopWindow.noticeDue(data)); // 新装：没有 desktop.json
+    DesktopWindow.markNotice(data);
+    assertFalse(Files.exists(data.resolve("desktop.json"))); // 不凭空创建
+
+    Files.writeString(data.resolve("desktop.json"), "{\"preferred_port\":17861}\n");
+    assertTrue(DesktopWindow.noticeDue(data)); // 0.2.0 升级：有文件但没有提示标记
+    DesktopWindow.markNotice(data);
+    assertFalse(DesktopWindow.noticeDue(data)); // 只提示一次
+    var tree = new com.fasterxml.jackson.databind.ObjectMapper()
+        .readTree(Files.readString(data.resolve("desktop.json")));
+    assertEquals(17861, tree.path("preferred_port").intValue()); // 其它字段保留
+    assertTrue(tree.path(DesktopWindow.NOTICE_FIELD).asBoolean(false));
+  }
 }

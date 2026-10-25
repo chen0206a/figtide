@@ -28,7 +28,7 @@ final class DesktopUi {
   }
 
   void show(DesktopInstance instance, DesktopPaths paths, Runnable quit, boolean temporaryPort,
-      DesktopWindow window) {
+      DesktopWindow window, boolean upgradeNotice) {
     try {
       if (!SystemTray.isSupported()) { System.err.println("系统托盘不可用；关闭进程前请正常退出服务。"); return; }
       EventQueue.invokeAndWait(() -> {
@@ -56,6 +56,10 @@ final class DesktopUi {
             Path notice = paths.data().resolve(".tray-notice-shown");
             if (temporaryPort) {
               tray.displayMessage("FigTide 端口提示", DesktopPort.FALLBACK_NOTICE, TrayIcon.MessageType.WARNING);
+            } else if (upgradeNotice) {
+              // 16-3：从 0.2.0 升级后首次启动提示一次；旧草稿留在默认浏览器里。
+              tray.displayMessage("FigTide 打开方式升级", "FigTide 现在在独立窗口中打开。如果之前在浏览器里有未保存的草稿，"
+                  + "可以从托盘「在浏览器中打开」找回。", TrayIcon.MessageType.INFO);
             } else if (!Files.exists(notice)) {
               tray.displayMessage("FigTide 正在运行", "关闭窗口不会退出，可以从托盘图标退出", TrayIcon.MessageType.INFO);
               Files.writeString(notice, "1");

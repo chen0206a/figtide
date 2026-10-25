@@ -49,6 +49,8 @@ public final class DesktopLauncher {
       try {
         Files.createDirectories(paths.logs());
         active = runtime;
+        // select() 会创建 desktop.json：是否为老版本升级要在它之前判断（16-3 提示只对已有安装展示）。
+        boolean upgraded = Files.exists(paths.data().resolve("desktop.json"));
         var port = DesktopPort.select(paths.data(), args);
         try {
           runtime.context = start(args, paths, instance, port.requested());
@@ -62,8 +64,15 @@ public final class DesktopLauncher {
         if (port.temporary()) LoggerFactory.getLogger(DesktopLauncher.class).warn(
             "{}；首选端口={}，本次端口={}，desktop.json 保持不变", DesktopPort.FALLBACK_NOTICE,
             port.preferred(), instance.uri().getPort());
-        if (Boolean.parseBoolean(runtime.context.getEnvironment().getProperty("labflow.desktop.tray", "true")))
-          runtime.ui.show(instance, paths, runtime::close, port.temporary(), window);
+        boolean noticePending = upgraded && DesktopWindow.noticeDue(paths.data());
+        boolean noticeShown = false;
+        if (Boolean.parseBoolean(runtime.context.getEnvironment().getProperty("labflow.desktop.tray", "true"))) {
+          runtime.ui.show(instance, paths, runtime::close, port.temporary(), window, noticePending);
+          // 端口告警优先；被顶掉的升级提示下次启动再展示，标记只在真正展示后写入。
+          noticeShown = noticePending && !port.temporary();
+        }
+        if (noticeShown || (!upgraded && Files.exists(paths.data().resolve("desktop.json"))))
+          DesktopWindow.markNotice(paths.data());
         if (open) {
           var opened = window.open(instance.uri());
           if (opened.fallback()) {
