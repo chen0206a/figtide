@@ -1,0 +1,66 @@
+{
+  "capture": 1,
+  "application": "dist/desktop/v02/FigTide-0.2.0-windows-x64/FigTide/FigTide.exe",
+  "paid_model_calls": 0,
+  "stats": {
+    "startTime": "2026-10-25T04:06:46.91Z",
+    "duration": 14175.532000000001,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "data": "Built-in synthetic learning curve sample only",
+  "images": [
+    {
+      "name": "00-version.png",
+      "sha256": "7e5101533468b3acbb3944a545e7b5c24f0bbe78fa93347926b8d87388b36580"
+    },
+    {
+      "name": "01-first-open.png",
+      "sha256": "345747b821bcdb9a8c21f24e862a2f144c0881db5f6eb60203628adcfe415b04"
+    },
+    {
+      "name": "02-sample-home.png",
+      "sha256": "8dc9de8282efd0a6251dcaf3a53f0cb3329076a66007d095da287ca53dab7bb0"
+    },
+    {
+      "name": "03-editor.png",
+      "sha256": "3e73d26b764c2cdba7a8809a960f8fd9a92af70a14d977afc6233e7d8801d5dc"
+    },
+    {
+      "name": "04-import.png",
+      "sha256": "2a9fb2c4f79cbfb632012af599edfddd6f153242e05ff0692115c81a98947932"
+    },
+    {
+      "name": "05-data.png",
+      "sha256": "071493cf334e0f6c09a810e700c5e019497d8c71fac1aeeaf250a8dc9ffb0676"
+    },
+    {
+      "name": "06-style.png",
+      "sha256": "5723d7c1bae7b946c79541329784fa4a39a5a4d50449492b385765c57a70ca36"
+    },
+    {
+      "name": "07-paper-size.png",
+      "sha256": "ebb5591e0411110ec66f8532241af41efb35078e42cdc7f89f08d8a88125076a"
+    },
+    {
+      "name": "08-export.png",
+      "sha256": "d576d2b8f181dcf7dbe9d2589359417e89e461532d82bd758844df2cad69aaf5"
+    },
+    {
+      "name": "09-model-settings.png",
+      "sha256": "aa86405fbcd776afb2bb915a6f6d3ca4c67f5fecf1d3242a9a65dfb861f3fe93"
+    },
+    {
+      "name": "10-assistant-proposal.png",
+      "sha256": "45a3463b8ab8ab9a248278aca6f47163f2f827cc00f5eac08d7f68cd6afb701c"
+    },
+    {
+      "name": "11-backup.png",
+      "sha256": "89e25120ab6df9d57f8ecd4d9bb0d34081129b0b55951064ff777d1720073673"
+    }
+  ],
+  "version": "0.2.0",
+  "reducedMotion": "reduce"
+}

@@ -1,6 +1,7 @@
 package dev.labflow.api;
 
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,6 +10,14 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 public class Errors {
+  // 任务 14-3-1：文案里的备份上限跟随 labflow.backup.compressed-limit 配置
+  // （默认 64 MiB 时输出与旧版逐字节一致；desktop profile 显示 512 MiB）。
+  private final int backupLimitMiB;
+
+  public Errors(@Value("${labflow.backup.compressed-limit:67108864}") int backupLimit) {
+    this.backupLimitMiB = backupLimit / (1024 * 1024);
+  }
+
   @ExceptionHandler(ApiException.class)
   ResponseEntity<?> domain(ApiException e) {
     return ResponseEntity.status(e.status)
@@ -18,7 +27,12 @@ public class Errors {
   @ExceptionHandler(MaxUploadSizeExceededException.class)
   ResponseEntity<?> size(Exception e) {
     return ResponseEntity.status(413)
-        .body(Map.of("message", "请求超过大小限制：备份最大 64 MiB，数据文件最大 10 MiB", "code", "FILE_TOO_LARGE"));
+        .body(
+            Map.of(
+                "message",
+                "请求超过大小限制：备份最大 " + backupLimitMiB + " MiB，数据文件最大 10 MiB",
+                "code",
+                "FILE_TOO_LARGE"));
   }
 
   @ExceptionHandler({

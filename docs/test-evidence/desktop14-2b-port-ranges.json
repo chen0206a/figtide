@@ -1,0 +1,49 @@
+{
+  "default_is_ephemeral": false,
+  "excluded_ranges": [
+    [
+      49152,
+      49251
+    ],
+    [
+      49252,
+      49351
+    ],
+    [
+      49354,
+      49453
+    ],
+    [
+      49454,
+      49553
+    ],
+    [
+      50000,
+      50059
+    ],
+    [
+      64908,
+      65007
+    ],
+    [
+      65008,
+      65107
+    ],
+    [
+      65108,
+      65207
+    ],
+    [
+      65309,
+      65408
+    ],
+    [
+      65409,
+      65508
+    ]
+  ],
+  "default_is_excluded": false,
+  "default_port": 17861,
+  "checked_at": "2026-10-24T10:08:21.6299798Z",
+  "command": "netsh int ipv4 show excludedportrange protocol=tcp"
+}

@@ -21,7 +21,7 @@ export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   globalTeardown: "./e2e/global-teardown.ts",
   // 开发服务器缺失时自动拉起，已有实例则直接复用（后端与 MySQL 仍需外部就绪）。
-  webServer: {
+  webServer: process.env.LABFLOW_DESKTOP_E2E === "1" ? undefined : {
     command: `node node_modules/vite/bin/vite.js --host 127.0.0.1 --port ${new URL(webUrl).port || "5176"} --strictPort`,
     url: webUrl,
     reuseExistingServer: true,

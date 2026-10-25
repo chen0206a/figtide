@@ -51,3 +51,20 @@ jobs:
           name: agent-evaluation-replay
           path: backend/target/agent-eval/
           if-no-files-found: warn
+  # 14-1-4.4：H2 后端任务（desktop 内嵌库）。不需要 MySQL service——
+  # TestDatasourceInitializer 读 LABFLOW_TEST_DB=h2，走 jdbc:h2:mem 内存库和
+  # db/migration-h2 迁移；MySQL 任务保持不变。
+  backend-h2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Run backend tests on H2 (LABFLOW_TEST_DB=h2)
+        env:
+          LABFLOW_TEST_DB: h2
+        run: mvn -B -f backend/pom.xml verify

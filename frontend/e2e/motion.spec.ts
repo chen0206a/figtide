@@ -48,6 +48,13 @@ test.describe("home entrance", () => {
     await expect
       .poll(() => page.evaluate(() => getComputedStyle(document.querySelector(".home-intro h1")!).opacity), { timeout: 4000 })
       .toBe("1");
+    // h1 ends at 820ms; the stage ends at 1180ms. Wait for every finite
+    // entrance before taking one settled-state sample (the draft pulse is infinite).
+    await home.evaluate(async (element) => {
+      const entrances = element.getAnimations({ subtree: true })
+        .filter(animation => animation.effect?.getTiming().iterations !== Infinity);
+      await Promise.all(entrances.map(animation => animation.finished.catch(() => undefined)));
+    });
     const settled = await page.evaluate(() => {
       const pick = [".home-intro h1", ".home-intro-actions", ".home-stage", ".home-bottom>*"];
       return pick.flatMap((selector) =>

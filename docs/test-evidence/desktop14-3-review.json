@@ -1,0 +1,150 @@
+{
+  "source_workspace_accessed": false,
+  "verdict": "changes_required",
+  "production_code_modified": false,
+  "node_tests": {
+    "passed": 28,
+    "command": "node --test scripts/migration/normalize.test.cjs scripts/migration/zip.test.cjs",
+    "failed": 0
+  },
+  "migration_e2e": {
+    "passed": true,
+    "command": "./scripts/test-migration.ps1 -Keep",
+    "first": 4,
+    "log": ".runtime/review14-3-migration-e2e.log",
+    "old_db_counts_checksums_equal": true,
+    "idempotent": 4,
+    "browser_failed": 0,
+    "browser_passed": 3,
+    "tamper_detected": true,
+    "raw_evidence": ".runtime/migration-e2e-20261024-230839"
+  },
+  "reviewed_at": "2026-10-24T14:17:34.4789186Z",
+  "reviewed_commit": "01fa0c6",
+  "builds": [
+    "default backend Maven package via test-migration",
+    "isolated frontend npm ci/build and desktop Maven package via test-migration"
+  ],
+  "java_mysql": {
+    "passed": 7,
+    "command": "LABFLOW_TEST_DB=mysql mvn -B -f backend/pom.xml -Dtest=BackupLimitsIntegrationTest,DeliveryIntegrationTest test",
+    "failed": 0,
+    "skipped": 0
+  },
+  "limit_regression_gap": {
+    "passed": 1,
+    "command": "LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml -Dtest=BackupLimitsIntegrationTest -Dlabflow.backup.compressed-limit=134217728 test",
+    "demonstrates": "The default-64-MiB test still passes with a 128-MiB configuration because malformed random bytes are rejected independently of size."
+  },
+  "java_h2": {
+    "passed": 7,
+    "command": "LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml -Dtest=BackupLimitsIntegrationTest,DeliveryIntegrationTest test",
+    "failed": 0,
+    "skipped": 0
+  },
+  "base_commit": "b5ed551",
+  "duplicate_names_product_preview": [
+    {
+      "kind": "charts",
+      "status": 200,
+      "body": {
+        "original_bytes": 601,
+        "name": "冒烟·基础项目",
+        "created_at": "2026-10-24T10:41:34.562739100Z",
+        "format": "labflow-project-v1",
+        "counts": {
+          "datasets": 2,
+          "dataset_versions": 3,
+          "experiments": 0,
+          "experiment_datasets": 0,
+          "charts": 2,
+          "chart_versions": 2,
+          "style_templates": 1
+        }
+      }
+    },
+    {
+      "kind": "templates",
+      "status": 200,
+      "body": {
+        "original_bytes": 601,
+        "name": "冒烟·基础项目",
+        "created_at": "2026-10-24T10:41:34.562739100Z",
+        "format": "labflow-project-v1",
+        "counts": {
+          "datasets": 2,
+          "dataset_versions": 3,
+          "experiments": 0,
+          "experiment_datasets": 0,
+          "charts": 1,
+          "chart_versions": 1,
+          "style_templates": 2
+        }
+      }
+    }
+  ],
+  "not_rerun": [
+    "all Java tests in both databases",
+    "npm test",
+    "standalone npm run build",
+    "full development E2E",
+    "full desktop E2E"
+  ],
+  "edge_cases": [
+    {
+      "case": "duplicate-chart-names",
+      "error": "备份清单规范化失败：图表稳定键冲突：c:准确率曲线"
+    },
+    {
+      "case": "duplicate-template-names",
+      "error": "备份清单规范化失败：样式模板稳定键冲突：s:论文样式"
+    },
+    {
+      "case": "name-collision-migrate",
+      "exit_code": 0,
+      "status": "已迁移",
+      "target": "冒烟·基础项目（迁移）",
+      "diffs": [],
+      "requests": [
+        "GET /target/api/desktop/ping",
+        "POST /target/api/backups/preview",
+        "GET /target/api/projects",
+        "GET /target/api/projects/100/backup",
+        "GET /target/api/projects",
+        "GET /target/api/projects/101/backup"
+      ]
+    },
+    {
+      "case": "name-collision-verify",
+      "exit_code": 1,
+      "status": "失败",
+      "target": "冒烟·基础项目",
+      "diffs": [
+        "project.description：旧=\"smoke basic\" 新=\"smoke basic unrelated existing content\""
+      ],
+      "requests": [
+        "GET /target/api/desktop/ping",
+        "POST /target/api/backups/preview",
+        "GET /target/api/projects",
+        "GET /target/api/projects/100/backup"
+      ]
+    },
+    {
+      "case": "name-collision-long-name",
+      "exit_code": 1,
+      "status": "失败",
+      "target": null,
+      "diffs": [],
+      "requests": [
+        "GET /target/api/desktop/ping",
+        "POST /target/api/backups/preview",
+        "GET /target/api/projects",
+        "GET /target/api/projects/100/backup",
+        "GET /target/api/projects",
+        "POST /target/api/backups/restore"
+      ],
+      "restore_name_length": 124,
+      "note": "迁移过程异常：400 新项目名称须为 1–120 字"
+    }
+  ]
+}

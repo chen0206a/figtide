@@ -1,0 +1,26 @@
+{
+  "command": "./scripts/test-agent.ps1 -All -FixturePort 18770 -Desktop",
+  "stats": {
+    "startTime": "2026-10-24T09:38:33.451Z",
+    "duration": 226718.64500000002,
+    "expected": 83,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "workers": 1,
+  "startAsiaTokyo": "2026-10-24T18:38:33.451000+09:00",
+  "endAsiaTokyo": "2026-10-24T18:42:20.169645+09:00",
+  "transport": {
+    "mode": "desktop-jar",
+    "database": "h2",
+    "web": "http://127.0.0.1:59040",
+    "started": "2026-10-24T09:38:32.8656210Z",
+    "fixture_port": 18770,
+    "pid": 37248,
+    "api": "http://127.0.0.1:59040"
+  },
+  "auditRestart": "passed",
+  "assertionsRemoved": false,
+  "baselineUpdated": false
+}

@@ -2,7 +2,7 @@
 const fs = require("node:fs");
 const assert = require("node:assert/strict");
 const path = require("node:path");
-const base = "http://127.0.0.1:8087/api";
+const base = (process.env.LABFLOW_API || "http://127.0.0.1:8087") + "/api";
 const root = path.resolve(__dirname, "../../..");
 const marker = path.join(root, ".runtime/audit-restart.json");
 async function api(url, data, method = "POST") {

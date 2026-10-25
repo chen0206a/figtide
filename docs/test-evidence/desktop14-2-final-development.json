@@ -1,0 +1,26 @@
+{
+  "command": "./scripts/test-agent.ps1 -All -FixturePort 18770",
+  "stats": {
+    "startTime": "2026-10-24T09:30:36.823Z",
+    "duration": 309367.554,
+    "expected": 83,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "workers": 1,
+  "startAsiaTokyo": "2026-10-24T18:30:36.823000+09:00",
+  "endAsiaTokyo": "2026-10-24T18:35:46.190554+09:00",
+  "transport": {
+    "started": "2026-10-24T09:30:36.2374690Z",
+    "database": "mysql",
+    "fixture_port": 18770,
+    "mode": "development-mysql",
+    "pid": 32328,
+    "api": "http://127.0.0.1:8087",
+    "web": "http://127.0.0.1:5178"
+  },
+  "auditRestart": "passed",
+  "assertionsRemoved": false,
+  "baselineUpdated": false
+}

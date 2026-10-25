@@ -1,0 +1,21 @@
+{
+  "command": "./scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('home.spec.ts','agent.spec.ts','model-connection.spec.ts','processing.spec.ts','isolation.spec.ts')",
+  "transport": {
+    "pid": 51284,
+    "database": "h2",
+    "fixture_port": 18770,
+    "web": "http://127.0.0.1:51967",
+    "mode": "desktop-jar",
+    "api": "http://127.0.0.1:51967",
+    "started": "2026-10-24T09:23:02.3823026Z"
+  },
+  "stats": {
+    "startTime": "2026-10-24T09:23:02.998Z",
+    "duration": 57554.089,
+    "expected": 20,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "auditRestart": "passed"
+}

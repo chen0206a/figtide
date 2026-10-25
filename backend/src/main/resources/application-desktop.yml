@@ -1,0 +1,32 @@
+labflow:
+  data-dir: ${LOCALAPPDATA:${user.home}/AppData/Local}/FigTide/data
+  # 任务 14-3-1：desktop 只放大备份上限（迁移工具要经 /api/backups/restore 整包
+  # 恢复旧项目），multipart 同步放大；默认 profile 的 64/96 MiB 不变。
+  backup:
+    compressed-limit: 536870912
+    expanded-limit: 805306368
+server:
+  address: 127.0.0.1
+  # The desktop launcher resolves desktop.json / --labflow.desktop.port before starting Spring.
+  port: 17861
+logging:
+  config: classpath:logback-desktop.xml
+spring:
+  servlet:
+    multipart:
+      max-file-size: 512MB
+      max-request-size: 513MB
+  datasource:
+    # WRITE_DELAY=0：提交即落盘。H2 默认把已提交数据缓存在内存里延迟约 1 秒写盘，
+    # 进程被强杀（崩溃/断电/任务管理器）时这段数据会丢——E2E 的 audit-restart
+    # 复现了这个问题（见 docs/desktop/H2-PROBE.md）。桌面应用写入频率低，代价可忽略。
+    url: jdbc:h2:file:${labflow.data-dir}/figtide;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;WRITE_DELAY=0
+    username: sa
+    password: ""
+  flyway:
+    enabled: true
+    # 位置是 db/migration-h2（而不是任务书写的 db/migration/h2）：Flyway 11 的 classpath
+    # 位置会递归扫描子目录，h2 目录若放在 db/migration 之下，默认 MySQL profile
+    # （locations=classpath:db/migration，一行不改）会同时扫到两套 V1–V8 并报
+    # "Found more than one migration with version 1"。详见 docs/desktop/H2-PROBE.md。
+    locations: classpath:db/migration-h2

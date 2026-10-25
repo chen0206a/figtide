@@ -2,6 +2,8 @@
 
 面向 AI / 机器学习研究者的本地实验数据管理与科研绘图工作台，从原始数据到可复现的论文图表。
 
+[下载 Windows 版](https://github.com/chen0206a/figtide/releases/latest) · [使用指南](docs/GUIDE.md)
+
 ![FigTide 图汐：从实验数据到论文插图](docs/media/social-preview.png)
 
 ## 看看它如何工作
@@ -41,9 +43,28 @@ FigTide 运行在你的电脑上。数据、图表和所有版本都保存在本
 
 当前为无认证的本地单用户模式，服务仅监听本机。请勿直接将后端暴露到公网；本机其他程序也可能访问本地 API。跨用户部署需要另行实现认证、授权和数据隔离。
 
-## 快速开始
+## 下载 Windows 版
 
-**双击运行的桌面版正在开发中**，v0.1.0 尚无桌面安装包。当前使用 Windows PowerShell 脚本启动，数据保存在每位用户自己的电脑上。
+第一次使用请按[使用指南](docs/GUIDE.md)操作，包含导入、绘图、助手、导出与备份的真实界面截图。
+
+从[最新 Release 下载 Windows 版](https://github.com/chen0206a/figtide/releases/latest)，选择同一版本的`FigTide-X.Y.Z-windows-x64.zip`和`SHA256SUMS.txt`，用`Get-FileHash`核对ZIP的SHA256。解压整个文件夹，再双击`FigTide/FigTide.exe`。请保留旁边的`app`与`runtime`目录，无需安装Java、MySQL、Node或管理员权限。第一版未签名，Windows可能显示SmartScreen提示，请先确认可信下载来源。
+
+macOS版和原生窗口在计划中。
+
+- 工作台在系统默认浏览器中打开；关闭浏览器不会退出程序，使用通知区域的FigTide托盘菜单「退出」。
+- 数据保存在`%LOCALAPPDATA%\FigTide\data`，日志在`%LOCALAPPDATA%\FigTide\logs`。移走/删除程序目录不会删除数据；升级时退出旧程序后解压新版本，数据目录继续沿用。
+- 首选端口默认17861，浏览器地址始终为`http://127.0.0.1:<端口>/`。占用时临时换端口，不覆盖首选记录。未保存草稿和页面偏好存同一浏览器配置文件，换端口/换浏览器时不会自动迁移；正式保存的项目仍在本地数据库。
+- 项目菜单可导出备份，文件保存在你选择的下载位置；用备份恢复跨电脑转移。退出前请保存图表并备份重要项目。
+- 旧MySQL工作区见[迁移指南](docs/desktop/MIGRATION.md)，迁移只复制项目，不删除旧数据；助手历史不迁移。
+- [构建与发布](docs/desktop/PACKAGING.md)、[人工冒烟清单](docs/desktop/SMOKE-14-5.md)。当前交付是便携ZIP，没有安装向导、自动升级或原生窗口。
+
+## 开发者
+
+```powershell
+# 本地生成自带运行时的便携包，需要Node、Maven和JDK21
+./scripts/package-desktop.ps1
+& './dist/desktop/FigTide-0.2.0-windows-x64/FigTide/FigTide.exe'
+```
 
 准备 Node.js 22.12+、Maven 3.6.3+、MySQL 8 二进制，以及 Git。后端使用 JDK 21；首次启动脚本会下载项目私有 JDK，首次安装 npm / Maven 依赖也需要联网。MySQL 应使用空闲端口 33316，脚本初始化项目独立实例，不连接既有 3306 实例。
 
@@ -66,6 +87,7 @@ MySQL 安装位置不是默认值时：
 - 本地开发账号为 `labflow` / `labflow-local`，独立实例 root 密码为 `labflow-root-local`；仅用于当前本机模式。
 - 已构建过可使用 `.\scripts\start.ps1 -SkipBuild`；停止使用 `.\scripts\stop.ps1`，保留数据。
 - 模型设置可在网页中填写地址、模型 ID 与 API Key。密钥仅保存在后端进程内存；后端重启需重新配置。普通科研绘图不需要密钥。详见 [模型连接说明](docs/MODEL-CONNECTIONS.md)。
+- 从 MySQL 网页版把项目搬到桌面版：见 [桌面版迁移指南](docs/desktop/MIGRATION.md)。
 
 ## 技术栈
 
@@ -75,7 +97,7 @@ MySQL 安装位置不是默认值时：
 | 状态与表格 | TanStack Query、TanStack Table |
 | 绘图与导出 | Plotly.js、jsPDF、svg2pdf.js；应用字体本地打包 |
 | 后端 | Java 21、Spring Boot 3、JdbcTemplate、Bean Validation |
-| 数据与解析 | MySQL 8、Flyway、Apache Commons CSV、Apache POI |
+| 数据与解析 | MySQL 8（开发）/ H2文件库（桌面）、Flyway、Apache Commons CSV、Apache POI |
 | 绘图助手 | 单 Agent 工具循环、自研 Java Harness、兼容 Chat Completions 模型适配 |
 | 验证 | JUnit、Spring Boot Test、Vitest、Testing Library、Playwright / Chrome |
 
@@ -97,6 +119,12 @@ cd ..
 
 # 全量浏览器测试：隔离 Java 8087 / Vite 5178 / 夹具 18770 / labflow_e2e
 .\scripts\test-agent.ps1 -All -FixturePort 18770
+
+# 桌面版迁移端到端：隔离 MySQL 测试库 + 临时目录桌面 jar，不触碰真实工作区
+.\scripts\test-migration.ps1
+
+# 便携包真实EXE全量浏览器测试（临时H2、本地模型夹具）
+.\scripts\test-agent.ps1 -All -Packaged -Application 'dist/desktop/FigTide-0.2.0-windows-x64/FigTide' -FixturePort 18770
 
 # 生产构建的任务 09 专项（已从 .runtime 整理为受版本控制的入口）
 .\scripts\test-refactor09.ps1 -FixturePort 18770
@@ -133,7 +161,7 @@ scripts/        本地起停、隔离验收、导出检查与评测入口
 site/           独立公开展示页，可通过 GitHub Pages 发布
 docs/           API、设计、隐私、评测与验收证据
 samples/        明确标注的合成科研演示数据
-refactor/       重构任务与 FigTide 品牌源资产
+docs/development/       重构任务与 FigTide 品牌源资产
 ```
 
 ## 许可证

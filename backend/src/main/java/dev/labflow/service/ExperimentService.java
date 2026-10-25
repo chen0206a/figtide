@@ -143,7 +143,9 @@ public class ExperimentService {
     else
       db.update(
           "UPDATE experiments SET"
-              + " name=?,parameters=?,metrics=?,notes=?,status=?,tags_json=?,revision=revision+1"
+              + " name=?,parameters=?,metrics=?,notes=?,status=?,tags_json=?,revision=revision+1,"
+              // H2 无 ON UPDATE CURRENT_TIMESTAMP(3)（h2 迁移已去掉该子句），MySQL/H2 双兼容显式赋值
+              + " updated_at=CURRENT_TIMESTAMP(3)"
               + " WHERE id=? AND project_id=?",
           name.trim(),
           encode(parameters),

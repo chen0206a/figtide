@@ -354,8 +354,9 @@ public class WorkspaceService {
     }
     if (revision == null) throw ApiException.bad("缺少 revision");
     if (db.update(
-            "UPDATE charts SET name=?,revision=revision+1 WHERE id=? AND project_id=? AND"
-                + " revision=?",
+            // H2 无 ON UPDATE CURRENT_TIMESTAMP(3)（h2 迁移已去掉该子句），MySQL/H2 双兼容显式赋值
+            "UPDATE charts SET name=?,revision=revision+1,updated_at=CURRENT_TIMESTAMP(3) WHERE"
+                + " id=? AND project_id=? AND revision=?",
             name,
             id,
             p,

@@ -1,5 +1,7 @@
 package dev.labflow.repository;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -98,11 +100,19 @@ public class AgentAuditRepository {
       String session = (String) row.get("session_id");
       long project = ((Number) row.get("project_id")).longValue();
       if (session != null) lockSession(project, session);
+      // 任务 14-1-3：latency_ms 不再用 TIMESTAMPDIFF(MICROSECOND,…)（MySQL 专属写法，任务书固定要求
+      // Java 计算），改为用本行 created_at 与当前时间在 Java 里求毫秒差，作为参数传入；单位仍是毫秒。
+      Object created = row.get("created_at");
+      long latencyMs =
+          created instanceof java.sql.Timestamp t
+              ? Duration.between(t.toInstant(), Instant.now()).toMillis()
+              : 0L;
       int changed =
           db.update(
               "UPDATE agent_runs SET"
-                  + " status='incomplete',outcome='interrupted',reason_code='process_interrupted',usage_complete=FALSE,finished_at=CURRENT_TIMESTAMP(3),latency_ms=TIMESTAMPDIFF(MICROSECOND,created_at,CURRENT_TIMESTAMP(3))/1000,session_charge=reservation"
+                  + " status='incomplete',outcome='interrupted',reason_code='process_interrupted',usage_complete=FALSE,finished_at=CURRENT_TIMESTAMP(3),latency_ms=?,session_charge=reservation"
                   + " WHERE run_id=? AND status IN ('queued','running') AND instance_id<>?",
+              latencyMs,
               row.get("run_id"),
               instance);
       if (changed == 1 && session != null)
@@ -185,9 +195,11 @@ public class AgentAuditRepository {
   }
 
   public int chartRevision(long project, long chart) {
+    // 任务 14-1-3：FOR SHARE 在 H2 2.3.232 实测不支持（docs/desktop/H2-PROBE.md U6），统一改为 FOR UPDATE。
+    // 锁变强（排他），但本方法只钉住 revision 基线、在提案事务内不更新 charts 行，语义不变。
     var rows =
         db.queryForList(
-            "SELECT revision FROM charts WHERE project_id=? AND id=? FOR SHARE", project, chart);
+            "SELECT revision FROM charts WHERE project_id=? AND id=? FOR UPDATE", project, chart);
     if (rows.isEmpty()) throw new dev.labflow.api.ApiException(409, "源图表已不存在，请重新生成提案");
     return ((Number) rows.getFirst().get("revision")).intValue();
   }

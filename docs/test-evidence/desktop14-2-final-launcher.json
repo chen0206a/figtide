@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-24T09:44:28.960Z",
+  "passed": [
+    "random port",
+    "same-JAR SPA",
+    "Chinese/spaced path",
+    "single instance",
+    "normal exit removes port",
+    "normal restart persists",
+    "forced restart persists",
+    "rotating log location",
+    "no model key in logs",
+    "Host attack rejected",
+    "cross-port Origin rejected",
+    "same-origin write accepted",
+    "saved figure normal reopen",
+    "last-saved figure after forced exit"
+  ],
+  "dataDirectory": ".runtime\\launcher-probe-317bb6de-1e86-4267-9eba-6b1d86335a05\\中文 空间\\data",
+  "ports": [
+    57294,
+    59251,
+    59277
+  ]
+}

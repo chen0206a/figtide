@@ -11,15 +11,16 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(
     properties = {
-      "spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_test?serverTimezone=UTC",
       "LABFLOW_AGENT_MODEL=",
       "LABFLOW_AGENT_BASE_URL=http://127.0.0.1:1",
       "labflow.test-support=false"
     })
+@ContextConfiguration(initializers = TestDatasourceInitializer.class)
 @AutoConfigureMockMvc
 class ModelConnectionIntegrationTest {
   @Autowired MockMvc mvc;

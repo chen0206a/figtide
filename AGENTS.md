@@ -1,12 +1,12 @@
 # AGENTS.md — FigTide 前端重构
 
-> 放到仓库根目录。Codex 每次开工前先读本文件，再读 `refactor/REFACTOR-PLAN.md` 和当前要做的 `refactor/tasks/NN-*.md`。
+> 放到仓库根目录。Codex 每次开工前先读本文件，再读 `docs/development/REFACTOR-PLAN.md` 和当前要做的 `docs/development/tasks/NN-*.md`。
 
 ## 你在做什么
 
-按 `refactor/tasks/` 的编号**逐个**完成前端重构。每个任务文件都写明了目标、要改的文件、具体步骤和验收标准。一次只做一个任务，做完、验证、提交，然后停下来汇报，再开始下一个。
+按 `docs/development/tasks/` 的编号**逐个**完成前端重构。每个任务文件都写明了目标、要改的文件、具体步骤和验收标准。一次只做一个任务，做完、验证、提交，然后停下来汇报，再开始下一个。
 
-参考实现放在 `refactor/reference/`，目录结构和仓库一致（例如 `refactor/reference/frontend/src/styles/tokens.css` 对应 `frontend/src/styles/tokens.css`）。参考代码没有在真实依赖下编译过，复制过去以后**必须**让 `tsc` 和测试通过，不要假设它一定正确。
+参考实现放在 `docs/development/reference/`，目录结构和仓库一致（例如 `docs/development/reference/frontend/src/styles/tokens.css` 对应 `frontend/src/styles/tokens.css`）。参考代码没有在真实依赖下编译过，复制过去以后**必须**让 `tsc` 和测试通过，不要假设它一定正确。
 
 ## 不能动的东西（硬约束）
 
@@ -69,3 +69,31 @@ git add -A && git commit -m "refactor(NN): <一句话>"
 - 草稿：`lib/chartDraft.ts`、`lib/draftWriter.ts`
 - 助手：`editor/AgentAssistant.tsx`、`agent-assistant.css`
 - 全局样式：`styles.css` 和 `components/*.css`（任务 02 和 08 会整合）
+
+## 桌面版后端授权（任务 14）
+
+> **桌面版后端授权（任务 14）**：在任务 14 的任务书明确列出的范围内，允许修改后端：新增 H2 依赖、`desktop` profile、`db/migration/h2/` 迁移脚本；为了两种数据库通用而做的可移植性修改（如显式赋值 `updated_at`、用 Java 计算替代数据库专有函数）；测试数据源参数化。仍然禁止：修改已有的 MySQL 迁移脚本（`db/migration/V*.sql`）；改变 API 的请求和响应；改变乐观锁、预算、幂等、恢复的业务语义；连接或修改真实工作区数据库。每一处后端改动都要在汇报里写明属于哪一类授权。
+>
+> 新增迁移必须同时提供 MySQL 和 H2 两个版本（`db/migration/` 与 `db/migration-h2/`，版本号与文件名一一对应；`MigrationParityTest` 会校验）。
+>
+> H2 迁移脚本放在 `db/migration-h2/`（与任务书写的 `db/migration/h2/` 不同）：Flyway 11 的 `classpath:` 位置会**递归扫描子目录**，H2 目录若放在 `db/migration/` 之下，默认 MySQL profile（locations=`classpath:db/migration`，一行不改）会同时扫到两套 V1–V8 并报 `Found more than one migration with version 1`。因此 H2 脚本目录必须与 `db/migration/` 平级。实测证据见 `docs/desktop/H2-PROBE.md`。
+
+## 桌面启动器授权（任务 14-2）
+
+按 `docs/development/tasks/14-2-launcher.md`，允许新增 desktop 启动/托盘/静态页面配置、仅 desktop profile 的 `GET /api/desktop/ping`、desktop 的 Host/Origin 校验和测试/构建脚本；默认开发 profile 的行为、已有 API、MySQL 迁移与业务语义不变。
+
+## 桌面迁移工具授权（任务 14-3）
+
+按 `docs/development/tasks/14-3-migration.md`，允许：`BackupService` 的备份大小上限改为配置项（默认值不变，仅 `desktop` profile 调大）及配套 multipart 配置；新增 `scripts/migrate-to-desktop.ps1`（及其 Node 实现）与 `docs/desktop/MIGRATION.md`；恢复后用现有 `PUT /api/projects/{p}` 接口补齐归档状态（不改 `restore()` 语义）；在隔离测试库上验证迁移的测试设施。**仍然禁止**：对旧版发任何写请求（只用 `GET /api/projects` 与 `GET /api/projects/{p}/backup`）；连接或修改真实工作区（`labflow` 库 / 8086）与用户桌面数据目录；在任何真实数据上运行迁移工具；修改已有 MySQL 迁移脚本或 API 的请求/响应。
+
+## 桌面打包范围（任务14-4）
+
+用户已授权14-3修复通过后进入14-4。现有DESKTOP-PLAN第6节已定义jlink/jpackage、图标/版本及标签Release构建；仓库没有既有14-4单独任务书，按该范围细化为`docs/development/tasks/14-4-packaging.md`。允许新增打包/产物探针/CI脚本与图标格式转换、给desktop构建记录产物元数据；不改后端业务或数据格式，不读写用户目录。仅本地提交，不替用户推送、打标签或发布。
+
+## 桌面最终验收（任务14-5）
+
+用户授权14-4通过后继续现有计划的后续任务并在全部验收后暂停。按DESKTOP-PLAN第6节细化为`docs/development/tasks/14-5-acceptance.md`，允许扩展隔离测试入口以运行真实EXE、补CI/文档/验收证据。不得修改产品业务语义或使用真实数据，未实际执行的系统托盘/SmartScreen人工项必须注明。
+
+## v0.2.0发布授权（任务15）
+
+仓库主人已确认任务15的人工检查前提通过。按当前任务书15-1到15-5执行，允许版本元数据、指南/截图、资料归档与发布工作流配套调整，不改变后端业务。仅15-4授权推送release/v0.2.0、开PR到main、等待包括H2在内的全部CI通过后merge-merge、在合并main打v0.2.0标签并推送；工作流只准备草稿，检查附件/校验后发布。遇到冲突或检查失败停止，不强推、不改写旧历史、不用本地ZIP替代CI失败产物。仅清理已经合并的指定远端发布/desktop分支，本地保留。15-5重新下载实际发布ZIP复核。完整范围以任务书为准。

@@ -18,13 +18,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.*;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(
-    properties =
-        "spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC")
+@LabflowIntegrationTest
 @AutoConfigureMockMvc
 class AgentAuditIntegrationTest {
   @Autowired AgentRunService agent;
@@ -412,6 +409,9 @@ class AgentAuditIntegrationTest {
     var initial = (ObjectNode) completed.deepCopy();
     initial.put("run_id", interrupted);
     audit.begin(project, request, initial, provider.info(), completed.at("/proposal/source"));
+    // 任务 14-1-3：恢复路径的 latency_ms 改为 Java 计算（created_at 与当前时间的毫秒差），
+    // 睡一小会儿保证毫秒差严格大于 0，可直接断言计算结果。
+    Thread.sleep(50);
     db.recover(UUID.randomUUID().toString());
     assertEquals(before, audit.detail(project, id));
     var recovered = json.valueToTree(agent.get(project, interrupted));
@@ -419,6 +419,9 @@ class AgentAuditIntegrationTest {
     assertFalse(recovered.path("usage_complete").asBoolean());
     assertFalse(recovered.has("proposal"));
     assertTrue(recovered.path("historical").asBoolean());
+    long latencyMs = recovered.path("latency_ms").asLong(-1);
+    assertTrue(latencyMs >= 50 && latencyMs < 600_000,
+        "latency_ms 应为 created_at 起算的毫秒差（Java 计算），实测 " + latencyMs);
     var freshService = new AgentAuditService(db, json);
     assertEquals(before, freshService.detail(project, id));
     var readonly =
