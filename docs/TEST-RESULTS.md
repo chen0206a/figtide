@@ -1,4 +1,10 @@
-## 2026-10-25 · v0.2.0再次授权发布：准备第1轮（最多2轮PR CI）
+## 2026-10-25 · 任务16独立窗口（Edge应用模式）：实现、探针与总验收
+
+分支feature/app-window（本地6提交25d3aca→237d5c4→141b73d→e2499e4→9b69d36→635bce1，未推送）。16-0任务书+AGENTS授权；16-1 DesktopWindow（注册表/程序目录找Edge、--app固定user-data-dir、找不到回退默认浏览器+气泡、--labflow.desktop.window=app|browser、托盘新增「在浏览器中打开」）；16-2 manifest.webmanifest+品牌图标16–512px+实测截图；16-3升级气泡只展示一次（desktop.json标记，保留首选端口）；16-4 CI进程探针；16-5 APP-WINDOW.md/GUIDE/README/冒烟清单。
+
+实测与探针：真实jar+Edge应用窗口正常打开（1440×900，SPA重定向到/welcome，标题「欢迎 · FigTide」）；窗口/任务栏图标经WM_GETICON+像素比对确认为Edge标志而非FigTide品牌图标，已在APP-WINDOW.md如实记录（任务书禁止伪装）。探针首跑失败定位为SPA路由重定向（页面URL是`/welcome`而非`/`），修正为同源前缀+标题断言后本地全绿（`.runtime/edge-window-probe.json`，证据docs/test-evidence/desktop16-edge-window-probe.json）；探针只在测试中加`--remote-debugging-port=0`，生产参数永不含调试端口；已加入desktop-release.yml Windows任务（PR与打tag均执行），证据随desktop-package-evidence上传。
+
+总验收（本机全绿）：后端MySQL 277/0/0/1S（34类，含DesktopWindowTest 13+DesktopLauncherTest）；后端H2 271/0/0/1S（同减6评测类跳过）；前端52文件280测试+构建通过（仅既有>500kB块警告）；桌面全量E2E 84 passed/3 skipped（84=83+mcp.spec.ts，3迁移专项未开启属既有约定）+audit-restart通过。期间发现本机MySQL(33316)已停止且pid文件指向已死进程——按start.ps1相同参数（相对datadir，避免中文路径经PowerShell参数截断成`D:\RAG-agent\`）临时重启后跑完测试，mysqladmin优雅关停（Shutdown complete入日志），未动3306系统服务与任何数据。需人工确认项见SMOKE-14-5.md（双击独立窗口、关窗托盘仍在、升级气泡、Edge卸载回退等）。
 
 补充CHANGELOG中文用户名/数据路径启动修复及Windows10 1903要求、GUIDE安装目录不含emoji，推送既有1dd7ed2精确标题定位及Node22 ZIP复制修复。修改限测试定位和文档，未改产品代码。文档一致性/差异检查通过；本地隔离5/5与审计重启已在上一节实际执行，本节不重复；全量源码/打包/E2E由新Windows CI执行，结果待记录。产品失败立即停，只允许测试定位/时序问题再修一次；不加.first、不删断言、不调长超时。PR全部检查绿之前标签和Release保持原状。
 
