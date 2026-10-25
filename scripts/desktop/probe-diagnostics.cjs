@@ -23,10 +23,29 @@ function diagnostics(directory) {
     const executable = path.join(app, 'FigTide.exe');
     // Restrict command lines to this probe's EXE, never dump unrelated process arguments or environment secrets.
     const ps = `$p = @(Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -eq '${executable.replaceAll("'", "''")}' }); $p | Select-Object ProcessId,ParentProcessId,ExecutablePath,CommandLine | ConvertTo-Json -Depth 3`;
+    const windows = `
+Add-Type @'
+using System; using System.Text; using System.Runtime.InteropServices;
+public class ProbeWindows {
+ public delegate bool Callback(IntPtr h, IntPtr p);
+ [DllImport("user32.dll")] public static extern bool EnumWindows(Callback c, IntPtr p);
+ [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr h, Callback c, IntPtr p);
+ [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
+ [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr h, out uint p);
+}
+'@
+$ids = @((Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -eq '${executable.replaceAll("'", "''")}' }).ProcessId)
+$script:rows = [Collections.Generic.List[object]]::new()
+$read = [ProbeWindows+Callback]{param($h,$unused) $s=[Text.StringBuilder]::new(8192); [void][ProbeWindows]::GetWindowText($h,$s,$s.Capacity); if($s.Length){$script:rows.Add($s.ToString())}; return $true}
+$top = [ProbeWindows+Callback]{param($h,$unused) [uint32]$owner=0; [void][ProbeWindows]::GetWindowThreadProcessId($h,[ref]$owner); if($ids -contains $owner){[void]$read.Invoke($h,[IntPtr]::Zero); [void][ProbeWindows]::EnumChildWindows($h,$read,[IntPtr]::Zero)}; return $true}
+[void][ProbeWindows]::EnumWindows($top,[IntPtr]::Zero)
+$script:rows | ConvertTo-Json
+`;
     const results = await Promise.all([
       command(path.join(system, 'WindowsPowerShell/v1.0/powershell.exe'), ['-NoProfile', '-Command', ps], 'processes.txt'),
       command(path.join(system, 'netstat.exe'), ['-ano', '-p', 'tcp'], 'listeners.txt'),
       command(path.join(system, 'netsh.exe'), ['int', 'ipv4', 'show', 'excludedportrange', 'protocol=tcp'], 'excluded-ports.txt'),
+      command(path.join(system, 'WindowsPowerShell/v1.0/powershell.exe'), ['-NoProfile', '-Command', windows], 'native-windows.txt'),
     ]);
     let processes = [];
     try { processes = [].concat(JSON.parse(fs.readFileSync(path.join(directory, 'processes.txt'), 'utf8').trim())); } catch { }

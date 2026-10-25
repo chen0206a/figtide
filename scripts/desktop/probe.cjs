@@ -126,6 +126,8 @@ const post = data => ({ method: 'POST', headers: { 'Content-Type': 'application/
 })().catch(async e => {
   diagnostic.event('probe-failed', { error: String(e), stack: e.stack });
   try { await diagnostic.snapshot(children, app, 'probe-failed'); } catch (error) { console.error('Diagnostic collection failed:', error); }
+  try { await require('./probe-startup-comparison.cjs').compare(app, owned, env, diagnostic, freePort); }
+  catch (error) { diagnostic.event('comparison-failed', { error: String(error), stderr: error.stderr }); }
   console.error(e); process.exitCode = 1;
 }).finally(async () => {
   for (const child of children) await stop(child);

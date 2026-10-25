@@ -1,3 +1,9 @@
+## 2026-10-25 · v0.2.0第二阻塞，第1轮证据与第2轮诊断
+
+第1轮[40170951898](https://github.com/chen0206a/figtide/actions/runs/40170951898)，commit39dbfb5：前端280、迁移40、诊断2、H2 257 passed/0 failed/1 skipped及构建通过；原EXE46.0秒超时，没有数据目录/app.port/desktop.json/figtide.log，监听中无17920，netsh排除范围不包含17920。父6496与子3820存活，父未加载JVM（jpackage正常父子模式），子jcmd附加10秒超时；不足以认定根因，更不能断言只是启动慢。参数在Windows进程命令行中存在，Java实际接收尚不能确认。证据完整下载到.runtime/release02-round1-evidence，原日志release02-round1-job.log。隐含.runtime上传缺口已修复。
+
+第2轮仍不加长就绪超时：失败时读取该EXE拥有的GUI窗口文本，并用同一包内runtime/JAR对照“控制台jpackage启动器”与“runtime/bin/java.exe”，每次独立临时数据目录，均关闭托盘/浏览器；对照通过也不会把生产EXE失败改成成功。诊断变体放在独立launcher-diagnostic目录，不修改/发布产品EXE，artifact只收集日志/测试数据。实际本机`node --test scripts/desktop/*.test.cjs` 3/0/0；两个对照启动均产生端口文件（约4.5秒、4秒）。没有改产品业务代码和断言。第2轮CI待执行，最多再有第3轮，不操作标签/Release。
+
 ## 2026-10-25 · v0.2.0第二阻塞，第1轮：仅诊断（CI待运行）
 
 用户授权最多3轮Windows诊断/修复检查；本轮不调整180×250ms就绪循环，不改产品启动逻辑，不动标签/Release。探针新增UTC/单调计时事件（启动、端口文件、ping、退出、失败），失败前采集owned EXE/CIM父子进程/退出码、netstat监听、netsh排除端口、jcmd VM.command_line；仅针对本次EXE，不收集其他进程参数或环境密钥。artifact启用include-hidden-files，上传完整独立package-smoke目录（包括Unicode数据目录、logs、app.port、desktop.json、崩溃文件）。此前隐藏.runtime未上传是证据缺口，并非已认定的启动根因。

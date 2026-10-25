@@ -18,6 +18,17 @@ test('diagnostic events persist UTC timestamps and monotonic elapsed time', () =
   assert.equal(events[1].port_file_seen, false);
 });
 
+test('comparison uses the bundled jar with explicit desktop, isolated data and no UI flags', () => {
+  const { javaArgs } = require('./probe-startup-comparison.cjs');
+  const args = javaArgs('C:/app/figtide.jar', 'C:/owned/中文 空间/data', 17921);
+  assert(args.includes('-Dspring.profiles.active=desktop'));
+  assert(args.includes('--labflow.data-dir=C:/owned/中文 空间/data'));
+  assert(args.includes('--labflow.desktop.tray=false'));
+  assert(args.includes('--labflow.desktop.open-browser=false'));
+  assert.deepEqual(args.slice(2, 4), ['-jar', 'C:/app/figtide.jar']);
+  assert.equal(args.slice(4)[0], '--labflow.data-dir=C:/owned/中文 空间/data');
+});
+
 test('Windows failure snapshot records process exit status, listener and excluded port commands', { skip: process.platform !== 'win32' }, async () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'figtide-diagnostic-'));
   await diagnostics(directory).snapshot([{ pid: undefined, exitCode: 17, signalCode: null }], path.join(directory, 'missing-app'), 'simulated failure');
