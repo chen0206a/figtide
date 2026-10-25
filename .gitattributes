@@ -1,0 +1,32 @@
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.bmp binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.zip binary
+*.gz binary
+*.7z binary
+*.jar binary
+*.class binary
+*.exe binary
+*.dll binary
+*.msi binary
+*.jks binary
+*.p12 binary
+*.mp4 binary
+*.webm binary
