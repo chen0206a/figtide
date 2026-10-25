@@ -1,3 +1,20 @@
+## 2026-10-25 · Windows剩余ENOENT：本机复现、定位并修正测试复制流程
+
+用户要求自主判断修法，不必沿用旧任务步骤。本轮只本机排查、修复、提交，不推送、不触发第4轮CI、不合并或操作标签/Release。
+
+**根因实证**：下载官方Node22.23.4并与SHASUMS256验证二进制SHA256（dccc52de…dec14f），用CI相同版本单跑旧launcher-utf8.test.cjs，0 passed/1 failed，精确复现第47行spawnSync中文安装目录ENOENT。检查复制前后：源102文件、源EXE存在，目标目录不存在、目标0文件。Node24.15.0同一旧用例通过。Node官方[nodejs/node#61878](https://github.com/nodejs/node/issues/61878)描述同样的Windows非ASCII目标fs.cpSync静默不复制行为，修复[nodejs/node#61950](https://github.com/nodejs/node/pull/61950)。因此第三轮剩余失败来自**新增测试复制步骤**，不是此次测试已经证实的产品中文安装失败；与之前真实的JDK ANSI参数问题是两件事，UTF-8产品修复保留。
+
+修复仅launcher-utf8.test.cjs：以Windows .NET ZIP创建/解压替代fs.cpSync，真实模拟用户解压便携包；启动前完整文件清单及逐文件SHA256比对，缺文件直接给出明确断言；保留中文安装/Unicode数据路径的启动与内容断言；fixture移入.runtime/package-smoke-unicode-*，即便失败也能由既有CI artifact收集整个目录。没有改断言为忽略中文/只接受英文，也没有增加超时或删除既有检查。
+
+| 本机实际命令/验证 | passed | failed | skipped |
+|---|---:|---:|---:|
+| `.runtime/node22/node.exe --test scripts/desktop/*.test.cjs` | 4 | 0 | 0 |
+| `node --test scripts/desktop/*.test.cjs`（24.15.0） | 4 | 0 | 0 |
+| UTF-8 FigTide实际ZIP解压到中文/空格/希腊字母/重音安装目录，`test-desktop-package.ps1`（Node22.23.4） | 7组 | 0 | 0 |
+| 相同完整便携包冒烟（Node24.15.0） | 7组 | 0 | 0 |
+
+完整便携包沿用此前本地UTF-8修复产物（其JAR/业务未变，manifest记录source_revision=b72ee61/source_dirty=true），没有冒充最新CI构建或最终发布包。探针用全新隔离H2，上传CSV/保存配置/第二实例/强制重启均通过；真实工作区和模型服务未使用。前后端源码未改，npm test/build/H2全量/E2E本轮未重跑；远端全量Windows门槛仍待后续检查，不能据本机通过宣称发布验收已通过。原始日志.runtime/release02-{node22-repro,copyfix-*}.log与机器摘要docs/test-evidence/release02-copyfix.json保存。
+
 ## 2026-10-25 · v0.2.0第二阻塞：第3轮仍失败，达到授权上限后停止
 
 最后提交69376ff；[第3轮40172406890](https://github.com/chen0206a/figtide/actions/runs/40172406890)在2026-10-25 16:22:32（UTC+09）failure。3轮运行：40170951898（只诊断）、40171662432（进一步定位）、40172406890（UTF-8修复）。没有第4轮、没有手动dispatch、没有延长45秒循环。

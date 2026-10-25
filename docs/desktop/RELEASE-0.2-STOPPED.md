@@ -85,3 +85,9 @@ Process completed with exit code 1.
 2026-10-25 16:22:32（UTC+09），[最后一轮40172406890](https://github.com/chen0206a/figtide/actions/runs/40172406890)，commit69376ff，仍为failure：前端280/0/0、迁移40/0/0，新增启动器/诊断3/1/0。UTF-8更新后同安装位置的Unicode数据参数已通过，但复制到`中文 安装 Δ café/app`后的原生启动在launcher-utf8.test.cjs:47报`spawnSync .../UnicodeProbe.exe ENOENT`。此新场景根因尚未确定，不能当作成功，也没有删除断言。H2/Maven、完整打包、EXE探针、E2E和草稿步骤全部未执行；没有浏览器trace，原始错误全文见docs/test-evidence/release02-round3-error.txt、日志SHA256见release02-startup.json。
 
 授权3轮已用完，停止任何额外推送/dispatch，不合并PR #3，不操作标签或Release；没有第4轮。旧v0.2.0仍在63f0128，故重打时间仍为未执行。只在本地提交此次失败记录，不推送以避免新运行。15-4后续与15-5继续未执行。本地4/4和7组通过不代替Windows远端门槛；进一步修复/CI重跑需要追加授权。
+
+### 后续本机定位：第三轮ENOENT为Node22测试复制缺陷
+
+用户要求自主判断修法后，在本机下载并校验官方Node22.23.4，旧用例精确复现CI同一ENOENT：fs.cpSync未报错，但源102文件、目标目录不存在、目标0文件。与Node官方#61878一致。旧Node24用例通过，原Java UTF-8参数修复与此独立，不撤销。
+
+仅修改测试：改用.NET真实ZIP创建/解压到中文安装目录，启动前核对完整文件清单与SHA256；保留原中文启动/内容断言，现场移到artifact覆盖的独立目录。Node22/24各4项全过，UTF-8 FigTide完整本地ZIP在中文目录的真实冒烟两版本各7组全过。证据与哈希见docs/test-evidence/release02-copyfix.json。没有远端新运行/推送/合并/标签/Release；仍不能把本机结果当作远端全量发布门槛通过。
