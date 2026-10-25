@@ -66,6 +66,16 @@ jobs:
         env:
           FIGTIDE_DESKTOP_JAR: ${{ github.workspace }}\.runtime\desktop-build\figtide.jar
         run: npm --prefix mcp run test:integration
+      - name: Add MCP server to release assets and checksums
+        run: |
+          $release = "dist/desktop/FigTide-$env:FIGTIDE_VERSION-windows-x64/release"
+          $mcp = 'mcp/dist/figtide-mcp.cjs'
+          if (!(Test-Path -LiteralPath $mcp -PathType Leaf)) { throw 'Built MCP bundle is missing.' }
+          Copy-Item -LiteralPath $mcp -Destination (Join-Path $release 'figtide-mcp.cjs')
+          $assets = @(Get-ChildItem -LiteralPath $release -File | Where-Object Name -ne 'SHA256SUMS.txt' | Sort-Object Name)
+          $lines = @($assets | ForEach-Object { "{0}  {1}" -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name })
+          [IO.File]::WriteAllText((Join-Path $release 'SHA256SUMS.txt'), (($lines -join "`n") + "`n"), [Text.UTF8Encoding]::new($false))
+          if (!($lines -match '  figtide-mcp\.cjs$')) { throw 'MCP bundle was not added to SHA256SUMS.txt.' }
       - name: Verify bundled executable without system Java
         run: ./scripts/test-desktop-package.ps1 -Application "dist/desktop/FigTide-$env:FIGTIDE_VERSION-windows-x64/FigTide"
       - name: Install browser for packaged acceptance

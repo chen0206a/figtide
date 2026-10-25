@@ -1,5 +1,9 @@
 # Changelog
 
+## 未发布
+
+- 新增本机 FigTide MCP Server：通过 Claude Desktop、Claude Code、Codex 或 Cursor 读取脱敏项目/字段/图表信息，校验与预览修改，并以 revision 冲突保护创建图表或保存新版本。Release 将单独提供 `figtide-mcp.cjs` 并纳入 `SHA256SUMS.txt`。
+
 ## 0.2.0 — 2026-10-25
 
 - Windows便携版：解压整个目录后双击`FigTide.exe`，无需安装JDK或MySQL；界面在系统默认浏览器打开。
