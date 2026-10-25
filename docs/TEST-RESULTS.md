@@ -1,3 +1,11 @@
+## 2026-10-25 · v0.2.0恢复发布：原问题修复，Windows PR暴露EXE启动失败后停止
+
+提交8ab780f单独换行规范，a59ca64修复响应字节断言及Windows PR触发；连同1bb9a0c推送并创建PR #3。六项常规CI全绿。Windows PR工作流40170049640：前端280 passed、Node40 passed、H2 258总计257 passed/0 failed/1 skipped、生产前端/Maven/jlink/jpackage均通过。原CRLF/LF失败已在Windows真实CI中消除。
+
+**EXE探针失败**：`Packaged EXE was not ready`（probe.cjs:55/84，约45秒未就绪），工作流4m13s后failure，浏览器安装/完整E2E及草稿准备全部跳过。本轮不能确认EXE内部失败原因，artifact只有67份后端报告，没有进程启动日志；没有修改产品、探针时限或弱化断言来掩盖它。原始全日志`.runtime/release02-retry-windows-full.log`、错误步骤`release02-retry-windows-failed.log`、artifact `release02-retry-failed-evidence/`及机器摘要release02-retry.json保留。
+
+按用户“失败就再次停下”停止：PR #3未合并；**v0.2.0未删除/未重打**，仍指向63f0128；其他标签与分支未改写；仅v0.1.0为公开Release；没有本地ZIP替代上传，没有远端分支清理，没有15-5重新下载/冒烟。RELEASE-0.2-STOPPED末尾处理结果记录根因修复、重打原因、未执行状态及失败时间，不捏造重打时间。追加报告本地提交，不推送/重跑。
+
 ## 2026-10-25 · v0.2.0 Windows发布恢复：本地修复验证
 
 按用户新授权从release/v0.2.0（包含未推送失败记录1bb9a0c）继续。8ab780f仅新增.gitattributes：默认text=auto/eol=lf、bat/cmd为CRLF、图片/字体/归档/JAR等二进制关闭文本转换。实际执行`git add --renormalize .`后没有已有文件字节差异（Git对象原已规范化），忽略行尾比较确认无非换行变更；未混入产品修改。

@@ -45,3 +45,23 @@ Java测试把预期内容写死为LF，Windows runner测试资源内容为CRLF�
 Windows工作流增加PR到main触发，在合并前完整构建、后端测试及EXE/浏览器验收；PR不创建Release。原失败记录1bb9a0c包含在修复分支中。
 
 标签重打原因：旧v0.2.0指向未修复提交，无法验证修复后的Windows产物；用户本次明确允许仅删除并重建v0.2.0，不允许强推分支或改其他标签。当前尚未执行重打，必须先等修复PR包括Windows在内的全部检查通过。实际时间与最终发布/下载结果在完成后补记。
+
+### 2026-10-25恢复检查结果：再次在门槛处停止
+
+修复提交：8ab780f（只新增换行规范，renormalize没有已有文件内容差异）、a59ca64（资源字节断言及Windows PR门槛）。[PR #3](https://github.com/chen0206a/figtide/pull/3)已包含原失败记录1bb9a0c。常规push/PR六项检查全绿；[Windows PR运行40170049640](https://github.com/chen0206a/figtide/actions/runs/40170049640)的前端280项、Node40项、H2 257通过/0失败/1跳过、完整便携包构建均成功，证明原行尾问题已修复。
+
+2026-10-25 15:46（UTC+09:00），Windows EXE探针报错：
+
+```text
+Error: Packaged EXE was not ready; inspect D:\a\figtide\figtide\.runtime\package-smoke-90bfbae9-8621-4ef3-bd05-409d7826f2ed
+    at ready (.../scripts/desktop/probe.cjs:55:9)
+    at async .../scripts/desktop/probe.cjs:84:39
+Packaged application verification failed.
+Process completed with exit code 1.
+```
+
+这是独立于原LF/CRLF问题的启动就绪失败，当前只确认约45秒内未就绪；artifact下载到67份后端测试报告，没有process-*.log或figtide.log，尚不能确定EXE内部启动原因，不能把延长超时当成已验证修复。
+
+按“失败就再次停下”停止：PR #3未合并；**截至本次记录未删除或重打标签，故没有重打执行时间**，旧v0.2.0仍指向63f01283cebacd63fd3833f586f90054a1247c31。没有创建v0.2.0草稿/正式Release，没有上传本地ZIP，没有清理远端分支；15-4后续与15-5未执行。重打原因和唯一标签授权保留，但执行前提尚未满足。
+
+完整日志`.runtime/release02-retry-windows-full.log`、失败步骤原文`release02-retry-windows-failed.log`、原始后端报告`release02-retry-failed-evidence/`及机器摘要`docs/test-evidence/release02-retry.json`保留。失败后的追加记录仅本地提交，不推送或自动重跑。
