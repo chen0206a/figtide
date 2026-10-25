@@ -1,0 +1,31 @@
+{
+  "probe": "edge-window",
+  "app_kind": "dev",
+  "jar": "D:/RAG-agent项目/LabFlow/.runtime/desktop-build/figtide.jar",
+  "java": "D:\\RAG-agent项目\\LabFlow\\.runtime\\java\\jdk-21.0.12.1+1\\bin\\java.exe",
+  "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "data_dir": "D:\\RAG-agent项目\\LabFlow\\.runtime\\edge-window-45556\\data",
+  "user_data_dir": "D:\\RAG-agent项目\\LabFlow\\.runtime\\edge-window-45556\\window",
+  "backend_port": 17940,
+  "passed": [
+    "backend ready (app.port + ping + health)",
+    "DevToolsActivePort written",
+    "app window page: url=http://127.0.0.1:17940/welcome title=欢迎 · FigTide",
+    "index.html served"
+  ],
+  "edge_pid": 59588,
+  "edge_args": [
+    "--app=http://127.0.0.1:17940/",
+    "--user-data-dir=D:\\RAG-agent项目\\LabFlow\\.runtime\\edge-window-45556\\window",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1440,900",
+    "--remote-debugging-port=0"
+  ],
+  "devtools_port": 55252,
+  "page_url": "http://127.0.0.1:17940/welcome",
+  "page_title": "欢迎 · FigTide",
+  "ok": true,
+  "temp_dir_removed": true,
+  "backend_log": "D:\\RAG-agent项目\\LabFlow\\.runtime\\edge-window-probe-backend.log"
+}

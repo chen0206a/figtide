@@ -54,6 +54,10 @@ jobs:
         run: ./scripts/package-desktop.ps1
       - name: Verify bundled executable without system Java
         run: ./scripts/test-desktop-package.ps1 -Application "dist/desktop/FigTide-$env:FIGTIDE_VERSION-windows-x64/FigTide"
+      - name: Edge app window probe
+        run: |
+          node scripts/desktop/edge-window-probe.cjs --app "dist/desktop/FigTide-$env:FIGTIDE_VERSION-windows-x64/FigTide"
+          if ($LASTEXITCODE) { throw 'Edge app window probe failed' }
       - name: Install browser for packaged acceptance
         working-directory: frontend
         run: npx playwright install chromium
@@ -73,6 +77,7 @@ jobs:
           include-hidden-files: true
           path: |
             .runtime/desktop-package-smoke.json
+            .runtime/edge-window-probe.json
             .runtime/package-smoke-*/
             backend/target/surefire-reports/
             frontend/test-results/
