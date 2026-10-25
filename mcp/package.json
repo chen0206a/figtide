@@ -9,7 +9,8 @@
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=node --format=cjs --target=node18 --outfile=dist/figtide-mcp.cjs --banner:js=\"#!/usr/bin/env node\"",
     "check": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run test/unit",
+    "test:integration": "vitest run test/integration.test.ts --testTimeout 120000",
     "start": "node dist/figtide-mcp.cjs"
   },
   "dependencies": {

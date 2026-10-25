@@ -1670,3 +1670,12 @@ E2E 生成的 3 个测试项目（`配置交互验收`、`实验记录验收`、
 - 验证：`npm run check` 通过；`npm run build` 通过（单文件 CJS bundle）。协议级参数、注解和真实调用留给 17-3 测试提交。
 - 与任务文件的偏差：`create_chart` 接收完整 schema v1 config，避免在 MCP 复制前端默认值或后端校验；其中仍明确包含数据版本、图表类型和字段映射。
 
+## 2026-10-25 · 任务 17-3：MCP 测试与 CI
+
+- 单元测试覆盖连接解析、Node 版本、桌面/开发确认、连接失败与 400/404/409 映射、11 个工具的 HTTP 映射、脱敏、lint 前置、写入短路，以及 9 个参数化工具的 MCP schema 拒绝；工具列表和注解经 SDK 客户端核对。
+- 真实集成测试以临时 H2 数据目录启动 desktop JAR，SDK 客户端通过 stdio 连接单文件 bundle：11 个工具/注解正确；项目与字段画像不泄露文件名、样例值或原始行；预览后保存 revision 1→2；旧 revision 返回清楚冲突且服务端保持 v2。
+- 新增 `mcp.spec.ts`：MCP 保存 v2 后浏览器显示新标题，版本历史加载 v1 并保存为 v3；测试数据与 H2 目录均由隔离运行器清理。
+- CI 新增 Ubuntu/Windows MCP 矩阵；Windows 桌面发布工作流在打包后用真实 desktop JAR 跑 stdio 集成，并在完整产物 E2E 中包含 MCP 用例。
+- 验证：`npm run check` 通过；MCP 单元 14/14；`npm run build` 通过；真实 stdio 集成 1/1；桌面浏览器 MCP E2E 1/1，audit-restart 通过。远端 Linux/Windows CI 未执行（按任务要求不推送）。
+- 与任务文件的偏差：没有。
+

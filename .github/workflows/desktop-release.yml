@@ -24,7 +24,9 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: |
+            frontend/package-lock.json
+            mcp/package-lock.json
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -42,6 +44,14 @@ jobs:
         run: |
           npm ci --prefix frontend
           if ($LASTEXITCODE) { throw 'npm ci failed' }
+          npm ci --prefix mcp
+          if ($LASTEXITCODE) { throw 'MCP npm ci failed' }
+          npm --prefix mcp run check
+          if ($LASTEXITCODE) { throw 'MCP type check failed' }
+          npm --prefix mcp test
+          if ($LASTEXITCODE) { throw 'MCP unit tests failed' }
+          npm --prefix mcp run build
+          if ($LASTEXITCODE) { throw 'MCP build failed' }
           npm --prefix frontend test -- --maxWorkers=2
           if ($LASTEXITCODE) { throw 'Frontend tests failed' }
           node --test scripts/migration/*.test.cjs
@@ -52,6 +62,10 @@ jobs:
           if ($LASTEXITCODE) { throw 'H2 tests failed' }
       - name: Build portable application
         run: ./scripts/package-desktop.ps1
+      - name: Test MCP through stdio against desktop JAR
+        env:
+          FIGTIDE_DESKTOP_JAR: ${{ github.workspace }}\.runtime\desktop-build\figtide.jar
+        run: npm --prefix mcp run test:integration
       - name: Verify bundled executable without system Java
         run: ./scripts/test-desktop-package.ps1 -Application "dist/desktop/FigTide-$env:FIGTIDE_VERSION-windows-x64/FigTide"
       - name: Install browser for packaged acceptance
