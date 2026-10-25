@@ -1,0 +1,47 @@
+# FigTide 独立窗口（Edge 应用模式）
+
+任务 16 引入的独立窗口方案：桌面版默认不再在系统默认浏览器的普通标签页里打开工作台，而是用 Microsoft Edge 的应用模式（`--app`）打开一个独立窗口。本文记录实现方式、实测结果与已知限制。
+
+## 实现方式
+
+启动参数由 `backend/src/main/java/dev/labflow/desktop/DesktopWindow.java` 组装：
+
+```
+msedge.exe --app=http://127.0.0.1:<端口>/
+  --user-data-dir=<数据目录同级>/window
+  --no-first-run --no-default-browser-check
+  --window-size=1440,900
+```
+
+- **Edge 查找顺序**：注册表 `HKLM`、`HKCU` 的 `SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe`，然后依次尝试 `%ProgramFiles(x86)%`、`%ProgramFiles%` 下的 `Microsoft\Edge\Application\msedge.exe`。
+- **固定 user-data-dir**：默认 `<数据目录同级>/window`（即 `%LOCALAPPDATA%\FigTide\window`）。草稿、介绍页标记、页面偏好等浏览器本地状态存在这份独立的 Edge 配置里，重启后端口不变（首选固定端口），窗口里的状态可以沿用。
+- **端口规则不变**：仍遵守 14-2b 的首选固定端口（默认 17861）+ 占用时临时随机 + 托盘气泡提示。
+- **配置开关**：`--labflow.desktop.window=app|browser`（默认 `app`）。`--labflow.desktop.open-browser=false` 仍然完全禁止开窗口（测试与 E2E 用）。传其他值直接报错，不静默回退。
+- **找不到 Edge 或启动失败**：退回系统默认浏览器打开，托盘弹一次气泡说明原因，日志同步记录。生产参数里永远不会出现 `--remote-debugging-port`（只有 CI 探针测试时才加，见下）。
+- **再次双击**：第二个进程探测到已有实例后，同样以应用模式再开一个窗口，不会启动第二个后端。
+- **托盘**：新增「在浏览器中打开」菜单项（系统默认浏览器，方便找回旧浏览器里的未保存草稿）；「打开 FigTide」也改为打开应用窗口。
+
+## 实测结果（Windows 10 本机）
+
+启动真实 `figtide.jar`（`--labflow.desktop.tray=false`，窗口默认开启）：
+
+- Edge 应用窗口正常打开，尺寸精确 1440×900，加载 `http://127.0.0.1:<端口>/`（SPA 重定向到 `/welcome`，标题「欢迎 · FigTide」）。
+- 主进程命令行与上面参数一致；崩溃恢复、GPU、渲染子进程全部挂在这份 user-data-dir 上。
+- 窗口截图：`docs/screenshots/app-window-main.png`；任务栏截图：`docs/screenshots/app-window-taskbar.png`。
+
+### 任务栏图标（如实记录）
+
+**Edge 应用窗口的窗口图标和任务栏图标是 Microsoft Edge 的标志（蓝绿漩涡），不是 FigTide 的图标。** 通过 `WM_GETICON` 取出的 48×48 图标与品牌 `favicon` 做像素级对比（差异 130，基线自比 15.7），主要颜色为白色背景 + Edge 蓝绿，可确认不是 FigTide 品牌图标（墨黑 + 橙色）。`--app` 模式下 Edge 不提供自定义窗口图标的途径；任务书也明确禁止伪装任务栏图标。网页内的 favicon（`frontend/public/favicon.ico`、`manifest.webmanifest` 的 16–512px 品牌图标）在窗口内正常显示。
+
+## 测试
+
+- **单元测试**：`backend/src/test/java/dev/labflow/desktop/DesktopWindowTest.java`（13 项：注册表查找优先级/兜底、参数组装含中文空格路径、userDataDir 布局、Edge 缺失/启动失败回退、browser 模式、mode 校验、升级气泡只展示一次且保留首选端口）。
+- **CI 进程探针**：`scripts/desktop/edge-window-probe.cjs`——真实启动打包后的应用，用生产参数 + `--remote-debugging-port=0`（仅测试）启动 Edge，读取 user-data-dir 下的 `DevToolsActivePort`，经 DevTools HTTP 接口断言窗口页面是 `http://127.0.0.1:<端口>/` 同源地址且标题含 FigTide，然后清理全部进程与临时目录。已加入 `desktop-release.yml` 的 Windows 任务（PR 与打 tag 都会跑），证据 JSON 随 `desktop-package-evidence` 工件上传。
+- **完整桌面 E2E**：`scripts/test-agent.ps1 -All -Desktop` 照常全量回归（窗口关闭路径）。
+
+## 已知限制
+
+- **依赖 Microsoft Edge**：Edge 缺失或启动失败时退回默认浏览器（托盘气泡说明）。窗口图标/任务栏图标是 Edge 的（见上）。
+- **关闭窗口不会退出程序**：后端与托盘仍在运行，需要从托盘「退出」。
+- **升级提示**：从旧版本（浏览器模式）升级后第一次启动，托盘气泡提示一次「旧浏览器草稿不自动迁移，可从托盘『在浏览器中打开』找回」（标记记在 `desktop.json`，不重复弹）。
+- **旧浏览器本地状态不自动迁移**：与既有规则一致，草稿/页面偏好按 origin 隔离。
