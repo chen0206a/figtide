@@ -24,12 +24,18 @@ public final class DesktopLauncher {
     try {
       var paths = DesktopPaths.resolve(args, System.getenv(), System.getProperty("user.home"));
       boolean open = Boolean.parseBoolean(DesktopPaths.option(args, "labflow.desktop.open-browser", "true"));
+      var window = new DesktopWindow(DesktopWindow.mode(DesktopPaths.option(args, "labflow.desktop.window", "app")),
+          paths.data(), System.getenv());
       var acquired = DesktopInstance.acquire(paths.data());
       if (acquired.isEmpty()) {
         for (int i = 0; i < 30; i++) {
           var running = DesktopInstance.running(paths.data());
           if (running.isPresent()) {
-            if (open) DesktopUi.browse(running.get());
+            // 再次双击：再开一个应用窗口（Edge 复用同一个 user-data-dir），不启动第二个后端。
+            if (open) {
+              var opened = window.open(running.get());
+              if (opened.fallback()) System.err.println("独立窗口退回浏览器：" + opened.reason());
+            }
             System.out.println("FigTide 已在运行：" + running.get()); return;
           }
           Thread.sleep(200);
@@ -57,8 +63,14 @@ public final class DesktopLauncher {
             "{}；首选端口={}，本次端口={}，desktop.json 保持不变", DesktopPort.FALLBACK_NOTICE,
             port.preferred(), instance.uri().getPort());
         if (Boolean.parseBoolean(runtime.context.getEnvironment().getProperty("labflow.desktop.tray", "true")))
-          runtime.ui.show(instance, paths, runtime::close, port.temporary());
-        if (open) DesktopUi.browse(instance.uri());
+          runtime.ui.show(instance, paths, runtime::close, port.temporary(), window);
+        if (open) {
+          var opened = window.open(instance.uri());
+          if (opened.fallback()) {
+            LoggerFactory.getLogger(DesktopLauncher.class).warn("独立窗口退回浏览器：{}", opened.reason());
+            runtime.ui.notice("FigTide 窗口提示", opened.reason(), java.awt.TrayIcon.MessageType.WARNING);
+          }
+        }
       } catch (Throwable failure) {
         runtime.close();
         try { java.lang.Runtime.getRuntime().removeShutdownHook(hook); } catch (IllegalStateException ignored) { }

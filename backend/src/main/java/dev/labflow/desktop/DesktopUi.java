@@ -27,7 +27,8 @@ final class DesktopUi {
     catch (Exception | AWTError ignored) { System.err.println("请打开文件夹：" + path); }
   }
 
-  void show(DesktopInstance instance, DesktopPaths paths, Runnable quit, boolean temporaryPort) {
+  void show(DesktopInstance instance, DesktopPaths paths, Runnable quit, boolean temporaryPort,
+      DesktopWindow window) {
     try {
       if (!SystemTray.isSupported()) { System.err.println("系统托盘不可用；关闭进程前请正常退出服务。"); return; }
       EventQueue.invokeAndWait(() -> {
@@ -37,24 +38,39 @@ final class DesktopUi {
           try (var stream = DesktopUi.class.getResourceAsStream(resource)) {
             Image image = ImageIO.read(stream);
             var menu = new PopupMenu();
-            item(menu, "打开 FigTide", () -> browse(instance.uri()));
+            item(menu, "打开 FigTide", () -> {
+              var opened = window.open(instance.uri());
+              if (opened.fallback()) System.err.println("独立窗口退回浏览器：" + opened.reason());
+            });
+            item(menu, "在浏览器中打开", () -> browse(instance.uri()));
             item(menu, "打开数据文件夹", () -> folder(paths.data()));
             item(menu, "打开日志文件夹", () -> folder(paths.logs()));
             menu.addSeparator();
             item(menu, "退出", () -> new Thread(quit, "figtide-exit").start());
             tray = new TrayIcon(image, "FigTide 图汐", menu); tray.setImageAutoSize(true);
-            tray.addActionListener(event -> browse(instance.uri())); system.add(tray);
+            tray.addActionListener(event -> {
+              var opened = window.open(instance.uri());
+              if (opened.fallback()) System.err.println("独立窗口退回浏览器：" + opened.reason());
+            });
+            system.add(tray);
             Path notice = paths.data().resolve(".tray-notice-shown");
             if (temporaryPort) {
               tray.displayMessage("FigTide 端口提示", DesktopPort.FALLBACK_NOTICE, TrayIcon.MessageType.WARNING);
             } else if (!Files.exists(notice)) {
-              tray.displayMessage("FigTide 正在运行", "关闭浏览器不会退出，可以从托盘图标退出", TrayIcon.MessageType.INFO);
+              tray.displayMessage("FigTide 正在运行", "关闭窗口不会退出，可以从托盘图标退出", TrayIcon.MessageType.INFO);
               Files.writeString(notice, "1");
             }
           }
         } catch (Exception e) { System.err.println("托盘初始化失败；服务仍在运行。"); }
       });
     } catch (Exception | AWTError ignored) { System.err.println("系统托盘不可用；服务仍在运行。"); }
+  }
+
+  /** 供启动流程在独立窗口退回浏览器时通过托盘气泡说明原因。 */
+  void notice(String title, String message, TrayIcon.MessageType type) {
+    if (tray == null) return;
+    try { EventQueue.invokeAndWait(() -> tray.displayMessage(title, message, type)); }
+    catch (Exception | AWTError ignored) { }
   }
 
   private void item(PopupMenu menu, String title, Runnable action) {
