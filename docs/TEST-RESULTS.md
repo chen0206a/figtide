@@ -1,3 +1,11 @@
+## 2026-10-25 · 15-4 Windows发布失败，按任务书停止；15-5未执行
+
+PR #2在push/PR两轮共6项frontend/MySQL/H2检查全部通过后普通merge，main=`63f01283cebacd63fd3833f586f90054a1247c31`，标签v0.2.0已推送；没有强推或改写旧提交。main及标签的常规CI和Pages部署均成功。
+
+**Windows工作流40161500613失败**：Test source的H2全量258项=256 passed/1 failed/1 skipped，唯一失败DesktopPagesTest.java:27，静态JS响应的实际CRLF与写死的LF预期不同，JUnit XML CDATA原始字节已核实。打包/EXE探针/完整浏览器检查/草稿创建全部跳过，不能算通过。没有v0.2.0 Release，也没有本地ZIP替代上传。
+
+按15-4“工作流失败就停下汇报”停止，不修复或重发、不改标签、不删除远端分支、不执行15-5。详细链接、错误原文和证据在`docs/desktop/RELEASE-0.2-STOPPED.md`；原始下载日志`.runtime/task15-4-windows-failed.log`及JUnit报告`task15-4-failed-evidence/`保留。失败记录只在本地release/v0.2.0提交，不推送；已发布的v0.1.0未改。
+
 ## 2026-10-25 · 15-4：受限发布准备（远端检查待执行）
 
 按新任务要求将desktop-release改为只创建草稿/附件，不自动公开；标题FigTide vX.Y.Z、正文直接提取CHANGELOG对应版本，日志打印SHA256SUMS。YAML解析、草稿标志/无自动发布检查、0.2.0正文实际提取均通过。此前的14-4自动发布描述为历史行为，本节取代之。

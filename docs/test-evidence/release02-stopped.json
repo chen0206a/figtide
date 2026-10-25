@@ -1,0 +1,113 @@
+{
+  "task": "15-4",
+  "status": "stopped_by_task_gate",
+  "pr": {
+    "headRefOid": "54dc391677b635e1ae2e551c39b72f9f8f170b28",
+    "mergeable": "MERGEABLE",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T04:18:53Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40161359292/job/121073424093",
+        "name": "frontend",
+        "startedAt": "2026-10-25T04:17:47Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T04:18:28Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40161353722/job/121073407328",
+        "name": "frontend",
+        "startedAt": "2026-10-25T04:17:41Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T04:19:11Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40161359292/job/121073424133",
+        "name": "backend",
+        "startedAt": "2026-10-25T04:17:46Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T04:18:57Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40161353722/job/121073407209",
+        "name": "backend",
+        "startedAt": "2026-10-25T04:17:41Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T04:18:38Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40161359292/job/121073424121",
+        "name": "backend-h2",
+        "startedAt": "2026-10-25T04:17:46Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T04:18:25Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/chen0206a/figtide/actions/runs/40161353722/job/121073407295",
+        "name": "backend-h2",
+        "startedAt": "2026-10-25T04:17:41Z",
+        "status": "COMPLETED",
+        "workflowName": "Test LabFlow"
+      }
+    ],
+    "url": "https://github.com/chen0206a/figtide/pull/2"
+  },
+  "merge": {
+    "mergeCommit": {
+      "oid": "63f01283cebacd63fd3833f586f90054a1247c31"
+    },
+    "mergedAt": "2026-10-25T04:19:55Z",
+    "state": "MERGED",
+    "url": "https://github.com/chen0206a/figtide/pull/2"
+  },
+  "windows": {
+    "conclusion": "failure",
+    "headBranch": "v0.2.0",
+    "headSha": "63f01283cebacd63fd3833f586f90054a1247c31",
+    "url": "https://github.com/chen0206a/figtide/actions/runs/40161500613"
+  },
+  "frontend": {
+    "passed": 280,
+    "failed": 0
+  },
+  "migration_node": {
+    "passed": 40,
+    "failed": 0
+  },
+  "windows_h2": {
+    "total": 258,
+    "passed": 256,
+    "failed": 1,
+    "skipped": 1
+  },
+  "failure": {
+    "file": "backend/src/test/java/dev/labflow/desktop/DesktopPagesTest.java",
+    "line": 27,
+    "expected_repr": "b'window.desktopTest = true;\\n'",
+    "actual_repr": "b'window.desktopTest = true;\\r\\n'",
+    "junit_sha256": "f3ae4c7156f92ce0c1c9a8e1be72cfb31562b9e40b80e241af0f45e8a28c09db"
+  },
+  "raw_log": ".runtime/task15-4-windows-failed.log",
+  "raw_log_sha256": "f54a7f59302c5bd23d9b759acaa09c6f7b46590d2dc4f3724e62af531e25b731",
+  "release_0_2_created": false,
+  "local_zip_uploaded": false,
+  "history_rewritten": false,
+  "remote_cleanup_executed": false,
+  "task_15_5_executed": false
+}
