@@ -91,3 +91,11 @@ Process completed with exit code 1.
 用户要求自主判断修法后，在本机下载并校验官方Node22.23.4，旧用例精确复现CI同一ENOENT：fs.cpSync未报错，但源102文件、目标目录不存在、目标0文件。与Node官方#61878一致。旧Node24用例通过，原Java UTF-8参数修复与此独立，不撤销。
 
 仅修改测试：改用.NET真实ZIP创建/解压到中文安装目录，启动前核对完整文件清单与SHA256；保留原中文启动/内容断言，现场移到artifact覆盖的独立目录。Node22/24各4项全过，UTF-8 FigTide完整本地ZIP在中文目录的真实冒烟两版本各7组全过。证据与哈希见docs/test-evidence/release02-copyfix.json。没有远端新运行/推送/合并/标签/Release；仍不能把本机结果当作远端全量发布门槛通过。
+
+### 发布复验：原阻塞通过，完整E2E发现定位歧义
+
+用户确认后推送29e16a4，[运行40176372166](https://github.com/chen0206a/figtide/actions/runs/40176372166)：Windows启动器4/4、H2 257 passed/1 skipped、前端280、迁移40、完整构建与EXE7组全过（首ping5.579秒）。两处中文路径问题已实证通过。完整E2E83 passed/1 failed/3迁移专项skipped；唯一isolation.spec.ts:69在切换项目之前getByText匹配侧栏和正文两个同名元素。CI截图/trace确认当前选中A且两处都是A文件，属于准备断言歧义。
+
+本地改为精确heading定位，保留20×50ms全页隔离采样和所有后续断言；真实EXE隔离5/5及审计重启通过。原始错误、trace/截图/JSON及哈希见release02-confirm.json和TEST-RESULTS顶部。完整artifact保留在GitHub，选择性下载5份证据；没有宣称整包artifact已下载。
+
+本轮Windows整体failure仍使发布门槛未过：停止后续合并/标签/草稿/发布/15-5，不自动触发下一轮。新定位修复和记录仅本地提交，旧v0.2.0继续指63f0128，仍无重打时间。

@@ -1,0 +1,61 @@
+{
+  "pr": 3,
+  "head": "29e16a4be011723925b35957415219eb6fd20fc1",
+  "windows_run": 40176372166,
+  "job": 121117826488,
+  "url": "https://github.com/chen0206a/figtide/actions/runs/40176372166",
+  "conclusion": "failure",
+  "checks": {
+    "frontend_passed": 280,
+    "node_migration_passed": 40,
+    "unicode_launcher_passed": 4,
+    "h2_total": 258,
+    "h2_passed": 257,
+    "h2_failed": 0,
+    "h2_skipped": 1,
+    "h2_skip_reason": "ServerEvaluationTest live-model mode disabled",
+    "build": "success",
+    "exe_smoke_groups_passed": 7,
+    "first_exe_ping_ms_from_spawn": 5579,
+    "e2e": {
+      "startTime": "2026-10-25T08:27:36.733Z",
+      "duration": 293766.58499999996,
+      "expected": 83,
+      "skipped": 3,
+      "unexpected": 1,
+      "flaky": 0
+    }
+  },
+  "failure": {
+    "file": "frontend/e2e/isolation.spec.ts:69",
+    "error": "strict mode violation: getByText(isolation-a-synthetic.csv) resolved to 2 elements: sidebar <b> and detail <h2>",
+    "phase": "before project switch; setup assertion",
+    "evidence": "trace and error context verify project A selected and both elements name project A dataset"
+  },
+  "local_fix": {
+    "locator": "getByRole(heading, { name: a.file, exact: true })",
+    "negative_body_sampling": "unchanged 20 x 50ms",
+    "packaged_isolation_passed": 5,
+    "packaged_isolation_failed": 0,
+    "audit_restart": "passed",
+    "command": "./scripts/test-agent.ps1 -Packaged -Application 'dist/desktop/utf8-fix/FigTide-0.2.0-windows-x64/FigTide' -FixturePort 18770 -Specs @('isolation.spec.ts')"
+  },
+  "artifact": {
+    "id": 12592317107,
+    "bytes": 84606243,
+    "selected_files_downloaded": 5,
+    "all_selected_zip_crc_checked": true,
+    "selected_sha256": {
+      ".runtime\\desktop-package-smoke.json": "8bbf020d742317493b62489620a0db3580448c2db6bd80434b0f674c2d6d44ff",
+      "frontend\\test-results\\results.json": "b0776d9711cb3d632ad304567c8bb7f2e16bde623914027a29291010546d2f9c",
+      "frontend\\test-results\\isolation-data-page-never--2526f-ject-s-file-after-switching\\error-context.md": "e41fe57b7eb821675a4a8651a0acbd4aa350d0cecaa2681e420f7c229098394e",
+      "frontend\\test-results\\isolation-data-page-never--2526f-ject-s-file-after-switching\\test-failed-1.png": "05465294851aff801568ec7e584ea84c393ecad6774bd020867af74d9fb4959f",
+      "frontend\\test-results\\isolation-data-page-never--2526f-ject-s-file-after-switching\\trace.zip": "59714ef9ecc8f57248a5a928639daf5ee45180c15c711cd42229693d42e55785"
+    }
+  },
+  "full_job_log_sha256": "b9b018ad7edacecd1415a56653c5015d67ad68044322c052eac8a9d56281227b",
+  "no_followup_ci_triggered": true,
+  "pr_not_merged": true,
+  "tag_unchanged": "63f01283cebacd63fd3833f586f90054a1247c31",
+  "release_v020_not_published": true
+}

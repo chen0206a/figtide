@@ -1,3 +1,23 @@
+## 2026-10-25 · Windows发布复验：中文路径与EXE门槛通过，E2E定位冲突后停止
+
+用户“可以，确认一下”后推送29e16a4，复用PR #3。[Windows运行40176372166](https://github.com/chen0206a/figtide/actions/runs/40176372166)已完成failure。常规push/PR六项成功；Windows前端280/0/0、Node迁移40/0/0、新Unicode启动器4/0/0、H2后端257/0/1（总258，ServerEvaluationTest真实模型模式未启用）均通过，生产前端/Maven/jlink/jpackage全部通过。**原来的中文数据路径失真和测试复制ENOENT已在Windows真实CI通过**；EXE7组探针全过，首ping从spawn起5.579秒，原45秒循环不变，paid_model_calls=0。
+
+完整87条产物E2E结果：**83 passed / 1 failed / 3 skipped / 0 flaky**。3条仍为迁移专项，条件LABFLOW_MIGRATION_E2E未开启，并非新增跳过。唯一失败isolation.spec.ts:69：
+
+```text
+Error: strict mode violation: getByText('isolation-a-synthetic.csv') resolved to 2 elements:
+1) <b>isolation-a-synthetic.csv</b> — sidebar dataset button
+2) <h2>isolation-a-synthetic.csv</h2> — dataset detail heading
+```
+
+失败发生在**切换项目之前**的准备断言。已查看CI截图、error-context与trace（ZIP CRC完整）：当前项目A被选中，列表和详情都是A的同一文件名，没有据此判定为串项目数据。局部修复为`getByRole("heading", { name: a.file, exact: true })`，等待数据详情真正就绪；切换项目、20×50ms全页采样、不得出现A文件名、空态与URL断言全部保留。不加.first()、不删除断言、不刷新基线、不改产品。
+
+实际本地复验：`./scripts/test-agent.ps1 -Packaged -Application 'dist/desktop/utf8-fix/FigTide-0.2.0-windows-x64/FigTide' -FixturePort 18770 -Specs @('isolation.spec.ts')` **5 passed/0 failed/0 skipped**，审计重启通过，独立临时H2的10个项目已清理，没有访问用户工作区/模型。业务与组件未改，npm test/build未本地重跑；Windows上的280组件及完整构建已实际执行。不把本地5/5当作修复后的全量CI通过。
+
+证据：完整artifact 12592317107（84,606,243字节）由GitHub保留；选择性下载5项到.runtime/release02-confirm-selected-evidence（EXE报告、Playwright JSON、失败截图/error-context/trace），逐项ZIP CRC校验。原始job日志.runtime/release02-confirm-pr-job.log，机器结果与SHA256见docs/test-evidence/release02-confirm.json。失败trace路径为该目录下frontend/test-results/isolation-data-page-never--2526f-ject-s-file-after-switching/trace.zip。
+
+按本轮开始时的失败处理约定停止远端后续动作：PR #3未合并，v0.2.0未删除/重打，仍指63f0128；没有草稿/发布/15-5下载复核/远端分支清理。仅将定位修复与记录本地提交，不推送、不自行触发下一轮CI。待下一次完整门槛验证，不能宣布发布完成。
+
 ## 2026-10-25 · Windows剩余ENOENT：本机复现、定位并修正测试复制流程
 
 用户要求自主判断修法，不必沿用旧任务步骤。本轮只本机排查、修复、提交，不推送、不触发第4轮CI、不合并或操作标签/Release。
