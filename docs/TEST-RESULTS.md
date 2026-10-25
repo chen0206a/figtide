@@ -1,3 +1,7 @@
+## 2026-10-25 · v0.2.0再次授权发布：准备第1轮（最多2轮PR CI）
+
+补充CHANGELOG中文用户名/数据路径启动修复及Windows10 1903要求、GUIDE安装目录不含emoji，推送既有1dd7ed2精确标题定位及Node22 ZIP复制修复。修改限测试定位和文档，未改产品代码。文档一致性/差异检查通过；本地隔离5/5与审计重启已在上一节实际执行，本节不重复；全量源码/打包/E2E由新Windows CI执行，结果待记录。产品失败立即停，只允许测试定位/时序问题再修一次；不加.first、不删断言、不调长超时。PR全部检查绿之前标签和Release保持原状。
+
 ## 2026-10-25 · Windows发布复验：中文路径与EXE门槛通过，E2E定位冲突后停止
 
 用户“可以，确认一下”后推送29e16a4，复用PR #3。[Windows运行40176372166](https://github.com/chen0206a/figtide/actions/runs/40176372166)已完成failure。常规push/PR六项成功；Windows前端280/0/0、Node迁移40/0/0、新Unicode启动器4/0/0、H2后端257/0/1（总258，ServerEvaluationTest真实模型模式未启用）均通过，生产前端/Maven/jlink/jpackage全部通过。**原来的中文数据路径失真和测试复制ENOENT已在Windows真实CI通过**；EXE7组探针全过，首ping从spawn起5.579秒，原45秒循环不变，paid_model_calls=0。

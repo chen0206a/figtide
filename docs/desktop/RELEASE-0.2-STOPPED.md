@@ -99,3 +99,9 @@ Process completed with exit code 1.
 本地改为精确heading定位，保留20×50ms全页隔离采样和所有后续断言；真实EXE隔离5/5及审计重启通过。原始错误、trace/截图/JSON及哈希见release02-confirm.json和TEST-RESULTS顶部。完整artifact保留在GitHub，选择性下载5份证据；没有宣称整包artifact已下载。
 
 本轮Windows整体failure仍使发布门槛未过：停止后续合并/标签/草稿/发布/15-5，不自动触发下一轮。新定位修复和记录仅本地提交，旧v0.2.0继续指63f0128，仍无重打时间。
+
+### 再次授权发布：最终验证准备
+
+本次最多两轮PR CI：只允许产品正确时修测试定位/时序（不加.first、不删断言、不延长超时）；产品失败立即停止。推送本地isolation精确标题定位、Node22 ZIP解压修复及记录。CHANGELOG补充中文用户名/数据路径启动修复与Windows10 1903最低要求；GUIDE补充安装目录不含emoji。
+
+两个原始阻塞的根因与修复已在上文留证：1）DesktopPagesTest把LF写死，Windows资源CRLF导致不一致，改为比较实际资源字节并增加Git换行规则；2）JDK21启动器ANSI转换损坏中文参数，GUI错误框存活表现为45秒未就绪，改为进程UTF-8 manifest，保留原超时。后续Node22复制静默漏文件和E2E同名定位歧义分别以真实ZIP解压/哈希核对、精确heading等待修复，原断言语义保留。标签尚未重打，只有PR全部检查一次全绿才执行，届时补实际时间。
