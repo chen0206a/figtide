@@ -1,3 +1,11 @@
+## 2026-10-25 · v0.2.0 Windows发布恢复：本地修复验证
+
+按用户新授权从release/v0.2.0（包含未推送失败记录1bb9a0c）继续。8ab780f仅新增.gitattributes：默认text=auto/eol=lf、bat/cmd为CRLF、图片/字体/归档/JAR等二进制关闭文本转换。实际执行`git add --renormalize .`后没有已有文件字节差异（Git对象原已规范化），忽略行尾比较确认无非换行变更；未混入产品修改。
+
+DesktopPagesTest改为ClassPathResource读取实际字节并用content().bytes比较，保留非空资源、缓存头、缺失资源404检查；仅测试代码改变，没有改API或生产代码。Windows工作流新增PR到main触发，沿用完整源码/打包/EXE/浏览器检查，草稿步骤仍严格限定tag push。
+
+实际Windows本地回归：`mvn -B -f backend/pom.xml -Dtest=DesktopPagesTest test` 4 passed/0 failed/0 skipped；将**生成目录**测试资源改为CRLF后`mvn -B -f backend/pom.xml -Dtest=DesktopPagesTest surefire:test`同样4/0/0，finally恢复生成资源，未改源码夹具。日志`.runtime/release02-retry-{lf,crlf}.log`。YAML/PR触发与tag-only草稿门槛检查另实测。后续远端结果见处理结果，不提前宣称发布成功。
+
 ## 2026-10-25 · 15-4 Windows发布失败，按任务书停止；15-5未执行
 
 PR #2在push/PR两轮共6项frontend/MySQL/H2检查全部通过后普通merge，main=`63f01283cebacd63fd3833f586f90054a1247c31`，标签v0.2.0已推送；没有强推或改写旧提交。main及标签的常规CI和Pages部署均成功。
