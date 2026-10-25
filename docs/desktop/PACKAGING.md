@@ -24,7 +24,7 @@
 `.github/workflows/desktop-release.yml`：Windows2022 + Node22 + Temurin21，先运行前端/H2/迁移测试，再打包、进行真实EXE探针和完整产物浏览器E2E、上传workflow artifact。浏览器安装仅用于CI验证，不进入用户便携包。
 
 - 手动workflow_dispatch只生成artifact。
-- 推送匹配源码版本的`vX.Y.Z`标签后才走Release：先建草稿、附三个文件、最后公开；已有正式Release拒绝覆盖。
+- 推送匹配源码版本的`vX.Y.Z`标签后才准备Release草稿：先测试、构建、附三个文件，正文从CHANGELOG对应版本提取，打印SHA256SUMS。维护者核对后才公开，工作流不自动发布；已有正式Release拒绝覆盖。
 - 本次仅本地验证和提交，GitHub实际执行、签名与公开Release均未执行。
 
 核对下载文件：

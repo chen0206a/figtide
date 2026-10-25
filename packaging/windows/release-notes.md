@@ -1,3 +1,5 @@
+Release正文由工作流从CHANGELOG.md对应版本自动提取。以下为历史打包背景，不再作为发布正文。
+
 Windows x64 portable build. Extract the entire ZIP and open `FigTide.exe`.
 
 - Includes a trimmed Java 21 runtime and embedded H2. No system JDK or MySQL needed.
