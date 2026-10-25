@@ -1,3 +1,30 @@
+## 2026-10-25 · v0.2.0第二阻塞：第3轮仍失败，达到授权上限后停止
+
+最后提交69376ff；[第3轮40172406890](https://github.com/chen0206a/figtide/actions/runs/40172406890)在2026-10-25 16:22:32（UTC+09）failure。3轮运行：40170951898（只诊断）、40171662432（进一步定位）、40172406890（UTF-8修复）。没有第4轮、没有手动dispatch、没有延长45秒循环。
+
+| 本轮Windows实际执行 | passed | failed | skipped |
+|---|---:|---:|---:|
+| 前端组件52文件 | 280 | 0 | 0 |
+| Node迁移测试 | 40 | 0 | 0 |
+| 原生启动器/诊断测试 | 3 | 1 | 0 |
+| H2后端、完整打包、产品EXE探针、浏览器E2E | 未执行 | — | Test source在Maven之前失败 |
+
+新增真实启动器测试中：旧launcher确实丢失Unicode参数；UTF-8 manifest后的同位置启动与Unicode文件内容一致检查已通过（执行流程越过第39行）；但复制到`中文 安装 Δ café/app`后的第47行启动报错，不能把整个测试算通过。原文：
+
+```text
+not ok 1 - real jpackage launcher preserves Unicode arguments and paths after manifest update
+error: 'spawnSync C:\Users\RUNNER~1\AppData\Local\Temp\figtide-launcher-unicode-BOtk5K\中文 安装 Δ café\app\UnicodeProbe.exe ENOENT'
+code: 'ENOENT'
+at TestContext.<anonymous> (.../scripts/desktop/launcher-utf8.test.cjs:47:3)
+# pass 3
+# fail 1
+# skipped 0
+```
+
+原45秒失败的ANSI→问号→InvalidPathException根因已证实；新的安装目录ENOENT尚未确定是文件复制、OS加载器或启动路径问题，不宣称只是测试环境。原始job日志.runtime/release02-round3-job.log及状态release02-round3-{state,pr-state}.json保留，失败原文提交到docs/test-evidence/release02-round3-error.txt；总证据/哈希release02-startup.json。因为未进入浏览器阶段，没有Playwright trace；本轮新fixture在系统Temp，不在当前artifact路径里，artifact提示无文件，不能声称已保全该目录。后续如获追加授权需先补此现场，不移除安装目录断言。
+
+常规push/PR另6项CI均成功，但Windows门槛未过，**PR #3保持OPEN，标签v0.2.0仍指63f0128，没有删除/重打，没有v0.2.0草稿/发布，没有15-5下载/冒烟和远端分支清理**。此次只追加本地记录提交、不推送，以免自动触发第4轮。前后端业务/API/用户数据未改，收费模型调用0。
+
 ## 2026-10-25 · v0.2.0第二阻塞，根因已证实；第3轮修复待CI
 
 [第2轮40171662432](https://github.com/chen0206a/figtide/actions/runs/40171662432)仍失败，但证据已完整：GUI错误窗口为“Failed to launch JVM”；控制台jpackage的jli arg[8]中中文目录成为`?? ??`，随后Java main在`DesktopPaths.java:18 Path.of(custom)`抛`InvalidPathException: Illegal char <?>`，0.502秒退出1；同一包内java.exe也是0.508秒退出1。服务尚未初始化数据和日志，因此原GUI进程一直等错误窗口，45秒只是探针观察到的表象。不是托盘/浏览器/保留端口/单纯启动慢。实际jli参数包含tray=false/open-browser=false。原始证据及SHA256见release02-startup.json，完整目录.runtime/release02-round2-evidence。

@@ -79,3 +79,9 @@ Process completed with exit code 1.
 第2轮控制台变体和包内Java均在约0.5秒退出1，完整异常为`InvalidPathException: Illegal char <?>`：jpackage JLI参数把`中文 空间`变成`?? ??`，DesktopPaths.java:18在数据目录/日志创建之前失败。GUI错误框“Failed to launch JVM”保持进程存活，造成原45秒超时。参数已带tray=false/open-browser=false，netsh无17920排除，故不调长超时。
 
 修复：打包脚本在原PE manifest加入进程UTF-8，保留提权/DPI/兼容性/图标/版本，不改Java业务、不改系统区域设置、不移除中文用例。Microsoft文档要求Windows10 1903及以后。新真实启动器测试和原探针本机4项+7组通过，首ping4.86秒。原始错误文件SHA256与运行ID见docs/test-evidence/release02-startup.json。第3轮为授权的最后一次PR诊断/修复运行，结果待CI；标签/Release仍未操作。
+
+### 第二个问题：第3轮最终结果，按3轮上限停止
+
+2026-10-25 16:22:32（UTC+09），[最后一轮40172406890](https://github.com/chen0206a/figtide/actions/runs/40172406890)，commit69376ff，仍为failure：前端280/0/0、迁移40/0/0，新增启动器/诊断3/1/0。UTF-8更新后同安装位置的Unicode数据参数已通过，但复制到`中文 安装 Δ café/app`后的原生启动在launcher-utf8.test.cjs:47报`spawnSync .../UnicodeProbe.exe ENOENT`。此新场景根因尚未确定，不能当作成功，也没有删除断言。H2/Maven、完整打包、EXE探针、E2E和草稿步骤全部未执行；没有浏览器trace，原始错误全文见docs/test-evidence/release02-round3-error.txt、日志SHA256见release02-startup.json。
+
+授权3轮已用完，停止任何额外推送/dispatch，不合并PR #3，不操作标签或Release；没有第4轮。旧v0.2.0仍在63f0128，故重打时间仍为未执行。只在本地提交此次失败记录，不推送以避免新运行。15-4后续与15-5继续未执行。本地4/4和7组通过不代替Windows远端门槛；进一步修复/CI重跑需要追加授权。

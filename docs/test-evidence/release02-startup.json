@@ -14,6 +14,27 @@
       "run": 40171662432,
       "conclusion": "failure",
       "evidence": "GUI Failed to launch JVM; console and bundled Java both InvalidPathException on ?? ??/data"
+    },
+    {
+      "round": 3,
+      "commit": "69376ff89634aecd21314a79df443a3d56acffaf",
+      "run": 40172406890,
+      "job": 121105840514,
+      "conclusion": "failure",
+      "failure": "new Unicode installation-directory regression: spawnSync .../中文 安装 Δ café/app/UnicodeProbe.exe ENOENT",
+      "location": "scripts/desktop/launcher-utf8.test.cjs:47",
+      "windows_results": {
+        "frontend_passed": 280,
+        "migration_passed": 40,
+        "launcher_tests_passed": 3,
+        "launcher_tests_failed": 1,
+        "launcher_tests_skipped": 0
+      },
+      "windows_h2_build_probe_and_e2e": "not executed; Test source failed before Maven",
+      "full_job_log_sha256": "5e8ea7078f9b0e1d8c60e01f1afc1ea66f796f9c5c98c1a1dd32ac11b7130192",
+      "error_excerpt": "docs/test-evidence/release02-round3-error.txt",
+      "no_playwright_trace": "E2E did not start",
+      "remaining_root_cause": "ENOENT could be copied file/loader/path; not yet established"
     }
   ],
   "root_cause": {
@@ -37,5 +58,7 @@
     "packaged_probe_groups": 7,
     "first_ping_from_process_start_ms": 4860
   },
-  "tags_and_releases_untouched": true
+  "tags_and_releases_untouched": true,
+  "stopped_at": "2026-10-25T16:26:00+09:00",
+  "reruns_after_limit": 0
 }
