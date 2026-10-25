@@ -13,14 +13,14 @@
 2. 前端（在 `frontend` 目录）：
    ```bash
    npm ci
-   npm test 2>&1 | tee ../refactor/baseline-vitest.txt
-   npm run build 2>&1 | tee ../refactor/baseline-build.txt
+   npm test 2>&1 | tee ../docs/development/baseline-vitest.txt
+   npm run build 2>&1 | tee ../docs/development/baseline-build.txt
    ```
-3. 如果本机有后端和测试库，跑一遍完整 E2E，把结果保存到 `refactor/baseline-e2e.txt`。跑不了就在文件里写「未执行：原因」。
+3. 如果本机有后端和测试库，跑一遍完整 E2E，把结果保存到 `docs/development/baseline-e2e.txt`。跑不了就在文件里写「未执行：原因」。
    ```bash
-   npx playwright test 2>&1 | tee ../refactor/baseline-e2e.txt
+   npx playwright test 2>&1 | tee ../docs/development/baseline-e2e.txt
    ```
-4. 记录 CSS 现状（在 `frontend/src` 目录），结果保存到 `refactor/baseline-css.txt`：
+4. 记录 CSS 现状（在 `frontend/src` 目录），结果保存到 `docs/development/baseline-css.txt`：
    ```bash
    find . -name "*.css" | xargs wc -l | tail -1
    grep -ohE '#[0-9a-fA-F]{6}\b' $(find . -name "*.css") | tr A-F a-f | sort -u | wc -l
@@ -31,7 +31,7 @@
 
 ## 验收
 
-- `refactor/baseline-*.txt` 四个文件都存在。
+- `docs/development/baseline-*.txt` 四个文件都存在。
 - 汇报里列出基线中**已经失败**的测试（如果有）。这些失败之后不算作本次重构引入的问题。
 
 ## 不要做

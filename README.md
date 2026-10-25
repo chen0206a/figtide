@@ -2,6 +2,8 @@
 
 面向 AI / 机器学习研究者的本地实验数据管理与科研绘图工作台，从原始数据到可复现的论文图表。
 
+[下载 Windows 版](https://github.com/chen0206a/figtide/releases/latest) · [使用指南](docs/GUIDE.md)
+
 ![FigTide 图汐：从实验数据到论文插图](docs/media/social-preview.png)
 
 ## 看看它如何工作
@@ -41,11 +43,13 @@ FigTide 运行在你的电脑上。数据、图表和所有版本都保存在本
 
 当前为无认证的本地单用户模式，服务仅监听本机。请勿直接将后端暴露到公网；本机其他程序也可能访问本地 API。跨用户部署需要另行实现认证、授权和数据隔离。
 
-## 安装（Windows x64便携版）
+## 下载 Windows 版
 
 第一次使用请按[使用指南](docs/GUIDE.md)操作，包含导入、绘图、助手、导出与备份的真实界面截图。
 
-桌面便携包已经可以本地构建；本轮未上传或发布远端资产。公开发布后，在[Releases](https://github.com/chen0206a/figtide/releases)下载同一版本的`FigTide-X.Y.Z-windows-x64.zip`和`SHA256SUMS.txt`，用`Get-FileHash`核对ZIP的SHA256。解压整个文件夹，再双击`FigTide/FigTide.exe`。请保留旁边的`app`与`runtime`目录，无需安装Java、MySQL、Node或管理员权限。第一版未签名，Windows可能显示SmartScreen提示，请先确认可信下载来源。
+从[最新 Release 下载 Windows 版](https://github.com/chen0206a/figtide/releases/latest)，选择同一版本的`FigTide-X.Y.Z-windows-x64.zip`和`SHA256SUMS.txt`，用`Get-FileHash`核对ZIP的SHA256。解压整个文件夹，再双击`FigTide/FigTide.exe`。请保留旁边的`app`与`runtime`目录，无需安装Java、MySQL、Node或管理员权限。第一版未签名，Windows可能显示SmartScreen提示，请先确认可信下载来源。
+
+macOS版和原生窗口在计划中。
 
 - 工作台在系统默认浏览器中打开；关闭浏览器不会退出程序，使用通知区域的FigTide托盘菜单「退出」。
 - 数据保存在`%LOCALAPPDATA%\FigTide\data`，日志在`%LOCALAPPDATA%\FigTide\logs`。移走/删除程序目录不会删除数据；升级时退出旧程序后解压新版本，数据目录继续沿用。
@@ -54,14 +58,13 @@ FigTide 运行在你的电脑上。数据、图表和所有版本都保存在本
 - 旧MySQL工作区见[迁移指南](docs/desktop/MIGRATION.md)，迁移只复制项目，不删除旧数据；助手历史不迁移。
 - [构建与发布](docs/desktop/PACKAGING.md)、[人工冒烟清单](docs/desktop/SMOKE-14-5.md)。当前交付是便携ZIP，没有安装向导、自动升级或原生窗口。
 
-```powershell
-# 开发者本地生成自带运行时的便携包（构建需要下面的开发工具）
-./scripts/package-desktop.ps1
-# 解压目录可直接双击；源码构建输出也可这样运行
-& './dist/desktop/FigTide-0.1.0-windows-x64/FigTide/FigTide.exe'
-```
+## 开发者
 
-## 源码开发快速开始
+```powershell
+# 本地生成自带运行时的便携包，需要Node、Maven和JDK21
+./scripts/package-desktop.ps1
+& './dist/desktop/FigTide-0.2.0-windows-x64/FigTide/FigTide.exe'
+```
 
 准备 Node.js 22.12+、Maven 3.6.3+、MySQL 8 二进制，以及 Git。后端使用 JDK 21；首次启动脚本会下载项目私有 JDK，首次安装 npm / Maven 依赖也需要联网。MySQL 应使用空闲端口 33316，脚本初始化项目独立实例，不连接既有 3306 实例。
 
@@ -121,7 +124,7 @@ cd ..
 .\scripts\test-migration.ps1
 
 # 便携包真实EXE全量浏览器测试（临时H2、本地模型夹具）
-.\scripts\test-agent.ps1 -All -Packaged -Application 'dist/desktop/FigTide-0.1.0-windows-x64/FigTide' -FixturePort 18770
+.\scripts\test-agent.ps1 -All -Packaged -Application 'dist/desktop/FigTide-0.2.0-windows-x64/FigTide' -FixturePort 18770
 
 # 生产构建的任务 09 专项（已从 .runtime 整理为受版本控制的入口）
 .\scripts\test-refactor09.ps1 -FixturePort 18770
@@ -158,7 +161,7 @@ scripts/        本地起停、隔离验收、导出检查与评测入口
 site/           独立公开展示页，可通过 GitHub Pages 发布
 docs/           API、设计、隐私、评测与验收证据
 samples/        明确标注的合成科研演示数据
-refactor/       重构任务与 FigTide 品牌源资产
+docs/development/       重构任务与 FigTide 品牌源资产
 ```
 
 ## 许可证

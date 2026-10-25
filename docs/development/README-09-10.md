@@ -1,9 +1,9 @@
 # 任务 09 / 10 补充包
 
-把这个压缩包解压到仓库根目录，会和已有的 `refactor/` 目录合并（不会覆盖任务 00–08 的文件）：
+把这个压缩包解压到仓库根目录，会和已有的 `docs/development/` 目录合并（不会覆盖任务 00–08 的文件）：
 
 ```
-refactor/
+docs/development/
   README-09-10.md          ← 本文件
   tasks/09-visual-polish.md
   tasks/10-home-motion-intro.md
@@ -19,7 +19,7 @@ refactor/
 
 给 Codex 的指令示例：
 
-> 阅读 AGENTS.md 和 refactor/README-09-10.md，执行 refactor/tasks/09-visual-polish.md 中的 09-1。完成后提交，并按 AGENTS.md 的格式汇报。
+> 阅读 AGENTS.md 和 docs/development/README-09-10.md，执行 docs/development/tasks/09-visual-polish.md 中的 09-1。完成后提交，并按 AGENTS.md 的格式汇报。
 
 ## 约束提醒
 

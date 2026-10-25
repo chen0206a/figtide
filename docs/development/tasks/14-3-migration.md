@@ -1,6 +1,6 @@
 # 任务 14-3：从旧版（MySQL）迁移到桌面版
 
-**先读**：`AGENTS.md`、`refactor/desktop/DESKTOP-PLAN.md`（第 4、5 节）、`docs/desktop/DB-AUDIT-glm-5.3.md` 第 4 节（备份与恢复）。
+**先读**：`AGENTS.md`、`docs/development/desktop/DESKTOP-PLAN.md`（第 4、5 节）、`docs/desktop/DB-AUDIT-glm-5.3.md` 第 4 节（备份与恢复）。
 **目标**：提供一个迁移工具，把旧版（MySQL）里的所有项目完整复制到桌面版（H2），并**自动核对**每个项目迁移前后完全一致，生成迁移报告。
 **这一步风险最高**：迁移针对的是用户的真实研究数据。本任务**只在隔离的测试库上开发和验证**，不连接真实工作区（`labflow` 库 / 8086），也不碰用户的桌面数据目录。真实迁移由仓库主人按最后写好的说明自己执行。
 **分支**：从 `desktop/14-2` 新建 `desktop/14-3`，每节单独提交，不推送。

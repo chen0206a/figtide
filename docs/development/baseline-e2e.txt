@@ -8,7 +8,7 @@ This existing wrapper runs the complete local Playwright CLI test suite, using C
 WRAPPER_EXIT_CODE=1
 
 Logging attempt failed: Tee-Object used a relative path, and the existing wrapper changes cwd to frontend. No valid test summary was captured.
-Error: Could not find a part of the path D:\RAG-agent项目\LabFlow\frontend\refactor\baseline-e2e.txt
+Error: Could not find a part of the path D:\RAG-agent项目\LabFlow\frontend\docs\development\baseline-e2e.txt
 Rerun: same full suite, absolute log path; no source changes.
 Rerun date: 2026-10-22 13:36:24 +09:00
 

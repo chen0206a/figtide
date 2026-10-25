@@ -10,7 +10,7 @@
 
 ## 步骤
 
-1. 复制 `refactor/reference/frontend/src/styles/tokens.css` 到 `frontend/src/styles/tokens.css`。
+1. 复制 `docs/development/reference/frontend/src/styles/tokens.css` 到 `frontend/src/styles/tokens.css`。
 2. `main.tsx`：
    - 删除 `import "@fontsource-variable/newsreader";`，并从 `package.json` 移除这个依赖（`npm uninstall @fontsource-variable/newsreader`）。
    - 在 `import "./styles.css"` **之前**加 `import "./styles/tokens.css";`。

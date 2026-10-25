@@ -7,7 +7,7 @@
 ### 1. 打补丁
 
 ```bash
-git apply --3way refactor/patches/01c-chart-polish.patch
+git apply --3way docs/development/patches/01c-chart-polish.patch
 ```
 
 补丁基于「原始快照 + 01 + 01b」生成。你在任务 01 里额外改过 `facets.ts`、`plot-core.ts`，如果有冲突，按下表手动实现：

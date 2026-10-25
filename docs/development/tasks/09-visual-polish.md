@@ -1,7 +1,7 @@
 # 任务 09：视觉打磨（实验表格、数据页、编辑器物理尺寸）
 
 **目标**：解决「看起来花、不统一」的问题，并补上两项之前推迟的功能：实验表格视图、编辑器的论文尺寸预设。
-**视觉目标**：`refactor/design/09-10/png/Experiments.png`、`Data.png`、`Editor.png`、`Editor-double.png`。
+**视觉目标**：`docs/development/design/09-10/png/Experiments.png`、`Data.png`、`Editor.png`、`Editor-double.png`。
 **范围**：只改前端。不改后端、API、schema v1 必填结构、草稿、保存与助手逻辑。按 AGENTS.md 的流程，每个小节单独提交。
 
 开工前先用 `grep` 重新定位文件：任务 03–08 之后目录结构已经变了（例如 `editor/workbench/*`、`components/home/*`、`data/DataPage.tsx`、`styles/{tokens,shell,dialogs}.css`）。

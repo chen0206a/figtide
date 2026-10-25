@@ -7,8 +7,8 @@
 ### 1. 打入现成补丁
 
 ```bash
-git apply --3way refactor/patches/01-chart-fixes.patch
-git apply --3way refactor/patches/01b-legend-metric-validation.patch
+git apply --3way docs/development/patches/01-chart-fixes.patch
+git apply --3way docs/development/patches/01b-legend-metric-validation.patch
 ```
 
 补丁内容：
@@ -26,7 +26,7 @@ git apply --3way refactor/patches/01b-legend-metric-validation.patch
 | `encoding.test.ts`（新增） | 11 个回归测试 |
 | `ConfigValidator.java` + 测试、`docs/API.md` | 可选字段校验（只接受布尔值）以及文档。这是本轮**唯一**的后端改动，遵循 CONTRIBUTING.md 中「配置扩展需同时更新 TS、Java 校验、API 文档和测试」的规则 |
 
-如果 `git apply` 失败（说明源码在打包后又改过），就按上表手动实现。`refactor/patches/*.patch` 里有完整的 diff 可以对照。
+如果 `git apply` 失败（说明源码在打包后又改过），就按上表手动实现。`docs/development/patches/*.patch` 里有完整的 diff 可以对照。
 
 ### 2. 统一配色来源（A7，补丁里没有）
 

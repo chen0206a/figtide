@@ -4,7 +4,7 @@
 - 审计日期：2026-10-24
 - 审计对象：`LabFlow`（已更名 FigTide）后端数据库层，MySQL 8.0 → H2（MODE=MySQL）桌面化兼容性
 - 方式：**只读审计**。未改动任何代码、Flyway 迁移、配置或文档（本报告是唯一新增文件）。所有行号均来自当前仓库源码实测。
-- 输入：`figtide-desktop-14-0.zip` 中 `refactor/desktop/DESKTOP-PLAN.md` 与 `refactor/tasks/14-0-db-audit.md`；仓库 `AGENTS.md` 硬约束（不改后端 / 不改 Flyway 迁移 / 预算与幂等逻辑一行不动）。
+- 输入：`figtide-desktop-14-0.zip` 中 `docs/development/desktop/DESKTOP-PLAN.md` 与 `docs/development/tasks/14-0-db-audit.md`；仓库 `AGENTS.md` 硬约束（不改后端 / 不改 Flyway 迁移 / 预算与幂等逻辑一行不动）。
 
 ## 结论速览
 

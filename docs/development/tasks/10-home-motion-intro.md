@@ -5,7 +5,7 @@
 2. 工作区首页换成 v2：深色展台只占一部分，有入场动画，点「继续编辑」时图纸过渡进编辑器；
 3. 编辑器里的绘图助手更显眼，并且能在画布上直接预览修改。
 
-**视觉目标**：`refactor/design/09-10/png/ProductIntro.png`、`HomeMotion.png`、`AssistantFlow-idle.png`、`AssistantFlow-proposal.png`。动画的精确参数见 `static/*.html` 里的 `<style>`。
+**视觉目标**：`docs/development/design/09-10/png/ProductIntro.png`、`HomeMotion.png`、`AssistantFlow-idle.png`、`AssistantFlow-proposal.png`。动画的精确参数见 `static/*.html` 里的 `<style>`。
 
 **范围**：前端。不新增依赖（不引入 framer-motion 之类的库，只用 CSS 和少量 hook）。助手的状态机、预算、幂等和恢复逻辑**不改**，10-4 只增加入口和展示。
 
@@ -144,7 +144,7 @@
 
 ## 10-5 公开展示页改用网站首页
 
-把 `site/index.html` 换成 10-2 的静态版本：可以直接复用 `refactor/design/09-10/static/ProductIntro.html`，替换 token 和链接。因为 GitHub Pages 上没有后端，所有「开始创作」按钮都改为指向 GitHub 仓库 README 的安装说明（`https://github.com/chen0206a/labflow-agent#readme`），文字改成「本地运行」。滚动浮现用一小段原生 JS 实现 IntersectionObserver。更新 `scripts/test-site.cjs` 的断言：四种宽度下都没有溢出、没有 `href="#"`、只请求 Google Fonts。
+把 `site/index.html` 换成 10-2 的静态版本：可以直接复用 `docs/development/design/09-10/static/ProductIntro.html`，替换 token 和链接。因为 GitHub Pages 上没有后端，所有「开始创作」按钮都改为指向 GitHub 仓库 README 的安装说明（`https://github.com/chen0206a/labflow-agent#readme`），文字改成「本地运行」。滚动浮现用一小段原生 JS 实现 IntersectionObserver。更新 `scripts/test-site.cjs` 的断言：四种宽度下都没有溢出、没有 `href="#"`、只请求 Google Fonts。
 
 ## 10-6 验收
 

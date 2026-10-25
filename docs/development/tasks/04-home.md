@@ -1,6 +1,6 @@
 # 任务 04：替换首页（设计 A）
 
-**目标**：打开 LabFlow 第一眼看到的是「上次做到哪」，而不是营销页。视觉目标见 `refactor/design/home-A.png`（设计稿）和 `refactor/design/home-A-reference-render.png`（参考实现的实际渲染：用桩数据渲染，图表区是占位 SVG，因为沙箱里没有 Plotly）。
+**目标**：打开 LabFlow 第一眼看到的是「上次做到哪」，而不是营销页。视觉目标见 `docs/development/design/home-A.png`（设计稿）和 `docs/development/design/home-A-reference-render.png`（参考实现的实际渲染：用桩数据渲染，图表区是占位 SVG，因为沙箱里没有 Plotly）。
 
 > 设计图里的部分内容是示意，实现时**以真实数据为准**：项目表没有「更新时间」列（`Project` 类型没有这个字段）；没有「上次备份」时间；最近图表列表用图标，不画迷你缩略图（图表列表接口不返回配置，现有文档也明确要求不虚构缩略图）。只有「继续编辑」卡片里的大图是用真实配置和数据渲染的。
 

@@ -16,7 +16,7 @@ const pairs = [
     const page=await browser.newPage({viewport:{width:2880,height:1100},deviceScaleFactor:1});
     const images=[];
     for(const [name,reference,actual] of pairs){
-      const ref='refactor/design/09-10/png/'+reference;
+      const ref='docs/development/design/09-10/png/'+reference;
       const file='docs/screenshots/'+actual;
       const width=fs.readFileSync(file).readUInt32BE(16);
       if(width!==1440)throw Error(file+' width '+width);

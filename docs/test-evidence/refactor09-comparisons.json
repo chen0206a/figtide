@@ -1,28 +1,28 @@
 [
   {
     "name": "experiments",
-    "reference": "refactor/design/09-10/png/Experiments.png",
+    "reference": "docs/development/design/09-10/png/Experiments.png",
     "actual": "docs/screenshots/refactor-09-final-experiments.png",
     "comparison": "docs/screenshots/refactor-09-compare-experiments.png",
     "actual_width": 1440
   },
   {
     "name": "data",
-    "reference": "refactor/design/09-10/png/Data.png",
+    "reference": "docs/development/design/09-10/png/Data.png",
     "actual": "docs/screenshots/refactor-09-final-data.png",
     "comparison": "docs/screenshots/refactor-09-compare-data.png",
     "actual_width": 1440
   },
   {
     "name": "editor-single",
-    "reference": "refactor/design/09-10/png/Editor.png",
+    "reference": "docs/development/design/09-10/png/Editor.png",
     "actual": "docs/screenshots/refactor-09-editor-single.png",
     "comparison": "docs/screenshots/refactor-09-compare-editor-single.png",
     "actual_width": 1440
   },
   {
     "name": "editor-double",
-    "reference": "refactor/design/09-10/png/Editor-double.png",
+    "reference": "docs/development/design/09-10/png/Editor-double.png",
     "actual": "docs/screenshots/refactor-09-editor-double.png",
     "comparison": "docs/screenshots/refactor-09-compare-editor-double.png",
     "actual_width": 1440

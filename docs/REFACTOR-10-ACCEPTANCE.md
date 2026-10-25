@@ -60,7 +60,7 @@ LABFLOW_API=http://127.0.0.1:8087 LABFLOW_WEB_URL=http://127.0.0.1:5178 NO_PROXY
 
 ## 设计与实际对照
 
-设计片段在 `refactor/design/09-10/static/`，只包含局部元素（不是整页），可测量的只有排印与组件规格；证据 `test-evidence/refactor10-parity.json`（1440×900）。
+设计片段在 `docs/development/design/09-10/static/`，只包含局部元素（不是整页），可测量的只有排印与组件规格；证据 `test-evidence/refactor10-parity.json`（1440×900）。
 
 | 项目 | 设计片段 | 实现 | 差异原因 |
 | --- | --- | --- | --- |
@@ -77,6 +77,6 @@ LABFLOW_API=http://127.0.0.1:8087 LABFLOW_WEB_URL=http://127.0.0.1:5178 NO_PROXY
 
 - **Firefox 未执行**：本机没有 Firefox，`%LOCALAPPDATA%\ms-playwright` 也没有 Playwright 浏览器（该网络下 CDN 不可达），全部 E2E 使用系统 Chrome（`channel: "chrome"`）。
 - **快捷键偏差**：10-4 用 `Alt+A` 而非首选 Ctrl/⌘J。理由是无头测试只能证明该快捷键事件被取消，无法验证 Chrome 原生下载页行为；`test-evidence/refactor10-shortcut-probe.json` 在 `about:blank` 上采集，证据强度有限，不据此声明原生快捷键已验证。
-- **10-5 未直接复用设计稿 HTML**：`refactor/design/09-10/static/ProductIntro.html` 全部是内联十六进制色与内联样式，与「只用 `--lf-*` 令牌」的视觉规则和站点自测的「无内联 UI 色」冲突，故复用 10-2 的 token 化产物，并以几何对比（上表末行）证明一致。
+- **10-5 未直接复用设计稿 HTML**：`docs/development/design/09-10/static/ProductIntro.html` 全部是内联十六进制色与内联样式，与「只用 `--lf-*` 令牌」的视觉规则和站点自测的「无内联 UI 色」冲突，故复用 10-2 的 token 化产物，并以几何对比（上表末行）证明一致。
 - **JS 依赖**：公开展示页只有 Google Fonts 一处外部请求；无框架运行时，断网时回退系统字体，版式不塌。
 - 介绍页与首页的示意数据均在页面上标注「示意数据」，不冒充实测结果；公开展示页的 CTA 指向 README，不提供在线试用（后端只跑在本机）。

@@ -1,6 +1,6 @@
 # 任务 14-2：桌面启动器（单进程、随机端口、打开浏览器、托盘）
 
-**先读**：`AGENTS.md`、`refactor/desktop/DESKTOP-PLAN.md`、`docs/desktop/H2-PROBE.md`、`docs/TEST-RESULTS.md` 顶部 14-1 各节。
+**先读**：`AGENTS.md`、`docs/development/desktop/DESKTOP-PLAN.md`、`docs/desktop/H2-PROBE.md`、`docs/TEST-RESULTS.md` 顶部 14-1 各节。
 **目标**：`java -jar figtide.jar --spring.profiles.active=desktop` 一条命令完成：启动后端（H2）、在随机端口提供前端页面和 API、自动打开浏览器、显示托盘图标。双击安装包是 14-4 的事，这一步先让这条命令跑通。
 **分支**：从 `desktop/14-1` 新建 `desktop/14-2`，每节单独提交，不推送。
 **授权**：沿用 AGENTS.md 的「桌面版后端授权」。本任务额外允许：新增 `desktop` 包下的启动类和配置、新增只在 `desktop` profile 下注册的接口 `GET /api/desktop/ping`、修改 `LocalOriginFilter`（见 14-2-3）。**默认 profile（开发和现有 E2E）的行为不能变。**
@@ -32,7 +32,7 @@
 3. **单实例**：数据目录下 `app.lock`（`FileChannel.tryLock`）。已有实例时：读取 `app.port`，调用 `GET /api/desktop/ping` 确认它确实在运行（返回实例 id），然后打开浏览器指向它，当前进程退出；锁存在但 ping 不通（上次异常退出），则正常启动并覆盖端口文件。
 4. **端口**：`server.port=0`，监听 `127.0.0.1`；服务就绪后（`WebServerInitializedEvent`）把实际端口写进 `app.port`。
 5. **打开浏览器**：用 `java.awt.Desktop.browse`；不支持时退回 `rundll32 url.dll,FileProtocolHandler <url>`。`--labflow.desktop.open-browser=false` 可关闭（测试用）。
-6. **托盘**：注意 Spring Boot 默认把 `java.awt.headless` 设为 true，必须 `setHeadless(false)`，否则托盘不工作。图标用 `refactor/brand/png/favicon-16.png`、`favicon-32.png`（复制到资源目录）。菜单：「打开 FigTide」「打开数据文件夹」「打开日志文件夹」「退出」。首次启动弹一次气泡提示「FigTide 正在运行，关闭浏览器不会退出，可以从托盘图标退出」。`--labflow.desktop.tray=false` 可关闭（测试用）。
+6. **托盘**：注意 Spring Boot 默认把 `java.awt.headless` 设为 true，必须 `setHeadless(false)`，否则托盘不工作。图标用 `docs/development/brand/png/favicon-16.png`、`favicon-32.png`（复制到资源目录）。菜单：「打开 FigTide」「打开数据文件夹」「打开日志文件夹」「退出」。首次启动弹一次气泡提示「FigTide 正在运行，关闭浏览器不会退出，可以从托盘图标退出」。`--labflow.desktop.tray=false` 可关闭（测试用）。
 7. **退出**：托盘「退出」或系统关机时，正常关闭 Spring 上下文和数据源，删除 `app.port`，释放锁。
 8. **日志**：`desktop` profile 下输出到 `logs\figtide.log`，按大小滚动，保留最近 5 个；日志里不得出现模型密钥。
 

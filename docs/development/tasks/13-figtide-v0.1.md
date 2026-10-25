@@ -1,7 +1,7 @@
 # 任务 13：改名 FigTide（图汐）并准备 v0.1.0 发布
 
 **目标**：产品对外名称从 LabFlow 改为 **FigTide**，中文名 **图汐**；换上新图标；整理 README 和展示页，准备发布 v0.1.0。
-**品牌资产**：`refactor/brand/`（说明见同目录 `README.md`）。图标方案是设计画布里的「方向 B · 波浪 F」。
+**品牌资产**：`docs/development/brand/`（说明见同目录 `README.md`）。图标方案是设计画布里的「方向 B · 波浪 F」。
 **范围**：只改用户看得到的名字、图标和文档。规则同 AGENTS.md：不改后端逻辑、API、schema v1，不删断言。在 `refactor/frontend` 的基础上新建分支 `release/v0.1.0`，每节单独提交，**不推送、不合并 main**（这两步由仓库主人在 GitHub 上操作）。
 
 ---
@@ -21,7 +21,7 @@
 ## 13-1 图标与品牌组件
 
 1. 复制资产：
-   - `refactor/brand/favicon.svg`、`favicon.ico` → `frontend/public/`；
+   - `docs/development/brand/favicon.svg`、`favicon.ico` → `frontend/public/`；
    - `png/figtide-icon-180.png` → `frontend/public/apple-touch-icon.png`；
    - `png/figtide-icon-192.png`、`png/figtide-icon-512.png` → `frontend/public/`；
    - `figtide-icon.svg`、`figtide-icon-small.svg`、`figtide-icon-reverse.svg` → `frontend/src/assets/brand/`。

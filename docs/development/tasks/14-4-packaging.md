@@ -1,6 +1,6 @@
 # 14-4 Windows 自带运行时便携包
 
-本任务书由现有 `refactor/desktop/DESKTOP-PLAN.md` 第6节细化，并非此前用户提供的独立任务包。前置：14-3四项修复及双库、双浏览器通道总验收通过。分支从desktop/14-3新建desktop/14-4；分节提交，不推送、不打标签、不实际发布远端Release。
+本任务书由现有 `docs/development/desktop/DESKTOP-PLAN.md` 第6节细化，并非此前用户提供的独立任务包。前置：14-3四项修复及双库、双浏览器通道总验收通过。分支从desktop/14-3新建desktop/14-4；分节提交，不推送、不打标签、不实际发布远端Release。
 
 ## 14-4-0 交付边界
 

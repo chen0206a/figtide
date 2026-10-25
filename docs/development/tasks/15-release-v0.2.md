@@ -1,6 +1,6 @@
 # 任务 15：发布 FigTide v0.2.0（Windows 桌面版）
 
-**先读**：`AGENTS.md`、`refactor/desktop/DESKTOP-PLAN.md`、`docs/TEST-RESULTS.md` 顶部 14-4 / 14-5 各节、`docs/desktop/SMOKE-14-5.md`。
+**先读**：`AGENTS.md`、`docs/development/desktop/DESKTOP-PLAN.md`、`docs/TEST-RESULTS.md` 顶部 14-4 / 14-5 各节、`docs/desktop/SMOKE-14-5.md`。
 **前提**：仓库主人已完成 `SMOKE-14-5.md` 的人工检查（托盘、默认浏览器、第二次启动、退出、强制结束后重启）。没有完成就停下提醒，不要开始。
 **分支**：从 `desktop/14-5` 新建 `release/v0.2.0`，每节单独提交。推送、合并、打标签只在 15-4 执行，并且要遵守那一节的限制。
 
@@ -36,7 +36,7 @@
 
 ## 15-3 仓库整理
 
-1. 把根目录的 `refactor/` 移到 `docs/development/`，在里面加一个简短的 `README.md`：「本项目使用 AI 编程助手协作开发，这里是各阶段的任务书、设计稿和验收记录」。全仓库搜索 `refactor/` 路径引用（AGENTS.md、docs、scripts、测试），全部更新；E2E 和脚本里的引用要实际跑一遍确认。
+1. 把根目录旧 `refactor` 目录归档到 `docs/development/`，在里面加一个简短的 `README.md`：「本项目使用 AI 编程助手协作开发，这里是各阶段的任务书、设计稿和验收记录」。全仓库搜索旧目录的路径引用（AGENTS.md、docs、scripts、测试），全部更新；E2E 和脚本里的引用要实际跑一遍确认。
 2. README：
    - 顶部「快速开始」改成「下载 Windows 版」→ 链接到最新 Release（`https://github.com/chen0206a/figtide/releases/latest`），并链接 GUIDE.md；
    - 原来的源码运行说明挪到「开发者」一节；

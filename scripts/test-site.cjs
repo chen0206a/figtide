@@ -8,7 +8,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const assert = require('node:assert/strict');
 
-const README = 'https://github.com/chen0206a/figtide#readme';
+const DOWNLOAD = 'https://github.com/chen0206a/figtide/releases/latest';
 const REPO = 'https://github.com/chen0206a/figtide';
 const GUIDE = REPO + '/blob/main/docs/GUIDE.md';
 
@@ -27,7 +27,7 @@ const GUIDE = REPO + '/blob/main/docs/GUIDE.md';
       await page.setViewportSize({ width, height: 1000 });
       await page.goto(pathToFileURL(path.join(root, 'site/index.html')).href, { waitUntil: 'load' });
       await page.evaluate(() => document.fonts.ready);
-      const checks = await page.evaluate(readme => {
+      const checks = await page.evaluate(download => {
         const anchors = [...document.querySelectorAll('a[href]')].map(a => ({
           href: a.getAttribute('href'),
           exists: a.hash ? !!document.getElementById(a.hash.slice(1)) : false,
@@ -38,7 +38,7 @@ const GUIDE = REPO + '/blob/main/docs/GUIDE.md';
           brokenImages: [...document.images].filter(image => !image.complete || !image.naturalWidth).map(image => image.src),
           anchors,
           buttons: document.querySelectorAll('button').length,
-          readmeLinks: anchors.filter(link => link.href === readme).length,
+          downloadLinks: anchors.filter(link => link.href === download).length,
           hiddenReveals: [...document.querySelectorAll('[data-reveal]')]
             .filter(node => getComputedStyle(node).opacity !== '1').length,
           rawUIColors: [...document.querySelectorAll('[style]')]
@@ -50,7 +50,7 @@ const GUIDE = REPO + '/blob/main/docs/GUIDE.md';
           navVisible: [...document.querySelectorAll('header nav a')]
             .some(link => getComputedStyle(link).display !== 'none' && link.getBoundingClientRect().width > 0),
         };
-      }, README);
+      }, DOWNLOAD);
       assert.equal(await page.title(), '从实验数据到论文插图 · FigTide');
       assert.equal(await page.locator('header [role="img"][aria-label="FigTide"]').count(), 1);
       assert.equal(await page.locator('header a[aria-label="FigTide"]').getAttribute('href'), '#top');
@@ -68,12 +68,12 @@ const GUIDE = REPO + '/blob/main/docs/GUIDE.md';
       assert.deepEqual(checks.unresolvedTokens, []);
       assert.equal(checks.rawUIColors, 0);
       assert.equal(checks.buttons, 0, 'Static page must not imply unsupported live actions');
-      assert.equal(checks.readmeLinks, 3, 'All three former 开始创作 buttons must link to the README install steps');
+      assert.equal(checks.downloadLinks, 3, 'All three download buttons must link to the latest Windows release');
       assert.equal(await page.locator(`a[href="${GUIDE}"]`).count(), 1, 'The user guide must be reachable');
       assert.equal(checks.hiddenReveals, 0, 'Reduced motion must show every section immediately');
       assert(
-        checks.anchors.every(link => (link.href.startsWith('#') ? link.exists : [README, REPO, GUIDE].includes(link.href))),
-        'Links must reach a real section, the README install steps or the repository',
+        checks.anchors.every(link => (link.href.startsWith('#') ? link.exists : [DOWNLOAD, REPO, GUIDE].includes(link.href))),
+        'Links must reach a real section, the latest release, guide or repository',
       );
       for (const target of ['trace', 'assistant', 'charts']) {
         if (width <= 640) break;
@@ -85,13 +85,13 @@ const GUIDE = REPO + '/blob/main/docs/GUIDE.md';
         assert(checks.headerHeight <= 64, `Under 640px the header must stay within 64px, got ${checks.headerHeight}`);
       }
       await page.goto(pathToFileURL(path.join(root, 'site/index.html')).href);
-      const screenshot = path.join(output, `release-0.1-site-${width}.png`);
+      const screenshot = path.join(output, `release-0.2-site-${width}.png`);
       await page.screenshot({ path: screenshot, fullPage: true });
       if (process.env.LABFLOW_CAPTURE === '1') {
         fs.mkdirSync(path.join(root, 'docs/screenshots'), { recursive: true });
-        fs.copyFileSync(screenshot, path.join(root, `docs/screenshots/release-0.1-site-${width}.png`));
+        fs.copyFileSync(screenshot, path.join(root, `docs/screenshots/release-0.2-site-${width}.png`));
       }
-      viewports.push({ width, scrollWidth: checks.scrollWidth, readmeLinks: checks.readmeLinks, anchorsValid: true, headerHeight: checks.headerHeight });
+      viewports.push({ width, scrollWidth: checks.scrollWidth, downloadLinks: checks.downloadLinks, anchorsValid: true, headerHeight: checks.headerHeight });
     }
     assert.deepEqual(consoleErrors, []);
     assert(
@@ -109,11 +109,11 @@ const GUIDE = REPO + '/blob/main/docs/GUIDE.md';
       pageErrors: consoleErrors,
       paidRequests: 0,
     };
-    const report = path.join(output, 'release-0.1-site.json');
+    const report = path.join(output, 'release-0.2-site.json');
     fs.writeFileSync(report, JSON.stringify(evidence, null, 2) + '\n');
     if (process.env.LABFLOW_CAPTURE === '1') {
       fs.mkdirSync(path.join(root, 'docs/test-evidence'), { recursive: true });
-      fs.copyFileSync(report, path.join(root, 'docs/test-evidence/release-0.1-site.json'));
+      fs.copyFileSync(report, path.join(root, 'docs/test-evidence/release-0.2-site.json'));
     }
     console.log(`PASS: ${viewports.length}/4 viewports; no overflow, no href="#", Google Fonts only.`);
     console.log(`Font request failures: ${failures.length}.`);

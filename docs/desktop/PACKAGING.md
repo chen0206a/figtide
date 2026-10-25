@@ -12,10 +12,10 @@
 # 只复用已校验JAR与其原始依赖目录；已有输出不覆盖
 ./scripts/package-desktop.ps1 -SkipBuild -OutputDirectory dist/desktop/another-build
 # 验证真实EXE（只使用独立临时目录）
-./scripts/test-desktop-package.ps1 -Application 'dist/desktop/FigTide-0.1.0-windows-x64/FigTide'
+./scripts/test-desktop-package.ps1 -Application 'dist/desktop/FigTide-0.2.0-windows-x64/FigTide'
 ```
 
-输出目录`dist/desktop/FigTide-0.1.0-windows-x64/`包含应用文件夹和`release/`。发布资产为ZIP、manifest.json和SHA256SUMS.txt；不把源码工作区、`.runtime`或用户目录作为输入。manifest记录版本、Git提交/是否脏工作区、JAR/锁文件SHA和25个运行时模块（实际模块以每次构建为准）。保留`runtime/legal`、项目MIT和THIRD-PARTY-NOTICES；后端依赖的许可也保留在嵌套JAR中。
+输出目录`dist/desktop/FigTide-0.2.0-windows-x64/`包含应用文件夹和`release/`。发布资产为ZIP、manifest.json和SHA256SUMS.txt；不把源码工作区、`.runtime`或用户目录作为输入。manifest记录版本、Git提交/是否脏工作区、JAR/锁文件SHA和25个运行时模块（实际模块以每次构建为准）。保留`runtime/legal`、项目MIT和THIRD-PARTY-NOTICES；后端依赖的许可也保留在嵌套JAR中。
 
 版本必须同时匹配`frontend/package.json`和`backend/pom.xml`。`-SkipBuild`仅检查JAR对应的构建元数据与依赖目录，不保证它反映最新源码；发布应使用默认完整构建且从干净提交执行。构建产物不保证逐字节可复现，manifest提供追溯信息。
 
@@ -30,7 +30,7 @@
 核对下载文件：
 
 ```powershell
-Get-FileHash ./FigTide-0.1.0-windows-x64.zip -Algorithm SHA256
+Get-FileHash ./FigTide-0.2.0-windows-x64.zip -Algorithm SHA256
 ```
 
 与同一发布的SHA256SUMS.txt比较，ZIP校验一致后解压。校验只能证明文件一致性，不能代替可信下载来源。数据位于`%LOCALAPPDATA%\FigTide\data`，日志位于`%LOCALAPPDATA%\FigTide\logs`；删除程序目录不删除这些数据。用项目备份导出/恢复转移数据，旧MySQL迁移见[MIGRATION.md](MIGRATION.md)。

@@ -6,7 +6,7 @@
 
 ### 1. 外壳
 
-1. 复制 `refactor/reference/frontend/src/styles/shell.css` 到 `frontend/src/styles/shell.css`。
+1. 复制 `docs/development/reference/frontend/src/styles/shell.css` 到 `frontend/src/styles/shell.css`。
 2. 在 `main.tsx` 中把它作为**最后一个** CSS import（放在所有 `components/*.css` 之后）。
 3. `App.tsx` 顶栏结构保持不变，只调整内容：
    - 「管理项目」「模型连接」「+」三个按钮保留。「模型连接」在窄屏下只显示图标，`aria-label` 已经有了。
@@ -15,7 +15,7 @@
 
 ### 2. PageHeader
 
-1. 复制 `refactor/reference/frontend/src/components/PageHeader.tsx`。
+1. 复制 `docs/development/reference/frontend/src/components/PageHeader.tsx`。
 2. **数据页**：把 `page-eyebrow` + `page-heading`（「每一份数据，都有来源。」）替换为：
    ```tsx
    <PageHeader

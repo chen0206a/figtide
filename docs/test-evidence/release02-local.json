@@ -1,0 +1,18 @@
+{
+  "paid_model_calls": 0,
+  "site_viewports": 4,
+  "baseline_refresh": false,
+  "component_passed": 280,
+  "command": "./scripts/test-agent.ps1 -All -Packaged -Application 'dist/desktop/v02/FigTide-0.2.0-windows-x64/FigTide' -FixturePort 18770",
+  "workers": 1,
+  "raw_sha256": "468d9ebb30ca01279272ebdedfaf37fdbbf6def54d889b6a0929e83b8d38702b",
+  "comparison_pairs": 4,
+  "stats": {
+    "startTime": "2026-10-25T04:11:01.864Z",
+    "duration": 263524.461,
+    "expected": 84,
+    "skipped": 3,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

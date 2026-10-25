@@ -1,3 +1,11 @@
+## 2026-10-25 · 15-3：开发资料归档与下载入口
+
+根目录旧任务资料整体git mv到docs/development，新增AI协作开发资料说明。全仓库更新25个文本文件的文件系统引用（包含JSON证据中的路径，未刷新任何几何/图像基线）；剩余9处旧前缀均为真实历史Git分支名，不是文件路径，保持原名。唯一活动脚本路径compare-refactor09.cjs已实际运行，四组设计参考读取/对比图生成通过。README顶部下载latest与指南、开发者说明、macOS/原生窗口计划及展示页3个下载按钮完成。
+
+实际验证：`npm --prefix frontend test -- --maxWorkers=4` 52文件/280 passed/0 failed；`npm --prefix frontend run build`通过；`node scripts/test-site.cjs`四视口4/4通过，3个下载链接均为releases/latest，指南可访问；`node scripts/compare-refactor09.cjs`4组通过；`./scripts/test-agent.ps1 -All -Packaged -Application 'dist/desktop/v02/FigTide-0.2.0-windows-x64/FigTide' -FixturePort 18770` **84 passed / 0 failed / 3 skipped / 0 flaky**，一次完整87条，后续审计重启通过。3条跳过仍为迁移专项，未删断言或新增跳过。完整原始JSON`.runtime/task15-3-e2e-results.json`，其他日志`.runtime/task15-3-*`。
+
+前后端业务源码未改，未运行真实数据迁移和付费模型。所有远端写操作仍待15-4；本节没有推送/合并/标签/发布。指南单独测试项目不影响87条常规套件。
+
 ## 2026-10-25 · 15-2：真实产物使用指南
 
 新增docs/GUIDE.md的11步指南、12张真实EXE截图和可直接导入的示例CSV；README与展示页链接指南。截图只出现“示例 · 学习曲线”及其数据，托盘/SmartScreen/解压只用文字，没有伪造系统画面。独立playwright.guide.config.ts和`test-agent.ps1 -Guide -Packaged`不增加/跳过原87条E2E。
@@ -587,7 +595,7 @@ $env:LABFLOW_CAPTURE = ''
 - 工作区记忆：`frontend/src/lib/workspaceMemory.ts` 新增 `rememberDataset()` / `workspaceDataset()`；`rememberWorkspace()` 记录数据页时不再原样保存地址里的 `?dataset=`，数据集只能通过 `rememberDataset()` 写入；`readWorkspaceMemory()` 把旧记忆里的数据集迁移进来。`App.tsx` 的 `lastDataset` 由全局 number 改为 `{project,id}`，新增 effect 只在 `datasets` 里确实存在该 id 时才写入记忆；`navigate()` 的数据集回退按当前项目读取；删除对地址里任意 `?dataset=` 的信任赋值。`DataPage.tsx:50-57` 的守卫保留。
 - 实测（隔离栈前端 5179 / 后端 8089）：项目 1 数据页选中数据集后切到空项目 2，地址为 `/projects/2/data`，`sessionStorage` 为 `{"1":{"data":"/projects/1/data?dataset=1"},"2":{"data":"/projects/2/data"}}`；直接打开 `/projects/2/data?dataset=1` 后项目 2 的记忆仍不带 dataset；从首页进入项目 1 数据页恢复 `?dataset=1`。
 - `frontend/src/lib/importChecks.ts`：字段数不等于 1 时直接判为表格，「数据行 ≤ 1」只在单列时生效。单测调整/新增：1 行 × 5 列不提示；1 行 × 1 列长句子仍提示 `prose-column`；1 行 × 1 列普通列名提示 `single-row`。
-- 本提交同时把 `refactor/tasks/11-productize.md` 纳入版本库。
+- 本提交同时把 `docs/development/tasks/11-productize.md` 纳入版本库。
 - 验证：`npx vitest run --maxWorkers=4` **45 文件 / 257 通过**（默认并发下 5 条既有 jsdom 用例偶发 5s 超时，单独重跑 19/19 通过）；`npm run build` 通过；`npx playwright test e2e/isolation.spec.ts`（隔离栈）**5 passed (15.2s)**。
 
 ## 2026-10-23 · 11-2 上传形态体检与本地服务报错
@@ -649,7 +657,7 @@ $env:LABFLOW_CAPTURE = ''
   - 生产构建（`vite preview`，4399）：FCP 140ms，入场起点 143ms；1 个 >50ms 任务（67ms/60ms），**入场窗口内 0 个**。
   - 注：在 Playwright 打开 trace 录制时，首帧渲染会多出约 250ms 的主线程任务（录制开销），无录制时不存在；因此该断言不放进 E2E，作为 trace 证据单独记录。
 - 截图：本次新增 `docs/screenshots/refactor-10-editor-assistant.png`（1440×900，按 `Alt+A` 打开助手并显示画布提案）；首页沿用 10-3 的 `refactor-10-home.png`（重拍字节一致，未产生 diff）；站点两张见 10-5。
-- 与设计稿逐项对照（`docs/test-evidence/refactor10-parity.json`，设计片段 `refactor/design/09-10/static/*.html` 仅含局部片段，故比对可测量的排印与组件规格）：
+- 与设计稿逐项对照（`docs/test-evidence/refactor10-parity.json`，设计片段 `docs/development/design/09-10/static/*.html` 仅含局部片段，故比对可测量的排印与组件规格）：
 
 | 项目 | 设计片段 | 实现 | 说明 |
 | --- | --- | --- | --- |
@@ -669,7 +677,7 @@ $env:LABFLOW_CAPTURE = ''
 - `site/index.html` 换成 10-2 介绍页的静态导出：正文复用 10-2 已 token 化的标记与 `welcome.css`，96 个 `--lf-*` 令牌内联解析，无内联十六进制颜色；三处「开始创作」按钮改为指向 README 安装说明的链接，文案「本地运行」；滚动浮现用原生 IntersectionObserver，无 JS 或 `prefers-reduced-motion: reduce` 时直接显示最终状态。
 - 几何对齐真实 `/welcome`：1440 与 390 两个宽度下 h1 文案与字号（76px / 40px）、section 数量（5）、横向溢出（0）完全一致；三处 CTA 文本均为「本地运行 →」。
 - `node scripts/test-site.cjs`：4/4 视图（390 / 768 / 1280 / 1440）无横向溢出、无 `href="#"`、外部请求只有 `fonts.googleapis.com` / `fonts.gstatic.com`；原有断图片/内联色/未解析令牌/锚点可解析等检查保留，截图 `docs/screenshots/refactor-10-site-*.png`，证据 `docs/test-evidence/refactor10-site.json`。
-- 偏差：任务允许直接复用 `refactor/design/09-10/static/ProductIntro.html`，该稿全部使用内联十六进制颜色与内联样式，与视觉规则（只用 `--lf-*`）和站点测试的「无内联 UI 色」冲突；故改为复用 10-2 已完成的 token 化标记，视觉与真实页面逐项一致（上条几何对比）。需要人决定：无。
+- 偏差：任务允许直接复用 `docs/development/design/09-10/static/ProductIntro.html`，该稿全部使用内联十六进制颜色与内联样式，与视觉规则（只用 `--lf-*`）和站点测试的「无内联 UI 色」冲突；故改为复用 10-2 已完成的 token 化标记，视觉与真实页面逐项一致（上条几何对比）。需要人决定：无。
 
 
 ## 2026-10-23 · 10-4 助手画布预览
@@ -853,7 +861,7 @@ $env:LABFLOW_CAPTURE = ''
 
 ## 任务 07：独立静态展示页（2026-10-23）
 
-从 refactor/reference/site 复制为根目录 site，保留独立单文件结构；用真实编辑器截图替换手绘工作台，其余图型/助手流程明确标注为示意。页面 UI 使用 --lf-* token、Inter/JetBrains Mono 与系统中文回退。新增 .github/workflows/pages.yml（main 的 site/workflow 变化或手动触发），没有部署 React 应用。
+从 docs/development/reference/site 复制为根目录 site，保留独立单文件结构；用真实编辑器截图替换手绘工作台，其余图型/助手流程明确标注为示意。页面 UI 使用 --lf-* token、Inter/JetBrains Mono 与系统中文回退。新增 .github/workflows/pages.yml（main 的 site/workflow 变化或手动触发），没有部署 React 应用。
 
 事实核对：实际只读 Java catalog 返回 **3 read / 10 preview**，Config.type 为 **11** 类，证据 docs/test-evidence/refactor07-facts.json。补全六类导入格式；明确 PDF 内置嵌入字体、SVG 文本、PNG DPI 的区别；模型授权发送与潜在计费边界如实表述。删除未在本轮重跑的 Java/模型评测旧数字，保留最新的 192 项前端单测和 12 项助手/连接/首页专项。启动命令与 README 一致；更新 README 旧图廊描述及截图链接。
 
@@ -934,7 +942,7 @@ $env:LABFLOW_CAPTURE = ''
 
 ## 任务 04：真实研究工作区首页（2026-10-22）
 
-按 `refactor/tasks/04-home.md` 替换首页，参考实现按原组件边界分为 HomePage、ContinueCard、HomeSide、HomeTables，另有 homeData 与 token 化 home.css。继续编辑区域使用真实图表配置和不可变数据版本渲染；项目表只显示已有计数，最近图表使用图标，不虚构缩略图、备份时间或项目更新时间。保留搜索/分页/项目切换、空/错/加载状态与本机草稿标记。新增 FigurePreview 并由 StylePreview 共用，保留 style-preview 类名和可访问 busy 状态。
+按 `docs/development/tasks/04-home.md` 替换首页，参考实现按原组件边界分为 HomePage、ContinueCard、HomeSide、HomeTables，另有 homeData 与 token 化 home.css。继续编辑区域使用真实图表配置和不可变数据版本渲染；项目表只显示已有计数，最近图表使用图标，不虚构缩略图、备份时间或项目更新时间。保留搜索/分页/项目切换、空/错/加载状态与本机草稿标记。新增 FigurePreview 并由 StylePreview 共用，保留 style-preview 类名和可访问 busy 状态。
 
 首页助手仅通过路由 state 带入文字；AgentAssistant 只新增可选 initialPrompt 和初始 useState 值，其他状态机/请求/预算逻辑未改。Workbench 首次挂载消费后 replace 清除 state；刷新不重复展开。新单测与真实 E2E 均检查没有 POST agent/runs。未改后端、API、schema、Flyway、原始数据、草稿保存和提案确认机制。
 
@@ -953,7 +961,7 @@ $env:LABFLOW_CAPTURE = ''
 
 ## 任务 03：统一外壳、拆出数据页与整理实验页（2026-10-22）
 
-按用户“做完 01d 进入 03”的授权执行 `refactor/tasks/03-shell-and-pages.md`。本轮仅调整前端布局、组件组织和对应断言，不修改后端、API、schema、Flyway、实验对比/数据处理/上传逻辑、编辑器历史与草稿，也不修改助手的状态机、预算、幂等或恢复逻辑。
+按用户“做完 01d 进入 03”的授权执行 `docs/development/tasks/03-shell-and-pages.md`。本轮仅调整前端布局、组件组织和对应断言，不修改后端、API、schema、Flyway、实验对比/数据处理/上传逻辑、编辑器历史与草稿，也不修改助手的状态机、预算、幂等或恢复逻辑。
 
 改动文件：
 
@@ -988,7 +996,7 @@ $env:LABFLOW_CAPTURE = ''
 
 ## 任务 01d：ROC 等比例、矩阵色条贴近（2026-10-22）
 
-按用户追加要求完成并独立提交，然后继续已授权的任务 03。改动 `frontend/src/editor/plot-core.ts`、`encoding.test.ts`、`frontend/e2e/chart-corrections.spec.ts`，补记 `refactor/tasks/01d-chart-aspect.md`，另新增本轮图像、SVG/PDF 与导出证据。
+按用户追加要求完成并独立提交，然后继续已授权的任务 03。改动 `frontend/src/editor/plot-core.ts`、`encoding.test.ts`、`frontend/e2e/chart-corrections.spec.ts`，补记 `docs/development/tasks/01d-chart-aspect.md`，另新增本轮图像、SVG/PDF 与导出证据。
 
 - 仅 ROC 在渲染时给 Y 轴 scaleanchor=x / scaleratio=1 / constrain=domain，X 轴 constrain=domain；PR 不变。配置与 760×500 画布尺寸不写回、不迁移。
 - 存在 scaleanchor=x 和 marker.colorbar 时，按用户指定 w/h/side 公式计算色条 x、xanchor、len；对无有效绘图区的情况跳过，避免除零。矩阵格子与计数不变。
@@ -1002,7 +1010,7 @@ $env:LABFLOW_CAPTURE = ''
 
 ## 任务 02：统一设计 token、移除暖纸层与衬线字体（2026-10-22）
 
-完成 `refactor/tasks/02-design-tokens.md`。以参考实现建立 `frontend/src/styles/tokens.css`；Inter / JetBrains Mono 为 UI 字体，中文使用系统回退。旧变量只在 token 文件中作为别名定义，移除 styles.css 的暖纸 root 以及首页、工作台、弹窗、experience 中发现的额外覆盖。保留原有选择器与组件结构。移除 Newsreader 导入和依赖，锁文件只删除对应包；没有升级其他依赖。
+完成 `docs/development/tasks/02-design-tokens.md`。以参考实现建立 `frontend/src/styles/tokens.css`；Inter / JetBrains Mono 为 UI 字体，中文使用系统回退。旧变量只在 token 文件中作为别名定义，移除 styles.css 的暖纸 root 以及首页、工作台、弹窗、experience 中发现的额外覆盖。保留原有选择器与组件结构。移除 Newsreader 导入和依赖，锁文件只删除对应包；没有升级其他依赖。
 
 改动文件：
 
@@ -1039,7 +1047,7 @@ $env:LABFLOW_CAPTURE = ''
 
 ## 任务 01c：图表默认观感修正（2026-10-22）
 
-已合并 `refactor-01c.zip` 中的任务文件与补丁（两个文件均与 ZIP 逐字节哈希一致）。执行 `git apply --3way refactor/patches/01c-chart-polish.patch`；仅 `plot-core.ts` 的导入冲突，手动保留上一轮 `traceEncoding / EncodingContext` 的分面配色逻辑，并移除 `groupLegendTitle`。未修改后端、API/schema、Flyway、编辑器历史/草稿或助手状态与预算逻辑。
+已合并 `refactor-01c.zip` 中的任务文件与补丁（两个文件均与 ZIP 逐字节哈希一致）。执行 `git apply --3way docs/development/patches/01c-chart-polish.patch`；仅 `plot-core.ts` 的导入冲突，手动保留上一轮 `traceEncoding / EncodingContext` 的分面配色逻辑，并移除 `groupLegendTitle`。未修改后端、API/schema、Flyway、编辑器历史/草稿或助手状态与预算逻辑。
 
 改动文件：
 
@@ -1048,7 +1056,7 @@ $env:LABFLOW_CAPTURE = ''
 - `frontend/src/editor/model.ts`：实施可选项，仅新建配置的轴标题首字母大写、下划线换空格，字段映射和已保存标题不变。
 - `frontend/src/editor/encoding.test.ts`、`model.test.ts`、`frontend/src/processing/processing.test.tsx`：更新/补充图例、蓝阶、正方形、无图例边距及新旧轴标题测试。
 - `frontend/e2e/chart-corrections.spec.ts`、`processing.spec.ts`、`publication.spec.ts`：更新真实浏览器断言，覆盖区间带完整性、矩阵格子几何尺寸、副标题间隙、稀疏区间告警和普通热力图顶部边距。实际热力图用例在 `publication.spec.ts`，因此除任务指定四个 spec 外补跑该文件及 `evaluation.spec.ts`。
-- `docs/screenshots/refactor-01-{sem,confusion,roc}.png`、`docs/exports/refactor-01-{sem,confusion,roc}.{svg,pdf}`、`docs/test-evidence/refactor01-exports.json`：替换验收附件；另纳入本次两份 `refactor/` 文件和本记录。
+- `docs/screenshots/refactor-01-{sem,confusion,roc}.png`、`docs/exports/refactor-01-{sem,confusion,roc}.{svg,pdf}`、`docs/test-evidence/refactor01-exports.json`：替换验收附件；另纳入本次两份 `docs/development/` 文件和本记录。
 
 SEM 断带结论：原始合成样例中 **Method A / epoch 3 只有一次有效运行，n=1 无法计算 SEM，断开正确，并非绘图 bug**。原始 `samples/synthetic-grouped-runs.csv` 没有改动；验收夹具显式增加两条合成运行后再交给真实 Java 聚合，每个点有三次有效运行。图中两条区间带均覆盖 epoch 1–3；Y 轴明确标注 `Accuracy (mean ± SEM)`。另保留既有缺失上下界单测，并在独立 processing E2E 中验证缺失区间不跨点补画，编辑器底部显示「1 行区间数据缺失或不适用于对数轴，区间带在此断开」。没有为真实数据补造误差或改写统计计算。
 
@@ -1092,17 +1100,17 @@ SEM 断带结论：原始合成样例中 **Method A / epoch 3 只有一次有效
 
 ## 任务 00：前端重构基线（2026-10-22）
 
-按用户要求仅完成 `refactor/tasks/00-baseline.md`，未开始任务 01，也未修复业务代码。压缩包中的根 `AGENTS.md` 与 `refactor/` 共27个文件已放入仓库，并逐文件校验与压缩包字节一致；参考代码和补丁只保存，未应用。
+按用户要求仅完成 `docs/development/tasks/00-baseline.md`，未开始任务 01，也未修复业务代码。压缩包中的根 `AGENTS.md` 与 `docs/development/` 共27个文件已放入仓库，并逐文件校验与压缩包字节一致；参考代码和补丁只保存，未应用。
 
 实际起点是干净的 `1e4672d`，不是计划内注明的 `77ee2ba + 未提交改动`；仓库不存在任务中提到的 `HANDOFF/工作区状态.txt`。因此快照提交 `0f0325c` 仅纳入新导入的文档包，随后创建 `refactor/frontend` 分支。
 
 实际执行与结果：
 
 - `cd frontend; npm ci`：首次因正在运行的本项目 Vite 占用 `lightningcss.win32-x64-msvc.node` 而 EPERM；验证进程归属后临时停止前端，再执行同一命令成功，安装238个包、审计239个包、0 vulnerabilities。已恢复前端5176，后端/MySQL未重启，锁文件未修改。
-- `cd frontend; npm test`：**27文件、162/162通过，0失败，12.65秒，退出码0**。原始输出在 `refactor/baseline-vitest.txt`。
-- `cd frontend; npm run build`：**TypeScript与Vite构建通过，10.60秒，退出码0**。既有大chunk提示仍存在，本任务不修复。完整输出在 `refactor/baseline-build.txt`。
-- 仓库根目录 `.\scripts\test-agent.ps1 -All`：使用完整Playwright套件、Chrome、本地协议夹具和 `labflow_e2e`，**53/53通过，0失败，3.0分钟**；新JVM审计恢复检查通过，脚本退出码0。初次日志采集因wrapper切换目录导致相对Tee路径失效，改用绝对日志路径重跑，未修改项目脚本；两次执行情况均保留在 `refactor/baseline-e2e.txt`。这属于日志采集错误，不计为应用断言失败。
-- CSS按任务相同正则及计数语义，使用PowerShell/rg等价命令复核：**15个CSS文件，7,820行，417种六位十六进制色值，26行包含 `!important`，22行衬线引用**。均与包内参考值一致。逐文件行数、引用位置、可复现命令在 `refactor/baseline-css.txt`。
+- `cd frontend; npm test`：**27文件、162/162通过，0失败，12.65秒，退出码0**。原始输出在 `docs/development/baseline-vitest.txt`。
+- `cd frontend; npm run build`：**TypeScript与Vite构建通过，10.60秒，退出码0**。既有大chunk提示仍存在，本任务不修复。完整输出在 `docs/development/baseline-build.txt`。
+- 仓库根目录 `.\scripts\test-agent.ps1 -All`：使用完整Playwright套件、Chrome、本地协议夹具和 `labflow_e2e`，**53/53通过，0失败，3.0分钟**；新JVM审计恢复检查通过，脚本退出码0。初次日志采集因wrapper切换目录导致相对Tee路径失效，改用绝对日志路径重跑，未修改项目脚本；两次执行情况均保留在 `docs/development/baseline-e2e.txt`。这属于日志采集错误，不计为应用断言失败。
+- CSS按任务相同正则及计数语义，使用PowerShell/rg等价命令复核：**15个CSS文件，7,820行，417种六位十六进制色值，26行包含 `!important`，22行衬线引用**。均与包内参考值一致。逐文件行数、引用位置、可复现命令在 `docs/development/baseline-css.txt`。
 
 基线中已失败的应用测试：**无**。本次未执行Java单元/集成测试与真实模型评测（任务00只要求前端基线；后端仅为隔离浏览器测试打包运行）。未调用收费模型。没有修改前后端源码、API/schema、Flyway、依赖清单/锁文件或用户数据；测试生成的既有截图/导出附件已还原。
 

@@ -1,10 +1,10 @@
 # 任务 07：公开展示页（设计 B）
 
-**目标**：一个不依赖后端的静态页面，部署到 GitHub Pages，作为开源项目主页和简历链接。视觉目标见 `refactor/design/landing-B.png`。
+**目标**：一个不依赖后端的静态页面，部署到 GitHub Pages，作为开源项目主页和简历链接。视觉目标见 `docs/development/design/landing-B.png`。
 
 ## 步骤
 
-1. 复制 `refactor/reference/site/` 整个目录到仓库根目录 `site/`（包含 `index.html`、`favicon.svg`）。页面是单文件，内联样式来自设计稿，没有构建步骤。
+1. 复制 `docs/development/reference/site/` 整个目录到仓库根目录 `site/`（包含 `index.html`、`favicon.svg`）。页面是单文件，内联样式来自设计稿，没有构建步骤。
 2. **替换占位符**（`grep -n "\[你的" site/index.html`）：
    - `[你的用户名]`：GitHub 用户名，共 8 处。
    - `[许可证]`：项目所有者选定许可证之后再填写。**在所有者决定之前不要擅自填写**，保留占位符，并在汇报的「需要人决定的事」里提出来。
