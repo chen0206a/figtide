@@ -43,6 +43,8 @@ FigTide 运行在你的电脑上。数据、图表和所有版本都保存在本
 
 ## 安装（Windows x64便携版）
 
+第一次使用请按[使用指南](docs/GUIDE.md)操作，包含导入、绘图、助手、导出与备份的真实界面截图。
+
 桌面便携包已经可以本地构建；本轮未上传或发布远端资产。公开发布后，在[Releases](https://github.com/chen0206a/figtide/releases)下载同一版本的`FigTide-X.Y.Z-windows-x64.zip`和`SHA256SUMS.txt`，用`Get-FileHash`核对ZIP的SHA256。解压整个文件夹，再双击`FigTide/FigTide.exe`。请保留旁边的`app`与`runtime`目录，无需安装Java、MySQL、Node或管理员权限。第一版未签名，Windows可能显示SmartScreen提示，请先确认可信下载来源。
 
 - 工作台在系统默认浏览器中打开；关闭浏览器不会退出程序，使用通知区域的FigTide托盘菜单「退出」。

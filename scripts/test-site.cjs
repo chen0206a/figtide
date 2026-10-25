@@ -10,6 +10,7 @@ const assert = require('node:assert/strict');
 
 const README = 'https://github.com/chen0206a/figtide#readme';
 const REPO = 'https://github.com/chen0206a/figtide';
+const GUIDE = REPO + '/blob/main/docs/GUIDE.md';
 
 (async () => {
   const root = path.resolve(__dirname, '..');
@@ -68,9 +69,10 @@ const REPO = 'https://github.com/chen0206a/figtide';
       assert.equal(checks.rawUIColors, 0);
       assert.equal(checks.buttons, 0, 'Static page must not imply unsupported live actions');
       assert.equal(checks.readmeLinks, 3, 'All three former 开始创作 buttons must link to the README install steps');
+      assert.equal(await page.locator(`a[href="${GUIDE}"]`).count(), 1, 'The user guide must be reachable');
       assert.equal(checks.hiddenReveals, 0, 'Reduced motion must show every section immediately');
       assert(
-        checks.anchors.every(link => (link.href.startsWith('#') ? link.exists : link.href === README || link.href === REPO)),
+        checks.anchors.every(link => (link.href.startsWith('#') ? link.exists : [README, REPO, GUIDE].includes(link.href))),
         'Links must reach a real section, the README install steps or the repository',
       );
       for (const target of ['trace', 'assistant', 'charts']) {

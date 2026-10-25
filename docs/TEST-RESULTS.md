@@ -1,3 +1,11 @@
+## 2026-10-25 · 15-2：真实产物使用指南
+
+新增docs/GUIDE.md的11步指南、12张真实EXE截图和可直接导入的示例CSV；README与展示页链接指南。截图只出现“示例 · 学习曲线”及其数据，托盘/SmartScreen/解压只用文字，没有伪造系统画面。独立playwright.guide.config.ts和`test-agent.ps1 -Guide -Packaged`不增加/跳过原87条E2E。
+
+实际命令：`LABFLOW_CAPTURE=1 ./scripts/test-agent.ps1 -Guide -Packaged -Application 'dist/desktop/v02/FigTide-0.2.0-windows-x64/FigTide' -FixturePort 18770`（PowerShell先设置env），最终1 passed/0 failed/0 skipped，审计重启通过；CSV预览/角色确认、真实导入、PDF/SVG/PNG下载、连接测试、助手提案预览/应用/撤销及备份预览均实际执行。`node scripts/test-site.cjs`4/4视口通过，字体外无请求，指南本地链接检查通过，编辑器/助手截图已目视检查。前端业务源码未改，280组件与生产构建沿用15-1，本节未重跑。
+
+保留两次本地截图脚本诊断：首次JSON导入缺少Node类型属性导致未发现测试，改为fs读取；第二次论文尺寸模式拒绝夹具fontSize操作（FigureOperations:373，要求fontPt），是原有校验正确生效，没有修改产品校验，改为有效的隐藏网格演示。失败trace保留`.runtime/task15-2-physical-unit-trace.zip`；成功日志`task15-2-guide-capture.log`，原始结果`task15-2-guide-results.json`。使用本地协议夹具，收费模型请求0。未推送或发布。
+
 ## 2026-10-25 · 15-1：v0.2.0版本与更新日志
 
 前置：仓库主人已明确确认双击默认浏览器、托盘菜单、第二次启动、退出及强制结束重启全部通过，记录在SMOKE-14-5。GitHub CLI `gh api user`取得login=chen0206a/id=290621408，仅`.git/config`设置user.name与noreply邮箱，读回一致；没有更改既有提交。从desktop/14-5新建release/v0.2.0。

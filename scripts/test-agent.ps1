@@ -1,4 +1,4 @@
-param([switch]$All, [string]$MySqlBin = '', [int]$FixturePort = 18769, [string[]]$Specs, [switch]$Production, [ValidateSet('mysql','h2')][string]$Database = 'mysql', [switch]$Desktop, [switch]$Packaged, [string]$Application = '')
+param([switch]$All, [string]$MySqlBin = '', [int]$FixturePort = 18769, [string[]]$Specs, [switch]$Production, [ValidateSet('mysql','h2')][string]$Database = 'mysql', [switch]$Desktop, [switch]$Packaged, [string]$Application = '', [switch]$Guide)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $appVersion = & (Join-Path $PSScriptRoot 'get-version.ps1')
@@ -25,6 +25,7 @@ function Resolve-MySqlBin {
 '@
 }
 $desktopMode = $Desktop -or $Packaged -or $Database -eq 'h2'
+if ($Guide -and !$Packaged) { throw 'Guide screenshots must use -Packaged.' }
 if ($Packaged) {
     if (!$Application) { throw '-Packaged requires -Application pointing to the folder containing FigTide.exe.' }
     $Application = [IO.Path]::GetFullPath($Application)
@@ -199,7 +200,8 @@ try {
     Write-Host "E2E transport: $env:LABFLOW_WEB_URL ($Database, desktop=$desktopMode)"
     Push-Location frontend
     try {
-        if ($All) { & node node_modules/@playwright/test/cli.js test }
+        if ($Guide) { & node node_modules/@playwright/test/cli.js test --config playwright.guide.config.ts }
+        elseif ($All) { & node node_modules/@playwright/test/cli.js test }
         elseif ($Specs) { & node node_modules/@playwright/test/cli.js test @Specs }
         else { & node node_modules/@playwright/test/cli.js test agent.spec.ts figure-tools.spec.ts model-connection.spec.ts chart-planner.spec.ts }
         if ($LASTEXITCODE) { throw 'Browser verification failed.' }
