@@ -1662,3 +1662,11 @@ E2E 生成的 3 个测试项目（`配置交互验收`、`实验记录验收`、
 - 验证：`npm run check` 通过；`npm run build` 通过（单个 812171 字节 CJS bundle）；`LocalOriginMatrixTest` 63/63 通过。首次 Maven 命令因 PowerShell 未给 `-Dtest` 参数加引号而未运行测试，修正后成功。
 - 与任务文件的偏差：没有；开发 profile 的确认方式沿用 17-0 记录的显式 health 回退。
 
+## 2026-10-25 · 任务 17-2：MCP 工具清单
+
+- 注册 11 个任务书工具及中文描述；9 个只读/预览工具标 `readOnlyHint=true`，2 个持久写入工具标非只读、非破坏、非幂等。
+- 数据集列表和字段画像统一删除原始行、文件名、数据集文件名别名、样例值及导入警告；`get_chart` 补版本数量，目录从后端动态读取。
+- 保存先 lint 再以调用者提供的 revision PUT；创建先 lint 再 POST。409 不重试；成功结果包含编辑器链接。
+- 验证：`npm run check` 通过；`npm run build` 通过（单文件 CJS bundle）。协议级参数、注解和真实调用留给 17-3 测试提交。
+- 与任务文件的偏差：`create_chart` 接收完整 schema v1 config，避免在 MCP 复制前端默认值或后端校验；其中仍明确包含数据版本、图表类型和字段映射。
+
