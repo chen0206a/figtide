@@ -1,6 +1,7 @@
 param([switch]$All, [string]$MySqlBin = '', [int]$FixturePort = 18769, [string[]]$Specs, [switch]$Production, [ValidateSet('mysql','h2')][string]$Database = 'mysql', [switch]$Desktop, [switch]$Packaged, [string]$Application = '')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
+$appVersion = & (Join-Path $PSScriptRoot 'get-version.ps1')
 Set-Location $root
 function Resolve-MySqlBin {
     param([string]$Explicit)
@@ -90,7 +91,7 @@ function Start-AgentTestBackend {
             "--labflow.data-dir=$dataDir",'--labflow.desktop.open-browser=false','--labflow.desktop.tray=false',
             "--spring.datasource.url=jdbc:h2:file:$h2Path;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;WRITE_DELAY=0")
     } else {
-        $launchArgs += @('.runtime/agent-e2e-build/labflow-0.1.0.jar','--server.port=8087',
+        $launchArgs += @(".runtime/agent-e2e-build/labflow-$appVersion.jar",'--server.port=8087',
             '--labflow.frontend-origin=http://127.0.0.1:5178','--spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_e2e')
     }
     $launchArgs += @('--labflow.test-support=true',"--LABFLOW_AGENT_BASE_URL=http://127.0.0.1:$FixturePort",'--LABFLOW_AGENT_MODEL=labflow-fixture')

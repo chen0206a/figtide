@@ -1,3 +1,11 @@
+## 2026-10-25 · 15-1：v0.2.0版本与更新日志
+
+前置：仓库主人已明确确认双击默认浏览器、托盘菜单、第二次启动、退出及强制结束重启全部通过，记录在SMOKE-14-5。GitHub CLI `gh api user`取得login=chen0206a/id=290621408，仅`.git/config`设置user.name与noreply邮箱，读回一致；没有更改既有提交。从desktop/14-5新建release/v0.2.0。
+
+前后端/锁文件版本0.2.0；关于弹窗继续从package.json注入。新增get-version.ps1供开发启动/模型连接/测试脚本读取版本，清除旧JAR文件名；原有PID跟踪保护保留，旧/新版本命令匹配和无关命令拒绝已用纯字符串检查，未停止日常服务。后端仅pom版本元数据改变，无业务/API/schema更改。
+
+实测：`npm --prefix frontend test -- --maxWorkers=4` 52文件/280 passed/0 failed；`./scripts/package-desktop.ps1 -OutputDirectory dist/desktop/v02`含tsc/Vite/Maven/jlink/jpackage成功；`./scripts/test-desktop-package.ps1 -Application 'dist/desktop/v02/FigTide-0.2.0-windows-x64/FigTide'` 7组通过、EXE版本0.2.0、产物名FigTide-0.2.0-windows-x64.zip；`./scripts/test-agent.ps1 -FixturePort 18770 -Specs @('release-brand.spec.ts','home.spec.ts')` 4 passed/0 failed/0 skipped，审计重启通过。日志`.runtime/task15-1-*`。打包发生在节提交前，manifest诚实标记source_dirty=true，不作为最终GitHub发布包。未推送、合并、打标签或发布。
+
 ## 2026-10-25 · 14-4 / 14-5 自动总验收通过，现有任务到此暂停
 
 最终便携包从干净提交`8a1902f`完整构建，manifest的`source_dirty=false`。真正运行包内`FigTide.exe`，没有用本机JAR/Vite冒充产物；EXE子进程不依赖系统Java，所有数据均在独立临时H2目录。既有5176/8086工作区服务PID保持不变，未访问真实用户桌面目录，收费模型请求0。分节提交见Git历史。

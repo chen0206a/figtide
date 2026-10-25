@@ -2,6 +2,7 @@
 # Interactive local bootstrap. The API key is never a command-line argument or file value.
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
+$appVersion = & (Join-Path $PSScriptRoot 'get-version.ps1')
 $statusPath = Join-Path $root '.runtime/agent-connection-status.json'
 function Write-ConnectionStatus([string]$Phase, [string]$Message) {
     @{phase=$Phase; message=$Message; updated_at=[DateTime]::UtcNow.ToString('o')} |
@@ -109,7 +110,7 @@ try {
     $statePath = Join-Path $root '.runtime/processes.json'
     $state = Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json
     $jdk = Get-ChildItem -LiteralPath (Join-Path $root '.runtime/java') -Directory | Select-Object -First 1
-    $jar = Join-Path $root 'backend/target/labflow-0.1.0.jar'
+    $jar = Join-Path $root "backend/target/labflow-$appVersion.jar"
     if (!$jdk -or !(Test-Path -LiteralPath $jar)) { throw 'Backend runtime missing.' }
     $prepared = $null
     if ($PreparedJar) {
@@ -121,7 +122,7 @@ try {
     if ($owner) {
         $process = Get-CimInstance Win32_Process -Filter "ProcessId=$($owner.OwningProcess)"
         if ($owner.OwningProcess -ne $state.backend -or !$process -or
-            !$process.CommandLine.Contains('backend/target/labflow-0.1.0.jar')) {
+            !($process.CommandLine -match 'backend[/\\]target[/\\]labflow-\d+\.\d+\.\d+\.jar')) {
             throw 'Refusing to stop an untracked backend.'
         }
         Stop-Process -Id $owner.OwningProcess
@@ -136,7 +137,7 @@ try {
     $env:LABFLOW_AGENT_BASE_URL = $BaseUrl.TrimEnd('/')
     $env:LABFLOW_AGENT_MODEL = $chosenModel
     $env:LABFLOW_AGENT_API_KEY = $chosenKey
-    $backend = Start-Process (Join-Path $jdk.FullName 'bin/java.exe') -ArgumentList '-jar','backend/target/labflow-0.1.0.jar' -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $root '.runtime/backend.stdout.log') -RedirectStandardError (Join-Path $root '.runtime/backend.stderr.log')
+    $backend = Start-Process (Join-Path $jdk.FullName 'bin/java.exe') -ArgumentList '-jar',"backend/target/labflow-$appVersion.jar" -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $root '.runtime/backend.stdout.log') -RedirectStandardError (Join-Path $root '.runtime/backend.stderr.log')
     $env:LABFLOW_AGENT_API_KEY = $oldKey
     $chosenKey = $null
     $state.backend = $backend.Id

@@ -1,6 +1,7 @@
 param([string]$MySqlBin = 'C:\Program Files\MySQL\MySQL Server 8.0\bin', [switch]$SkipBuild)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
+$appVersion = & (Join-Path $PSScriptRoot 'get-version.ps1')
 Set-Location $root
 New-Item -ItemType Directory -Force .runtime | Out-Null
 $jdk = Get-ChildItem '.runtime/java' -Directory -ErrorAction SilentlyContinue | Select-Object -First 1
@@ -52,7 +53,7 @@ if (!$SkipBuild) {
     if ($runningBackend) {
         if ($runningBackend.OwningProcess -ne $processes.backend) { throw 'Port 8086 is occupied by an untracked process.' }
         $existingProcess = Get-CimInstance Win32_Process -Filter "ProcessId=$($processes.backend)"
-        if (!$existingProcess.CommandLine.Contains('labflow-0.1.0.jar')) { throw 'Refusing to stop unrelated backend process.' }
+        if (!($existingProcess.CommandLine -match 'backend[/\\]target[/\\]labflow-\d+\.\d+\.\d+\.jar')) { throw 'Refusing to stop unrelated backend process.' }
         Stop-Process -Id $processes.backend
         Wait-Process -Id $processes.backend -ErrorAction SilentlyContinue
     }
@@ -72,7 +73,7 @@ foreach ($entry in @(@{name='backend';port=8086},@{name='frontend';port=5176})) 
         continue
     }
     if ($entry.name -eq 'backend') {
-        $proc = Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList '-jar','backend/target/labflow-0.1.0.jar' -WorkingDirectory $root -WindowStyle Hidden -RedirectStandardOutput '.runtime/backend.stdout.log' -RedirectStandardError '.runtime/backend.stderr.log' -PassThru
+        $proc = Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList '-jar',"backend/target/labflow-$appVersion.jar" -WorkingDirectory $root -WindowStyle Hidden -RedirectStandardOutput '.runtime/backend.stdout.log' -RedirectStandardError '.runtime/backend.stderr.log' -PassThru
     } else {
         $node = (Get-Command node.exe).Source
         $proc = Start-Process $node -ArgumentList 'node_modules/vite/bin/vite.js','--host','127.0.0.1','--port','5176','--strictPort' -WorkingDirectory "$root/frontend" -WindowStyle Hidden -RedirectStandardOutput '.runtime/frontend.stdout.log' -RedirectStandardError '.runtime/frontend.stderr.log' -PassThru

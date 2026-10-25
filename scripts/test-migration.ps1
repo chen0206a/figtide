@@ -7,6 +7,7 @@ $ErrorActionPreference = 'Stop'
 #   → 旧库快照不变 → Playwright 打开桌面版页面确认图表渲染。
 # 绝不触碰真实工作区（8086 / labflow 库）。
 $root = Split-Path $PSScriptRoot -Parent
+$appVersion = & (Join-Path $PSScriptRoot 'get-version.ps1')
 Set-Location $root
 function Resolve-MySqlBin {
     param([string]$Explicit)
@@ -54,7 +55,7 @@ try {
     # 旧版后端（当前代码打包；迁移工具只依赖稳定的 GET /projects 与 GET /backup）
     & mvn.cmd -q -f backend/pom.xml package -DskipTests "-Dlabflow.build.directory=$root/.runtime/agent-e2e-build"
     if ($LASTEXITCODE) { throw 'Old-side backend package failed.' }
-    $oldBackend = Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList @('-Duser.timezone=UTC','-jar','.runtime/agent-e2e-build/labflow-0.1.0.jar','--server.port=8087','--labflow.frontend-origin=http://127.0.0.1:5178','--spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_e2e','--labflow.test-support=true') -WorkingDirectory $root -WindowStyle Hidden -PassThru `
+    $oldBackend = Start-Process "$env:JAVA_HOME/bin/java.exe" -ArgumentList @('-Duser.timezone=UTC','-jar',".runtime/agent-e2e-build/labflow-$appVersion.jar",'--server.port=8087','--labflow.frontend-origin=http://127.0.0.1:5178','--spring.datasource.url=jdbc:mysql://127.0.0.1:33316/labflow_e2e','--labflow.test-support=true') -WorkingDirectory $root -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput (Join-Path $evidence 'old-backend.stdout.log') -RedirectStandardError (Join-Path $evidence 'old-backend.stderr.log')
     for ($n=0; $n -lt 120; $n++) {
         if ($oldBackend.HasExited) { throw 'Old backend exited; see evidence logs.' }
