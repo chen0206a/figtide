@@ -65,3 +65,7 @@ Process completed with exit code 1.
 按“失败就再次停下”停止：PR #3未合并；**截至本次记录未删除或重打标签，故没有重打执行时间**，旧v0.2.0仍指向63f01283cebacd63fd3833f586f90054a1247c31。没有创建v0.2.0草稿/正式Release，没有上传本地ZIP，没有清理远端分支；15-4后续与15-5未执行。重打原因和唯一标签授权保留，但执行前提尚未满足。
 
 完整日志`.runtime/release02-retry-windows-full.log`、失败步骤原文`release02-retry-windows-failed.log`、原始后端报告`release02-retry-failed-evidence/`及机器摘要`docs/test-evidence/release02-retry.json`保留。失败后的追加记录仅本地提交，不推送或自动重跑。
+
+### 第二个问题：第1轮仅诊断
+
+新授权允许最多3轮Windows检查，第一轮只采集证据。完整隔离目录和诊断事件加入artifact并启用隐藏文件上传；保留原45秒就绪循环。加入CIM进程树、退出状态、监听/排除端口及Java实际命令行。没有修改产品、合并、标签或Release。本机7组探针及2项诊断测试通过，已证实本机Java收到关闭托盘/浏览器参数；CI的启动根因仍待本轮artifact，不把本机结果替代远端证据。

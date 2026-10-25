@@ -1,3 +1,9 @@
+## 2026-10-25 · v0.2.0第二阻塞，第1轮：仅诊断（CI待运行）
+
+用户授权最多3轮Windows诊断/修复检查；本轮不调整180×250ms就绪循环，不改产品启动逻辑，不动标签/Release。探针新增UTC/单调计时事件（启动、端口文件、ping、退出、失败），失败前采集owned EXE/CIM父子进程/退出码、netstat监听、netsh排除端口、jcmd VM.command_line；仅针对本次EXE，不收集其他进程参数或环境密钥。artifact启用include-hidden-files，上传完整独立package-smoke目录（包括Unicode数据目录、logs、app.port、desktop.json、崩溃文件）。此前隐藏.runtime未上传是证据缺口，并非已认定的启动根因。
+
+实际本机验证：`node --test scripts/desktop/*.test.cjs` 2 passed/0 failed/0 skipped（含模拟失败采集）；`./scripts/test-desktop-package.ps1 -Application 'dist/desktop/v02/FigTide-0.2.0-windows-x64/FigTide'` 7组通过，首个ping相对启动约5.1秒（整个探针5.368秒）；jcmd实际java_command包含tray=false/open-browser=false，native父进程无JVM、子EXE有JVM，均已记录。使用旧本机包验证采集能力，不冒充新CI产物。前端/后端未改，本地未重跑组件和全量E2E，Windows工作流将完整执行。第一轮CI结果和实测根因后续补记。
+
 ## 2026-10-25 · v0.2.0恢复发布：原问题修复，Windows PR暴露EXE启动失败后停止
 
 提交8ab780f单独换行规范，a59ca64修复响应字节断言及Windows PR触发；连同1bb9a0c推送并创建PR #3。六项常规CI全绿。Windows PR工作流40170049640：前端280 passed、Node40 passed、H2 258总计257 passed/0 failed/1 skipped、生产前端/Maven/jlink/jpackage均通过。原CRLF/LF失败已在Windows真实CI中消除。
