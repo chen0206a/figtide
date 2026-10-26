@@ -115,7 +115,7 @@ describe("FigTide desktop MCP stdio integration", () => {
     }).then((response) => response.json());
     projectId = project.id;
     const form = new FormData();
-    form.append("file", new Blob(["epoch,score,secret\n1,0.7,private-a\n2,0.8,private-b"], { type: "text/csv" }), "private-input.csv");
+    form.append("file", new Blob(["epoch,score,secret,truth,predicted\n1,0.7,private-a,A,A\n2,0.8,private-b,B,A"], { type: "text/csv" }), "private-input.csv");
     const dataset = await fetch(`${baseUrl}/api/projects/${projectId}/datasets`, { method: "POST", body: form }).then((response) => response.json());
     initialConfig = config(dataset.id);
     const chart = await fetch(`${baseUrl}/api/projects/${projectId}/charts`, {
@@ -144,6 +144,29 @@ describe("FigTide desktop MCP stdio integration", () => {
         });
       });
     if (directory) await rm(directory, { recursive: true, force: true });
+  });
+
+  it("does not expose classification reports through either MCP result channel", async () => {
+    const candidate = {
+      ...structuredClone(initialConfig), type: "confusion", group: "secret",
+      series: initialConfig.series.map((series) => ({ ...series, prediction: "predicted" })),
+      classification: {
+        algorithm: "classification-v1", label: "truth", input: "labels",
+        positive: "A", threshold: 0.5, classes: ["A", "B"], normalization: "count",
+        seriesId: "", groupValue: "", xTitle: "", yTitle: "",
+      },
+    };
+    const args = { project_id: projectId, config: candidate };
+    const raw = await fetch(`${baseUrl}/api/projects/${projectId}/figure-tools/lint`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ protocol_version: 1, base_revision: 0, config: candidate }),
+    }).then((response) => response.json());
+    expect(raw.report.source.filename).toBe("private-input.csv");
+    expect(JSON.stringify(raw.report)).toContain("private-a");
+    const response = await client.callTool({ name: "lint_chart", arguments: args });
+    expect(parsed(response)).toMatchObject({ ok: true, issues: [] });
+    expect(parsed(response)).not.toHaveProperty("report");
+    expect(JSON.stringify(response)).not.toMatch(/private-input|private-a|private-b|filename|sampleRows/);
   });
 
   it("lists annotations, keeps profiles private, previews, saves and rejects stale revision", async () => {

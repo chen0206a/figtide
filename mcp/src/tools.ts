@@ -148,17 +148,20 @@ export class FigTideTools {
     chartId?: number,
     baseRevision = 0,
   ) {
-    return (
-      await this.client.request<unknown>(
-        `projects/${projectId}/figure-tools/lint`,
-        post({
-          protocol_version: 1,
-          ...(chartId === undefined ? {} : { chart_id: chartId }),
-          base_revision: baseRevision,
-          config,
-        }),
-      )
-    ).data;
+    const { data } = await this.client.request<JsonObject>(
+      `projects/${projectId}/figure-tools/lint`,
+      post({
+        protocol_version: 1,
+        ...(chartId === undefined ? {} : { chart_id: chartId }),
+        base_revision: baseRevision,
+        config,
+      }),
+    );
+    // Match the built-in assistant: classification reports include filenames,
+    // observed group values and sample row numbers, not just field summaries.
+    const result = { ...data };
+    delete result.report;
+    return result;
   }
 
   async previewChartChanges(

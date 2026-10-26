@@ -1,3 +1,10 @@
+## 2026-10-26 · 任务 17 审查修复：lint 报告隐私
+
+- 改动：MCP `lint_chart` 删除后端分类 `report`，与内置助手一致；保留 ok/issues/base_revision 和安全 source，不改后端响应或校验。
+- 回归：单元测试验证完整报告删除且不修改输入；真实 desktop JAR + stdio 测试先确认后端报告含合成文件名/分组，再断言 MCP 文本与 structuredContent 均无文件名、分组样例或 sampleRows。原预览/保存/409 流程仍通过。
+- 实际命令：`npm --prefix mcp run check` 通过；`npm --prefix mcp test` 15/15；`npm --prefix mcp run build` 通过；Node 22 `vitest run --root mcp test/integration.test.ts --pool=threads --maxWorkers=1 --testTimeout 120000` 2/2。全量联合验收留到任务 16 修复与分支整合后执行。
+- 与任务文件的偏差：没有。用户已追加修复后推送授权；本节提交时尚未推送。
+
 ## 2026-10-25 · 任务 17-4：MCP 文档与发布准备
 
 - 新增 `docs/MCP.md`：记录 11 个工具的能力、写入边界、脱敏/模型可见性、端口发现、常见故障，以及 Claude Desktop、Claude Code、Codex、Cursor 的可复制配置。README、使用指南和未发布变更记录同步更新。

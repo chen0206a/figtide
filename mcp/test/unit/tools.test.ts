@@ -125,4 +125,18 @@ describe("FigTide tools", () => {
     });
     expect(f.calls.slice(before).every((call) => call.path.endsWith("figure-tools/lint"))).toBe(true);
   });
+
+  it("removes classification reports without changing lint status, issues or safe source metadata", async () => {
+    const response = {
+      protocol_version: 1, ok: true, issues: [], base_revision: 2,
+      source: { dataset_version_id: 7, sha256: "abc" },
+      report: { source: { filename: "private.csv" }, reports: [{ group: "patient-123", sampleRows: [1, 2] }] },
+    };
+    const f = fixture(() => json(response));
+    expect(await f.tools.lintChart(1, {}, 4, 2)).toEqual({
+      protocol_version: 1, ok: true, issues: [], base_revision: 2,
+      source: { dataset_version_id: 7, sha256: "abc" },
+    });
+    expect(response.report.source.filename).toBe("private.csv");
+  });
 });
