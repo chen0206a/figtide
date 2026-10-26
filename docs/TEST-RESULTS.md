@@ -1,3 +1,26 @@
+## 2026-10-26 · 任务 16/17：审查修复与联合总验收
+
+改动文件：`mcp/src/tools.ts` 及单元/真实集成测试；`DesktopWindow.java`、`DesktopLauncher.java`、`DesktopWindowTest.java`、仅测试用的 `DesktopWindowProbeMain.java`；窗口进程探针/测试、CI、AGENTS、CHANGELOG 和桌面文档。保留原分节提交，`feature/app-window` 普通合并修复后的 `feature/mcp`，未合并 main。
+
+| 实际验证 | 结果 |
+|---|---|
+| `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test` | 274 passed / 0 failed / 1 skipped（真实模型未开启） |
+| `mvn -B -f backend/pom.xml test`，私有 MySQL 33316/labflow_test | 280 passed / 0 failed / 1 skipped（真实模型未开启） |
+| Node 22 `vitest run --root frontend --pool=threads --maxWorkers=2` | 52 文件、280/280 |
+| `npm --prefix mcp run check`、`npm --prefix mcp test`、`npm --prefix mcp run build` | 类型检查/单文件构建通过，15/15 |
+| Node 22 MCP `test/integration.test.ts --pool=threads --maxWorkers=1`，指向新桌面 JAR | 2/2，含分类报告隐私、preview/save/revision 冲突保护 |
+| Node 22 `--test scripts/migration/*.test.cjs scripts/desktop/*.test.cjs` | 45/45 |
+| `./scripts/package-desktop.ps1 -OutputDirectory dist/desktop/review16-17-0bacb19` | tsc/Vite/Maven/jlink/jpackage 全通过；仅既有 chunk-size 提示 |
+| `./scripts/test-desktop-package.ps1 -Application dist/desktop/review16-17-0bacb19/FigTide-0.2.0-windows-x64/FigTide` | 7 组真实 EXE 探针通过，子进程无系统 Java |
+| `node scripts/desktop/edge-window-probe.cjs --app <同一产物>` | 真实 DesktopLauncher → DesktopWindow → Edge 链路、页面 URL/标题、临时目录清理通过 |
+| `./scripts/test-agent.ps1 -All -Packaged -Application <同一产物> -FixturePort 18770` | 一次完整运行 85 passed / 0 failed / 3 skipped / 0 flaky（88 条）；`mcp.spec.ts` 在列表中通过；audit-restart 通过 |
+
+产物源码版本 `0bacb19451518cd4ae350e400e0433a1994ed846`，manifest 记录 source_dirty=false。本节后续提交仅补文档/证据。测试入口类经 ZIP 条目核对未进入产品 JAR；仅测试入口附加 CDP，生产参数不含调试端口。按发布工作流相同逻辑为本地产物补独立 MCP bundle 并核对三项 SHA256SUMS，未上传本地产物或发布。证据：[机器摘要](test-evidence/task16-17-acceptance.json)、[打包窗口链路](test-evidence/desktop16-launch-chain.json)，完整 E2E 日志 `.runtime/task16-17-packaged-e2e.log` 与 Playwright JSON 保留在本机。
+
+运行过程：第一次前端 fork 运行的子进程退出后运行器未结束，停止该次运行，使用相同断言在线程池完整重跑通过；第一次 E2E 启动的 Tee 日志相对路径受脚本切换目录影响造成 EPIPE，改绝对日志路径后完整重跑通过。两次未完成运行未记作通过，没有删除断言或增加跳过。3 条 E2E 跳过仍是需要单独夹具的 migration.spec.ts。私有 MySQL 为本轮临时启动，验证后已 mysqladmin 正常关停，日志记录 Shutdown complete；测试使用隔离 H2/测试库、本机协议夹具，收费模型请求 0。
+
+与任务文件的偏差：没有；按追加授权修复并整合验证。任务 17 原总验收记录缺口在本节补齐，任务 16 原误称 E2E 包含 MCP 的说明已更正。需要人决定的事：无；系统托盘等人工点击项仍以 SMOKE-14-5.md 的未勾选清单为准。按用户授权在本地验收提交完成后推送功能分支；推送后的 CI 状态在对话汇报，不把本地结果称为远端 CI 通过。
+
 ## 2026-10-26 · 任务 16 审查修复：真实窗口启动链路探针
 
 - 探针改为外部测试入口调用真实 `DesktopLauncher.launch → DesktopWindow.open`，保持应用自动开窗；JS 不再复制 Edge 查找或窗口参数。生产入口仍使用普通构造器，没有调试配置；`DesktopWindowProbeMain` 仅存在于 src/test。
@@ -19,7 +42,7 @@
 
 实测与探针：真实jar+Edge应用窗口正常打开（1440×900，SPA重定向到/welcome，标题「欢迎 · FigTide」）；窗口/任务栏图标经WM_GETICON+像素比对确认为Edge标志而非FigTide品牌图标，已在APP-WINDOW.md如实记录（任务书禁止伪装）。探针首跑失败定位为SPA路由重定向（页面URL是`/welcome`而非`/`），修正为同源前缀+标题断言后本地全绿（`.runtime/edge-window-probe.json`，证据docs/test-evidence/desktop16-edge-window-probe.json）；探针只在测试中加`--remote-debugging-port=0`，生产参数永不含调试端口；已加入desktop-release.yml Windows任务（PR与打tag均执行），证据随desktop-package-evidence上传。
 
-总验收（本机全绿）：后端MySQL 277/0/0/1S（34类，含DesktopWindowTest 13+DesktopLauncherTest）；后端H2 271/0/0/1S（同减6评测类跳过）；前端52文件280测试+构建通过（仅既有>500kB块警告）；桌面全量E2E 84 passed/3 skipped（84=83+mcp.spec.ts，3迁移专项未开启属既有约定）+audit-restart通过。期间发现本机MySQL(33316)已停止且pid文件指向已死进程——按start.ps1相同参数（相对datadir，避免中文路径经PowerShell参数截断成`D:\RAG-agent\`）临时重启后跑完测试，mysqladmin优雅关停（Shutdown complete入日志），未动3306系统服务与任何数据。需人工确认项见SMOKE-14-5.md（双击独立窗口、关窗托盘仍在、升级气泡、Edge卸载回退等）。
+总验收（本机全绿）：后端MySQL 277/0/0/1S（34类，含DesktopWindowTest 13+DesktopLauncherTest）；后端H2 271/0/0/1S（同减6评测类跳过）；前端52文件280测试+构建通过（仅既有>500kB块警告）；桌面全量E2E 84 passed/3 skipped（不含 MCP 用例；3 条为既有迁移专项）+audit-restart通过。期间发现本机MySQL(33316)已停止且pid文件指向已死进程——按start.ps1相同参数（相对datadir，避免中文路径经PowerShell参数截断成`D:\RAG-agent\`）临时重启后跑完测试，mysqladmin优雅关停（Shutdown complete入日志），未动3306系统服务与任何数据。需人工确认项见SMOKE-14-5.md（双击独立窗口、关窗托盘仍在、升级气泡、Edge卸载回退等）。
 
 ## 2026-10-26 · 任务 17 审查修复：lint 报告隐私
 
@@ -1717,4 +1740,3 @@ E2E 生成的 3 个测试项目（`配置交互验收`、`实验记录验收`、
 - 图版为规范复刻的示例，不代表期刊对投稿的实际裁切与色值要求；如需真实论文图，应替换为 CC-BY 图件并保留署名。
 - 仍未覆盖 Firefox、Safari、移动端与百万行数据；绘图引擎按需加载的体积提示仍在。
 - 视觉层面覆盖 1280–1560px 桌面视口；<1120px 时布局横向滚动。
-

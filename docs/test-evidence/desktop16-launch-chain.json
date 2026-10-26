@@ -1,0 +1,67 @@
+{
+  "probe": "edge-window",
+  "app_kind": "packaged",
+  "jar": "D:\\RAG-agent项目\\LabFlow\\dist\\desktop\\review16-17-0bacb19\\FigTide-0.2.0-windows-x64\\FigTide\\app\\figtide.jar",
+  "data_dir": "D:\\RAG-agent项目\\LabFlow\\.runtime\\edge-window-odKabx\\data",
+  "user_data_dir": "D:\\RAG-agent项目\\LabFlow\\.runtime\\edge-window-odKabx\\window",
+  "backend_port": 56064,
+  "passed": [
+    "backend ready (app.port + ping + health)",
+    "DesktopLauncher.launch -> DesktopWindow.open -> Edge",
+    "app window URL and FigTide title"
+  ],
+  "ok": true,
+  "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "edge_args": [
+    "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "--app=http://127.0.0.1:56064/",
+    "--user-data-dir=D:\\RAG-agent项目\\LabFlow\\.runtime\\edge-window-odKabx\\window",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1440,900",
+    "--remote-debugging-port=0"
+  ],
+  "launcher": "DesktopLauncher.launch -> DesktopWindow.open",
+  "edge_pid": 41280,
+  "devtools_port": 49712,
+  "observed_pages": [
+    {
+      "type": "background_page",
+      "url": "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold/_generated_background_page.html",
+      "title": "Microsoft Voices"
+    },
+    {
+      "type": "background_page",
+      "url": "chrome-extension://ncbjelpjchkpbikbpkcchkhkblodoama/_generated_background_page.html",
+      "title": "WebRTC Internals Extension"
+    },
+    {
+      "type": "background_page",
+      "url": "chrome-extension://fikbjbembnmfhppjfnmfkahdhfohhjmg/_generated_background_page.html",
+      "title": "Media Internals Services Extension"
+    },
+    {
+      "type": "background_page",
+      "url": "chrome-extension://ihmafllikibpmigkcoadcmckbfhibefp/_generated_background_page.html",
+      "title": "Edge 反馈"
+    },
+    {
+      "type": "background_page",
+      "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/background.html",
+      "title": "WebRTC Extension"
+    },
+    {
+      "type": "page",
+      "url": "http://127.0.0.1:56064/welcome",
+      "title": "欢迎 · FigTide"
+    },
+    {
+      "type": "service_worker",
+      "url": "chrome-extension://ndcpkimcihhghdcddljkfmmjccdmcmof/background.rollup.js",
+      "title": "Service Worker chrome-extension://ndcpkimcihhghdcddljkfmmjccdmcmof/background.rollup.js"
+    }
+  ],
+  "page_url": "http://127.0.0.1:56064/welcome",
+  "page_title": "欢迎 · FigTide",
+  "temp_dir_removed": true
+}

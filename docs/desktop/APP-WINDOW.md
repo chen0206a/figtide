@@ -44,7 +44,10 @@ msedge.exe --app=http://127.0.0.1:<端口>/
 node scripts/desktop/edge-window-probe.cjs --app 'dist/desktop/FigTide-0.2.0-windows-x64/FigTide'
 # 源码 JAR 也可用 --jar .runtime/desktop-build/figtide.jar --java-home <JDK目录>
 ```
+
 - **完整桌面 E2E**：`scripts/test-agent.ps1 -All -Desktop` 照常全量回归（窗口关闭路径）。
+
+2026-10-26 修复后，真实打包 JAR 的窗口链路探针通过，原始证据见 [desktop16-launch-chain.json](../test-evidence/desktop16-launch-chain.json)。该探针不代替下方系统托盘的人工点击检查。
 
 ## 已知限制
 
