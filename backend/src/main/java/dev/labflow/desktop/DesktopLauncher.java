@@ -2,8 +2,10 @@ package dev.labflow.desktop;
 
 import dev.labflow.LabFlowApplication;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.PortInUseException;
@@ -21,11 +23,17 @@ public final class DesktopLauncher {
   }
 
   public static void launch(String[] args) {
+    launch(args, DesktopWindow::new);
+  }
+
+  // A test-only entrypoint supplies the process boundary; production always uses
+  // the ordinary DesktopWindow constructor and never enables remote debugging.
+  static void launch(String[] args, BiFunction<DesktopWindow.Mode, Path, DesktopWindow> windows) {
     try {
       var paths = DesktopPaths.resolve(args, System.getenv(), System.getProperty("user.home"));
       boolean open = Boolean.parseBoolean(DesktopPaths.option(args, "labflow.desktop.open-browser", "true"));
-      var window = new DesktopWindow(DesktopWindow.mode(DesktopPaths.option(args, "labflow.desktop.window", "app")),
-          paths.data(), System.getenv());
+      var window = windows.apply(DesktopWindow.mode(DesktopPaths.option(args, "labflow.desktop.window", "app")),
+          paths.data());
       var acquired = DesktopInstance.acquire(paths.data());
       if (acquired.isEmpty()) {
         for (int i = 0; i < 30; i++) {

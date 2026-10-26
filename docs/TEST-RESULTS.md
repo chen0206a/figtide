@@ -1,3 +1,11 @@
+## 2026-10-26 · 任务 16 审查修复：真实窗口启动链路探针
+
+- 探针改为外部测试入口调用真实 `DesktopLauncher.launch → DesktopWindow.open`，保持应用自动开窗；JS 不再复制 Edge 查找或窗口参数。生产入口仍使用普通构造器，没有调试配置；`DesktopWindowProbeMain` 仅存在于 src/test。
+- 修复 --app/--jar 相对路径在更改 cwd 后解析错误；清理只匹配本轮唯一临时目录；失败不再输出 OK。增加相对路径与加载入口回归，`node --test scripts/desktop/edge-window-probe.test.cjs` 1/1。
+- 实际 `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml -Dtest=DesktopWindowTest,DesktopLauncherTest test` 23/23；`mvn -Pdesktop -DskipTests package` 指定 .runtime/desktop-build 成功；`node scripts/desktop/edge-window-probe.cjs --jar .runtime/desktop-build/figtide.jar --java-home .runtime/java/jdk-21.0.12.1+1` 通过，页面 URL/标题、真实启动链路、临时目录清理均成功。
+- 首次探针因加载整个 test-classes 使 desktop-static 测试夹具遮盖正式页面而失败；定位后只复制并加载单个探针入口类，再次运行通过，未降低页面/标题断言。测试类的 UTF-8 事件输出同时修正。打包产物与全量联合验收在后续整合提交验证。
+- 与任务文件的偏差：无；测试入口的进程边界负责附加调试参数，不向生产配置新增调试开关。
+
 ## 2026-10-26 · 任务 16 审查修复：Edge 早期退出回退
 
 - `DesktopWindow.open` 检查启动后一秒内的退出结果：非零退出回退浏览器；退出 0（Edge 复用已有进程）保持成功；仍在运行的进程保持成功；中断恢复线程标志并回退。

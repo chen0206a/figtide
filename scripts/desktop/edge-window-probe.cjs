@@ -1,229 +1,187 @@
 #!/usr/bin/env node
-// 任务 16-4：Windows 进程探针——真实启动桌面后端 + Edge 应用模式窗口。
-//
-// 生产路径（DesktopWindow.command()）绝不包含 --remote-debugging-port；
-// 只有本探针为了验证窗口内容才加上 --remote-debugging-port=0，并读取
-// user-data-dir 下的 DevToolsActivePort 文件连接 DevTools HTTP 接口。
-//
-// 用法：
-//   node scripts/desktop/edge-window-probe.cjs --app <打包后的 FigTide 目录>
-//   node scripts/desktop/edge-window-probe.cjs --jar <figtide.jar> --java-home <JDK 目录>
-// 可选：--out <报告 JSON 路径>（默认 .runtime/edge-window-probe.json）、--keep（保留临时目录）
-const { spawn, execSync, execFileSync } = require('node:child_process');
+// Test-only loader calls DesktopLauncher.launch -> DesktopWindow.open, with a
+// process boundary that appends CDP only after validating the production command.
+// Run Maven test-compile first; the probe helper is outside the released JAR.
+const { spawn, execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const net = require('node:net');
 const path = require('node:path');
+const { pathToFileURL } = require('node:url');
 
 const root = path.resolve(__dirname, '..', '..');
-
-function arg(name) {
-  const i = process.argv.indexOf(`--${name}`);
-  return i >= 0 ? process.argv[i + 1] : undefined;
-}
-const keep = process.argv.includes('--keep');
-
-// ---- 解析 java 与 jar ----
-function resolveApp() {
-  const app = arg('app');
-  if (app) {
-    const jar = path.join(app, 'app', 'figtide.jar');
-    const java = path.join(app, 'runtime', 'bin', 'java.exe');
-    if (!fs.existsSync(jar)) throw new Error(`找不到 ${jar}（--app 应指向打包后的 FigTide 目录）`);
-    if (!fs.existsSync(java)) throw new Error(`找不到 ${java}（打包目录应内嵌运行时）`);
-    return { jar, java, kind: 'packaged' };
-  }
-  const jar = arg('jar');
-  const javaHome = arg('java-home');
-  if (!jar || !javaHome) throw new Error('需要 --app <FigTide 目录> 或 --jar <jar> + --java-home <JDK 目录>');
-  const java = path.join(javaHome, 'bin', 'java.exe');
-  if (!fs.existsSync(jar)) throw new Error(`找不到 ${jar}`);
-  if (!fs.existsSync(java)) throw new Error(`找不到 ${java}`);
-  return { jar, java, kind: 'dev' };
+const marker = 'FIGTIDE_WINDOW_PROBE_START ';
+function arg(name, argv = process.argv) {
+  const index = argv.indexOf(`--${name}`);
+  return index >= 0 ? argv[index + 1] : undefined;
 }
 
-// ---- 找 Edge（与 DesktopWindow.findEdge 同规则：注册表 App Paths 优先，程序目录兜底）----
-function findEdge() {
-  const roots = [
-    'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe',
-    'HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe',
+function resolveApp(argv = process.argv) {
+  const app = arg('app', argv);
+  const jar = app ? path.resolve(app, 'app', 'figtide.jar') : path.resolve(arg('jar', argv) || '');
+  const java = app ? path.resolve(app, 'runtime', 'bin', 'java.exe')
+    : path.resolve(arg('java-home', argv) || '', 'bin', 'java.exe');
+  if (!app && (!arg('jar', argv) || !arg('java-home', argv)))
+    throw new Error('需要 --app <FigTide 目录> 或 --jar <jar> + --java-home <JDK 目录>');
+  const probeClasses = path.resolve(arg('probe-classes', argv) || path.join(root, 'backend', 'target', 'test-classes'));
+  for (const file of [jar, java, path.join(probeClasses, 'dev', 'labflow', 'desktop', 'DesktopWindowProbeMain.class')])
+    if (!fs.existsSync(file)) throw new Error(`找不到 ${file}；请先构建应用并执行 Maven test-compile`);
+  return { jar, java, probeClasses, kind: app ? 'packaged' : 'dev' };
+}
+
+function launchArgs(application, dataDir, port) {
+  return [
+    '-Duser.timezone=UTC',
+    '-Dloader.main=dev.labflow.desktop.DesktopWindowProbeMain',
+    `-Dloader.path=${pathToFileURL(application.probeClasses + path.sep).href}`,
+    '-cp', application.jar, 'org.springframework.boot.loader.launch.PropertiesLauncher',
+    '--spring.profiles.active=desktop', `--labflow.data-dir=${dataDir}`,
+    `--labflow.desktop.port=${port}`, '--labflow.desktop.window=app',
+    '--labflow.desktop.open-browser=true', '--labflow.desktop.tray=false',
   ];
-  for (const key of roots) {
-    try {
-      const out = execSync(`reg query "${key}" /ve`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
-      const line = out.split(/\r?\n/).find((l) => l.includes('REG_SZ'));
-      if (!line) continue;
-      let value = line.slice(line.indexOf('REG_SZ') + 6).trim();
-      if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
-      if (value && fs.existsSync(value)) return value;
-    } catch { /* 该根不存在或被拒绝，继续 */ }
-  }
-  const candidates = [
-    process.env['ProgramFiles(x86)'], process.env.ProgramFiles,
-  ].filter(Boolean).map((p) => path.join(p, 'Microsoft', 'Edge', 'Application', 'msedge.exe'));
-  for (const c of candidates) if (fs.existsSync(c)) return c;
-  return null;
 }
 
-// ---- 端口 ----
-function freePort(from, to) {
+function freePort() {
   return new Promise((resolve, reject) => {
-    const probe = (p) => {
-      const srv = net.createServer();
-      srv.once('error', () => { if (p >= to) reject(new Error('没有可用端口')); else probe(p + 1); });
-      srv.once('listening', () => srv.close(() => resolve(p)));
-      srv.listen(p, '127.0.0.1');
-    };
-    probe(from);
+    const server = net.createServer();
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const port = server.address().port;
+      server.close((error) => error ? reject(error) : resolve(port));
+    });
   });
 }
 
-async function waitFor(fn, { attempts = 180, interval = 250, label = '' } = {}) {
-  for (let i = 0; i < attempts; i++) {
+async function waitFor(fn, label) {
+  for (let i = 0; i < 180; i++) {
     const value = await fn();
-    if (value !== undefined && value !== null && value !== false) return value;
-    await new Promise((r) => setTimeout(r, interval));
+    if (value) return value;
+    await new Promise((resolve) => setTimeout(resolve, 250));
   }
   throw new Error(`等待超时：${label}`);
 }
 
 async function getJson(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
-  return res.json();
+  const response = await fetch(url, { signal: AbortSignal.timeout(2000) });
+  if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
+  return response.json();
 }
 
-// 找出命令行里带本探针临时目录的 msedge 进程（兜底清理，防止 taskkill /T 漏网）
-function sweepEdgePids() {
+function sweepEdgePids(owned) {
   try {
-    const out = execFileSync('powershell.exe', ['-NoProfile', '-Command',
-      "Get-CimInstance Win32_Process -Filter \"Name='msedge.exe'\" | Where-Object { $_.CommandLine -like '*edge-window-*' } | ForEach-Object { $_.ProcessId }",
-    ], { encoding: 'utf8' });
-    return out.split(/\s+/).filter(Boolean);
+    // Match only this run's unique directory, never another probe or user profile.
+    const output = execFileSync('powershell.exe', ['-NoProfile', '-Command',
+      'Get-CimInstance Win32_Process -Filter "Name=\'msedge.exe\'" | Where-Object { $_.CommandLine -and $_.CommandLine.Contains($env:FIGTIDE_PROBE_OWNED) } | ForEach-Object { $_.ProcessId }',
+    ], { encoding: 'utf8', windowsHide: true, env: { ...process.env, FIGTIDE_PROBE_OWNED: owned } });
+    return output.split(/\s+/).filter((value) => /^\d+$/.test(value));
   } catch { return []; }
 }
 
 async function main() {
-  const { jar, java, kind } = resolveApp();
-  const edge = findEdge();
-  if (!edge) throw new Error('本机未找到 Microsoft Edge（reg query App Paths 与程序目录均未命中）');
-
-  const owned = path.join(root, '.runtime', `edge-window-${process.pid}`);
+  const application = resolveApp();
+  const runtimeRoot = path.join(root, '.runtime');
+  fs.mkdirSync(runtimeRoot, { recursive: true });
+  const owned = fs.mkdtempSync(path.join(runtimeRoot, 'edge-window-'));
   const dataDir = path.join(owned, 'data');
-  const userDataDir = path.join(owned, 'window'); // 与 DesktopWindow.userDataDir 同布局（data 的兄弟目录）
-  fs.mkdirSync(dataDir, { recursive: true });
-
-  const port = await freePort(17940, 18020);
-  const report = {
-    probe: 'edge-window', app_kind: kind, jar, java, edge, data_dir: dataDir,
-    user_data_dir: userDataDir, backend_port: port, passed: [],
-  };
-
-  // 1. 启动桌面后端（不自动开窗口；窗口由探针带调试端口启动）
-  const backend = spawn(java, [
-    '-jar', jar,
-    '--spring.profiles.active=desktop',
-    `--labflow.data-dir=${dataDir}`,
-    `--labflow.desktop.port=${port}`,
-    '--labflow.desktop.open-browser=false',
-    '--labflow.desktop.tray=false',
-  ], { cwd: owned, stdio: ['ignore', 'pipe', 'pipe'] });
-  const backendLog = [];
-  backend.stdout.on('data', (d) => backendLog.push(String(d)));
-  backend.stderr.on('data', (d) => backendLog.push(String(d)));
-
-  let edgeProc = null;
+  const userDataDir = path.join(owned, 'window');
+  fs.mkdirSync(dataDir);
+  // Do not add all test-classes to the application loader: its desktop-static
+  // fixtures would shadow the actual bundled UI. Copy only the probe helper.
+  const helperRelative = path.join('dev', 'labflow', 'desktop', 'DesktopWindowProbeMain.class');
+  const isolatedClasses = path.join(owned, 'probe-classes');
+  fs.mkdirSync(path.dirname(path.join(isolatedClasses, helperRelative)), { recursive: true });
+  fs.copyFileSync(path.join(application.probeClasses, helperRelative), path.join(isolatedClasses, helperRelative));
+  const port = await freePort();
+  const report = { probe: 'edge-window', app_kind: application.kind, jar: application.jar,
+    data_dir: dataDir, user_data_dir: userDataDir, backend_port: port, passed: [], ok: false };
+  const backend = spawn(application.java, launchArgs({ ...application, probeClasses: isolatedClasses }, dataDir, port),
+    { cwd: owned, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  let output = '';
+  let spawnError;
+  backend.stdout.on('data', (chunk) => { output += chunk.toString(); });
+  backend.stderr.on('data', (chunk) => { output += chunk.toString(); });
+  backend.on('error', (error) => { spawnError = error; });
+  function checkBackend() {
+    if (spawnError) throw spawnError;
+    if (backend.exitCode !== null) throw new Error(`桌面启动器退出 ${backend.exitCode}: ${output.slice(-3000)}`);
+  }
   try {
-    // 2. 等后端就绪：app.port + /api/desktop/ping + /api/health
+    const uri = `http://127.0.0.1:${port}/`;
     const instance = await waitFor(async () => {
+      checkBackend();
       try {
-        const ping = await getJson(`http://127.0.0.1:${port}/api/desktop/ping`);
-        if (!ping.instance_id) return null;
-        const health = await getJson(`http://127.0.0.1:${port}/api/health`);
-        return health.status === 'ok' ? ping : null;
+        const ping = await getJson(`${uri}api/desktop/ping`);
+        const health = await getJson(`${uri}api/health`);
+        return ping.instance_id && health.status === 'ok' && ping;
       } catch { return null; }
-    }, { label: '后端就绪' });
-    const portFile = JSON.parse(fs.readFileSync(path.join(dataDir, 'app.port'), 'utf8'));
-    if (portFile.port !== port || portFile.instance_id !== instance.instance_id) {
-      throw new Error('app.port 与实际实例不一致');
-    }
+    }, '后端就绪');
+    const record = JSON.parse(fs.readFileSync(path.join(dataDir, 'app.port'), 'utf8'));
+    if (record.port !== port || record.instance_id !== instance.instance_id) throw new Error('端口实例身份不一致');
     report.passed.push('backend ready (app.port + ping + health)');
 
-    // 3. 以生产参数 + 调试端口启动 Edge 应用窗口
-    //    除最后的调试端口外，参数必须与 DesktopWindow.command() 保持一致。
-    const uri = `http://127.0.0.1:${port}/`;
-    const edgeArgs = [
-      `--app=${uri}`,
-      `--user-data-dir=${userDataDir}`,
-      '--no-first-run',
-      '--no-default-browser-check',
-      '--window-size=1440,900',
-      '--remote-debugging-port=0', // 仅探针；生产绝不加
-    ];
-    edgeProc = spawn(edge, edgeArgs, { stdio: 'ignore' });
-    report.edge_pid = edgeProc.pid;
-    report.edge_args = edgeArgs;
+    const launched = await waitFor(() => {
+      checkBackend();
+      const line = output.split(/\r?\n/).find((value) => value.startsWith(marker));
+      if (!line) return null;
+      try { return JSON.parse(line.slice(marker.length)); } catch { return null; }
+    }, '产品窗口启动链路');
+    Object.assign(report, launched);
+    report.passed.push('DesktopLauncher.launch -> DesktopWindow.open -> Edge');
 
-    // 4. 等 DevToolsActivePort 出现（Edge 写入 user-data-dir）
-    const devtools = await waitFor(() => {
+    const debugPort = await waitFor(() => {
+      checkBackend();
       try {
-        const text = fs.readFileSync(path.join(userDataDir, 'DevToolsActivePort'), 'utf8').trim();
-        const devtoolsPort = Number(text.split(/\r?\n/)[0]);
-        return Number.isInteger(devtoolsPort) && devtoolsPort > 0 ? devtoolsPort : null;
+        const value = Number(fs.readFileSync(path.join(userDataDir, 'DevToolsActivePort'), 'utf8').trim().split(/\r?\n/)[0]);
+        return Number.isInteger(value) && value > 0 && value;
       } catch { return null; }
-    }, { attempts: 120, interval: 250, label: 'DevToolsActivePort' });
-    report.devtools_port = devtools;
-    report.passed.push('DevToolsActivePort written');
-
-    // 5. /json/list 找到应用窗口页面：同源（http://127.0.0.1:<port>/ 开头，SPA 会把 / 重定向到 /welcome
-    //    等具体路由），标题含 FigTide。见 16-4 任务书「页面 URL + 标题」断言。
+    }, 'DevToolsActivePort');
+    report.devtools_port = debugPort;
     const page = await waitFor(async () => {
+      checkBackend();
       try {
-        const list = await getJson(`http://127.0.0.1:${devtools}/json/list`);
-        const hit = list.find((t) => t.type === 'page' && (t.url === uri || t.url.startsWith(uri)));
-        if (!hit) return null;
-        return hit.title && hit.title.includes('FigTide') ? hit : null;
+        const pages = await getJson(`http://127.0.0.1:${debugPort}/json/list`);
+        report.observed_pages = pages.map(({ type, url, title }) => ({ type, url, title }));
+        return pages.find((entry) => entry.type === 'page' && entry.url.startsWith(uri) && entry.title.includes('FigTide'));
       } catch { return null; }
-    }, { attempts: 120, interval: 250, label: '应用窗口页面' });
+    }, '应用窗口页面');
     report.page_url = page.url;
     report.page_title = page.title;
-    report.passed.push(`app window page: url=${page.url} title=${page.title}`);
-
-    // 6. 首页静态资源可达（窗口里真正渲染了工作台）
-    const index = await fetch(`${uri}index.html`);
-    if (!index.ok) throw new Error(`index.html -> HTTP ${index.status}`);
-    report.passed.push('index.html served');
-
+    report.passed.push('app window URL and FigTide title');
     report.ok = true;
+  } catch (error) {
+    report.error = error.message;
+    throw error;
   } finally {
-    // 7. 清理：先杀 Edge（树 + 兜底扫描）与后端，再删临时目录
-    if (edgeProc && edgeProc.exitCode === null) {
-      try { execSync(`taskkill /PID ${edgeProc.pid} /T /F`, { stdio: 'ignore' }); } catch { /* 已退出 */ }
+    for (const pid of sweepEdgePids(owned)) {
+      try { execFileSync('taskkill', ['/PID', pid, '/T', '/F'], { stdio: 'ignore', windowsHide: true }); } catch { }
     }
-    for (const pid of sweepEdgePids()) {
-      try { execSync(`taskkill /PID ${pid} /T /F`, { stdio: 'ignore' }); } catch { /* 已退出 */ }
+    if (backend.exitCode === null && backend.pid) {
+      await new Promise((resolve) => {
+        const timer = setTimeout(resolve, 5000);
+        backend.once('exit', () => { clearTimeout(timer); resolve(); });
+        backend.kill();
+      });
     }
-    if (backend.exitCode === null) backend.kill('SIGKILL');
-    for (let i = 0; i < 5 && !keep; i++) {
-      try { fs.rmSync(owned, { recursive: true, force: true }); break; } catch { await new Promise((r) => setTimeout(r, 400)); }
-    }
-    if (!keep) {
+    if (!process.argv.includes('--keep')) {
+      // owned came from mkdtemp within runtimeRoot; check again before recursion.
+      if (!path.resolve(owned).startsWith(path.resolve(runtimeRoot) + path.sep)) throw new Error('Unsafe cleanup path');
+      for (let i = 0; i < 5; i++) {
+        try { fs.rmSync(owned, { recursive: true, force: true }); break; }
+        catch { await new Promise((resolve) => setTimeout(resolve, 400)); }
+      }
       report.temp_dir_removed = !fs.existsSync(owned);
-      if (!report.temp_dir_removed) report.temp_dir_warning = `未能删除 ${owned}（Edge 句柄未释放）`;
+      if (!report.temp_dir_removed) { report.ok = false; report.error = '临时窗口目录未能清理'; }
     }
-    if (backendLog.length) {
-      const logPath = path.join(root, '.runtime', 'edge-window-probe-backend.log');
-      fs.writeFileSync(logPath, backendLog.join(''));
-      report.backend_log = logPath;
-    }
-    const out = arg('out') || path.join(root, '.runtime', 'edge-window-probe.json');
-    fs.mkdirSync(path.dirname(out), { recursive: true });
-    fs.writeFileSync(out, JSON.stringify(report, null, 2));
-    console.log(`EDGE_WINDOW_PROBE_OK (${report.passed.join('; ')})`);
-    console.log(`report: ${out}`);
+    fs.writeFileSync(path.join(runtimeRoot, 'edge-window-probe-backend.log'), output);
+    const reportFile = path.resolve(arg('out') || path.join(runtimeRoot, 'edge-window-probe.json'));
+    fs.mkdirSync(path.dirname(reportFile), { recursive: true });
+    fs.writeFileSync(reportFile, JSON.stringify(report, null, 2));
+    console.log(`${report.ok ? 'EDGE_WINDOW_PROBE_OK' : 'EDGE_WINDOW_PROBE_FAIL'}: ${reportFile}`);
+    if (!report.ok) process.exitCode = 1;
   }
 }
 
-main().catch((e) => {
-  console.error(`EDGE_WINDOW_PROBE_FAIL: ${e.message}`);
+module.exports = { resolveApp, launchArgs };
+if (require.main === module) main().catch((error) => {
+  console.error(`EDGE_WINDOW_PROBE_FAIL: ${error.message}`);
   process.exitCode = 1;
 });

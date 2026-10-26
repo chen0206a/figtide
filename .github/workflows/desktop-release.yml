@@ -78,6 +78,7 @@ jobs:
           path: |
             .runtime/desktop-package-smoke.json
             .runtime/edge-window-probe.json
+            .runtime/edge-window-probe-backend.log
             .runtime/package-smoke-*/
             backend/target/surefire-reports/
             frontend/test-results/

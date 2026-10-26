@@ -35,8 +35,15 @@ msedge.exe --app=http://127.0.0.1:<端口>/
 
 ## 测试
 
-- **单元测试**：`backend/src/test/java/dev/labflow/desktop/DesktopWindowTest.java`（13 项：注册表查找优先级/兜底、参数组装含中文空格路径、userDataDir 布局、Edge 缺失/启动失败回退、browser 模式、mode 校验、升级气泡只展示一次且保留首选端口）。
-- **CI 进程探针**：`scripts/desktop/edge-window-probe.cjs`——真实启动打包后的应用，用生产参数 + `--remote-debugging-port=0`（仅测试）启动 Edge，读取 user-data-dir 下的 `DevToolsActivePort`，经 DevTools HTTP 接口断言窗口页面是 `http://127.0.0.1:<端口>/` 同源地址且标题含 FigTide，然后清理全部进程与临时目录。已加入 `desktop-release.yml` 的 Windows 任务（PR 与打 tag 都会跑），证据 JSON 随 `desktop-package-evidence` 工件上传。
+- **单元测试**：`backend/src/test/java/dev/labflow/desktop/DesktopWindowTest.java`（16 项）：路径/参数/模式/升级提示，以及早期非零退出回退、退出 0 的正常进程接管、线程中断回退。
+- **CI 进程探针**：`scripts/desktop/edge-window-probe.cjs` 用测试入口 `DesktopWindowProbeMain` 调用真实 `DesktopLauncher.launch → DesktopWindow.open → Edge`。入口只在 `src/test`，不随应用 JAR 发布；Spring Boot 的测试加载器仅加载这一个入口类，避免测试静态页面遮盖正式界面。在进程创建边界检查生产命令不含调试参数后，仅测试入口附加 `--remote-debugging-port=0`。探针核对实际页面 URL/标题与端口实例身份，按本轮唯一目录清理进程与配置；JSON 和启动日志随 CI 工件上传。
+
+手工复现自动探针（先 `mvn -f backend/pom.xml test-compile`，应用已构建）：
+
+```powershell
+node scripts/desktop/edge-window-probe.cjs --app 'dist/desktop/FigTide-0.2.0-windows-x64/FigTide'
+# 源码 JAR 也可用 --jar .runtime/desktop-build/figtide.jar --java-home <JDK目录>
+```
 - **完整桌面 E2E**：`scripts/test-agent.ps1 -All -Desktop` 照常全量回归（窗口关闭路径）。
 
 ## 已知限制
