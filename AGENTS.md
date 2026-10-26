@@ -103,3 +103,5 @@ git add -A && git commit -m "refactor(NN): <一句话>"
 ## 独立窗口授权（任务 16）
 
 按 `docs/development/tasks/16-edge-app-window.md`，允许：新增 Edge 应用模式启动（注册表/程序目录查找、`--app` 启动参数、固定 `user-data-dir`）、找不到 Edge 时退回默认浏览器、`--labflow.desktop.window` 配置项、托盘「在浏览器中打开」与升级气泡、前端 `manifest.webmanifest`、CHANGELOG/GUIDE/README 文档、`docs/desktop/APP-WINDOW.md`、单测与 Windows CI 进程探针脚本（`--remote-debugging-port=0` 仅限测试）。仍然禁止：改变已有 API 请求/响应与业务语义、修改 MySQL 迁移、改动默认开发 profile 行为、伪装任务栏图标。仅本地提交，不推送。
+
+2026-10-26 补充授权：用户要求修复任务 16/17 审查发现的问题，完成回归后推送功能分支。允许修复 MCP lint 报告脱敏、窗口早期异常退出回退、真实启动链路探针及相应测试/文档，并整合两项功能验证。不直接合并 main，不打标签或发布。

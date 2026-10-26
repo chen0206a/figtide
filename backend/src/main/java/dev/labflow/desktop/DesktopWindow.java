@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -73,8 +74,17 @@ final class DesktopWindow {
       return new Opened("browser", reason);
     }
     try {
-      launcher.start(command(edge.get(), uri, userDataDir));
+      Process process = launcher.start(command(edge.get(), uri, userDataDir));
+      // Edge may hand the window to an existing process and exit successfully.
+      // A non-zero early exit instead means no usable window was opened.
+      if (process.waitFor(1, TimeUnit.SECONDS) && process.exitValue() != 0)
+        throw new IOException("Edge 进程提前退出（退出码 " + process.exitValue() + "）");
       return new Opened("app", null);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      String reason = "Edge 启动检测被中断（已用默认浏览器打开）";
+      fallbackBrowser.accept(uri, reason);
+      return new Opened("browser", reason);
     } catch (IOException | RuntimeException e) {
       String reason = "Edge 启动失败：" + e.getMessage();
       fallbackBrowser.accept(uri, reason);

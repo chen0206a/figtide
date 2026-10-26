@@ -1,3 +1,10 @@
+## 2026-10-26 · 任务 16 审查修复：Edge 早期退出回退
+
+- `DesktopWindow.open` 检查启动后一秒内的退出结果：非零退出回退浏览器；退出 0（Edge 复用已有进程）保持成功；仍在运行的进程保持成功；中断恢复线程标志并回退。
+- 新增非零退出、正常接管、中断三个回归。实际 `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml -Dtest=DesktopWindowTest,DesktopLauncherTest test`：23 passed / 0 failed / 0 skipped。未改 API、数据库或业务语义，属于任务 16 窗口启动授权。
+- 更正此前任务 16 报告：原始 `.runtime/e2e16-desktop.log` 为 84 passed / 3 skipped，未包含 `mcp.spec.ts`；“84=83+mcp.spec.ts”是错误说明。MCP 在独立分支，整合后另跑全量。原始通过数没有变化。
+- 与任务文件的偏差：没有。用户已授权修复并在回归后推送；本节尚未推送。
+
 ## 2026-10-25 · 任务16独立窗口（Edge应用模式）：实现、探针与总验收
 
 分支feature/app-window（本地6提交25d3aca→237d5c4→141b73d→e2499e4→9b69d36→635bce1，未推送）。16-0任务书+AGENTS授权；16-1 DesktopWindow（注册表/程序目录找Edge、--app固定user-data-dir、找不到回退默认浏览器+气泡、--labflow.desktop.window=app|browser、托盘新增「在浏览器中打开」）；16-2 manifest.webmanifest+品牌图标16–512px+实测截图；16-3升级气泡只展示一次（desktop.json标记，保留首选端口）；16-4 CI进程探针；16-5 APP-WINDOW.md/GUIDE/README/冒烟清单。

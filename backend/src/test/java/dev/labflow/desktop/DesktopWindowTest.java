@@ -1,11 +1,13 @@
 package dev.labflow.desktop;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -99,7 +101,7 @@ class DesktopWindowTest {
     List<List<String>> launched = new ArrayList<>();
     List<URI> browsed = new ArrayList<>();
     var window = new DesktopWindow(DesktopWindow.Mode.APP, temp.resolve("data"), Map.of(),
-        () -> Optional.of(edge), command -> { launched.add(command); return null; },
+        () -> Optional.of(edge), command -> { launched.add(command); return mock(Process.class); },
         (uri, reason) -> browsed.add(uri));
     var opened = window.open(URI_);
     assertFalse(opened.fallback());
@@ -141,6 +143,43 @@ class DesktopWindowTest {
     assertTrue(opened.fallback());
     assertTrue(opened.reason().contains("browser"));
     assertEquals(List.of(URI_), browsed);
+  }
+
+  @Test void earlyNonzeroExitFallsBackInsteadOfReportingAnOpenWindow() throws Exception {
+    Process failed = mock(Process.class);
+    when(failed.waitFor(1, TimeUnit.SECONDS)).thenReturn(true);
+    when(failed.exitValue()).thenReturn(7);
+    List<String> reasons = new ArrayList<>();
+    var window = new DesktopWindow(DesktopWindow.Mode.APP, temp.resolve("data"), Map.of(),
+        () -> Optional.of(Path.of("msedge.exe")), command -> failed,
+        (uri, reason) -> reasons.add(reason));
+    assertTrue(window.open(URI_).fallback());
+    assertEquals(1, reasons.size());
+    assertTrue(reasons.getFirst().contains("退出码 7"));
+  }
+
+  @Test void successfulProcessHandoffDoesNotOpenADuplicateBrowser() throws Exception {
+    Process handedOff = mock(Process.class);
+    when(handedOff.waitFor(1, TimeUnit.SECONDS)).thenReturn(true);
+    when(handedOff.exitValue()).thenReturn(0);
+    var window = new DesktopWindow(DesktopWindow.Mode.APP, temp.resolve("data"), Map.of(),
+        () -> Optional.of(Path.of("msedge.exe")), command -> handedOff,
+        (uri, reason) -> fail("Successful Edge handoff must not open the browser"));
+    assertFalse(window.open(URI_).fallback());
+  }
+
+  @Test void interruptedStartupRestoresInterruptAndFallsBack() throws Exception {
+    Process interrupted = mock(Process.class);
+    when(interrupted.waitFor(1, TimeUnit.SECONDS)).thenThrow(new InterruptedException());
+    List<String> reasons = new ArrayList<>();
+    var window = new DesktopWindow(DesktopWindow.Mode.APP, temp.resolve("data"), Map.of(),
+        () -> Optional.of(Path.of("msedge.exe")), command -> interrupted,
+        (uri, reason) -> reasons.add(reason));
+    try {
+      assertTrue(window.open(URI_).fallback());
+      assertTrue(Thread.currentThread().isInterrupted());
+      assertEquals(1, reasons.size());
+    } finally { Thread.interrupted(); }
   }
 
   @Test void modeOptionValidatesValues() {
