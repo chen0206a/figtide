@@ -1,3 +1,96 @@
+## 2026-10-26 · 任务 16/17：审查修复与联合总验收
+
+改动文件：`mcp/src/tools.ts` 及单元/真实集成测试；`DesktopWindow.java`、`DesktopLauncher.java`、`DesktopWindowTest.java`、仅测试用的 `DesktopWindowProbeMain.java`；窗口进程探针/测试、CI、AGENTS、CHANGELOG 和桌面文档。保留原分节提交，`feature/app-window` 普通合并修复后的 `feature/mcp`，未合并 main。
+
+| 实际验证 | 结果 |
+|---|---|
+| `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test` | 274 passed / 0 failed / 1 skipped（真实模型未开启） |
+| `mvn -B -f backend/pom.xml test`，私有 MySQL 33316/labflow_test | 280 passed / 0 failed / 1 skipped（真实模型未开启） |
+| Node 22 `vitest run --root frontend --pool=threads --maxWorkers=2` | 52 文件、280/280 |
+| `npm --prefix mcp run check`、`npm --prefix mcp test`、`npm --prefix mcp run build` | 类型检查/单文件构建通过，15/15 |
+| Node 22 MCP `test/integration.test.ts --pool=threads --maxWorkers=1`，指向新桌面 JAR | 2/2，含分类报告隐私、preview/save/revision 冲突保护 |
+| Node 22 `--test scripts/migration/*.test.cjs scripts/desktop/*.test.cjs` | 45/45 |
+| `./scripts/package-desktop.ps1 -OutputDirectory dist/desktop/review16-17-0bacb19` | tsc/Vite/Maven/jlink/jpackage 全通过；仅既有 chunk-size 提示 |
+| `./scripts/test-desktop-package.ps1 -Application dist/desktop/review16-17-0bacb19/FigTide-0.2.0-windows-x64/FigTide` | 7 组真实 EXE 探针通过，子进程无系统 Java |
+| `node scripts/desktop/edge-window-probe.cjs --app <同一产物>` | 真实 DesktopLauncher → DesktopWindow → Edge 链路、页面 URL/标题、临时目录清理通过 |
+| `./scripts/test-agent.ps1 -All -Packaged -Application <同一产物> -FixturePort 18770` | 一次完整运行 85 passed / 0 failed / 3 skipped / 0 flaky（88 条）；`mcp.spec.ts` 在列表中通过；audit-restart 通过 |
+
+产物源码版本 `0bacb19451518cd4ae350e400e0433a1994ed846`，manifest 记录 source_dirty=false。本节后续提交仅补文档/证据。测试入口类经 ZIP 条目核对未进入产品 JAR；仅测试入口附加 CDP，生产参数不含调试端口。按发布工作流相同逻辑为本地产物补独立 MCP bundle 并核对三项 SHA256SUMS，未上传本地产物或发布。证据：[机器摘要](test-evidence/task16-17-acceptance.json)、[打包窗口链路](test-evidence/desktop16-launch-chain.json)，完整 E2E 日志 `.runtime/task16-17-packaged-e2e.log` 与 Playwright JSON 保留在本机。
+
+运行过程：第一次前端 fork 运行的子进程退出后运行器未结束，停止该次运行，使用相同断言在线程池完整重跑通过；第一次 E2E 启动的 Tee 日志相对路径受脚本切换目录影响造成 EPIPE，改绝对日志路径后完整重跑通过。两次未完成运行未记作通过，没有删除断言或增加跳过。3 条 E2E 跳过仍是需要单独夹具的 migration.spec.ts。私有 MySQL 为本轮临时启动，验证后已 mysqladmin 正常关停，日志记录 Shutdown complete；测试使用隔离 H2/测试库、本机协议夹具，收费模型请求 0。
+
+与任务文件的偏差：没有；按追加授权修复并整合验证。任务 17 原总验收记录缺口在本节补齐，任务 16 原误称 E2E 包含 MCP 的说明已更正。需要人决定的事：无；系统托盘等人工点击项仍以 SMOKE-14-5.md 的未勾选清单为准。按用户授权在本地验收提交完成后推送功能分支；推送后的 CI 状态在对话汇报，不把本地结果称为远端 CI 通过。
+
+## 2026-10-26 · 任务 16 审查修复：真实窗口启动链路探针
+
+- 探针改为外部测试入口调用真实 `DesktopLauncher.launch → DesktopWindow.open`，保持应用自动开窗；JS 不再复制 Edge 查找或窗口参数。生产入口仍使用普通构造器，没有调试配置；`DesktopWindowProbeMain` 仅存在于 src/test。
+- 修复 --app/--jar 相对路径在更改 cwd 后解析错误；清理只匹配本轮唯一临时目录；失败不再输出 OK。增加相对路径与加载入口回归，`node --test scripts/desktop/edge-window-probe.test.cjs` 1/1。
+- 实际 `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml -Dtest=DesktopWindowTest,DesktopLauncherTest test` 23/23；`mvn -Pdesktop -DskipTests package` 指定 .runtime/desktop-build 成功；`node scripts/desktop/edge-window-probe.cjs --jar .runtime/desktop-build/figtide.jar --java-home .runtime/java/jdk-21.0.12.1+1` 通过，页面 URL/标题、真实启动链路、临时目录清理均成功。
+- 首次探针因加载整个 test-classes 使 desktop-static 测试夹具遮盖正式页面而失败；定位后只复制并加载单个探针入口类，再次运行通过，未降低页面/标题断言。测试类的 UTF-8 事件输出同时修正。打包产物与全量联合验收在后续整合提交验证。
+- 与任务文件的偏差：无；测试入口的进程边界负责附加调试参数，不向生产配置新增调试开关。
+
+## 2026-10-26 · 任务 16 审查修复：Edge 早期退出回退
+
+- `DesktopWindow.open` 检查启动后一秒内的退出结果：非零退出回退浏览器；退出 0（Edge 复用已有进程）保持成功；仍在运行的进程保持成功；中断恢复线程标志并回退。
+- 新增非零退出、正常接管、中断三个回归。实际 `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml -Dtest=DesktopWindowTest,DesktopLauncherTest test`：23 passed / 0 failed / 0 skipped。未改 API、数据库或业务语义，属于任务 16 窗口启动授权。
+- 更正此前任务 16 报告：原始 `.runtime/e2e16-desktop.log` 为 84 passed / 3 skipped，未包含 `mcp.spec.ts`；“84=83+mcp.spec.ts”是错误说明。MCP 在独立分支，整合后另跑全量。原始通过数没有变化。
+- 与任务文件的偏差：没有。用户已授权修复并在回归后推送；本节尚未推送。
+
+## 2026-10-25 · 任务16独立窗口（Edge应用模式）：实现、探针与总验收
+
+分支feature/app-window（本地6提交25d3aca→237d5c4→141b73d→e2499e4→9b69d36→635bce1，未推送）。16-0任务书+AGENTS授权；16-1 DesktopWindow（注册表/程序目录找Edge、--app固定user-data-dir、找不到回退默认浏览器+气泡、--labflow.desktop.window=app|browser、托盘新增「在浏览器中打开」）；16-2 manifest.webmanifest+品牌图标16–512px+实测截图；16-3升级气泡只展示一次（desktop.json标记，保留首选端口）；16-4 CI进程探针；16-5 APP-WINDOW.md/GUIDE/README/冒烟清单。
+
+实测与探针：真实jar+Edge应用窗口正常打开（1440×900，SPA重定向到/welcome，标题「欢迎 · FigTide」）；窗口/任务栏图标经WM_GETICON+像素比对确认为Edge标志而非FigTide品牌图标，已在APP-WINDOW.md如实记录（任务书禁止伪装）。探针首跑失败定位为SPA路由重定向（页面URL是`/welcome`而非`/`），修正为同源前缀+标题断言后本地全绿（`.runtime/edge-window-probe.json`，证据docs/test-evidence/desktop16-edge-window-probe.json）；探针只在测试中加`--remote-debugging-port=0`，生产参数永不含调试端口；已加入desktop-release.yml Windows任务（PR与打tag均执行），证据随desktop-package-evidence上传。
+
+总验收（本机全绿）：后端MySQL 277/0/0/1S（34类，含DesktopWindowTest 13+DesktopLauncherTest）；后端H2 271/0/0/1S（同减6评测类跳过）；前端52文件280测试+构建通过（仅既有>500kB块警告）；桌面全量E2E 84 passed/3 skipped（不含 MCP 用例；3 条为既有迁移专项）+audit-restart通过。期间发现本机MySQL(33316)已停止且pid文件指向已死进程——按start.ps1相同参数（相对datadir，避免中文路径经PowerShell参数截断成`D:\RAG-agent\`）临时重启后跑完测试，mysqladmin优雅关停（Shutdown complete入日志），未动3306系统服务与任何数据。需人工确认项见SMOKE-14-5.md（双击独立窗口、关窗托盘仍在、升级气泡、Edge卸载回退等）。
+
+## 2026-10-26 · 任务 17 审查修复：lint 报告隐私
+
+- 改动：MCP `lint_chart` 删除后端分类 `report`，与内置助手一致；保留 ok/issues/base_revision 和安全 source，不改后端响应或校验。
+- 回归：单元测试验证完整报告删除且不修改输入；真实 desktop JAR + stdio 测试先确认后端报告含合成文件名/分组，再断言 MCP 文本与 structuredContent 均无文件名、分组样例或 sampleRows。原预览/保存/409 流程仍通过。
+- 实际命令：`npm --prefix mcp run check` 通过；`npm --prefix mcp test` 15/15；`npm --prefix mcp run build` 通过；Node 22 `vitest run --root mcp test/integration.test.ts --pool=threads --maxWorkers=1 --testTimeout 120000` 2/2。全量联合验收留到任务 16 修复与分支整合后执行。
+- 与任务文件的偏差：没有。用户已追加修复后推送授权；本节提交时尚未推送。
+
+## 2026-10-25 · 任务 17-4：MCP 文档与发布准备
+
+- 新增 `docs/MCP.md`：记录 11 个工具的能力、写入边界、脱敏/模型可见性、端口发现、常见故障，以及 Claude Desktop、Claude Code、Codex、Cursor 的可复制配置。README、使用指南和未发布变更记录同步更新。
+- 桌面发布工作流将 `figtide-mcp.cjs` 作为独立附件放入 release 目录，并根据所有附件重建 `SHA256SUMS.txt`；原有 glob 上传和标签草稿流程会同时包含该文件。
+- MCP Inspector 2.12.0 以 stdio 实际启动 bundle，成功连接并列出 11 个工具；真实截图保存在 `docs/screenshots/mcp-inspector.png`。
+- 验证：Inspector CLI `tools/list` 成功，Inspector GUI Connected/11 tools 人工检查通过；文档链接、YAML 与发布校验和的本地检查在本节提交前执行。GitHub PR 工作流未远程执行，因为任务明确要求不推送。
+- 与任务文件的偏差：没有。
+
+## 2026-10-25 · 任务 17-3：MCP 测试与 CI
+
+- 单元测试覆盖连接解析、Node 版本、桌面/开发确认、连接失败与 400/404/409 映射、11 个工具的 HTTP 映射、脱敏、lint 前置、写入短路，以及 9 个参数化工具的 MCP schema 拒绝；工具列表和注解经 SDK 客户端核对。
+- 真实集成测试以临时 H2 数据目录启动 desktop JAR，SDK 客户端通过 stdio 连接单文件 bundle：11 个工具/注解正确；项目与字段画像不泄露文件名、样例值或原始行；预览后保存 revision 1→2；旧 revision 返回清楚冲突且服务端保持 v2。
+- 新增 `mcp.spec.ts`：MCP 保存 v2 后浏览器显示新标题，版本历史加载 v1 并保存为 v3；测试数据与 H2 目录均由隔离运行器清理。
+- CI 新增 Ubuntu/Windows MCP 矩阵；Windows 桌面发布工作流在打包后用真实 desktop JAR 跑 stdio 集成，并在完整产物 E2E 中包含 MCP 用例。
+- 验证：`npm run check` 通过；MCP 单元 14/14；`npm run build` 通过；真实 stdio 集成 1/1；桌面浏览器 MCP E2E 1/1，audit-restart 通过。远端 Linux/Windows CI 未执行（按任务要求不推送）。
+- 与任务文件的偏差：没有。
+
+## 2026-10-25 · 任务 17-2：MCP 工具清单
+
+- 注册 11 个任务书工具及中文描述；9 个只读/预览工具标 `readOnlyHint=true`，2 个持久写入工具标非只读、非破坏、非幂等。
+- 数据集列表和字段画像统一删除原始行、文件名、数据集文件名别名、样例值及导入警告；`get_chart` 补版本数量，目录从后端动态读取。
+- 保存先 lint 再以调用者提供的 revision PUT；创建先 lint 再 POST。409 不重试；成功结果包含编辑器链接。
+- 验证：`npm run check` 通过；`npm run build` 通过（单文件 CJS bundle）。协议级参数、注解和真实调用留给 17-3 测试提交。
+- 与任务文件的偏差：`create_chart` 接收完整 schema v1 config，避免在 MCP 复制前端默认值或后端校验；其中仍明确包含数据版本、图表类型和字段映射。
+
+## 2026-10-25 · 任务 17-1：MCP 包结构与连接
+
+- 新增 `mcp/` TypeScript 包；精确锁定 `@modelcontextprotocol/sdk 1.32.2`、`zod 4.6.7`，esbuild 输出单文件 `dist/figtide-mcp.cjs`，运行时要求 Node 18+。
+- 连接顺序实现为 `FIGTIDE_URL` → `%LOCALAPPDATA%\FigTide\data\app.port` → `127.0.0.1:17861`；只接受 loopback HTTP。桌面 ping 和显式开发地址 health 回退均在请求前校验，网络错误不返回堆栈。
+- 后端生产过滤器未修改；新增专门回归测试固定 `Host=127.0.0.1:<监听端口>`、无 `Origin` 的 Node POST 可通过。
+- 验证：`npm run check` 通过；`npm run build` 通过（单个 812171 字节 CJS bundle）；`LocalOriginMatrixTest` 63/63 通过。首次 Maven 命令因 PowerShell 未给 `-Dtest` 参数加引号而未运行测试，修正后成功。
+- 与任务文件的偏差：没有；开发 profile 的确认方式沿用 17-0 记录的显式 health 回退。
+
+## 2026-10-25 · 任务 17-0：MCP 设计原则
+
+- 分支从最新 `main@391f006` 新建为 `feature/mcp`；附件中的任务书纳入仓库。
+- 明确薄 HTTP 转接、字段画像脱敏、无原始行工具、预览与版本写入边界、revision 冲突不重试、MCP 工具注解及连接顺序。
+- 验证：文档审阅与路径/接口源码核对；本节没有产品代码，npm、Maven、E2E 未执行。
+- 与任务文件的偏差：开发模式在显式 `FIGTIDE_URL` 下以 `/api/health` 作为 desktop ping 404 后的确认路径；否则开发 profile 没有 `/api/desktop/ping`，无法同时满足开发模式。
+
 ## 2026-10-25 · v0.2.0再次授权发布：准备第1轮（最多2轮PR CI）
 
 补充CHANGELOG中文用户名/数据路径启动修复及Windows10 1903要求、GUIDE安装目录不含emoji，推送既有1dd7ed2精确标题定位及Node22 ZIP复制修复。修改限测试定位和文档，未改产品代码。文档一致性/差异检查通过；本地隔离5/5与审计重启已在上一节实际执行，本节不重复；全量源码/打包/E2E由新Windows CI执行，结果待记录。产品失败立即停，只允许测试定位/时序问题再修一次；不加.first、不删断言、不调长超时。PR全部检查绿之前标签和Release保持原状。

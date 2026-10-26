@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-26",
+  "timezone": "Asia/Tokyo",
+  "source_revision": "0bacb19451518cd4ae350e400e0433a1994ed846",
+  "source_dirty_at_package": false,
+  "branch": "feature/app-window",
+  "includes_branch": "feature/mcp",
+  "backend_mysql": { "total": 281, "passed": 280, "failed": 0, "skipped": 1 },
+  "backend_h2": { "total": 275, "passed": 274, "failed": 0, "skipped": 1 },
+  "backend_skip_reason": "ServerEvaluationTest requires explicit real-model opt-in",
+  "frontend": { "files": 52, "passed": 280, "failed": 0, "pool": "threads", "node": "22.23.4" },
+  "mcp": { "typecheck": true, "build": true, "unit_passed": 15, "stdio_integration_passed": 2, "classification_report_redacted": true },
+  "migration_and_desktop_scripts": { "passed": 45, "failed": 0, "node": "22.23.4" },
+  "package": {
+    "directory": "dist/desktop/review16-17-0bacb19/FigTide-0.2.0-windows-x64",
+    "probe_groups_passed": 7,
+    "system_java_available_to_child": false,
+    "test_helper_in_production_jar": false,
+    "jar_sha256": "29614f0e7cc756cf1e38eee08ecb21afd1328032a72076247a54b09d1258d83b",
+    "zip_sha256": "04483110fdf6c44cd5bfe6c95fe636c75a93c2a2bf43067a6ddb2ea5bf9ed563",
+    "manifest_sha256": "46a891e17a4851d478415a810dd7e6278e539b0236183110a21d5c671126cb78",
+    "mcp_sha256": "55cdfdb519c08085d6ac1821550faddc275cb3e0e678237ac7c6afd149e94ce0"
+  },
+  "window_probe": { "passed": true, "evidence": "desktop16-launch-chain.json", "path": "DesktopLauncher.launch -> DesktopWindow.open -> Edge", "temporary_directory_removed": true },
+  "packaged_e2e": {
+    "started_at": "2026-10-26T01:37:39.380Z",
+    "total": 88, "passed": 85, "failed": 0, "skipped": 3, "flaky": 0,
+    "duration_ms": 204833.863,
+    "mcp_spec_passed": true,
+    "skip_reason": "Three existing migration.spec.ts cases need the separate migration fixture",
+    "audit_restart_passed": true,
+    "log": ".runtime/task16-17-packaged-e2e.log"
+  },
+  "incomplete_attempts": [
+    "Frontend fork workers exited and runner did not complete; stopped and reran all assertions using threads",
+    "E2E log relative path followed a cwd change and broke stdout; reran all tests with an absolute log path"
+  ],
+  "owned_mysql_shutdown": "normal; Shutdown complete recorded",
+  "paid_model_calls": 0,
+  "human_tray_smoke": "not performed; existing checklist remains pending",
+  "remote_ci_at_acceptance_commit": "not yet run; push follows this local acceptance commit"
+}

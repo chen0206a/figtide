@@ -2,8 +2,10 @@ package dev.labflow.desktop;
 
 import dev.labflow.LabFlowApplication;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.PortInUseException;
@@ -21,15 +23,27 @@ public final class DesktopLauncher {
   }
 
   public static void launch(String[] args) {
+    launch(args, DesktopWindow::new);
+  }
+
+  // A test-only entrypoint supplies the process boundary; production always uses
+  // the ordinary DesktopWindow constructor and never enables remote debugging.
+  static void launch(String[] args, BiFunction<DesktopWindow.Mode, Path, DesktopWindow> windows) {
     try {
       var paths = DesktopPaths.resolve(args, System.getenv(), System.getProperty("user.home"));
       boolean open = Boolean.parseBoolean(DesktopPaths.option(args, "labflow.desktop.open-browser", "true"));
+      var window = windows.apply(DesktopWindow.mode(DesktopPaths.option(args, "labflow.desktop.window", "app")),
+          paths.data());
       var acquired = DesktopInstance.acquire(paths.data());
       if (acquired.isEmpty()) {
         for (int i = 0; i < 30; i++) {
           var running = DesktopInstance.running(paths.data());
           if (running.isPresent()) {
-            if (open) DesktopUi.browse(running.get());
+            // 再次双击：再开一个应用窗口（Edge 复用同一个 user-data-dir），不启动第二个后端。
+            if (open) {
+              var opened = window.open(running.get());
+              if (opened.fallback()) System.err.println("独立窗口退回浏览器：" + opened.reason());
+            }
             System.out.println("FigTide 已在运行：" + running.get()); return;
           }
           Thread.sleep(200);
@@ -43,6 +57,8 @@ public final class DesktopLauncher {
       try {
         Files.createDirectories(paths.logs());
         active = runtime;
+        // select() 会创建 desktop.json：是否为老版本升级要在它之前判断（16-3 提示只对已有安装展示）。
+        boolean upgraded = Files.exists(paths.data().resolve("desktop.json"));
         var port = DesktopPort.select(paths.data(), args);
         try {
           runtime.context = start(args, paths, instance, port.requested());
@@ -56,9 +72,22 @@ public final class DesktopLauncher {
         if (port.temporary()) LoggerFactory.getLogger(DesktopLauncher.class).warn(
             "{}；首选端口={}，本次端口={}，desktop.json 保持不变", DesktopPort.FALLBACK_NOTICE,
             port.preferred(), instance.uri().getPort());
-        if (Boolean.parseBoolean(runtime.context.getEnvironment().getProperty("labflow.desktop.tray", "true")))
-          runtime.ui.show(instance, paths, runtime::close, port.temporary());
-        if (open) DesktopUi.browse(instance.uri());
+        boolean noticePending = upgraded && DesktopWindow.noticeDue(paths.data());
+        boolean noticeShown = false;
+        if (Boolean.parseBoolean(runtime.context.getEnvironment().getProperty("labflow.desktop.tray", "true"))) {
+          runtime.ui.show(instance, paths, runtime::close, port.temporary(), window, noticePending);
+          // 端口告警优先；被顶掉的升级提示下次启动再展示，标记只在真正展示后写入。
+          noticeShown = noticePending && !port.temporary();
+        }
+        if (noticeShown || (!upgraded && Files.exists(paths.data().resolve("desktop.json"))))
+          DesktopWindow.markNotice(paths.data());
+        if (open) {
+          var opened = window.open(instance.uri());
+          if (opened.fallback()) {
+            LoggerFactory.getLogger(DesktopLauncher.class).warn("独立窗口退回浏览器：{}", opened.reason());
+            runtime.ui.notice("FigTide 窗口提示", opened.reason(), java.awt.TrayIcon.MessageType.WARNING);
+          }
+        }
       } catch (Throwable failure) {
         runtime.close();
         try { java.lang.Runtime.getRuntime().removeShutdownHook(hook); } catch (IllegalStateException ignored) { }

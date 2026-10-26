@@ -1,5 +1,11 @@
 # Changelog
 
+## 未发布
+
+- 界面改为在独立窗口（Microsoft Edge 应用模式）中打开：没有地址栏和标签页，双击 `FigTide.exe` 直接进入工作台；本地存储改用独立的 `user-data-dir`（`%LOCALAPPDATA%\FigTide\window`），同一配置目录和端口下草稿与页面偏好可继续使用；临时换端口仍按 origin 隔离。找不到 Edge 或启动早期异常退出时自动退回默认浏览器。
+- 升级提示：从 0.2.0 升级后首次启动会通过托盘气泡提示一次——旧版本存在默认浏览器里的未保存草稿和页面偏好不会自动出现在新窗口里，可从托盘「在浏览器中打开」找回。
+- 新增本机 FigTide MCP Server：通过 Claude Desktop、Claude Code、Codex 或 Cursor 读取脱敏项目/字段/图表信息，校验与预览修改，并以 revision 冲突保护创建图表或保存新版本。Release 将单独提供 `figtide-mcp.cjs` 并纳入 `SHA256SUMS.txt`。
+
 ## 0.2.0 — 2026-10-25
 
 - Windows便携版：解压整个目录后双击`FigTide.exe`，无需安装JDK或MySQL；界面在系统默认浏览器打开。
