@@ -3,6 +3,34 @@ on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
+  mcp:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            mcp/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - run: npm ci --prefix frontend
+      - run: npm --prefix frontend run build
+      - run: mvn -B -f backend/pom.xml -Pdesktop -DskipTests package
+      - run: npm ci --prefix mcp
+      - run: npm --prefix mcp run check
+      - run: npm --prefix mcp test
+      - run: npm --prefix mcp run build
+      - run: npm --prefix mcp run test:integration
   frontend:
     runs-on: ubuntu-latest
     defaults:

@@ -104,4 +104,8 @@ git add -A && git commit -m "refactor(NN): <一句话>"
 
 按 `docs/development/tasks/16-edge-app-window.md`，允许：新增 Edge 应用模式启动（注册表/程序目录查找、`--app` 启动参数、固定 `user-data-dir`）、找不到 Edge 时退回默认浏览器、`--labflow.desktop.window` 配置项、托盘「在浏览器中打开」与升级气泡、前端 `manifest.webmanifest`、CHANGELOG/GUIDE/README 文档、`docs/desktop/APP-WINDOW.md`、单测与 Windows CI 进程探针脚本（`--remote-debugging-port=0` 仅限测试）。仍然禁止：改变已有 API 请求/响应与业务语义、修改 MySQL 迁移、改动默认开发 profile 行为、伪装任务栏图标。仅本地提交，不推送。
 
+## MCP server 授权（任务 17）
+
+按 `docs/development/tasks/17-mcp-server.md` 实施。允许新增独立 `mcp/` TypeScript 包、MCP 单元/集成/E2E、文档与构建发布接线，以及只为固定现有 Host/Origin 行为而补后端测试。MCP 只调用已有 HTTP API，不新增或放宽后端接口，不直接读写数据库，不返回原始数据行、文件名或样例值。写入必须使用现有 lint、预览、保存与 revision 冲突保护。每节单独本地提交；本任务不推送、不打标签、不发布。
+
 2026-10-26 补充授权：用户要求修复任务 16/17 审查发现的问题，完成回归后推送功能分支。允许修复 MCP lint 报告脱敏、窗口早期异常退出回退、真实启动链路探针及相应测试/文档，并整合两项功能验证。不直接合并 main，不打标签或发布。

@@ -21,6 +21,55 @@
 
 总验收（本机全绿）：后端MySQL 277/0/0/1S（34类，含DesktopWindowTest 13+DesktopLauncherTest）；后端H2 271/0/0/1S（同减6评测类跳过）；前端52文件280测试+构建通过（仅既有>500kB块警告）；桌面全量E2E 84 passed/3 skipped（84=83+mcp.spec.ts，3迁移专项未开启属既有约定）+audit-restart通过。期间发现本机MySQL(33316)已停止且pid文件指向已死进程——按start.ps1相同参数（相对datadir，避免中文路径经PowerShell参数截断成`D:\RAG-agent\`）临时重启后跑完测试，mysqladmin优雅关停（Shutdown complete入日志），未动3306系统服务与任何数据。需人工确认项见SMOKE-14-5.md（双击独立窗口、关窗托盘仍在、升级气泡、Edge卸载回退等）。
 
+## 2026-10-26 · 任务 17 审查修复：lint 报告隐私
+
+- 改动：MCP `lint_chart` 删除后端分类 `report`，与内置助手一致；保留 ok/issues/base_revision 和安全 source，不改后端响应或校验。
+- 回归：单元测试验证完整报告删除且不修改输入；真实 desktop JAR + stdio 测试先确认后端报告含合成文件名/分组，再断言 MCP 文本与 structuredContent 均无文件名、分组样例或 sampleRows。原预览/保存/409 流程仍通过。
+- 实际命令：`npm --prefix mcp run check` 通过；`npm --prefix mcp test` 15/15；`npm --prefix mcp run build` 通过；Node 22 `vitest run --root mcp test/integration.test.ts --pool=threads --maxWorkers=1 --testTimeout 120000` 2/2。全量联合验收留到任务 16 修复与分支整合后执行。
+- 与任务文件的偏差：没有。用户已追加修复后推送授权；本节提交时尚未推送。
+
+## 2026-10-25 · 任务 17-4：MCP 文档与发布准备
+
+- 新增 `docs/MCP.md`：记录 11 个工具的能力、写入边界、脱敏/模型可见性、端口发现、常见故障，以及 Claude Desktop、Claude Code、Codex、Cursor 的可复制配置。README、使用指南和未发布变更记录同步更新。
+- 桌面发布工作流将 `figtide-mcp.cjs` 作为独立附件放入 release 目录，并根据所有附件重建 `SHA256SUMS.txt`；原有 glob 上传和标签草稿流程会同时包含该文件。
+- MCP Inspector 2.12.0 以 stdio 实际启动 bundle，成功连接并列出 11 个工具；真实截图保存在 `docs/screenshots/mcp-inspector.png`。
+- 验证：Inspector CLI `tools/list` 成功，Inspector GUI Connected/11 tools 人工检查通过；文档链接、YAML 与发布校验和的本地检查在本节提交前执行。GitHub PR 工作流未远程执行，因为任务明确要求不推送。
+- 与任务文件的偏差：没有。
+
+## 2026-10-25 · 任务 17-3：MCP 测试与 CI
+
+- 单元测试覆盖连接解析、Node 版本、桌面/开发确认、连接失败与 400/404/409 映射、11 个工具的 HTTP 映射、脱敏、lint 前置、写入短路，以及 9 个参数化工具的 MCP schema 拒绝；工具列表和注解经 SDK 客户端核对。
+- 真实集成测试以临时 H2 数据目录启动 desktop JAR，SDK 客户端通过 stdio 连接单文件 bundle：11 个工具/注解正确；项目与字段画像不泄露文件名、样例值或原始行；预览后保存 revision 1→2；旧 revision 返回清楚冲突且服务端保持 v2。
+- 新增 `mcp.spec.ts`：MCP 保存 v2 后浏览器显示新标题，版本历史加载 v1 并保存为 v3；测试数据与 H2 目录均由隔离运行器清理。
+- CI 新增 Ubuntu/Windows MCP 矩阵；Windows 桌面发布工作流在打包后用真实 desktop JAR 跑 stdio 集成，并在完整产物 E2E 中包含 MCP 用例。
+- 验证：`npm run check` 通过；MCP 单元 14/14；`npm run build` 通过；真实 stdio 集成 1/1；桌面浏览器 MCP E2E 1/1，audit-restart 通过。远端 Linux/Windows CI 未执行（按任务要求不推送）。
+- 与任务文件的偏差：没有。
+
+## 2026-10-25 · 任务 17-2：MCP 工具清单
+
+- 注册 11 个任务书工具及中文描述；9 个只读/预览工具标 `readOnlyHint=true`，2 个持久写入工具标非只读、非破坏、非幂等。
+- 数据集列表和字段画像统一删除原始行、文件名、数据集文件名别名、样例值及导入警告；`get_chart` 补版本数量，目录从后端动态读取。
+- 保存先 lint 再以调用者提供的 revision PUT；创建先 lint 再 POST。409 不重试；成功结果包含编辑器链接。
+- 验证：`npm run check` 通过；`npm run build` 通过（单文件 CJS bundle）。协议级参数、注解和真实调用留给 17-3 测试提交。
+- 与任务文件的偏差：`create_chart` 接收完整 schema v1 config，避免在 MCP 复制前端默认值或后端校验；其中仍明确包含数据版本、图表类型和字段映射。
+
+## 2026-10-25 · 任务 17-1：MCP 包结构与连接
+
+- 新增 `mcp/` TypeScript 包；精确锁定 `@modelcontextprotocol/sdk 1.32.2`、`zod 4.6.7`，esbuild 输出单文件 `dist/figtide-mcp.cjs`，运行时要求 Node 18+。
+- 连接顺序实现为 `FIGTIDE_URL` → `%LOCALAPPDATA%\FigTide\data\app.port` → `127.0.0.1:17861`；只接受 loopback HTTP。桌面 ping 和显式开发地址 health 回退均在请求前校验，网络错误不返回堆栈。
+- 后端生产过滤器未修改；新增专门回归测试固定 `Host=127.0.0.1:<监听端口>`、无 `Origin` 的 Node POST 可通过。
+- 验证：`npm run check` 通过；`npm run build` 通过（单个 812171 字节 CJS bundle）；`LocalOriginMatrixTest` 63/63 通过。首次 Maven 命令因 PowerShell 未给 `-Dtest` 参数加引号而未运行测试，修正后成功。
+- 与任务文件的偏差：没有；开发 profile 的确认方式沿用 17-0 记录的显式 health 回退。
+
+## 2026-10-25 · 任务 17-0：MCP 设计原则
+
+- 分支从最新 `main@391f006` 新建为 `feature/mcp`；附件中的任务书纳入仓库。
+- 明确薄 HTTP 转接、字段画像脱敏、无原始行工具、预览与版本写入边界、revision 冲突不重试、MCP 工具注解及连接顺序。
+- 验证：文档审阅与路径/接口源码核对；本节没有产品代码，npm、Maven、E2E 未执行。
+- 与任务文件的偏差：开发模式在显式 `FIGTIDE_URL` 下以 `/api/health` 作为 desktop ping 404 后的确认路径；否则开发 profile 没有 `/api/desktop/ping`，无法同时满足开发模式。
+
+## 2026-10-25 · v0.2.0再次授权发布：准备第1轮（最多2轮PR CI）
+
 补充CHANGELOG中文用户名/数据路径启动修复及Windows10 1903要求、GUIDE安装目录不含emoji，推送既有1dd7ed2精确标题定位及Node22 ZIP复制修复。修改限测试定位和文档，未改产品代码。文档一致性/差异检查通过；本地隔离5/5与审计重启已在上一节实际执行，本节不重复；全量源码/打包/E2E由新Windows CI执行，结果待记录。产品失败立即停，只允许测试定位/时序问题再修一次；不加.first、不删断言、不调长超时。PR全部检查绿之前标签和Release保持原状。
 
 ## 2026-10-25 · Windows发布复验：中文路径与EXE门槛通过，E2E定位冲突后停止
@@ -1668,3 +1717,4 @@ E2E 生成的 3 个测试项目（`配置交互验收`、`实验记录验收`、
 - 图版为规范复刻的示例，不代表期刊对投稿的实际裁切与色值要求；如需真实论文图，应替换为 CC-BY 图件并保留署名。
 - 仍未覆盖 Firefox、Safari、移动端与百万行数据；绘图引擎按需加载的体积提示仍在。
 - 视觉层面覆盖 1280–1560px 桌面视口；<1120px 时布局横向滚动。
+
