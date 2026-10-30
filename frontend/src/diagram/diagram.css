@@ -20,7 +20,7 @@
 .diagram-stage { min-width:0; display:flex; flex-direction:column; }
 .diagram-stage-toolbar { display:flex; gap:var(--lf-space-2); align-items:center; flex-wrap:wrap; padding:var(--lf-space-3); background:var(--lf-surface-2); border-bottom:1px solid var(--lf-border); font-size:var(--lf-text-xs); }
 .diagram-canvas-scroll { flex:1; min-height:500px; max-height:calc(100vh - 260px); overflow:auto; padding:var(--lf-space-6); background:var(--lf-canvas); outline-offset:-3px; }
-.diagram-surface { position:relative; flex:none; background:var(--lf-surface); box-shadow:var(--lf-shadow-paper); touch-action:none; user-select:none; }
+.diagram-surface { margin-inline:auto; position:relative; flex:none; background:var(--lf-surface); box-shadow:var(--lf-shadow-paper); touch-action:none; user-select:none; }
 .diagram-svg,.diagram-svg>svg { width:100%; height:100%; display:block; }
 .diagram-svg [data-node-id],.diagram-svg [data-zone-id] { cursor:move; }
 .diagram-svg [data-edge-id] { cursor:pointer; }

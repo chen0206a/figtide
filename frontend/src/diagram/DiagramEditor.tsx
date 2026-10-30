@@ -21,6 +21,10 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
   const [exportOpen,setExportOpen]=useState(false);
   const [versionsOpen,setVersionsOpen]=useState(false),[restoring,setRestoring]=useState(false);
   const {confirm,dialog}=useConfirm(),canvasHost=useRef<HTMLDivElement>(null),inspector=useRef<HTMLDivElement>(null);
+  const fitEnabled=useRef(true);
+  function fitWidth(){const width=canvasHost.current?.clientWidth;if(width)setZoom(Math.max(4,width*.9/doc.canvas.width_mm)/(96/25.4));}
+  function changeZoom(value:number){fitEnabled.current=false;setZoom(value);}
+  useEffect(()=>{const host=canvasHost.current;if(!host)return;const observer=new ResizeObserver(()=>{if(fitEnabled.current)fitWidth();});observer.observe(host);return()=>observer.disconnect();},[doc.canvas.width_mm]);
   const selectedKey=[...selected].join(',');
   useEffect(()=>{if(inspector.current)inspector.current.scrollTop=0;},[selectedKey]);
   const versions=useQuery({queryKey:["diagram-versions",record.project_id,record.id,state.revision],queryFn:()=>api<{version:number;doc:DiagramDoc;created_at:string}[]>(`/projects/${record.project_id}/diagrams/${record.id}/versions`),enabled:versionsOpen});
@@ -69,9 +73,9 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
         <label>字号（pt）<input type="number" min="1" max="72" step="0.5" aria-label="机制图字号" value={doc.style.overrides.font_size_pt??style.font_size_pt} onChange={e=>edit(d=>{d.style.overrides.font_size_pt=Number(e.target.value);return d;})}/></label><label>线宽（pt）<input type="number" min="0.1" max="12" step="0.1" aria-label="机制图线宽" value={doc.style.overrides.line_width_pt??style.line_width_pt} onChange={e=>edit(d=>{d.style.overrides.line_width_pt=Number(e.target.value);return d;})}/></label>
         <Button variant="ghost" onClick={()=>edit(d=>{d.style.overrides={};return d;})}>重置风格覆盖</Button>
       </aside>
-      <section className="diagram-stage" ref={canvasHost}><div className="diagram-stage-toolbar"><span className="lf-mono">{doc.canvas.width_mm} × {doc.canvas.height_mm} mm · 1 mm 网格</span><Button size="sm" variant="ghost" aria-label="缩小机制图" onClick={()=>setZoom(Math.max(.25,zoom-.1))}>−</Button><span className="lf-mono">{Math.round(zoom*100)}%</span><Button size="sm" variant="ghost" aria-label="放大机制图" onClick={()=>setZoom(Math.min(3,zoom+.1))}>＋</Button><Button size="sm" variant="ghost" onClick={()=>setZoom(1)}>100%</Button></div>
+      <section className="diagram-stage" ref={canvasHost}><div className="diagram-stage-toolbar"><span className="lf-mono">{doc.canvas.width_mm} × {doc.canvas.height_mm} mm · 1 mm 网格</span><Button size="sm" variant="ghost" aria-label="缩小机制图" onClick={()=>changeZoom(Math.max(.25,zoom-.1))}>−</Button><span className="lf-mono">{Math.round(zoom*100)}%</span><Button size="sm" variant="ghost" aria-label="放大机制图" onClick={()=>changeZoom(Math.min(10,zoom+.1))}>＋</Button><Button size="sm" variant="ghost" onClick={()=>{fitEnabled.current=true;fitWidth();}}>适应宽度</Button></div>
         <div className="diagram-stylebar" aria-label="机制图风格">{catalog.styles.map(preset=><button key={preset.id} aria-label={`选择风格 ${preset.name}`} aria-pressed={doc.style.preset===preset.id} onClick={()=>edit(d=>{d.style.preset=preset.id;return d;})}>{preset.name}</button>)}</div>
-        <DiagramCanvas doc={doc} style={style} selected={selected} onSelect={setSelected} onEdit={edit} onConnect={connect} zoom={zoom} onZoom={setZoom}/>
+        <DiagramCanvas doc={doc} style={style} selected={selected} onSelect={setSelected} onEdit={edit} onConnect={connect} zoom={zoom} onZoom={changeZoom}/>
         <p className="diagram-keyboard-help">方向键 1 mm · Shift 5 mm · Ctrl+D 复制 · Delete 删除 · Alt 拖动平移</p>
       </section>
       <div className="diagram-inspector" ref={inspector}><DiagramProperties doc={doc} selected={selected} edit={edit}/><div className="diagram-element-list" aria-label="机制图元素">{[...doc.zones,...doc.nodes,...doc.edges,...doc.annotations].map(n=><button key={n.id} aria-pressed={selected.has(n.id)} onClick={()=>{setSelected(new Set([n.id]));canvasHost.current?.querySelector<HTMLElement>('.diagram-canvas-scroll')?.focus();}}>{n.id} · {"from" in n?n.label||`${n.from} → ${n.to}`:"label" in n?n.label:n.text}</button>)}</div></div>

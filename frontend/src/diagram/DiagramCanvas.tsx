@@ -10,7 +10,7 @@ export function DiagramCanvas({doc,style,selected,onSelect,onEdit,onConnect,zoom
   const scroll=useRef<HTMLDivElement>(null),surface=useRef<HTMLDivElement>(null),drag=useRef<Drag|null>(null);
   const [preview,setPreview]=useState<DiagramDoc|null>(null),[box,setBox]=useState<DiagramRect|null>(null);
   const shown=preview||doc,svg=useMemo(()=>renderDiagram(shown,style),[shown,style]);
-  useEffect(()=>{const element=scroll.current;if(!element)return;const wheel=(e:WheelEvent)=>{if(e.ctrlKey){e.preventDefault();onZoom(Math.max(.25,Math.min(3,zoom*(e.deltaY>0?.9:1.1))));}};element.addEventListener("wheel",wheel,{passive:false});return()=>element.removeEventListener("wheel",wheel);},[zoom,onZoom]);
+  useEffect(()=>{const element=scroll.current;if(!element)return;const wheel=(e:WheelEvent)=>{if(e.ctrlKey){e.preventDefault();onZoom(Math.max(.25,Math.min(10,zoom*(e.deltaY>0?.9:1.1))));}};element.addEventListener("wheel",wheel,{passive:false});return()=>element.removeEventListener("wheel",wheel);},[zoom,onZoom]);
   const point=(e:PointerEvent)=>{const r=surface.current!.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*doc.canvas.width_mm,y:(e.clientY-r.top)/r.height*doc.canvas.height_mm};};
   const down=(e:PointerEvent<HTMLDivElement>)=>{
     if(e.button!==0&&e.button!==1)return;
