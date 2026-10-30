@@ -58,4 +58,7 @@ public class AgentController {
   Object decision(@PathVariable long p, @PathVariable String id, @RequestBody JsonNode request) {
     return service.decide(p, id, request);
   }
+
+  @PostMapping("/projects/{p}/agent/runs/{id}/review")
+  Object review(@PathVariable long p,@PathVariable String id,@RequestBody JsonNode request){return service.review(p,id,request);}
 }

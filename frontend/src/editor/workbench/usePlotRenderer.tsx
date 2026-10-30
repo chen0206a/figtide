@@ -4,6 +4,7 @@ import { type Dataset } from "../../lib/api";
 import { layoutPatch } from "../layoutPatch";
 import { type Config } from "../model";
 import { buildPlot } from "../plot";
+import {collectRenderFacts, type RenderFacts} from '../renderFacts';
 
 type usePlotRendererProps = {
   c: Config;
@@ -28,6 +29,7 @@ export function usePlotRenderer({
   const [rendered, setRendered] = useState<{
     config: Config;
     data: Dataset;
+    facts?: RenderFacts | null;
   } | null>(null);
   const [plotError, setPlotError] = useState("");
 
@@ -84,7 +86,13 @@ export function usePlotRenderer({
         return update.then(() => {
           drawn.current = { signature, layout: snapshot, data: data };
           if (!active) return;
-          setRendered({ config: renderConfig, data: data });
+          const measured = () => {
+            if (active) setRendered({ config: renderConfig, data,
+              facts: collectRenderFacts(el, renderConfig.style.width, renderConfig.style.height) });
+          };
+          measured();
+          el.removeAllListeners?.('plotly_afterplot');
+          el.on('plotly_afterplot', measured);
           setPlotError("");
           el.removeAllListeners?.("plotly_click");
           el.removeAllListeners?.("plotly_legendclick");

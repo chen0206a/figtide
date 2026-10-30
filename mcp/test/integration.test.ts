@@ -171,7 +171,7 @@ describe("FigTide desktop MCP stdio integration", () => {
 
   it("lists annotations, keeps profiles private, previews, saves and rejects stale revision", async () => {
     const listed = await client.listTools();
-    expect(listed.tools).toHaveLength(11);
+    expect(listed.tools).toHaveLength(12);
     expect(listed.tools.find((tool) => tool.name === "save_chart_version")?.annotations).toMatchObject({
       readOnlyHint: false,
       destructiveHint: false,
@@ -227,5 +227,15 @@ describe("FigTide desktop MCP stdio integration", () => {
     const afterConflict = await fetch(`${baseUrl}/api/projects/${projectId}/charts/${chartId}`).then((response) => response.json());
     expect(afterConflict.revision).toBe(2);
     expect(afterConflict.config.style.title).toBe("Saved through MCP");
+  });
+  it('reviews a saved chart through real stdio without geometry or private source data', async () => {
+    const before=await fetch(`${baseUrl}/api/projects/${projectId}/charts/${chartId}`).then(response=>response.json());
+    const response=await client.callTool({name:'review_chart',arguments:{project_id:projectId,chart_id:chartId,config:before.config}});
+    expect(response.isError).not.toBe(true);
+    const review=parsed(response);expect(review.rules_version).toBe('review-v1');
+    expect(review.skipped.map((item:any)=>item.rule)).toEqual(['R7','R8']);
+    expect(JSON.stringify(response)).not.toMatch(/private-input|private-a|private-b|filename|sampleRows/);
+    const after=await fetch(`${baseUrl}/api/projects/${projectId}/charts/${chartId}`).then(response=>response.json());
+    expect(after).toEqual(before);
   });
 });

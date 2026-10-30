@@ -1,6 +1,8 @@
 import {useCallback,useEffect,useState} from 'react';
 import type {ToolPreview} from '../figureTools';
-export type CanvasProposal={preview:ToolPreview;token:string};
+import type {ReviewIssue} from '../review';
+import type {RenderFacts} from '../renderFacts';
+export type CanvasProposal={preview:ToolPreview;token:string;data?:import('../../lib/api').Dataset;reviewIssues?:ReviewIssue[];reviewOnly?:boolean;onRendered?:(facts:RenderFacts|null)=>void};
 /** Presentation-only state. Never dispatches history, writes storage or saves. */
 export function useProposalCanvas(token:string,open:boolean){
   const [stored,setStored]=useState<CanvasProposal|null>(null),[visible,setVisible]=useState(true);

@@ -5,7 +5,7 @@ export const publicationWidthLabels = ["单栏", "1.5 栏", "双栏"] as const;
 /** One reducer patch, only existing schema-v1 publication fields. */
 export function publicationPreset(
   c: Config,
-  widthMm: (typeof publicationWidths)[number],
+  widthMm: number,
 ): Partial<Config> {
   return {
     publication: {

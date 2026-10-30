@@ -22,6 +22,16 @@ function fixture(handler: (path: string, init?: RequestInit) => Response | Promi
 }
 
 describe("FigTide tools", () => {
+  it('reviews through the read-only HTTP endpoint without any render or raw data payload', async () => {
+    const f = fixture((path, init) => {
+      expect(path).toBe('/api/projects/1/figure-tools/review');
+      expect(JSON.parse(String(init?.body))).toEqual({protocol_version: 1, config: {schema_version: 1}, target: {width_mm: 88}, chart_id: 4});
+      return json({protocol_version: 1, rules_version: 'review-v1', issues: [], passed: ['R1'], skipped: [{rule: 'R7',reason: '需要编辑器中的渲染信息'},{rule: 'R8',reason: '需要编辑器中的渲染信息'}]});
+    });
+    const result = await f.tools.reviewChart(1,{schema_version: 1},{width_mm: 88},4);
+    expect(result.skipped).toHaveLength(2);
+    expect(f.calls).toHaveLength(1);
+  });
   it("maps all read tools to their documented endpoints", async () => {
     const f = fixture((path) => {
       if (path === "/api/projects") return json([{ id: 1 }]);

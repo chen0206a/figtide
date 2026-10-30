@@ -27,6 +27,8 @@ import {useReducedMotion} from "../../lib/useMotion";
 import {useProposalCanvas} from "./useProposalCanvas";
 import type {AssistantSubmission} from "../agentPresentation";
 import './agent-canvas.css';
+import {ReviewDock} from '../ReviewDock';
+import type {ReviewIssue} from '../review';
 export function Workbench({
   project,
   projectName,
@@ -119,6 +121,8 @@ export function Workbench({
   const [reuseOpen, setReuseOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
   const [agentOpen, setAgentOpen] = useState(!!assistantPrompt);
+  const [reviewOpen,setReviewOpen]=useState(false),[reviewIssues,setReviewIssues]=useState<ReviewIssue[]>([]);
+  useEffect(()=>{if(agentOpen)setReviewOpen(false)},[agentOpen]);
   const [submission,setSubmission]=useState<AssistantSubmission>();
   useEffect(()=>{const shortcut=(event:KeyboardEvent)=>{if(shouldToggleAssistant(event)){event.preventDefault();setAgentOpen(v=>!v)}};window.addEventListener('keydown',shortcut);return()=>window.removeEventListener('keydown',shortcut)},[]);
   const [reuseTab, setReuseTab] = useState<"builtin" | "style">("style");
@@ -136,7 +140,7 @@ export function Workbench({
     [c, name],
   );
   const dirty = baseline !== serialized;
-  const canvasProposal=useProposalCanvas(JSON.stringify({serialized,id,revision}),agentOpen);
+  const canvasProposal=useProposalCanvas(JSON.stringify({serialized,id,revision}),agentOpen||reviewOpen);
   useCanvasFit({stage,autoFit,setZoom,c:canvasProposal.proposal&&canvasProposal.visible?canvasProposal.proposal.preview.config:c});
   const { draftStatus, draftWriter, mounted } = useDraftPersistence({
     dirty,
@@ -230,9 +234,10 @@ export function Workbench({
   return (
     <div
       aria-busy={saving}
-      className={`editor ${entering&&!reducedMotion?'ed-enter':''} ${preview ? "preview-mode" : ""} ${!panels.left ? "hide-left" : ""} ${!panels.right ? "hide-right" : ""} ${agentOpen ? "assistant-open" : ""}`}
+      className={`editor ${entering&&!reducedMotion?'ed-enter':''} ${preview ? "preview-mode" : ""} ${!panels.left ? "hide-left" : ""} ${!panels.right ? "hide-right" : ""} ${agentOpen||reviewOpen ? "assistant-open" : ""}`}
     >
       <EditorToolbar
+        onReview={()=>{setAgentOpen(false);setReviewOpen(value=>!value)}}
         {...{
           saving,
           name,
@@ -288,10 +293,11 @@ export function Workbench({
         />
         {resizer("left")}
         <FigureCanvas
+          reviewIssues={reviewIssues}
           canvasProposal={canvasProposal.proposal}
           proposalVisible={canvasProposal.visible}
           onToggleProposal={canvasProposal.toggle}
-          assistantClosed={!agentOpen}
+          assistantClosed={!agentOpen&&!reviewOpen}
           onAssistantSend={value=>{setSubmission(value);setAgentOpen(true)}}
           {...{
             c,
@@ -362,6 +368,11 @@ export function Workbench({
             notify,
           }}
         />
+        <ReviewDock open={reviewOpen} project={project} chartId={id} revision={revision} config={c} data={data}
+          token={JSON.stringify({serialized,id,revision})} facts={rendered?.config===c?rendered.facts:null}
+          onClose={()=>setReviewOpen(false)} onPreview={canvasProposal.receive} onIssues={setReviewIssues}
+          onPhysicalWidth={width=>patch({publication:{...c.publication!,widthMm:width}})}
+          onApply={(token,config,count)=>{if(token!==JSON.stringify({serialized,id,revision})||saving)return false;change(config);setLogs(old=>[`已应用审稿修复 · ${count} 项`,...old].slice(0,30));notify('已应用审稿修复，可一步撤销');return true}}/>
       </div>
       <EditorStatusBar {...{ data }} />
       {confirmDialog}

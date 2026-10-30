@@ -109,6 +109,19 @@ public class ProcessingService {
     return workspace.data(p, version);
   }
 
+  /** Internal full preview for plotting/lint, never supplied to the model or audit trace. */
+  public Map<String,Object> memoryPreview(long p,long id,ProcessingRules rules) {
+    var source=workspace.data(p,id);var result=calculate(source,rules);
+    var out=new LinkedHashMap<String,Object>();
+    out.put("id",id);out.put("dataset_id",source.get("dataset_id"));out.put("version",source.get("version"));
+    out.put("filename","待确认的派生数据");out.put("source_sha256",source.get("sha256"));
+    out.put("fields",result.fields());out.put("rows",result.rows());out.put("row_count",result.rows().size());
+    out.put("warnings",result.warnings());out.put("source_meta",Map.of("kind","data_processing","rules",rules,"statistics",result.statistics()));
+    if(encode(out).length()>10*1024*1024)throw ApiException.bad("处理预览超过 10 MB，请缩小范围");
+    out.put("sha256",dev.labflow.agent.AuditSanitizer.hash(json.valueToTree(out)));
+    return out;
+  }
+
   private static Map<String, Object> reference(Map<String, Object> s) {
     return Map.of(
         "datasetVersionId",

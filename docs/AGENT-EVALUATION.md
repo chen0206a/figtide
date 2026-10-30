@@ -113,3 +113,12 @@ Markdown提供逐例检查表和人工回复检查区。传入 `Baseline` 后按
 评分器反例覆盖错误值、额外变更、不允许/失败的工具、伪拒绝附带实际修改声明、无问题的追问、夹带提案、超预算/截断、原始数据/lint/源绑定/持久化失败、重复用例与无预期断言、回放耗尽以及按ID比较。集成反例确实把字号90和超额usage喂入正式Harness，分别产生失败报告和 `incomplete/token_budget`，不是只做静态JSON比对。
 
 另用JDK本机HTTP服务验证正式兼容适配器 → 同一运行器 → 正常PASS/拒绝与追问REVIEW → 基线对比的路径。该HTTP服务返回人工录制，不能称为真实大模型测评。本轮未进行真实DeepSeek/其他收费模型调用，也没有新增前端UI或重跑此前已通过的浏览器全量验收。当前可查看[本轮实际回放报告](evaluations/replay-v1.md)。
+
+
+## 协作与审稿评测入口
+
+合成任务集 `agent-eval/team-suite-v1.json` 与审稿任务集 `review-suite-v1.json` 用于离线验证；`team-suite-v2.json` 为留出题集，不用于提示词优化。`TeamEvaluationTest` 使用隔离测试库运行人工协议夹具，`ReviewEvaluationTest` 验证确定性审稿规则；人工协议回放不代表真实模型效果。
+
+离线运行：`scripts/evaluate-team.ps1 -Mode replay -Database h2`。仅测试入口接受无界执行策略；HTTP 用户运行仍有可配置额度、权限、校验及确认要求。真实调用必须显式选择 `-Mode live -Live`；费用、用量、步数及时限的评测选项见该脚本参数和 [协作说明](AGENT-TEAM.md)。缺失用量不能视为零。
+
+本地真实模型评测报告、统计与原始逐例结果暂不上传 GitHub；此功能集成不包含这些文件及其历史提交。

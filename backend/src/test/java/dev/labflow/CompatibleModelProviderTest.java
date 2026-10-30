@@ -79,6 +79,14 @@ class CompatibleModelProviderTest {
   }
 
   @Test
+  void unrestrictedEvaluationDoesNotSendALocalOutputTokenCap() throws Exception {
+    var received=new CompletableFuture<JsonNode>();
+    server.createContext("/chat/completions",exchange->{received.complete(json.readTree(exchange.getRequestBody()));byte[] bytes="{\"choices\":[{\"finish_reason\":\"stop\",\"message\":{\"role\":\"assistant\",\"content\":\"ok\"}}],\"usage\":{\"prompt_tokens\":12,\"completion_tokens\":3}}".getBytes(StandardCharsets.UTF_8);exchange.sendResponseHeaders(200,bytes.length);exchange.getResponseBody().write(bytes);exchange.close();});
+    server.start();new CompatibleModelProvider(json,base,"fixture","").complete(json.createArrayNode(),json.createArrayNode(),0,Duration.ofSeconds(2));
+    assertFalse(received.get(2,TimeUnit.SECONDS).has("max_tokens"));
+  }
+
+  @Test
   void textOnlyClosingRequestOmitsEmptyToolsAndToolChoice() throws Exception {
     var received = new CompletableFuture<JsonNode>();
     server.createContext(

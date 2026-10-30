@@ -1,0 +1,27 @@
+.review-dock{background:var(--lf-surface);color:var(--lf-text);}
+.review-toolbar,.review-dock footer{padding:var(--lf-space-4);border-bottom:1px solid var(--lf-border);display:grid;gap:var(--lf-space-3);flex-shrink:0;}
+.review-toolbar label{display:grid;gap:var(--lf-space-1);font-size:var(--lf-text-sm);}
+.review-toolbar [role=group]{display:flex;gap:var(--lf-space-2);flex-wrap:wrap;}
+.review-scroll{min-height:0;overflow-y:auto;flex:1;padding:var(--lf-space-3);}
+.review-issues{display:grid;gap:var(--lf-space-3);}
+.review-issue{padding:var(--lf-space-3);border:1px solid var(--lf-border);border-radius:var(--lf-radius-md);font-size:var(--lf-text-sm);}
+.review-issue header{display:flex;align-items:center;gap:var(--lf-space-2);}
+.review-issue code{margin-left:auto;font:var(--lf-text-xs) var(--lf-font-mono);color:var(--lf-text-3);}
+.review-issue p{margin:var(--lf-space-2) 0;line-height:var(--lf-leading);}
+.review-issue small,.review-skipped,.review-fix-description{font-size:var(--lf-text-xs);color:var(--lf-text-3);}
+.review-issue[data-ignored=true]{background:var(--lf-surface-2);}
+.review-dock footer{border-top:1px solid var(--lf-border);border-bottom:0;}
+.review-dock footer p{font-size:var(--lf-text-xs);color:var(--lf-text-3);}
+.review-issue .proposal-number{background:var(--lf-warning-soft);color:var(--lf-warning);}
+.review-markers .proposal-marker-number{fill:var(--lf-warning);}
+.review-markers .proposal-marker-box{stroke:var(--lf-warning);fill:color-mix(in srgb,var(--lf-warning) 5%,transparent);}
+.review-toolbar small{font-size:var(--lf-text-xs);color:var(--lf-text-3);}
+.proposal-review-group{padding:var(--lf-space-3) var(--lf-space-4);}
+.proposal-review-group h3,.proposal-user-heading{font-size:var(--lf-text-sm);font-weight:600;margin:var(--lf-space-2) 0;}
+.proposal-user-heading{padding:var(--lf-space-3) var(--lf-space-4) 0;}
+.agent-mode{width:auto;flex:0 0 auto;font-size:var(--lf-text-xs);padding:var(--lf-space-1);border:1px solid var(--lf-border);border-radius:var(--lf-radius-sm);background:var(--lf-surface);color:var(--lf-text);}
+.team-progress,.agent-role-audit{display:grid;gap:var(--lf-space-2);font-size:var(--lf-text-xs);}
+.team-progress details,.agent-role-audit>details{padding:var(--lf-space-2);border:1px solid var(--lf-border);border-radius:var(--lf-radius-sm);}
+.team-progress summary,.agent-role-audit summary{cursor:pointer;color:var(--lf-text-2);}
+.proposal-processing{padding:var(--lf-space-3) var(--lf-space-4);font-size:var(--lf-text-sm);background:var(--lf-selected);color:var(--lf-text);}
+.deep-review{display:grid;gap:var(--lf-space-2);}

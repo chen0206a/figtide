@@ -1,0 +1,57 @@
+import {test,expect,type APIRequestContext} from './workspace-test';
+import {artifactPath} from './artifacts';
+import {defaults,makeSeries} from '../src/editor/model';
+test.use({reducedMotion:'reduce'});
+async function fixture(request:APIRequestContext){
+  const project=await(await request.post('/api/projects',{data:{name:`审稿合成验收 ${Date.now()}`,description:'Synthetic protocol test; no real data or model'}})).json();
+  const data=await(await request.post(`/api/projects/${project.id}/datasets`,{multipart:{file:{name:'synthetic-review.csv',mimeType:'text/csv',buffer:Buffer.from('epoch,accuracy,baseline\n1,0.7,0.6\n2,0.8,0.7\n3,0.9,0.8')}}})).json();
+  const config=defaults(data);config.series=['accuracy','baseline'].map((y,i)=>({...makeSeries(y,i),width:.5,color:i?'#CC0100':'#CC0000'}));
+  config.style.fontSize=8;config.style.title='Synthetic review example';config.legend.show=true;config.axes.y.title='';
+  const chart=await(await request.post(`/api/projects/${project.id}/charts`,{data:{name:'Review synthetic chart',config}})).json();
+  expect(chart.id).toBeTruthy();return {project,data,config,chart,url:`/projects/${project.id}/figures/${chart.id}`,api:`/api/projects/${project.id}/charts/${chart.id}`};
+}
+test('review → deselect → preview → apply → one undo keeps saved chart and original data untouched',async({page,request},testInfo)=>{
+  const f=await fixture(request);await page.goto(f.url);await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText(f.config.style.title);
+  const originalFont=await page.getByTestId('plot').evaluate((graph:any)=>graph.layout.font.size);
+  await page.getByRole('button',{name:'审稿这张图',exact:true}).click();const report=page.getByRole('complementary',{name:'审稿报告'});
+  const palette=report.locator('[data-issue-id="R3:palette"]');await expect(palette).toBeVisible();
+  await expect(report.getByRole('checkbox',{name:'修复 成品文字字号太小'})).toBeChecked();await palette.getByRole('checkbox').uncheck();
+  await expect(page.getByTestId('review-markers').first().locator('[data-review-issue="R1:font"]')).toBeVisible();
+  await report.locator('.review-scroll').evaluate(element=>{element.scrollTop=0});
+  await page.screenshot({path:artifactPath(testInfo,'../docs/screenshots/review-report.png'),fullPage:true});
+  await report.getByRole('button',{name:/预览修复所选/}).click();await expect(page.getByTestId('canvas-proposal')).toHaveClass(/is-visible/);
+  await expect(page.getByTestId('canvas-proposal').locator('[data-review-issue="R1:font"]')).toHaveCount(0);
+  await expect(page.getByTestId('canvas-proposal').locator('[data-review-issue="R3:palette"]')).toBeVisible();
+  expect(await page.getByTestId('plot').evaluate((graph:any)=>graph.layout.font.size)).toBe(originalFont);
+  await page.screenshot({path:artifactPath(testInfo,'../docs/screenshots/review-markers.png'),fullPage:true});
+  await report.getByRole('button',{name:'应用到草稿',exact:true}).click();
+  await expect.poll(()=>page.getByTestId('plot').evaluate((graph:any)=>graph.layout.font.size)).toBeGreaterThan(originalFont);
+  expect((await(await request.get(f.api)).json()).revision).toBe(1);
+  await page.getByRole('button',{name:'撤销',exact:true}).click();await expect.poll(()=>page.getByTestId('plot').evaluate((graph:any)=>graph.layout.font.size)).toBe(originalFont);
+  const saved=await(await request.get(f.api)).json();expect(saved.config).toEqual(f.config);
+  const unchanged=await(await request.get(`/api/projects/${f.project.id}/data/${f.data.id}`)).json();expect(unchanged.sha256).toBe(f.data.sha256);
+});
+test('fixture assistant proposal has three groups and only accepts selected deterministic fixes',async({page,request},testInfo)=>{
+  const provider=await(await request.get('/api/agent/provider')).json();expect(provider.model).toBe('labflow-fixture');
+  const f=await fixture(request);await page.goto(f.url);await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText(f.config.style.title);
+  await page.getByRole('button',{name:'绘图助手',exact:true}).click();const panel=page.getByRole('complementary',{name:'绘图助手',exact:true});
+  await panel.getByRole('textbox',{name:'希望怎样调整？'}).fill('审稿提案测试：只把标题改为 Reviewed proposal · synthetic');
+  await panel.getByRole('checkbox').check();await panel.getByRole('button',{name:'生成调整提案'}).click();
+  await expect(panel.getByRole('heading',{name:'你要求的修改'})).toBeVisible();await expect(panel.getByRole('heading',{name:'审稿修复 · 可逐条取消'})).toBeVisible();
+  await expect(panel.getByRole('heading',{name:'审稿意见 · 不改图'})).toBeVisible();
+  await expect(panel.getByText('正在生成确定性审稿与修复预览…')).toHaveCount(0);
+  const palette=panel.locator('[data-issue-id="R3:palette"]');await palette.getByRole('checkbox').uncheck();
+  await expect(panel.getByRole('button',{name:'应用这组调整',exact:true})).toBeEnabled();
+  await page.setViewportSize({width:1560,height:2600});
+  await panel.locator('.quick-actions-body').evaluate(element=>{element.scrollTop=0});
+  await page.screenshot({path:artifactPath(testInfo,'../docs/screenshots/review-proposal-groups.png'),fullPage:true});
+  const decision=page.waitForRequest(request=>request.url().endsWith('/decision')&&request.method()==='POST');
+  await panel.getByRole('button',{name:'应用这组调整',exact:true}).click();
+  const decisionRequest=await decision;const body=decisionRequest.postDataJSON();expect(body.accepted_fixes).toContain('R1:font');expect(body.accepted_fixes).not.toContain('R3:palette');expect(body.review_hash).toMatch(/^[a-f0-9]{64}$/);
+  await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText('Reviewed proposal · synthetic');
+  const run=await(await request.get(decisionRequest.url().replace(/\/decision$/,''))).json();expect(run.review.skipped).toEqual([]);
+  const originalColors=f.config.series.map(series=>series.color);
+  const colors=await page.getByTestId('plot').evaluate((graph:any)=>graph.data.filter((trace:any)=>trace.mode?.includes('lines')).map((trace:any)=>trace.line.color));expect(colors).toEqual(originalColors);
+  await page.getByRole('button',{name:'撤销',exact:true}).click();await expect(page.getByTestId('plot').locator('.gtitle')).toHaveText(f.config.style.title);
+  const saved=await(await request.get(f.api)).json();expect(saved.config).toEqual(f.config);expect(saved.revision).toBe(1);
+});

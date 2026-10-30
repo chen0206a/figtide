@@ -14,6 +14,26 @@ public class FigureToolService {
     this.workspace = workspace;
   }
 
+  /** Not exposed over HTTP. The caller owns the processed rows; no dataset is persisted. */
+  public Object memoryPreview(long project, JsonNode snapshot, JsonNode original, JsonNode operations, Map<String,Object> data) {
+    // Retain the saved revision/source ownership guard before examining any proposed mapping.
+    if (!Boolean.TRUE.equals(lint(project, snapshot).get("ok"))) throw ApiException.bad("源图表需要先修正");
+    var numeric = (com.fasterxml.jackson.databind.node.ObjectNode) original.deepCopy();
+    numeric.put("datasetVersionId", ((Number)data.get("id")).longValue());
+    var candidate = FigureOperations.apply(numeric, operations);
+    workspace.validateAndReport(project, candidate, data);
+    candidate.put("datasetVersionId", "$derived");
+    return Map.of("protocol_version",1,"config",candidate,"changes",FigureOperations.changes(original,candidate),
+      "operation_count",operations.size(),"base_revision",snapshot.path("base_revision").asInt(),
+      "source",Map.of("dataset_version_id",data.get("id"),"sha256",data.get("source_sha256")));
+  }
+
+  public void lintMemory(long project, JsonNode config, Map<String,Object> data) {
+    var numeric = (com.fasterxml.jackson.databind.node.ObjectNode) config.deepCopy();
+    numeric.put("datasetVersionId", ((Number)data.get("id")).longValue());
+    workspace.validateAndReport(project,numeric,data);
+  }
+
   @Transactional(readOnly = true)
   public Object preview(long project, JsonNode request) {
     if (request == null || !request.isObject()) throw ApiException.bad("需要操作请求");

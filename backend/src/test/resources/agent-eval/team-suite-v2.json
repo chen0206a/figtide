@@ -1,0 +1,1062 @@
+{
+ "suite_version": "figtide-team-eval-v2",
+ "held_out": true,
+ "held_out_rule": "Held-out pool: never use these prompts to tune team prompts or the router; if tuning is needed, author a new pool and retire this one.",
+ "synthetic": true,
+ "fixture_provenance": "hand-authored synthetic tasks for held-out comparison; not captured model responses; prompts never used during prompt optimization",
+ "csv": "epoch,model,seed,accuracy,latency,error\n1,A,1,0.7,12,0.01\n1,A,2,0.9,14,0.01\n1,B,3,0.6,16,0.02\n1,B,4,0.8,18,0.02\n2,A,1,0.75,11,0.01\n2,A,2,0.95,13,0.01\n2,B,3,0.65,15,0.02\n2,B,4,0.85,17,0.02\n3,A,1,0.8,10,0.01\n3,A,2,1,12,0.01\n3,B,3,0.7,14,0.02\n3,B,4,0.9,16,0.02\n",
+ "cases": [
+  {
+   "id": "S01",
+   "category": "single_step",
+   "synthetic": true,
+   "prompt": "X 轴标题改成 Epoch index，其他保持不动。",
+   "expected_operations": [
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "x",
+      "title": "Epoch index"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/axes/x/title"
+   ],
+   "allowed_paths": [
+    "/axes/x/title"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "S02",
+   "category": "single_step",
+   "synthetic": true,
+   "prompt": "Y 轴标题改成 Accuracy (%)，其他不动。",
+   "expected_operations": [
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "y",
+      "title": "Accuracy (%)"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/axes/y/title"
+   ],
+   "allowed_paths": [
+    "/axes/y/title"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "S03",
+   "category": "single_step",
+   "synthetic": true,
+   "prompt": "画布高度改成 620 px，宽度不变。",
+   "expected_operations": [
+    {
+     "tool": "set_canvas",
+     "arguments": {
+      "height": 620
+     }
+    }
+   ],
+   "expected_changes": [
+    "/style/height"
+   ],
+   "allowed_paths": [
+    "/style/height"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "S04",
+   "category": "single_step",
+   "synthetic": true,
+   "prompt": "把 s1 的点形状改成方形，其他不动。",
+   "expected_operations": [
+    {
+     "tool": "set_series",
+     "arguments": {
+      "seriesId": "s1",
+      "symbol": "square"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/series/0/symbol"
+   ],
+   "allowed_paths": [
+    "/series/0/symbol"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "S05",
+   "category": "single_step",
+   "synthetic": true,
+   "prompt": "给 X 轴加网格线，Y 轴的网格保持不变。",
+   "expected_operations": [
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "x",
+      "grid": true
+     }
+    }
+   ],
+   "expected_changes": [
+    "/axes/x/grid"
+   ],
+   "allowed_paths": [
+    "/axes/x/grid"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "S06",
+   "category": "single_step",
+   "synthetic": true,
+   "prompt": "图例改成竖排，位置不动。",
+   "expected_operations": [
+    {
+     "tool": "set_legend",
+     "arguments": {
+      "orientation": "v"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/legend/orientation"
+   ],
+   "allowed_paths": [
+    "/legend/orientation"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "S07",
+   "category": "single_step",
+   "synthetic": true,
+   "prompt": "画布背景改成 #fafbfc，其他不动。",
+   "expected_operations": [
+    {
+     "tool": "set_canvas",
+     "arguments": {
+      "background": "#fafbfc"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/style/background"
+   ],
+   "allowed_paths": [
+    "/style/background"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "S08",
+   "category": "single_step",
+   "synthetic": true,
+   "prompt": "s1 不透明度调到 0.6，其他不改。",
+   "expected_operations": [
+    {
+     "tool": "set_series",
+     "arguments": {
+      "seriesId": "s1",
+      "opacity": 0.6
+     }
+    }
+   ],
+   "expected_changes": [
+    "/series/0/opacity"
+   ],
+   "allowed_paths": [
+    "/series/0/opacity"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "M01",
+   "category": "multi_step",
+   "synthetic": true,
+   "prompt": "X 轴标题改成 Epoch，Y 轴标题改成 Accuracy (%)，图例放到底部。",
+   "expected_operations": [
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "x",
+      "title": "Epoch"
+     }
+    },
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "y",
+      "title": "Accuracy (%)"
+     }
+    },
+    {
+     "tool": "set_legend",
+     "arguments": {
+      "position": "bottom"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/axes/x/title",
+    "/axes/y/title",
+    "/legend/position"
+   ],
+   "allowed_paths": [
+    "/axes/x/title",
+    "/axes/y/title",
+    "/legend/position"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "M02",
+   "category": "multi_step",
+   "synthetic": true,
+   "prompt": "字号 16 px，标题改成“Learning curves”，s1 改成虚线、线宽 3。",
+   "expected_operations": [
+    {
+     "tool": "set_style",
+     "arguments": {
+      "fontSize": 16,
+      "title": "Learning curves"
+     }
+    },
+    {
+     "tool": "set_series",
+     "arguments": {
+      "seriesId": "s1",
+      "dash": "dash",
+      "width": 3
+     }
+    }
+   ],
+   "expected_changes": [
+    "/style/fontSize",
+    "/style/title",
+    "/series/0/dash",
+    "/series/0/width"
+   ],
+   "allowed_paths": [
+    "/style/fontSize",
+    "/style/title",
+    "/series/0/dash",
+    "/series/0/width"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "M03",
+   "category": "multi_step",
+   "synthetic": true,
+   "prompt": "Y 轴标题写错了，应该是 Accuracy；再把图例隐藏，其他不动。",
+   "expected_operations": [
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "y",
+      "title": "Accuracy"
+     }
+    },
+    {
+     "tool": "set_legend",
+     "arguments": {
+      "show": false
+     }
+    }
+   ],
+   "expected_changes": [
+    "/axes/y/title",
+    "/legend/show"
+   ],
+   "allowed_paths": [
+    "/axes/y/title",
+    "/legend/show"
+   ],
+   "setup_operations": [
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "y",
+      "title": "Latency"
+     }
+    }
+   ]
+  },
+  {
+   "id": "M04",
+   "category": "multi_step",
+   "synthetic": true,
+   "prompt": "画布改成 900×560，图例放右侧，字号 15。",
+   "expected_operations": [
+    {
+     "tool": "set_canvas",
+     "arguments": {
+      "width": 900,
+      "height": 560
+     }
+    },
+    {
+     "tool": "set_legend",
+     "arguments": {
+      "position": "right"
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "fontSize": 15
+     }
+    }
+   ],
+   "expected_changes": [
+    "/style/width",
+    "/style/height",
+    "/legend/position",
+    "/style/fontSize"
+   ],
+   "allowed_paths": [
+    "/style/width",
+    "/style/height",
+    "/legend/position",
+    "/style/fontSize"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "M05",
+   "category": "multi_step",
+   "synthetic": true,
+   "prompt": "s1 的颜色和线宽被改乱了：恢复成 #0072B2、线宽 2.5，其他保持不变。",
+   "expected_operations": [
+    {
+     "tool": "set_series",
+     "arguments": {
+      "seriesId": "s1",
+      "color": "#0072B2",
+      "width": 2.5
+     }
+    }
+   ],
+   "expected_changes": [
+    "/series/0/color",
+    "/series/0/width"
+   ],
+   "allowed_paths": [
+    "/series/0/color",
+    "/series/0/width"
+   ],
+   "setup_operations": [
+    {
+     "tool": "set_series",
+     "arguments": {
+      "seriesId": "s1",
+      "color": "#E69F00",
+      "width": 4
+     }
+    }
+   ]
+  },
+  {
+   "id": "M06",
+   "category": "multi_step",
+   "synthetic": true,
+   "prompt": "按 model 分组画散点，X 还是 epoch；Y 轴标题改成 Accuracy；图例放右上。",
+   "expected_operations": [
+    {
+     "tool": "set_chart",
+     "arguments": {
+      "type": "scatter"
+     }
+    },
+    {
+     "tool": "set_mapping",
+     "arguments": {
+      "x": "epoch",
+      "group": "model"
+     }
+    },
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "y",
+      "title": "Accuracy"
+     }
+    },
+    {
+     "tool": "set_legend",
+     "arguments": {
+      "position": "top-right"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/type",
+    "/group",
+    "/axes/y/title",
+    "/legend/position"
+   ],
+   "allowed_paths": [
+    "/type",
+    "/group",
+    "/axes/y/title",
+    "/legend/position"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "M07",
+   "category": "multi_step",
+   "synthetic": true,
+   "prompt": "X 轴范围限制在 1 到 3、刻度间隔 1；Y 轴用对数坐标。",
+   "expected_operations": [
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "x",
+      "min": 1,
+      "max": 3,
+      "dtick": 1
+     }
+    },
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "y",
+      "log": true
+     }
+    }
+   ],
+   "expected_changes": [
+    "/axes/x/min",
+    "/axes/x/max",
+    "/axes/x/dtick",
+    "/axes/y/log"
+   ],
+   "allowed_paths": [
+    "/axes/x/min",
+    "/axes/x/max",
+    "/axes/x/dtick",
+    "/axes/y/log"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "M08",
+   "category": "multi_step",
+   "synthetic": true,
+   "prompt": "s1 改画 latency，Y 轴标题改成 Latency (ms)，标题改成“Latency by epoch”。",
+   "expected_operations": [
+    {
+     "tool": "map_series",
+     "arguments": {
+      "seriesId": "s1",
+      "y": "latency"
+     }
+    },
+    {
+     "tool": "set_axis",
+     "arguments": {
+      "axis": "y",
+      "title": "Latency (ms)"
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "title": "Latency by epoch"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/series/0/y",
+    "/axes/y/title",
+    "/style/title"
+   ],
+   "allowed_paths": [
+    "/series/0/y",
+    "/axes/y/title",
+    "/style/title"
+   ],
+   "setup_operations": []
+  },
+  {
+   "id": "P01",
+   "category": "processing",
+   "synthetic": true,
+   "prompt": "每行是固定epoch与model的独立seed重复；按model分组，计算accuracy均值和SEM；缺失分组include，按model升序；X=model，s1画均值与SEM误差棒，标题“Held-out processed P01”。",
+   "expected_operations": [
+    {
+     "tool": "map_series",
+     "arguments": {
+      "seriesId": "s1",
+      "y": "accuracy__mean",
+      "error": "accuracy__sem"
+     }
+    },
+    {
+     "tool": "set_mapping",
+     "arguments": {
+      "x": "model",
+      "group": ""
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "title": "Held-out processed P01"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/datasetVersionId",
+    "/x",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "allowed_paths": [
+    "/datasetVersionId",
+    "/x",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "setup_operations": [],
+   "expected_processing": {
+    "schema_version": 1,
+    "mode": "aggregate",
+    "groupBy": [
+     "model"
+    ],
+    "metrics": [
+     "accuracy"
+    ],
+    "filters": [],
+    "sort": [
+     {
+      "field": "model",
+      "direction": "asc"
+     }
+    ],
+    "missingGroup": "include",
+    "error": "sem",
+    "observationUnit": "independent repeated run at a fixed epoch and model",
+    "replicate": "",
+    "x": "model",
+    "group": "",
+    "display": "bars"
+   }
+  },
+  {
+   "id": "P02",
+   "category": "processing",
+   "synthetic": true,
+   "prompt": "每行是固定epoch与model的独立seed重复；按model分组，计算latency均值和SD；缺失分组include，按均值降序；X=model，s1画均值与SD误差棒，标题“Held-out processed P02”。",
+   "expected_operations": [
+    {
+     "tool": "map_series",
+     "arguments": {
+      "seriesId": "s1",
+      "y": "latency__mean",
+      "error": "latency__sd"
+     }
+    },
+    {
+     "tool": "set_mapping",
+     "arguments": {
+      "x": "model",
+      "group": ""
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "title": "Held-out processed P02"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/datasetVersionId",
+    "/x",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "allowed_paths": [
+    "/datasetVersionId",
+    "/x",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "setup_operations": [],
+   "expected_processing": {
+    "schema_version": 1,
+    "mode": "aggregate",
+    "groupBy": [
+     "model"
+    ],
+    "metrics": [
+     "latency"
+    ],
+    "filters": [],
+    "sort": [
+     {
+      "field": "latency__mean",
+      "direction": "desc"
+     }
+    ],
+    "missingGroup": "include",
+    "error": "sd",
+    "observationUnit": "independent repeated run at a fixed epoch and model",
+    "replicate": "",
+    "x": "model",
+    "group": "",
+    "display": "bars"
+   }
+  },
+  {
+   "id": "P03",
+   "category": "processing",
+   "synthetic": true,
+   "prompt": "每行是固定epoch与model的独立seed重复；按epoch、model分组，同时计算accuracy和latency的均值和SEM；seed是重复ID，缺失分组include，按epoch升序；X=epoch，按model分组，s1画accuracy均值与SEM误差棒，标题“Held-out processed P03”。",
+   "expected_operations": [
+    {
+     "tool": "map_series",
+     "arguments": {
+      "seriesId": "s1",
+      "y": "accuracy__mean",
+      "error": "accuracy__sem"
+     }
+    },
+    {
+     "tool": "set_mapping",
+     "arguments": {
+      "x": "epoch",
+      "group": "model"
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "title": "Held-out processed P03"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "allowed_paths": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "setup_operations": [],
+   "expected_processing": {
+    "schema_version": 1,
+    "mode": "aggregate",
+    "groupBy": [
+     "epoch",
+     "model"
+    ],
+    "metrics": [
+     "accuracy",
+     "latency"
+    ],
+    "filters": [],
+    "sort": [
+     {
+      "field": "epoch",
+      "direction": "asc"
+     }
+    ],
+    "missingGroup": "include",
+    "error": "sem",
+    "observationUnit": "independent repeated run at a fixed epoch and model",
+    "replicate": "seed",
+    "x": "epoch",
+    "group": "model",
+    "display": "bars"
+   }
+  },
+  {
+   "id": "P04",
+   "category": "processing",
+   "synthetic": true,
+   "prompt": "每行是固定epoch与model的独立seed重复；先过滤 epoch >= 2，再按epoch分组计算accuracy均值和SEM；缺失分组include，按epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Held-out processed P04”。",
+   "expected_operations": [
+    {
+     "tool": "map_series",
+     "arguments": {
+      "seriesId": "s1",
+      "y": "accuracy__mean",
+      "error": "accuracy__sem"
+     }
+    },
+    {
+     "tool": "set_mapping",
+     "arguments": {
+      "x": "epoch",
+      "group": ""
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "title": "Held-out processed P04"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "allowed_paths": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "setup_operations": [],
+   "expected_processing": {
+    "schema_version": 1,
+    "mode": "aggregate",
+    "groupBy": [
+     "epoch"
+    ],
+    "metrics": [
+     "accuracy"
+    ],
+    "filters": [
+     {
+      "field": "epoch",
+      "operator": "gte",
+      "value": "2"
+     }
+    ],
+    "sort": [
+     {
+      "field": "epoch",
+      "direction": "asc"
+     }
+    ],
+    "missingGroup": "include",
+    "error": "sem",
+    "observationUnit": "independent repeated run at a fixed epoch and model",
+    "replicate": "seed",
+    "x": "epoch",
+    "group": "",
+    "display": "bars"
+   }
+  },
+  {
+   "id": "P05",
+   "category": "processing",
+   "synthetic": true,
+   "prompt": "每行是固定epoch与model的独立seed重复；先过滤 model = A，再按epoch分组计算latency均值和SD；缺失分组include，按epoch降序；X=epoch，s1画均值与SD误差棒，标题“Held-out processed P05”。",
+   "expected_operations": [
+    {
+     "tool": "map_series",
+     "arguments": {
+      "seriesId": "s1",
+      "y": "latency__mean",
+      "error": "latency__sd"
+     }
+    },
+    {
+     "tool": "set_mapping",
+     "arguments": {
+      "x": "epoch",
+      "group": ""
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "title": "Held-out processed P05"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "allowed_paths": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "setup_operations": [],
+   "expected_processing": {
+    "schema_version": 1,
+    "mode": "aggregate",
+    "groupBy": [
+     "epoch"
+    ],
+    "metrics": [
+     "latency"
+    ],
+    "filters": [
+     {
+      "field": "model",
+      "operator": "eq",
+      "value": "A"
+     }
+    ],
+    "sort": [
+     {
+      "field": "epoch",
+      "direction": "desc"
+     }
+    ],
+    "missingGroup": "include",
+    "error": "sd",
+    "observationUnit": "independent repeated run at a fixed epoch and model",
+    "replicate": "seed",
+    "x": "epoch",
+    "group": "",
+    "display": "bars"
+   }
+  },
+  {
+   "id": "P06",
+   "category": "processing",
+   "synthetic": true,
+   "prompt": "每行是独立重复；保留所有原始列，按accuracy desc排序成独立派生数据；s1画accuracy、清空误差列，标题“Held-out processed P06”。",
+   "expected_operations": [
+    {
+     "tool": "map_series",
+     "arguments": {
+      "seriesId": "s1",
+      "y": "accuracy",
+      "error": ""
+     }
+    },
+    {
+     "tool": "set_mapping",
+     "arguments": {
+      "x": "epoch",
+      "group": ""
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "title": "Held-out processed P06"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "allowed_paths": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "setup_operations": [],
+   "expected_processing": {
+    "schema_version": 1,
+    "mode": "sort",
+    "groupBy": [],
+    "metrics": [],
+    "filters": [],
+    "sort": [
+     {
+      "field": "accuracy",
+      "direction": "desc"
+     }
+    ],
+    "missingGroup": "include",
+    "error": "none",
+    "observationUnit": "independent repeated run at a fixed epoch and model",
+    "replicate": "",
+    "x": "epoch",
+    "group": "",
+    "display": "bars"
+   }
+  },
+  {
+   "id": "P07",
+   "category": "processing",
+   "synthetic": true,
+   "prompt": "每行是固定epoch与model的独立seed重复；按epoch分组计算accuracy均值，不要误差棒；缺失分组include，按epoch升序；X=epoch，s1画均值，标题“Held-out processed P07”。",
+   "expected_operations": [
+    {
+     "tool": "map_series",
+     "arguments": {
+      "seriesId": "s1",
+      "y": "accuracy__mean",
+      "error": ""
+     }
+    },
+    {
+     "tool": "set_mapping",
+     "arguments": {
+      "x": "epoch",
+      "group": ""
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "title": "Held-out processed P07"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "allowed_paths": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "setup_operations": [],
+   "expected_processing": {
+    "schema_version": 1,
+    "mode": "aggregate",
+    "groupBy": [
+     "epoch"
+    ],
+    "metrics": [
+     "accuracy"
+    ],
+    "filters": [],
+    "sort": [
+     {
+      "field": "epoch",
+      "direction": "asc"
+     }
+    ],
+    "missingGroup": "include",
+    "error": "none",
+    "observationUnit": "independent repeated run at a fixed epoch and model",
+    "replicate": "seed",
+    "x": "epoch",
+    "group": "",
+    "display": "bars"
+   }
+  },
+  {
+   "id": "P08",
+   "category": "processing",
+   "synthetic": true,
+   "prompt": "每行是固定epoch与model的独立seed重复；先过滤 model = B 且 epoch <= 2，再按epoch分组计算accuracy均值和SEM；缺失分组include，按epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Held-out processed P08”。",
+   "expected_operations": [
+    {
+     "tool": "map_series",
+     "arguments": {
+      "seriesId": "s1",
+      "y": "accuracy__mean",
+      "error": "accuracy__sem"
+     }
+    },
+    {
+     "tool": "set_mapping",
+     "arguments": {
+      "x": "epoch",
+      "group": ""
+     }
+    },
+    {
+     "tool": "set_style",
+     "arguments": {
+      "title": "Held-out processed P08"
+     }
+    }
+   ],
+   "expected_changes": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "allowed_paths": [
+    "/datasetVersionId",
+    "/series/0/y",
+    "/series/0/error",
+    "/group",
+    "/style/title"
+   ],
+   "setup_operations": [],
+   "expected_processing": {
+    "schema_version": 1,
+    "mode": "aggregate",
+    "groupBy": [
+     "epoch"
+    ],
+    "metrics": [
+     "accuracy"
+    ],
+    "filters": [
+     {
+      "field": "model",
+      "operator": "eq",
+      "value": "B"
+     },
+     {
+      "field": "epoch",
+      "operator": "lte",
+      "value": "2"
+     }
+    ],
+    "sort": [
+     {
+      "field": "epoch",
+      "direction": "asc"
+     }
+    ],
+    "missingGroup": "include",
+    "error": "sem",
+    "observationUnit": "independent repeated run at a fixed epoch and model",
+    "replicate": "seed",
+    "x": "epoch",
+    "group": "",
+    "display": "bars"
+   }
+  }
+ ]
+}

@@ -37,6 +37,16 @@ public class AgentAuditRepository {
     return rows.getFirst();
   }
 
+  public int storeReview(long project,String id,String review){
+    return db.update("UPDATE agent_runs SET review_json=? WHERE project_id=? AND run_id=? AND status='proposed' AND outcome='pending'",review,project,id);
+  }
+  public void mode(long project,String id,String mode){db.update("UPDATE agent_runs SET mode=? WHERE project_id=? AND run_id=?",mode,project,id);}
+  public int processingCommit(long project,String id,String record){return db.update("UPDATE agent_runs SET accepted_fixes_json=? WHERE project_id=? AND run_id=? AND status='proposed' AND outcome IN ('pending','accepted')",record,project,id);}
+  public void standaloneReview(long project,String id,String record){db.update("UPDATE agent_runs SET review_json=? WHERE project_id=? AND run_id=? AND mode='review' AND status='answered'",record,project,id);}
+  public int storeAcceptedFixes(long project,String id,String fixes){
+    return db.update("UPDATE agent_runs SET accepted_fixes_json=? WHERE project_id=? AND run_id=? AND status='proposed' AND outcome='accepted'",fixes,project,id);
+  }
+
   public Map<String, Object> lock(long project, String id) {
     var rows =
         db.queryForList(

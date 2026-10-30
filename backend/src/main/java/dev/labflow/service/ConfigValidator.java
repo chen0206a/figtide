@@ -84,7 +84,7 @@ public final class ConfigValidator {
     var legend = c.path("legend");
     require(
         legend.path("show").isBoolean()
-            && Set.of("top", "bottom", "right").contains(legend.path("position").asText())
+            && Set.of("top", "bottom", "right", "top-left", "top-right", "bottom-left", "bottom-right").contains(legend.path("position").asText())
             && Set.of("h", "v").contains(legend.path("orientation").asText()),
         "图例无效");
     require(
@@ -188,6 +188,9 @@ public final class ConfigValidator {
       number(p.path("widthMm"), 50, 300, "成品宽度");
       number(p.path("fontPt"), 4, 24, "成品字号");
       number(p.path("dpi"), 72, 1200, "DPI");
+      require(!p.has("journal") || (p.path("journal").isTextual()
+          && Set.of("default", "nature", "ieee", "plos-one", "elsevier", "acs-crt")
+              .contains(p.path("journal").asText())), "目标期刊无效");
     }
     if (c.has("empirical")) {
       var e = c.path("empirical");

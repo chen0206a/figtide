@@ -11,6 +11,7 @@ import {
   Save,
   Undo2,
   Sparkles,
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { type Dataset } from "../../lib/api";
@@ -31,6 +32,7 @@ type EditorToolbarProps = {
   togglePanel: (side: "left" | "right") => void;
   agentOpen: boolean;
   setAgentOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onReview?:()=>void;
   c: Config;
   data: Dataset;
   setQuickOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -62,6 +64,7 @@ export function EditorToolbar({
   togglePanel,
   agentOpen,
   setAgentOpen,
+  onReview,
   c,
   data,
   setQuickOpen,
@@ -146,6 +149,13 @@ export function EditorToolbar({
         >
           快捷操作
         </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={saving || c.datasetVersionId !== data.id}
+          onClick={onReview}
+          aria-label="审稿这张图"
+        ><ClipboardCheck size={15}/>审稿这张图</Button>
         <Button
           variant="ghost"
           size="sm"

@@ -112,6 +112,7 @@ export type Config = {
   };
   publication?: {
     enabled: boolean;
+    journal?: string;
     widthMm: number;
     fontPt: number;
     dpi: number;
@@ -182,7 +183,7 @@ export const defaultClassification: NonNullable<Config["classification"]> = {
   xTitle: "",
   yTitle: "",
 };
-export const defaultPublication = {
+export const defaultPublication: NonNullable<Config['publication']> = {
   enabled: false,
   widthMm: 183,
   fontPt: 8,

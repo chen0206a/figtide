@@ -375,11 +375,18 @@ public class WorkspaceService {
 
   @SuppressWarnings("unchecked")
   Map<String, Object> validateAndReport(long p, JsonNode c) {
+    if (c == null || c.path("schema_version").asInt() != 1) throw ApiException.bad("不支持的配置 schema_version");
+    ConfigValidator.validate(c);
+    return validateAndReport(p, c, data(p, c.path("datasetVersionId").asLong()));
+  }
+
+  /** Internal preview only: exactly the save validators, against trusted in-memory processed rows. */
+  @SuppressWarnings("unchecked")
+  Map<String, Object> validateAndReport(long p, JsonNode c, Map<String, Object> data) {
     if (c == null || c.path("schema_version").asInt() != 1)
       throw ApiException.bad("不支持的配置 schema_version");
     ConfigValidator.validate(c);
     if (encode(c).length() > 200000) throw ApiException.bad("配置过大");
-    var data = data(p, c.path("datasetVersionId").asLong());
     Map<String, Object> report = null;
     var fields = (List<Map<String, Object>>) data.get("fields");
     Set<String> names = new HashSet<>(), numeric = new HashSet<>();

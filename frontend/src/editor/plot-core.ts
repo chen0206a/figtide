@@ -207,7 +207,9 @@ export function buildSinglePlot(
             .flatMap((t) => (Array.isArray(t.x) ? t.x : [])),
         )
       : undefined;
-  const pos =
+  const corner = c.legend.position.match(/^(top|bottom)-(left|right)$/);
+  const pos = corner ? {x: corner[2] === 'left' ? 0 : 1, y: corner[1] === 'top' ? 1 : 0,
+    xanchor: corner[2], yanchor: corner[1]} :
     c.legend.position === "bottom"
       ? { x: 0.5, y: -0.22, xanchor: "center", yanchor: "top" }
       : c.legend.position === "right"

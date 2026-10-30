@@ -12,6 +12,9 @@ import {CanvasAsk} from './CanvasAsk';
 import {ProposalPaper} from './ProposalPaper';
 import type {AssistantSubmission} from '../agentPresentation';
 import type {CanvasProposal} from './useProposalCanvas';
+import {ReviewMarkers} from './ReviewMarkers';
+import type {ReviewIssue} from '../review';
+import type {RenderFacts} from '../renderFacts';
 
 type FigureCanvasProps = {
   c: Config;
@@ -22,7 +25,8 @@ type FigureCanvasProps = {
   stage: React.RefObject<HTMLDivElement | null>;
   plotPending: boolean;
   data: Dataset;
-  rendered: { config: Config; data: Dataset } | null;
+  rendered: { config: Config; data: Dataset; facts?:RenderFacts|null } | null;
+  reviewIssues?:ReviewIssue[];
   setPanel: React.Dispatch<React.SetStateAction<string>>;
   graph: RefObject<HTMLDivElement | null>;
   plotError: string;
@@ -66,6 +70,7 @@ export function FigureCanvas({
   onToggleProposal,
   assistantClosed,
   onAssistantSend,
+  reviewIssues=[],
 }: FigureCanvasProps) {
   const display=canvasProposal&&proposalVisible?canvasProposal.preview.config:c;
   const physical = publicationMetrics(display);
@@ -184,6 +189,7 @@ export function FigureCanvas({
               }}
             >
               <div className="canvas-original-layer"><div data-testid="plot" ref={graph} /></div>
+              {(!canvasProposal||!proposalVisible)&&<ReviewMarkers config={c} issues={reviewIssues} facts={rendered?.facts}/>}
               {canvasProposal&&<ProposalPaper key={canvasProposal.token+JSON.stringify(canvasProposal.preview.config)} proposal={canvasProposal} data={data} visible={proposalVisible}/>}
             </div>
           </div>

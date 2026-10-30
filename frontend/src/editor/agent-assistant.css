@@ -632,6 +632,12 @@
   margin: 0;
   border: 0;
 }
+.agent-dock-top .agent-budget[open] {
+  max-height: 35vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: var(--lf-space-2);
+}
 .agent-budget progress {
   display: block;
   width: 100%;

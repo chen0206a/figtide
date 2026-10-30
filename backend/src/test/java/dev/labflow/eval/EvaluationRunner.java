@@ -58,12 +58,11 @@ final class EvaluationRunner {
     if (!known.containsAll(selected))
       throw new IllegalArgumentException("Unknown evaluation case id");
     try (var connection = Objects.requireNonNull(db.getDataSource()).getConnection()) {
-      if (!connection
-          .getMetaData()
-          .getURL()
-          .matches("jdbc:mysql://[^/]+/labflow_(test|e2e)(\\?.*)?"))
+      String jdbc=connection.getMetaData().getURL();
+      boolean isolatedReplayH2=mode.equals("replay")&&(jdbc.equals("jdbc:h2:mem:labflow_test")||jdbc.startsWith("jdbc:h2:mem:labflow_test;"));
+      if (!jdbc.matches("jdbc:mysql://[^/]+/labflow_(test|e2e)(\\?.*)?") && !isolatedReplayH2)
         throw new IllegalStateException(
-            "Evaluation only permits isolated labflow_test / labflow_e2e schemas");
+            "Evaluation only permits isolated test schemas; H2 is restricted to offline labflow_test replay");
     }
     JsonNode baseConfig;
     try (var stream = getClass().getResourceAsStream("/config-v1.json")) {

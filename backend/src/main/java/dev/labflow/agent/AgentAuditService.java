@@ -89,6 +89,7 @@ public class AgentAuditService {
         initial.path("request_hash").asText(null),
         reserved,
         ((Number) budget.get("turn_count")).intValue() + 1);
+    if(Set.of("team","review").contains(initial.path("mode").asText()))db.mode(project,initial.path("run_id").asText(),initial.path("mode").asText());
     return reserved;
   }
 
@@ -203,6 +204,8 @@ public class AgentAuditService {
   public ObjectNode detail(long project, String id) {
     return render(db.find(project, id));
   }
+  @Transactional
+  public void standaloneReview(long project,String id,ObjectNode result){var record=json.createObjectNode();record.set("result",result);db.standaloneReview(project,id,record.toString());}
 
   private ObjectNode render(Map<String, Object> row) {
     var result = json.createObjectNode();
@@ -250,6 +253,19 @@ public class AgentAuditService {
       throw new IllegalStateException("审计记录格式无效");
     }
     result.put("persisted", true).put("historical", true).put("text", "");
+    var review=dev.labflow.review.ReviewJson.read(json,row.get("review_json"));
+    if(review.has("result"))result.set("review",review.path("result"));
+    if(review.path("result").has("deep_review"))result.set("deep_review",review.at("/result/deep_review"));
+    var fixes=dev.labflow.review.ReviewJson.read(json,row.get("accepted_fixes_json"));
+    if(fixes.isObject()){
+      result.set("accepted_fixes",fixes.path("ids"));result.set("final_config_hash",fixes.path("config_hash"));
+      if(fixes.has("processing_commit"))result.set("processing_commit",fixes.path("processing_commit"));
+    }
+    if(Set.of("team","review").contains(String.valueOf(row.get("mode")))){
+      result.put("mode",String.valueOf(row.get("mode")));result.set("roles",dev.labflow.agent.team.TeamRoles.summarize(result.path("trace"),json));
+      String phase=result.path("status").asText();for(var event:result.path("trace"))if(event.has("phase"))phase=event.path("phase").asText();
+      result.put("phase",phase);
+    }
     result.put(
         "reason",
         switch (String.valueOf(row.get("reason_code"))) {

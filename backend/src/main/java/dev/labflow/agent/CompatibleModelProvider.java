@@ -76,8 +76,10 @@ public class CompatibleModelProvider implements ModelProvider {
     var body =
         json.createObjectNode()
             .put("model", model)
-            .put("stream", false)
-            .put("max_tokens", maxOutputTokens);
+            .put("stream", false);
+    if(maxOutputTokens<0)throw new IllegalArgumentException("无效输出上限");
+    // Internal unrestricted evaluation uses zero to defer output sizing to the provider.
+    if(maxOutputTokens>0)body.put("max_tokens",maxOutputTokens);
     body.set("messages", messages);
     if (!tools.isEmpty()) {
       body.set("tools", tools);

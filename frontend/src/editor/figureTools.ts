@@ -31,6 +31,9 @@ export type ToolCatalog = {
   tools: ToolSpec[];
 };
 export type ToolPreview = {
+  processing?: {source_dataset_version_id:number;name:string;rules:unknown;preview_hash:string};
+  preview_dataset?: import('../lib/api').Dataset;
+  deep_review?: string;
   protocol_version: 1;
   config: Config;
   changes: { path: string; before: unknown; after: unknown }[];
@@ -91,6 +94,10 @@ export const toolValueNames: Record<string, string> = {
   top: "上方",
   bottom: "下方",
   right: "右侧",
+  'top-left': '左上角',
+  'top-right': '右上角',
+  'bottom-left': '左下角',
+  'bottom-right': '右下角',
   h: "横向",
   v: "纵向",
   solid: "实线",

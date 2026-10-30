@@ -40,8 +40,14 @@ const names: Record<string, string> = {
   get_dataset_profile: "字段摘要",
   lint_figure: "配置校验",
   unknown_tool: "未允许的工具",
+  propose_processing: "派生数据处理预览",
+  get_current_config: "当前图表配置",
 };
 export function AuditTrace({ trace }: { trace: AgentRun["trace"] }) {
+  if(trace.some(event=>event.role)){
+    const labels:Record<string,string>={coordinator:'协调者',data:'数据专家',plotter:'绘图专家',reviewer:'审稿专家'};
+    return <div className="agent-role-audit">{[...new Set(trace.map(event=>event.role).filter(Boolean))].map(role=><details key={role}><summary>{labels[role!]||role} · {trace.filter(event=>event.role===role&&event.event==='model_response').reduce((total,event)=>total+(event.tokens||0),0)} token</summary><AuditTrace trace={trace.filter(event=>event.role===role).map(({role:_,...event})=>event)}/></details>)}</div>;
+  }
   return (
     <ol className="agent-audit-trace">
       {trace.map((event, i) => (
@@ -67,7 +73,7 @@ export function AuditTrace({ trace }: { trace: AgentRun["trace"] }) {
                 ? "基于上一份提案继续调整"
                 : event.event === "model_request"
                   ? "请求模型"
-                  : `模型响应 · ${event.tokens} tokens`}
+                  : event.event==='model_response'?`模型响应 · ${event.tokens} tokens`:event.event==='role_start'?'开始阶段':event.event==='role_end'?'阶段结束':event.event==='render_wait'?'等待渲染几何':event.event==='run_end'?'运行结束':'运行事件'}
             </span>
           )}
         </li>

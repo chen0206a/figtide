@@ -123,3 +123,6 @@ Codex CLI、Codex IDE 扩展和同一 Codex host 上的桌面客户端共享这�
 **保存返回 409 / revision 冲突**：这表示图表已被浏览器或另一客户端保存。重新调用 `get_chart`，基于最新配置再预览，经用户确认后用新 revision 保存。MCP 不会替你覆盖或重试。
 
 **工具列表为空或服务器立即退出**：用 `node --version` 确认 Node 18+，确认 `args` 是存在的绝对路径，然后完全重启客户端。不要用其他程序向 MCP 进程的 stdout 写日志。
+# 18-A：只读审稿工具
+
+新增 `review_chart({project_id,config,chart_id?,target?:{width_mm?,journal?}})`，通过现有 HTTP 客户端调用只读审稿接口，无数据库访问或模型调用。返回确定性问题、可预览的修复操作、通过与跳过项。MCP 不提交渲染事实，因此 R7/R8 显示「需要编辑器中的渲染信息」，不能视为通过。不会返回源文件名、原始数据行或样例；应用修复须继续走 `preview_chart_changes` 与用户确认。
