@@ -108,7 +108,7 @@
         },
         {
           "id": "n5",
-          "kind": "box",
+          "kind": "glyph",
           "x": 112,
           "y": 65,
           "w": 33,
@@ -117,11 +117,15 @@
           "zone": "z2",
           "icon": null,
           "role": "process",
-          "style_ref": "note"
+          "style_ref": "note",
+          "glyph": "text-input",
+          "boxed": true,
+          "label_pos": "center",
+          "badges": []
         },
         {
           "id": "n6",
-          "kind": "box",
+          "kind": "glyph",
           "x": 158,
           "y": 65,
           "w": 20,
@@ -130,7 +134,11 @@
           "zone": null,
           "icon": null,
           "role": "output",
-          "style_ref": null
+          "style_ref": null,
+          "glyph": "input-frames",
+          "boxed": true,
+          "label_pos": "center",
+          "badges": []
         }
       ],
       "edges": [
@@ -293,7 +301,7 @@
         },
         {
           "id": "n5",
-          "kind": "box",
+          "kind": "glyph",
           "x": 112,
           "y": 65,
           "w": 33,
@@ -302,11 +310,15 @@
           "zone": "z2",
           "icon": null,
           "role": "process",
-          "style_ref": "note"
+          "style_ref": "note",
+          "glyph": "text-input",
+          "boxed": true,
+          "label_pos": "center",
+          "badges": []
         },
         {
           "id": "n6",
-          "kind": "box",
+          "kind": "glyph",
           "x": 158,
           "y": 65,
           "w": 20,
@@ -315,7 +327,11 @@
           "zone": null,
           "icon": null,
           "role": "output",
-          "style_ref": null
+          "style_ref": null,
+          "glyph": "input-frames",
+          "boxed": true,
+          "label_pos": "center",
+          "badges": []
         }
       ],
       "edges": [

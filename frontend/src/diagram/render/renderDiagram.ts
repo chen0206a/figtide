@@ -13,13 +13,13 @@ export function readableText(background: string, text: string): string {
   return (Math.max(b,t)+.05)/(Math.min(b,t)+.05)>=4.5?text:b<.18?"#FFFFFF":"#000000";
 }
 /** The only SVG renderer: editor, thumbnails, exports and geometry collection use this output. */
-export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle): string {
+export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=false): string {
   const style=effectiveStyle(doc,preset),font=ptToMm(style.font_size_pt),line=ptToMm(style.line_width_pt)*(style.sketch?1.3:1),edgeLine=ptToMm(1.25)*(style.sketch?1.3:1),zoneLine=ptToMm(.75);
   const prefix="dg"+stableSeed(JSON.stringify(style));
   const marker=(kind:string)=>`url(#${prefix}-${kind})`;
   const text=(label:string,box:DiagramRect,fill=style.text_color,align:"center"|"left"="center",reference="",size=font)=>{
     const font=size;
-    const lines=wrapLabel(label,Math.max(1,box.w-2),font),step=font*1.25;
+    const lines=wrapLabel(label,Math.max(1,box.w),font),step=font*1.25;
     const x=align==="left"?box.x+1:box.x+box.w/2;
     const y=align==="left"?box.y+font:box.y+box.h/2-(lines.length-1)*step/2+font*.34;
     return `<text data-diagram-text="true" data-container-x="${box.x}" data-container-y="${box.y}" data-container-w="${box.w}" data-container-h="${box.h}"${reference?` data-text-target="${esc(reference)}"`:""} x="${fmt(x)}" y="${fmt(y)}" font-size="${fmt(font)}" fill="${esc(fill)}" text-anchor="${align==="left"?"start":"middle"}" xml:space="preserve">${lines.map((s,i)=>`<tspan x="${fmt(x)}" y="${fmt(y+i*step)}">${esc(s)}</tspan>`).join("")}</text>`;
@@ -93,5 +93,5 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle): string {
     const x=doc.legend.position.endsWith("right")?doc.canvas.width_mm-w-2:2,y=doc.legend.position.startsWith("bottom")?doc.canvas.height_mm-h-2:2;
     return `<g data-diagram-legend="true"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${esc(doc.canvas.background)}" fill-opacity="0.96"/>${kinds.map((kind,i)=>{const cy=y+2+(i+.5)*(font*1.4+1);return `<path d="M${x+1} ${cy} H${x+8}" stroke="${esc(kind==="inhibit"?paletteOf(doc.style.palette).c:style.line_color)}" stroke-width="${edgeLine}" marker-end="${marker(kind==="inhibit"?"inhibit":kind==="bind"?"bind":"arrow")}"${["indirect","transport"].includes(kind)?' stroke-dasharray="1.5 1"':""}/>${text(edgeNames[kind],{x:x+9,y:cy-font*.8,w:w-10,h:font*1.5},style.text_color,"left")}`;}).join("")}</g>`;
   })():"";
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${doc.canvas.width_mm}mm" height="${doc.canvas.height_mm}mm" viewBox="0 0 ${doc.canvas.width_mm} ${doc.canvas.height_mm}" role="img" aria-label="机制图" font-family="${esc(style.font_family)}"><title>Mechanism diagram</title>${defs}<rect width="100%" height="100%" fill="${esc(doc.canvas.background)}"/>${zones}${edges}${nodes}${annotations}${legend}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${doc.canvas.width_mm}mm" height="${doc.canvas.height_mm}mm" viewBox="0 0 ${doc.canvas.width_mm} ${doc.canvas.height_mm}" role="img" aria-label="机制图" font-family="${esc(style.font_family)}"><title>Mechanism diagram</title>${defs}${thumbnail?'<style>path,rect,ellipse,circle{vector-effect:non-scaling-stroke;stroke-width:1px}</style>':""}<rect width="100%" height="100%" fill="${esc(doc.canvas.background)}"/>${zones}${edges}${nodes}${annotations}${legend}</svg>`;
 }

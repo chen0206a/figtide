@@ -19,3 +19,14 @@ test('diagram initially fits width, manual zoom and fit button reflect actual sc
   await page.setViewportSize({width:1920,height:1080});await fit();
   await page.screenshot({path:artifactPath(info,'../docs/test-evidence/diagram-step1/fit-1920.png'),fullPage:true});
 });
+test('capture flagship templates at reference viewport',async({page,request},info)=>{
+  const project=await(await request.post('/api/projects',{data:{name:'Flagship visual comparison',description:'Synthetic visual fixtures only'}})).json();
+  await page.setViewportSize({width:1440,height:960});
+  for(const [template,style] of [['mechanism','nature-flat'],['framework','conference-framework']]){
+    const diagram=await(await request.post(`/api/projects/${project.id}/diagrams`,{data:{name:template==='mechanism'?'JAK–STAT 信号通路':'视频问答方法总览',template,style}})).json();
+    expect(diagram.id).toBeTruthy();await page.goto(`/projects/${project.id}/diagrams/${diagram.id}`);
+    await expect(page.getByTestId('diagram-canvas')).toBeVisible();
+    await expect.poll(async()=>Math.abs((await page.getByTestId('diagram-canvas').boundingBox())!.width-Math.max(720,(await page.locator('.diagram-stage').boundingBox())!.width*.9))).toBeLessThan(2);
+    await page.screenshot({path:artifactPath(info,`../docs/test-evidence/diagram-checkpoint-b/${template}-1440.png`)});
+  }
+});

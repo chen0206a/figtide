@@ -8,7 +8,7 @@ export function nodeLayout(node:DiagramNode,fontMm=ptToMm(6.5)):{body:DiagramRec
   let body:DiagramRect={x:node.x,y:node.y,w:node.w,h:node.h},label={...body};
   if(node.kind!=="text") {
     const position=node.label_pos||"center",space=Math.min(4.4,node.h*.5);
-    if(node.kind==="glyph"&&node.boxed){const size=Math.max(.1,Math.min(node.h-3,node.w-3.2));body={x:node.x+1.6,y:node.y+1.5,w:size,h:size};label={x:body.x+size+1.2,y:node.y,w:Math.max(.1,node.w-size-4.4),h:node.h};}
+    if(node.kind==="glyph"&&node.boxed){const size=Math.max(.1,Math.min(node.h-3,node.w-3.2));body={x:node.x+1.6,y:node.y+1.5,w:size,h:size};label={x:body.x+size+1.2,y:node.y,w:Math.max(.1,node.w-size-2.8),h:node.h};}
     else if(position==="below"){body.h=node.h-space;label={x:node.x,y:node.y+body.h+1,w:node.w,h:Math.max(.1,space-1)};}
     else if(position==="above"){body={x:node.x,y:node.y+node.h-2.2,w:node.w,h:Math.min(2.2,node.h)};label={x:node.x,y:node.y,w:node.w,h:Math.max(.1,node.h-2.2)};}
     else if(position==="left"||position==="right"){body.w=Math.min(node.h,node.w*.42);label={x:position==="right"?node.x+body.w+1.2:node.x,y:node.y,w:Math.max(.1,node.w-body.w-1.2),h:node.h};if(position==="left"){body.x=node.x+node.w-body.w;label.y=node.y+2.4;label.h=fontMm*1.3;}}
@@ -46,16 +46,17 @@ export function edgePoints(doc: DiagramDoc, edge: DiagramEdge,fontMm=ptToMm(6.5)
   }
   return [start,end];
 }
-export function wrapLabel(label: string, width: number, fontMm: number): string[] {
-  const lines: string[]=[];
-  for(const paragraph of label.split("\n")) {
-    let line="",used=0;
-    for(const char of paragraph) {
-      const advance=fontMm*(/[^\u0000-\u00ff]/u.test(char)?1: /[ilI., :;'!]/.test(char)?.3:/[MW@]/.test(char)?.85:.56);
-      if(line&&used+advance>Math.max(width,fontMm)){lines.push(line);line="";used=0;}
-      line+=char;used+=advance;
+export function wrapLabel(label:string,width:number,fontMm:number):string[]{
+  const advance=(text:string)=>[...text].reduce((sum,char)=>sum+fontMm*(/[^\u0000-\u00ff]/u.test(char)?1:/[ilI., :;'!]/.test(char)?.3:/[MW@]/.test(char)?.85:.56),0);
+  const limit=Math.max(width,fontMm),lines:string[]=[];
+  for(const paragraph of label.split("\n")){
+    let line="";
+    for(const token of paragraph.match(/[A-Za-z0-9–−-]+|\s+|./gu)||[]){
+      if(line&&advance(line+token)>limit){lines.push(line.trimEnd());line="";}
+      if(advance(token)>limit){for(const char of token){if(line&&advance(line+char)>limit){lines.push(line);line="";}line+=char;}}
+      else if(line||token.trim())line+=token;
     }
-    lines.push(line);
+    lines.push(line.trimEnd());
   }
   return lines;
 }
