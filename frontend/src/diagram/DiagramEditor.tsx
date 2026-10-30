@@ -8,6 +8,7 @@ import { useConfirm } from "../components/useConfirm";
 import type { DiagramCatalog, DiagramDoc, DiagramRecord, DiagramNode, DiagramEdge, DiagramZone } from "./model";
 import { alignSelection, duplicateSelection, freshId, moveSelection, removeSelection } from "./editing";
 import { layoutDiagram } from "./layout";
+import { DiagramExport } from "./DiagramExport";
 import { DiagramCanvas } from "./DiagramCanvas";
 import { DiagramProperties, edgeKinds, nodeKinds, zoneKinds } from "./DiagramProperties";
 import { useDiagramDocument } from "./useDiagramDocument";
@@ -17,6 +18,7 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
   const state=useDiagramDocument(record,onLeaveGuard,notify),{doc,edit}=state;
   const [selected,setSelected]=useState(new Set<string>()),[zoom,setZoom]=useState(1),[nodeKind,setNodeKind]=useState<DiagramNode["kind"]>("box"),[zoneKind,setZoneKind]=useState<DiagramZone["kind"]>("panel"),[edgeKind,setEdgeKind]=useState<DiagramEdge["kind"]>("flow"),[from,setFrom]=useState(""),[to,setTo]=useState("");
   const [glyphCategory,setGlyphCategory]=useState(doc.meta.template?.includes("mechanism")?"biology":["framework","pipeline","architecture"].includes(doc.meta.template||"")?"ml":"all");
+  const [exportOpen,setExportOpen]=useState(false);
   const [versionsOpen,setVersionsOpen]=useState(false),[restoring,setRestoring]=useState(false);
   const {confirm,dialog}=useConfirm(),canvasHost=useRef<HTMLDivElement>(null),inspector=useRef<HTMLDivElement>(null);
   const selectedKey=[...selected].join(',');
@@ -48,7 +50,7 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
   async function reload(){if(!await confirm("重新载入将替换当前草稿。继续？"))return;try{state.loadRecord(await api<DiagramRecord>(`/projects/${record.project_id}/diagrams/${record.id}`));setSelected(new Set());}catch(e){notify(e instanceof Error?e.message:"读取失败");}}
   return <main className="diagram-workbench" aria-label="机制图编辑器">
     <header className="diagram-toolbar"><Link to={`/projects/${record.project_id}/diagrams`}>机制图列表</Link><strong>{record.name}</strong><span className="lf-mono">v{state.revision}</span><span role="status">{state.dirty?state.draftStatus||"有未保存修改":"已保存"}</span>
-      <div className="diagram-toolbar-actions"><Button variant="ghost" onClick={state.undo} disabled={!state.canUndo}>撤销</Button><Button variant="ghost" onClick={state.redo} disabled={!state.canRedo}>重做</Button><Button variant="ghost" onClick={()=>setVersionsOpen(true)}>版本历史</Button><Button variant="outline" disabled={state.saving||!!state.pendingDraft} onClick={()=>void state.save()}>保存机制图</Button></div>
+      <div className="diagram-toolbar-actions"><Button variant="ghost" onClick={()=>setExportOpen(true)}>导出机制图</Button><Button variant="ghost" onClick={state.undo} disabled={!state.canUndo}>撤销</Button><Button variant="ghost" onClick={state.redo} disabled={!state.canRedo}>重做</Button><Button variant="ghost" onClick={()=>setVersionsOpen(true)}>版本历史</Button><Button variant="outline" disabled={state.saving||!!state.pendingDraft} onClick={()=>void state.save()}>保存机制图</Button></div>
     </header>
     {state.conflict&&<div className="diagram-conflict" role="alert">机制图已被更新，本机草稿仍保留。<Button variant="outline" onClick={()=>void reload()}>重新载入最新版本</Button></div>}
     <div className="diagram-body">
@@ -76,6 +78,7 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
     </div>
     {state.pendingDraft&&<Dialog open onOpenChange={()=>{}} title="发现机制图本机草稿" description={state.pendingDraft.revision===record.revision?"可以恢复上次未保存的编辑。":"草稿基于旧版本，恢复后保存可能遇到版本冲突；也可以使用当前已保存版本。"}><div className="dialog-actions"><Button variant="outline" onClick={state.discardDraft}>使用已保存版本</Button><Button onClick={state.restoreDraft}>恢复本机草稿</Button></div></Dialog>}
     <Dialog open={versionsOpen} onOpenChange={setVersionsOpen} title="机制图版本历史" description="恢复会创建一个新版本，原来的版本仍然保留。">{versions.isPending?<p>正在读取…</p>:versions.isError?<p role="alert">{versions.error.message}</p>:versions.data?.map(v=><div className="diagram-version" key={v.version}><span className="lf-mono">第 {v.version} 版 · {v.created_at}</span><Button variant="outline" disabled={restoring} onClick={()=>void restore(v.version)}>恢复第 {v.version} 版</Button></div>)}</Dialog>
+    {exportOpen&&<DiagramExport doc={doc} style={style} name={record.name} onClose={()=>setExportOpen(false)}/>}
     {dialog}
   </main>;
 }

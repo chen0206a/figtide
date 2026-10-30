@@ -1,3 +1,10 @@
+## 2026-10-30 · 任务19-4：SVG/PNG/PDF导出
+
+- 导出从同一渲染器读取当前草稿，SVG保留mm/风格字体，PNG300/600按物理尺寸换算且写pHYs密度，PDF中非ASCII标签嵌入已有Noto子集、ASCII用Helvetica。最小字号/成品尺寸及审稿error提示不阻断导出；PNG有明确像素内存保护。不保存版本、不发模型请求。
+- 共享editor/pdf.ts仅导出原字体/定位函数，定位新增可选参数，原图表默认Noto逻辑不变。`npm test`65文件566/566（配色修订前全量）；最新配色下机制图272/272、构建通过。导出专门3项单测覆盖mm到dpi、pHYs替换/像素保留、错误格式、对话框error不阻断及打开时0fetch。
+- `scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('diagram.spec.ts')`最终4/4（11.6秒），含实际SVG/300dpi/600dpi/CJK PDF/英文PDF下载。PNG2126×1299、4252×2598及密度11811/23622验证；PDF页510.23622×311.811024pt、CJK FontFile2/ToUnicode、英文Helvetica无FontFile2验证；导出后revision仍1。真JVM审计重启/中断恢复通过，清理4合成项目。该轮下载在视觉配色修订前，最终总验收会覆盖新版配色。
+- 按PDF skill用pypdf提取文字、PyMuPDF校验实际字体及Poppler(pdftoppm)渲染，中文可提取、实际6.5pt、0位图、单页180×110mm，目视无裁切/乱码。证据位于.runtime/task19-4-export-check；保留字体缓存与像素控存限制。不新增依赖、API或迁移。
+
 ## 2026-10-30 · 任务19视觉修订：撤掉棕灰实心配色
 
 - 按主人反馈重新匹配设计稿：六预设移除棕/灰大块底色，白底与蓝/绿轮廓/浅填充，橙色限强调/抑制；核内留白、双膜边界，面板留白/窄标题带；新增独立配色选择。模板强调与受体标签位置相应修正。没有改结构语义或数据图配色。
