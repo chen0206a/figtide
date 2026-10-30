@@ -5,10 +5,13 @@ import { stableSeed } from "./sketch";
 
 export const glyphKinds=["cell","vesicle","receptor","protein","dimer","ligand","small-molecule","dna","input-frames","encoder","llm","attention","tokens","layers","dataset","result-bars","text-input","tube","flask","cell-cluster","laser","lens","beam-splitter","sample-stage","detector","energy-levels","phospho","frozen","trainable","number"] as const;
 export type GlyphKind=typeof glyphKinds[number];
-export type GlyphPalette=Pick<DiagramStyle,"accent_colors"|"line_color"|"text_color"|"fill"|"line_width_pt"|"sketch"|"iso"|"radius_mm">;
+export type GlyphPalette=Pick<DiagramStyle,"zone_colors"|"accent_colors"|"line_color"|"text_color"|"fill"|"line_width_pt"|"sketch"|"iso"|"radius_mm">;
 export type GlyphLayer={paths:string[];fill:string;stroke:string;opacity?:number};
 export type GlyphDrawing={layers:GlyphLayer[];bounds:DiagramRect};
 const f=(n:number)=>Number(n.toFixed(4));
+export function tintColor(ink:string,paper:string,amount=.88):string {
+  return '#'+[1,3,5].map(i=>Math.round(parseInt(ink.slice(i,i+2),16)*(1-amount)+parseInt(paper.slice(i,i+2),16)*amount).toString(16).padStart(2,'0')).join('');
+}
 export function glyphBounds(kind:string,w:number,h:number):DiagramRect {
   if(kind==="receptor")return {x:w*.18,y:h*.03,w:w*.64,h:h*.94};
   if(kind==="tube")return {x:w*.28,y:h*.04,w:w*.44,h:h*.92};
@@ -95,9 +98,9 @@ export function drawGlyph(kind:GlyphKind,w:number,h:number,palette:GlyphPalette)
     case "number":
       body.push(ellipse(.5,.5,.43,.43));detail.push(path([[.38,.33],[.53,.22],[.53,.77]]),line(.35,.77,.7,.77));break;
   }
-  const fill=palette.fill==="outline"?"none":palette.accent_colors[0],secondary=palette.accent_colors[1]||palette.accent_colors[0];
+  const fill=palette.fill==="outline"?"none":tintColor(palette.accent_colors[0],palette.zone_colors[0],palette.fill==="soft"?.92:.85),secondary=palette.accent_colors[1]||palette.accent_colors[0];
   if(kind==="dna")return {bounds,layers:[{paths:accent,fill:palette.fill==="outline"?"none":secondary,stroke:"none",opacity:.18},{paths:body,fill:"none",stroke:palette.line_color},{paths:detail,fill:"none",stroke:palette.line_color}]};
-  return {bounds,layers:[{paths:body,fill:kind==="small-molecule"?"none":fill,stroke:palette.line_color,opacity:palette.fill==="soft"?.35:1},{paths:detail,fill:"none",stroke:palette.line_color},{paths:accent,fill:palette.fill==="outline"?"none":secondary,stroke:palette.fill==="outline"?secondary:palette.line_color,opacity:palette.fill==="soft"?.6:1}].filter(layer=>layer.paths.length)};
+  return {bounds,layers:[{paths:body,fill:kind==="small-molecule"?"none":fill,stroke:palette.line_color},{paths:detail,fill:"none",stroke:palette.line_color},{paths:accent,fill:palette.fill==="outline"?"none":tintColor(secondary,palette.zone_colors[0],.7),stroke:palette.fill==="outline"?secondary:palette.line_color}].filter(layer=>layer.paths.length)};
 }
 const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"})[c]!);
 export function glyphMarkup(kind:GlyphKind,w:number,h:number,palette:GlyphPalette,seedKey:string=kind):string {
@@ -113,10 +116,10 @@ export function membraneMarkup(w:number,h:number,palette:GlyphPalette):string {
   let heads="",tails="";
   const circle=(cx:number,cy:number)=>`M${f(cx-r)} ${f(cy)} a${f(r)} ${f(r)} 0 1 0 ${f(r*2)} 0 a${f(r)} ${f(r)} 0 1 0 ${f(-r*2)} 0 Z `;
   for(let i=0;i<count;i++){const cx=(i+.5)*spacing;heads+=circle(cx,top)+circle(cx,bottom);for(const dx of [-r*.4,r*.4])tails+=`M${f(cx+dx)} ${f(top+r)} V${f(h/2-.15)} M${f(cx+dx)} ${f(bottom-r)} V${f(h/2+.15)} `;}
-  const fill=palette.fill==="outline"?"none":palette.accent_colors[0];
-  return `<g data-glyph-layer="body" fill="${escape(fill)}" stroke="${escape(palette.line_color)}" stroke-width="${ptToMm(palette.line_width_pt)}"><path d="${heads}"/></g><g data-glyph-layer="detail" fill="none" stroke="${escape(palette.line_color)}" stroke-width="${ptToMm(palette.line_width_pt)}"><path d="${tails}"/></g>`;
+  const fill=palette.fill==="outline"?"none":tintColor(palette.accent_colors[0],palette.zone_colors[0],.65),stroke=palette.fill==="outline"?palette.line_color:palette.accent_colors[0];
+  return `<g data-glyph-layer="body" fill="${escape(fill)}" stroke="${escape(stroke)}" stroke-width="${ptToMm(palette.line_width_pt)}"><path d="${heads}"/></g><g data-glyph-layer="detail" fill="none" stroke="${escape(stroke)}" stroke-width="${ptToMm(palette.line_width_pt)}"><path d="${tails}"/></g>`;
 }
 export function nuclearEnvelopeMarkup(w:number,h:number,palette:GlyphPalette):string {
   const gap=Math.min(.8,w*.05,h*.05),stroke=escape(palette.line_color),width=ptToMm(palette.line_width_pt);
-  return `<g data-glyph-layer="body" fill="none" stroke="${stroke}" stroke-width="${width}"><ellipse cx="${w/2}" cy="${h/2}" rx="${w/2}" ry="${h/2}"/></g><g data-glyph-layer="detail" fill="none" stroke="${stroke}" stroke-width="${width}"><ellipse cx="${w/2}" cy="${h/2}" rx="${w/2-gap}" ry="${h/2-gap}"/></g>`;
+  return `<g data-glyph-layer="body" fill="none" stroke="${stroke}" stroke-width="${width}"><ellipse cx="${w/2}" cy="${h/2}" rx="${w/2}" ry="${h/2}"/></g><g data-glyph-layer="detail" fill="${escape(palette.fill==="outline"?"none":palette.zone_colors[0])}" stroke="${stroke}" stroke-width="${width}"><ellipse cx="${w/2}" cy="${h/2}" rx="${w/2-gap}" ry="${h/2-gap}"/></g>`;
 }

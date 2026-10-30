@@ -117,7 +117,7 @@
           "zone": "z2",
           "icon": null,
           "role": "process",
-          "style_ref": null
+          "style_ref": "note"
         },
         {
           "id": "n6",
@@ -302,7 +302,7 @@
           "zone": "z2",
           "icon": null,
           "role": "process",
-          "style_ref": null
+          "style_ref": "note"
         },
         {
           "id": "n6",
