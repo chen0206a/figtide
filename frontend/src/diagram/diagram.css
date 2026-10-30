@@ -71,3 +71,14 @@
 .diagram-style-choice strong { font-size:var(--lf-text-2xs); }
 @media(max-width:1100px) { .diagram-wizard-layout { grid-template-columns:120px minmax(0,1fr) 320px; gap:var(--lf-space-3); } .diagram-template-browser .diagram-thumbnail-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:800px) { .diagram-wizard-layout { grid-template-columns:1fr; } .diagram-template-filters { flex-direction:row; flex-wrap:wrap; } .diagram-wizard-preview { padding-left:0; border-left:0; } }
+
+/* 19-A visual review: a direct manipulation glyph palette. */
+.diagram-tools .diagram-glyph-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--lf-space-1); }
+.diagram-tools .diagram-glyph-grid button { min-width:0; padding:var(--lf-space-1); cursor:grab; }
+.diagram-tools .diagram-glyph-grid button:active { cursor:grabbing; }
+.diagram-tools .diagram-glyph-grid button span { display:block; white-space:nowrap; font-size:var(--lf-text-xs); letter-spacing:-.03em; }
+.diagram-tools .diagram-glyph-grid svg { width:100%; height:40px; }
+.diagram-inspector details { border-top:1px solid var(--lf-border); margin-top:var(--lf-space-3); padding-top:var(--lf-space-2); }
+.diagram-inspector summary { cursor:pointer; font-size:var(--lf-text-sm); font-weight:600; margin-bottom:var(--lf-space-2); }
+.diagram-inspector .diagram-element-list { max-height:none; }
+
