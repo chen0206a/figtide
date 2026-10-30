@@ -9,6 +9,10 @@ $stage = Join-Path $stageRoot 'frontend'
 New-Item -ItemType Directory -Path $stage -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $stageRoot 'docs') -Force | Out-Null
 Copy-Item (Join-Path $root 'docs/config-v1.example.json') (Join-Path $stageRoot 'docs')
+# The palette JSON is shared by the Java catalog and the TypeScript renderer.
+$paletteStage=Join-Path $stageRoot 'backend/src/main/resources/diagram'
+New-Item -ItemType Directory -Path $paletteStage -Force | Out-Null
+Copy-Item (Join-Path $root 'backend/src/main/resources/diagram/palettes.json') $paletteStage
 # npm ci removes node_modules; a running Windows Vite locks native modules there.
 # Build an exact copy of the source in an isolated dependency directory instead.
 Get-ChildItem (Join-Path $root 'frontend') | Where-Object {

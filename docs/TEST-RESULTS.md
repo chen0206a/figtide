@@ -1,3 +1,9 @@
+## 2026-10-30 — 19-A视觉返工步骤2 / 检查点A
+
+范围：05 #2–#6、08 #2–#3、线宽和六套配色。证据：docs/test-evidence/diagram-checkpoint-a/；逐项规范几何对比与快照不代替主人视觉验收。
+实际命令：npm test -- --run src/diagram -u：276/276；npm run build通过。LABFLOW_TEST_DB=mysql/h2 mvn -B -f backend/pom.xml test -Dtest=DiagramValidatorTest,DiagramCatalogTest,DiagramIntegrationTest,DiagramOperationsTest：均67/67。
+联合E2E diagram-visual-rework.spec.ts+diagram.spec.ts：4通过/1失败（框选期望4项实际3项），后续新版交互回归继续修复，不宣称总通过。首次夹具description及配体分区边界失败已经修复，原失败日志保留.runtime/logs/task19-rework-*。前端全量未执行：安排A-C结束统一回归。19-5保持暂停。
+
 ## 2026-10-30 — 19-A视觉返工步骤1（05 #1/#15，08 #1）
 
 默认纸宽=画布区×0.9且≥4px/mm；保留一个真实缩放值与适应宽度按钮。截图：docs/test-evidence/diagram-step1/fit-1440.png、fit-1920.png。

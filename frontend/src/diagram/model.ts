@@ -27,7 +27,7 @@ export type DiagramEdge = {
 };
 export type DiagramDoc = {
   schema_version: 1; canvas: {width_mm: number; height_mm: number; background: string};
-  style: {preset: string; overrides: DiagramOverrides}; label_language: "en" | "zh";
+  style: {preset: string; palette?:string; overrides: DiagramOverrides}; label_language: "en" | "zh";
   zones: DiagramZone[]; nodes: DiagramNode[]; edges: DiagramEdge[];
   annotations: {id: string; kind: "panel_letter" | "callout" | "note"; target: string; text: string}[];
   legend: {mode: "auto" | "off"; position: "bottom-right" | "bottom-left" | "top-right" | "top-left"};
@@ -35,5 +35,5 @@ export type DiagramDoc = {
 };
 export type DiagramRecord = {id: number; project_id: number; name: string; revision: number; version_count: number; archived: boolean; doc: DiagramDoc};
 export type DiagramTemplate = {id: string; name: string; pattern: string; documents: {en: DiagramDoc; zh: DiagramDoc}};
-export type DiagramCatalog = {schema_version: 1; styles: DiagramStyle[]; templates: DiagramTemplate[]; skills: unknown[]; icons: unknown[]; glyphs:{id:string;name:string;category:string}[]; journals: {id: string; name: string; single_column_mm: number | null; double_column_mm: number | null}[]};
+export type DiagramCatalog = {schema_version: 1; palette_audits?:{id:string;safe:boolean}[]; styles: DiagramStyle[]; templates: DiagramTemplate[]; skills: unknown[]; icons: unknown[]; glyphs:{id:string;name:string;category:string}[]; journals: {id: string; name: string; single_column_mm: number | null; double_column_mm: number | null}[]};
 export const effectiveStyle = (doc: DiagramDoc, style: DiagramStyle): DiagramStyle => ({...style, ...doc.style.overrides});

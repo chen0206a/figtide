@@ -1,3 +1,4 @@
+import {PaletteSelect} from "./PaletteSelect";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -75,7 +76,7 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
       </aside>
       <section className="diagram-stage" ref={canvasHost}><div className="diagram-stage-toolbar"><span className="lf-mono">{doc.canvas.width_mm} × {doc.canvas.height_mm} mm · 1 mm 网格</span><Button size="sm" variant="ghost" aria-label="缩小机制图" onClick={()=>changeZoom(Math.max(.25,zoom-.1))}>−</Button><span className="lf-mono">{Math.round(zoom*100)}%</span><Button size="sm" variant="ghost" aria-label="放大机制图" onClick={()=>changeZoom(Math.min(10,zoom+.1))}>＋</Button><Button size="sm" variant="ghost" onClick={()=>{fitEnabled.current=true;fitWidth();}}>适应宽度</Button></div>
         <div className="diagram-stylebar" aria-label="机制图风格">{catalog.styles.map(preset=><button key={preset.id} aria-label={`选择风格 ${preset.name}`} aria-pressed={doc.style.preset===preset.id} onClick={()=>edit(d=>{d.style.preset=preset.id;return d;})}>{preset.name}</button>)}</div>
-        <DiagramCanvas doc={doc} style={style} selected={selected} onSelect={setSelected} onEdit={edit} onConnect={connect} zoom={zoom} onZoom={changeZoom}/>
+        <PaletteSelect value={doc.style.palette} onChange={id=>mutate(d=>{d.style.palette=id;return d;})} audits={catalog.palette_audits}/><DiagramCanvas doc={doc} style={style} selected={selected} onSelect={setSelected} onEdit={edit} onConnect={connect} zoom={zoom} onZoom={changeZoom}/>
         <p className="diagram-keyboard-help">方向键 1 mm · Shift 5 mm · Ctrl+D 复制 · Delete 删除 · Alt 拖动平移</p>
       </section>
       <div className="diagram-inspector" ref={inspector}><DiagramProperties doc={doc} selected={selected} edit={edit}/><div className="diagram-element-list" aria-label="机制图元素">{[...doc.zones,...doc.nodes,...doc.edges,...doc.annotations].map(n=><button key={n.id} aria-pressed={selected.has(n.id)} onClick={()=>{setSelected(new Set([n.id]));canvasHost.current?.querySelector<HTMLElement>('.diagram-canvas-scroll')?.focus();}}>{n.id} · {"from" in n?n.label||`${n.from} → ${n.to}`:"label" in n?n.label:n.text}</button>)}</div></div>

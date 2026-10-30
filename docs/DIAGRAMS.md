@@ -79,3 +79,12 @@ PDF复用jspdf+svg2pdf.js与现有Noto Sans SC本地子集/字形检查及文字
 为了19-5修复能够从第一天走完整校验链，先完成其前置操作层。纯Java DiagramOperations提供12种白名单操作、严格目录schema及逐项JSON Pointer差异；先深拷贝输入，整个批次完成后用DiagramValidator验证，失败不返回半成品。最多400操作/2MiB，移除节点会清理连线/注释，移动分区时带着节点一起移动。set_style覆盖项合并，null明确清空。
 
 预览接口只读，不创建版本，并检查可选diagram_id归属和base_revision。客户端makeDiagramOperation只按服务端目录读取参数名/必填项，不维护第二套操作字段名。审稿修复会使用同一个构造器和预览接口，确认后才编辑本机草稿；正式保存仍需用户操作。
+
+
+## 视觉返工（19-A，2026-10-30）
+
+设计原型现为仓库主人提供的规范；TypeScript移植保持路径和badge坐标，并用规范函数逐项对比。正文默认7pt、轮廓1pt、连线1.25pt、分区0.75pt；手绘轮廓/连线乘1.3。快照仅证明稳定性，视觉仍待用户验收。
+
+style.palette为新增可选字段，省略使用okabe-ito，旧文档无需迁移。六配色数值统一维护在backend/src/main/resources/diagram/palettes.json，TypeScript直接引用同一JSON；隔离桌面构建复制该资源。NPG/AAAS/NEJM/Lancet/JAMA只引用规范中整理的ggsci配色色值，未复制ggsci实现代码。界面全部标“风格（非官方）”。色值来源说明见各项source，参考https://nanx.me/ggsci/。
+
+palette_audits使用原ColorVision和MIN_DELTA_E=20，枚举a/b/c/d/n所有色对及三种色觉缺陷；低于20的色对返回真实minimum_delta_e并在界面提示，不改变色值、不降低阈值。“色盲友好”是Okabe–Ito惯用名称，不等于本图所有选用色对均满足严格20门槛。

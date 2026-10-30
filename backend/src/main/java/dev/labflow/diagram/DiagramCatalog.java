@@ -16,7 +16,9 @@ public class DiagramCatalog {
   private final List<JsonNode> templates;
   private final List<JsonNode> glyphs;
   private final JournalRules journals;
+  private final List<JsonNode> palettes;
   public DiagramCatalog(ObjectMapper json,JournalRules journals) {
+    try(var in=getClass().getResourceAsStream("/diagram/palettes.json")){palettes=new ArrayList<>();for(var p:json.readTree(in))palettes.add(p);}catch(java.io.IOException e){throw new IllegalStateException(e);}
     this.journals=journals;var order=List.of("nature-flat","soft-illustration","line-minimal","conference-framework","isometric","sketch");styles=load(json,"styles").stream().sorted(Comparator.comparingInt(s->order.indexOf(s.path("id").asText()))).toList();templates=load(json,"templates");
     try(var in=getClass().getResourceAsStream("/diagram/glyphs.json")){var entries=json.readTree(in);require(entries.isArray(),"图元目录无效");var list=new ArrayList<JsonNode>();Set<String> glyphIds=new HashSet<>();for(var glyph:entries){fields(glyph,"id name category","id name category");require(glyphIds.add(choice(glyph.get("id"),GLYPHS)),"图元ID重复");text(glyph.get("name"),120);choice(glyph.get("category"),Set.of("biology","ml","experiment","markers"));list.add(glyph);}require(glyphIds.equals(GLYPHS),"图元目录不完整");glyphs=List.copyOf(list);}catch(java.io.IOException e){throw new IllegalStateException("图元目录不可读",e);}
     var ids=new HashSet<String>();
@@ -41,5 +43,6 @@ public class DiagramCatalog {
   public List<JsonNode> templates() { return templates.stream().<JsonNode>map(JsonNode::deepCopy).toList(); }
   public JsonNode template(String id,String language) { for(var t:templates)if(t.path("id").asText().equals(id))return t.at("/documents/"+language).deepCopy();throw ApiException.bad("机制图：未知模板"); }
   public ObjectNode effective(JsonNode doc) { var out=(ObjectNode)style(doc.at("/style/preset").asText());out.setAll((ObjectNode)doc.at("/style/overrides"));return out; }
-  public Map<String,Object> all() { return Map.of("schema_version",1,"styles",styles(),"templates",templates(),"skills",List.of(),"icons",List.of(),"journals",journals.all(),"glyphs",glyphs.stream().<JsonNode>map(JsonNode::deepCopy).toList()); }
+  public List<Map<String,Object>> paletteAudits(){var result=new ArrayList<Map<String,Object>>();for(var p:palettes){var pairs=new ArrayList<Map<String,Object>>();var keys=List.of("a","b","c","d","n");for(int i=0;i<keys.size();i++)for(int j=0;j<i;j++){double min=dev.labflow.review.ColorVision.minimum(p.path(keys.get(i)).asText(),p.path(keys.get(j)).asText());if(min<dev.labflow.review.ColorVision.MIN_DELTA_E)pairs.add(Map.of("roles",List.of(keys.get(j),keys.get(i)),"minimum_delta_e",min));}result.add(Map.of("id",p.path("id").asText(),"safe",pairs.isEmpty(),"failing_pairs",pairs,"threshold",dev.labflow.review.ColorVision.MIN_DELTA_E));}return result;}
+  public Map<String,Object> all() { return Map.of("schema_version",1,"palette_audits",paletteAudits(),"palettes",palettes.stream().<JsonNode>map(JsonNode::deepCopy).toList(),"styles",styles(),"templates",templates(),"skills",List.of(),"icons",List.of(),"journals",journals.all(),"glyphs",glyphs.stream().<JsonNode>map(JsonNode::deepCopy).toList()); }
 }

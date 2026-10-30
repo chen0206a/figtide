@@ -64,7 +64,7 @@ public final class DiagramValidator {
     require(d.toString().getBytes(StandardCharsets.UTF_8).length <= MAX_BYTES,"文档超过2MB");
     var canvas=d.path("canvas");fields(canvas,"width_mm height_mm background","width_mm height_mm background");
     double width=number(canvas.get("width_mm"),10,2000),height=number(canvas.get("height_mm"),10,2000);color(canvas.get("background"));
-    var style=d.path("style");fields(style,"preset overrides","preset overrides");choice(style.get("preset"),PRESETS);overrides(style.path("overrides"));
+    var style=d.path("style");fields(style,"preset palette overrides","preset overrides");if(style.has("palette"))choice(style.get("palette"),Set.of("okabe-ito","npg","aaas","nejm","lancet","jama"));choice(style.get("preset"),PRESETS);overrides(style.path("overrides"));
     choice(d.get("label_language"),Set.of("en","zh"));
     array(d.get("zones"),30);array(d.get("nodes"),120);array(d.get("edges"),200);array(d.get("annotations"),120);
     Set<String> all=new HashSet<>(),zones=new HashSet<>(),nodes=new HashSet<>();

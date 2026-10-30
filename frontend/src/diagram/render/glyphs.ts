@@ -1,3 +1,6 @@
+import {prototypeGlyph} from "./prototypeGlyphs";
+import {tintColor} from "./color";
+export {tintColor} from "./color";
 import type { DiagramRect, DiagramStyle } from "../model";
 import rough from "roughjs";
 import { ptToMm } from "../units";
@@ -5,20 +8,15 @@ import { stableSeed } from "./sketch";
 
 export const glyphKinds=["cell","vesicle","receptor","protein","dimer","ligand","small-molecule","dna","input-frames","encoder","llm","attention","tokens","layers","dataset","result-bars","text-input","tube","flask","cell-cluster","laser","lens","beam-splitter","sample-stage","detector","energy-levels","phospho","frozen","trainable","number"] as const;
 export type GlyphKind=typeof glyphKinds[number];
-export type GlyphPalette=Pick<DiagramStyle,"zone_colors"|"accent_colors"|"line_color"|"text_color"|"fill"|"line_width_pt"|"sketch"|"iso"|"radius_mm">;
+export type GlyphPalette=Pick<DiagramStyle,"zone_colors"|"accent_colors"|"line_color"|"text_color"|"fill"|"line_width_pt"|"sketch"|"iso"|"radius_mm"> & {body_fill?:string};
 export type GlyphLayer={paths:string[];fill:string;stroke:string;opacity?:number};
-export type GlyphDrawing={layers:GlyphLayer[];bounds:DiagramRect};
+export type GlyphDrawing={layers:GlyphLayer[];bounds:DiagramRect;badges?:{x:number;y:number}[]};
 const f=(n:number)=>Number(n.toFixed(4));
-export function tintColor(ink:string,paper:string,amount=.88):string {
-  return '#'+[1,3,5].map(i=>Math.round(parseInt(ink.slice(i,i+2),16)*(1-amount)+parseInt(paper.slice(i,i+2),16)*amount).toString(16).padStart(2,'0')).join('');
-}
 export function glyphBounds(kind:string,w:number,h:number):DiagramRect {
-  if(kind==="receptor")return {x:w*.18,y:h*.03,w:w*.64,h:h*.94};
-  if(kind==="tube")return {x:w*.28,y:h*.04,w:w*.44,h:h*.92};
-  return {x:w*.04,y:h*.04,w:w*.92,h:h*.92};
+  return {x:0,y:0,w,h};
 }
 /** Authored vector geometry. Coordinates are expanded to mm before stroking, never bitmap-scaled. */
-export function drawGlyph(kind:GlyphKind,w:number,h:number,palette:GlyphPalette):GlyphDrawing {
+function legacyGlyph(kind:GlyphKind,w:number,h:number,palette:GlyphPalette):GlyphDrawing {
   if(!glyphKinds.includes(kind)||!Number.isFinite(w)||!Number.isFinite(h)||w<=0||h<=0)throw new Error("图元类型或尺寸无效");
   const x=(v:number)=>f(v*w),y=(v:number)=>f(v*h);
   const path=(points:[number,number][],close=false)=>points.map(([a,b],i)=>`${i?"L":"M"}${x(a)} ${y(b)}`).join(" ")+(close?" Z":"");
@@ -102,13 +100,20 @@ export function drawGlyph(kind:GlyphKind,w:number,h:number,palette:GlyphPalette)
   if(kind==="dna")return {bounds,layers:[{paths:accent,fill:palette.fill==="outline"?"none":secondary,stroke:"none",opacity:.18},{paths:body,fill:"none",stroke:palette.line_color},{paths:detail,fill:"none",stroke:palette.line_color}]};
   return {bounds,layers:[{paths:body,fill:kind==="small-molecule"?"none":fill,stroke:palette.line_color},{paths:detail,fill:"none",stroke:palette.line_color},{paths:accent,fill:palette.fill==="outline"?"none":tintColor(secondary,palette.zone_colors[0],.7),stroke:palette.fill==="outline"?secondary:palette.line_color}].filter(layer=>layer.paths.length)};
 }
+const aliases:Partial<Record<GlyphKind,string>>={"small-molecule":"drug","input-frames":"frames",layers:"stack",dataset:"database","result-bars":"chart","text-input":"text","cell-cluster":"cells","beam-splitter":"cube","sample-stage":"sample","energy-levels":"level",frozen:"snow",trainable:"flame"};
+export function drawGlyph(kind:GlyphKind,w:number,h:number,palette:GlyphPalette):GlyphDrawing {
+  if(!glyphKinds.includes(kind)||![w,h].every(n=>Number.isFinite(n)&&n>0))throw new Error("图元类型或尺寸无效");
+  const raw=prototypeGlyph(aliases[kind]||kind,w,h,palette.body_fill||tintColor(palette.accent_colors[0],"#FFFFFF",.82),palette.line_color,{r:palette.radius_mm},1);
+  if(!raw.layers.length)return legacyGlyph(kind,w,h,palette);
+  return {bounds:glyphBounds(kind,w,h),badges:raw.badges,layers:raw.layers.map(l=>({paths:[l.d],fill:palette.fill==="outline"?"none":l.fill,stroke:l.stroke}))};
+}
 const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"})[c]!);
 export function glyphMarkup(kind:GlyphKind,w:number,h:number,palette:GlyphPalette,seedKey:string=kind):string {
-  const drawing=drawGlyph(kind,w,h,palette),line=ptToMm(palette.line_width_pt),generator=palette.sketch?rough.generator():null;
+  const drawing=drawGlyph(kind,w,h,palette),line=ptToMm(palette.line_width_pt)*(palette.sketch?1.3:1),generator=palette.sketch?rough.generator():null;
   return drawing.layers.map((layer,i)=>`<g data-glyph-layer="${i===0?"body":"detail"}" fill="${escape(layer.fill)}" stroke="${escape(layer.stroke)}" stroke-width="${line}" opacity="${layer.opacity??1}" stroke-linejoin="round" stroke-linecap="round">${layer.paths.map((d,j)=>{
-    if(!generator)return `<path d="${escape(d)}"/>`;
+    if(!generator||layer.stroke==="none")return `<path d="${escape(d)}"/>`;
     return generator.toPaths(generator.path(d,{seed:stableSeed(`${seedKey}:${i}:${j}`),stroke:layer.stroke,strokeWidth:line,fill:layer.fill==="none"?undefined:layer.fill,fillStyle:"solid",roughness:.35,bowing:.1,disableMultiStroke:true})).map(p=>`<path d="${escape(p.d)}" fill="${escape(p.fill||"none")}" stroke="${escape(p.stroke||"none")}" stroke-width="${p.strokeWidth}"/>`).join("");
-  }).join("")}</g>`).join("");
+  }).join("")}</g>`).join("")+(drawing.badges||[]).map(b=>`<g data-intrinsic-phospho="true"><circle cx="${b.x}" cy="${b.y}" r="1.35" fill="#F0C040" stroke="#B98B22" stroke-width="${ptToMm(.5)}"/><text x="${b.x}" y="${b.y+.65}" text-anchor="middle" font-size="1.8" fill="#343434">P</text></g>`).join("");
 }
 /** Two leaflets of explicit phospholipid heads and paired hydrophobic tails. */
 export function membraneMarkup(w:number,h:number,palette:GlyphPalette):string {
