@@ -1,3 +1,9 @@
+## 2026-10-30 · 任务19-0：前置集成与开发基线
+
+- 任务18功能PR #5全部检查通过后普通合并，main=c90ec1d650bbe8dfcb635026ed116e3b5b392a9b；从该main新建feature/diagrams。真实评测归档未上传，原feature/agent-team及.runtime/task18-evaluation-archive-local.zip保留本地。
+- PR检查：MySQL、H2、前端、Linux/Windows MCP与Windows打包全通过；Windows完整EXE浏览器90通过、3既有migration opt-in跳过，stdio集成3/3。实际工作流41020688876、41020688900；任务19尚未改产品代码。
+- 读取AGENTS、重构计划、任务19及REVIEW/AGENT-TEAM/FIGURE-TOOLS/MCP/API与README隐私说明。范围为19-A，分节本地提交，禁止任务19推送和收费模型调用。上游许可与版本资料保存在.runtime/task19-upstream；Gallery许可仅覆盖代码，图片不引入。
+
 ## 2026-10-30 · 任务18功能集成（不含本地评测归档）
 
 - 从 main 单独整理审稿/协作功能及离线测试，未合入 feature/agent-team 历史；真实模型评测报告、原始结果及原本地分支保留在本地。移除对未发布验收JSON的链接。
