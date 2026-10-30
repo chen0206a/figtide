@@ -1,4 +1,4 @@
-import {prototypeGlyph} from "./prototypeGlyphs";
+import {prototypeGlyph,bilayer} from "./prototypeGlyphs";
 import {tintColor} from "./color";
 export {tintColor} from "./color";
 import type { DiagramRect, DiagramStyle } from "../model";
@@ -117,12 +117,8 @@ export function glyphMarkup(kind:GlyphKind,w:number,h:number,palette:GlyphPalett
 }
 /** Two leaflets of explicit phospholipid heads and paired hydrophobic tails. */
 export function membraneMarkup(w:number,h:number,palette:GlyphPalette):string {
-  const count=Math.max(1,Math.min(160,Math.floor(w/1.8))),spacing=w/count,r=Math.min(.65,h/8,spacing*.35),top=r+.15,bottom=h-r-.15;
-  let heads="",tails="";
-  const circle=(cx:number,cy:number)=>`M${f(cx-r)} ${f(cy)} a${f(r)} ${f(r)} 0 1 0 ${f(r*2)} 0 a${f(r)} ${f(r)} 0 1 0 ${f(-r*2)} 0 Z `;
-  for(let i=0;i<count;i++){const cx=(i+.5)*spacing;heads+=circle(cx,top)+circle(cx,bottom);for(const dx of [-r*.4,r*.4])tails+=`M${f(cx+dx)} ${f(top+r)} V${f(h/2-.15)} M${f(cx+dx)} ${f(bottom-r)} V${f(h/2+.15)} `;}
-  const fill=palette.fill==="outline"?"none":tintColor(palette.accent_colors[0],palette.zone_colors[0],.65),stroke=palette.fill==="outline"?palette.line_color:palette.accent_colors[0];
-  return `<g data-glyph-layer="body" fill="${escape(fill)}" stroke="${escape(stroke)}" stroke-width="${ptToMm(palette.line_width_pt)}"><path d="${heads}"/></g><g data-glyph-layer="detail" fill="none" stroke="${escape(stroke)}" stroke-width="${ptToMm(palette.line_width_pt)}"><path d="${tails}"/></g>`;
+  const {heads,tails}=bilayer(w,h,1),stroke=palette.fill==="outline"?palette.line_color:palette.accent_colors[0],fill=palette.fill==="outline"?"#FFFFFF":tintColor(stroke,"#FFFFFF",.25);
+  return `<g data-glyph-layer="body" fill="${escape(fill)}" stroke="${escape(stroke)}" stroke-width="${ptToMm(.5)}"><path d="${heads}"/></g><g data-glyph-layer="detail" fill="none" stroke="${escape(stroke)}" stroke-width="${ptToMm(.5)}"><path d="${tails}"/></g>`;
 }
 export function nuclearEnvelopeMarkup(w:number,h:number,palette:GlyphPalette):string {
   const gap=Math.min(.8,w*.05,h*.05),stroke=escape(palette.line_color),width=ptToMm(palette.line_width_pt);

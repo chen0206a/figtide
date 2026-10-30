@@ -44,7 +44,7 @@ export function removeSelection(doc: DiagramDoc, ids: ReadonlySet<string>): Diag
   const nodes=new Set(next.nodes.map(n=>n.id)),zones=new Set(next.zones.map(z=>z.id));
   next.edges=next.edges.filter(e=>!ids.has(e.id)&&nodes.has(e.from)&&nodes.has(e.to));
   next.annotations=next.annotations.filter(a=>!ids.has(a.id)&&(nodes.has(a.target)||zones.has(a.target)));
-  next.nodes.forEach(n=>{if(n.zone&&!zones.has(n.zone))n.zone=null;});next.zones.forEach(z=>{if(z.zoom_of&&!zones.has(z.zoom_of))z.zoom_of=null;});return next;
+  next.nodes.forEach(n=>{if(n.zone&&!zones.has(n.zone))n.zone=null;});next.zones.forEach(z=>{if(z.zoom_of&&!zones.has(z.zoom_of)&&!nodes.has(z.zoom_of))z.zoom_of=null;});return next;
 }
 export function duplicateSelection(doc: DiagramDoc, ids: ReadonlySet<string>): DiagramDoc {
   let next=structuredClone(doc);const remap=new Map<string,string>();

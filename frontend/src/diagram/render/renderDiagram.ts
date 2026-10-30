@@ -3,7 +3,7 @@ import { effectiveStyle, type DiagramDoc, type DiagramStyle, type DiagramRect } 
 import { edgePoints, nodeLayout, ptToMm, wrapLabel } from "./geometry";
 import { sketchPaths, stableSeed } from "./sketch";
 import {glyphMarkup,membraneMarkup,nuclearEnvelopeMarkup,tintColor,type GlyphKind} from "./glyphs";
-export const edgeNames: Record<DiagramDoc["edges"][number]["kind"],string> = {flow:"Flow",activate:"Activation",inhibit:"Inhibition",transport:"Transport",bind:"Binding",indirect:"Indirect interaction"};
+export const edgeNames: Record<DiagramDoc["edges"][number]["kind"],string> = {flow:"Flow",activate:"Activation",inhibit:"Inhibition",transport:"Translocation",bind:"Binding",indirect:"Indirect interaction"};
 const esc = (value: unknown) => String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"})[c]!);
 const fmt = (n: number) => Number(n.toFixed(4));
 const roleColors:Record<string,number>={actor:0,process:1,data:0,model:0,output:1,note:2};
@@ -17,7 +17,8 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle): string {
   const style=effectiveStyle(doc,preset),font=ptToMm(style.font_size_pt),line=ptToMm(style.line_width_pt)*(style.sketch?1.3:1),edgeLine=ptToMm(1.25)*(style.sketch?1.3:1),zoneLine=ptToMm(.75);
   const prefix="dg"+stableSeed(JSON.stringify(style));
   const marker=(kind:string)=>`url(#${prefix}-${kind})`;
-  const text=(label:string,box:DiagramRect,fill=style.text_color,align:"center"|"left"="center",reference="")=>{
+  const text=(label:string,box:DiagramRect,fill=style.text_color,align:"center"|"left"="center",reference="",size=font)=>{
+    const font=size;
     const lines=wrapLabel(label,Math.max(1,box.w-2),font),step=font*1.25;
     const x=align==="left"?box.x+1:box.x+box.w/2;
     const y=align==="left"?box.y+font:box.y+box.h/2-(lines.length-1)*step/2+font*.34;
@@ -26,24 +27,39 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle): string {
   const defs=`<defs>
     <marker id="${prefix}-arrow" viewBox="0 0 2.5 2.2" refX="2.5" refY="1.1" markerWidth="2.5" markerHeight="2.2" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M0 0 L2.5 1.1 L0 2.2 Z" fill="${esc(style.line_color)}"/></marker>
     <marker id="${prefix}-inhibit" viewBox="0 0 8 10" refX="6" refY="5" markerWidth="7" markerHeight="9" orient="auto" markerUnits="strokeWidth"><path d="M6 1 L6 9" fill="none" stroke="${esc(paletteOf(doc.style.palette).c)}" stroke-width="1.7"/></marker>
-    <marker id="${prefix}-bind" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7"><circle cx="4" cy="4" r="2.4" fill="${esc(doc.canvas.background)}" stroke="${esc(style.line_color)}"/></marker>
+    <marker id="${prefix}-bind" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7"><circle cx="4" cy="4" r="2.4" fill="${esc(style.line_color)}" stroke="${esc(style.line_color)}"/></marker>
     <filter id="${prefix}-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="0.5" stdDeviation="0.4" flood-opacity="0.12"/></filter>
     ${style.accent_colors.map((c,i)=>`<linearGradient id="${prefix}-soft${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${esc(c)}" stop-opacity="0.32"/><stop offset="1" stop-color="${esc(c)}" stop-opacity="0.13"/></linearGradient>`).join("")}
   </defs>`;
-  const zones=doc.zones.map((z,i)=>{
-    const fill=style.fill==="outline"?"none":style.zone_colors[i%style.zone_colors.length];
-    let shape=z.kind==="nucleus"?`<ellipse cx="${z.x+z.w/2}" cy="${z.y+z.h/2}" rx="${z.w/2}" ry="${z.h/2}"/>`:`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="${Math.min(style.radius_mm,z.w/4,z.h/4)}"/>`;
-    if(z.kind==="membrane")shape=`<g transform="translate(${z.x} ${z.y})">${membraneMarkup(z.w,z.h,style)}</g>`;
-    if(z.kind==="nucleus")shape=`<ellipse cx="${z.x+z.w/2}" cy="${z.y+z.h/2}" rx="${z.w/2}" ry="${z.h/2}"/><g transform="translate(${z.x} ${z.y})">${nuclearEnvelopeMarkup(z.w,z.h,style)}</g>`;
-    if(["panel","zoom"].includes(z.kind)&&style.fill!=="outline")shape=`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="${style.radius_mm}" fill="${esc(style.zone_colors[0])}"/><rect x="${z.x}" y="${z.y}" width="${z.w}" height="${Math.min(z.h,font+3)}" fill="${esc(fill)}" stroke="none"/>`;
-    const zoom=doc.zones.find(a=>a.id===z.zoom_of);
-    return `${zoom?`<path d="M${zoom.x+zoom.w} ${zoom.y+zoom.h/2} L${z.x} ${z.y+z.h/2}" fill="none" stroke="${esc(style.line_color)}" stroke-width="${line}" stroke-dasharray="1.5 1"/>`:""}<g data-zone-id="${esc(z.id)}"><g fill="${esc(fill)}" stroke="${esc(style.line_color)}" stroke-width="${zoneLine}"${z.kind==="zoom"?` stroke-dasharray="1.5 1"`:""}>${shape}</g>${text(z.label,{x:z.x+1,y:z.y+1,w:z.w-2,h:font+2},fill==="none"?style.text_color:readableText(fill,style.text_color),"left",z.id)}</g>`;
+  const P=paletteOf(doc.style.palette),minimal=style.id==="line-minimal";
+  const zoneSkin=style.id==="soft-illustration"?["#F2F6FB","#DCE5F0"]:style.id==="conference-framework"?["#EEF4FB","#BFD3EA"]:style.id==="sketch"?["#FBF7EA","#8C877A"]:["#F7F8FA","#C9D0D9"];
+  const zones=doc.zones.map(z=>{
+    const membraneFill=minimal?"#FFFFFF":tintColor(P.a,"#FFFFFF",.9),membraneStroke=minimal?"#0E1116":tintColor(P.a,"#FFFFFF",.35);
+    const zoneFill=minimal?"#FFFFFF":zoneSkin[0],zoneStroke=minimal?"#0E1116":zoneSkin[1];
+    const space=z.kind==="compartment"&&doc.zones.some(m=>m.kind==="membrane"&&z.y+z.h<=m.y+.01);
+    let shape=space?"":`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="${style.radius_mm*2}" fill="${zoneFill}" stroke="${zoneStroke}" stroke-width="${zoneLine}"/>`;
+    let labelBox={x:z.x+.6,y:z.y+1.2,w:z.w-2,h:2.6},center=false;
+    if(z.kind==="membrane"){
+      shape=`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" fill="${membraneFill}"/><g transform="translate(${z.x} ${z.y})">${membraneMarkup(z.w,z.h,{...style,accent_colors:[membraneStroke],zone_colors:[membraneFill],line_width_pt:.5})}</g>`;
+      const labelWidth=Math.min(z.w-2,Math.max(24,z.label.length*1.05));labelBox={x:z.x+z.w-labelWidth-1.6,y:z.y+z.h/2-1.3,w:labelWidth,h:2.6};
+      shape+=`<rect x="${labelBox.x}" y="${labelBox.y}" width="${labelBox.w}" height="${labelBox.h}" fill="${membraneFill}"/>`;center=true;
+    }
+    if(z.kind==="nucleus"){
+      const fill=minimal?"#FFFFFF":tintColor(P.d,"#FFFFFF",.93),stroke=minimal?"#0E1116":tintColor(P.d,"#000000",.05),gap=Math.min(.8854,z.w*.1,z.h*.1);
+      shape=`<ellipse cx="${z.x+z.w/2}" cy="${z.y+z.h/2}" rx="${z.w/2}" ry="${z.h/2}" fill="${fill}" stroke="${stroke}" stroke-width="${zoneLine}"/><ellipse cx="${z.x+z.w/2}" cy="${z.y+z.h/2}" rx="${z.w/2-gap}" ry="${z.h/2-gap}" fill="none" stroke="${stroke}" stroke-width="${zoneLine}"/>`;
+      labelBox={x:z.x,y:z.y+2.4,w:z.w,h:2.6};center=true;
+    }
+    if(z.kind==="zoom")shape=`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="${style.radius_mm}" fill="${doc.canvas.background}" stroke="${style.line_color}" stroke-width="${zoneLine}" stroke-dasharray="1.4 1"/>`;
+    if(z.kind==="panel"&&style.id==="conference-framework")shape+=`<rect x="${z.x}" y="${z.y}" width="${Math.min(z.w,z.label.length*1.05+3)}" height="3.2" fill="${zoneStroke}" stroke="none"/>`;
+    const source=[...doc.zones,...doc.nodes].find(a=>a.id===z.zoom_of);
+    const guides=source?`<path data-zoom-guides="true" d="M${source.x} ${source.y+source.h} L${z.x} ${z.y} M${source.x+source.w} ${source.y+source.h} L${z.x+z.w} ${z.y}" fill="none" stroke="${tintColor(style.line_color,"#FFFFFF",.45)}" stroke-width="${ptToMm(.6)}" stroke-dasharray="1.4 1"/>`:"";
+    return `${guides}<g data-zone-id="${esc(z.id)}">${shape}<g font-style="${["compartment","membrane","nucleus"].includes(z.kind)?"italic":"normal"}">${text(z.label,labelBox,z.kind==="panel"&&style.id==="conference-framework"?"#FFFFFF":"#5F6773",center?"center":"left",z.id,1.9)}</g></g>`;
   }).join("");
   const edges=doc.edges.map(e=>{
     const pts=edgePoints(doc,e,font);if(pts.length<2)return "";
     const d=pts.map((p,i)=>`${i?"L":"M"}${fmt(p.x)} ${fmt(p.y)}`).join(" ");
     const edgeInk=e.kind==="inhibit"?(paletteOf(doc.style.palette).c):style.line_color;
-    const end=e.kind==="inhibit"?"inhibit":e.kind==="bind"?"bind":"arrow",dash=e.kind==="indirect"?' stroke-dasharray="1.5 1"':"";
+    const end=e.kind==="inhibit"?"inhibit":e.kind==="bind"?"bind":"arrow",dash=["indirect","transport"].includes(e.kind)?' stroke-dasharray="1.5 1"':"";
     const mid=pts[Math.floor(pts.length/2)];
     return `<g data-edge-id="${esc(e.id)}"><path data-diagram-edge="true" d="${d}" fill="none" stroke="${esc(edgeInk)}" stroke-width="${edgeLine}"${dash} marker-end="${marker(end)}"/>${e.label?text(e.label,{x:mid.x-15,y:mid.y-font*2,w:30,h:font*1.3},style.text_color,"center",e.id):""}</g>`;
   }).join("");
@@ -71,11 +87,11 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle): string {
     return `<g data-node-id="${esc(n.id)}" data-body-x="${layout.anchor.x}" data-body-y="${layout.anchor.y}" data-body-w="${layout.anchor.w}" data-body-h="${layout.anchor.h}">${frame}<g fill="${esc(fill)}" stroke="${esc(stroke)}" stroke-width="${line}"${style.shadow?` filter="url(#${prefix}-shadow)"`:""}>${shape}</g>${text(n.label,layout.label,labelFill,"center",n.id)}${badges}</g>`;
   }).join("");
   const annotations=doc.annotations.map(a=>{const target=[...doc.nodes,...doc.zones].find(n=>n.id===a.target);return target?`<g data-annotation-id="${esc(a.id)}">${text(a.text,{x:target.x,y:Math.max(0,target.y-font*2),w:target.w,h:font*1.4},style.text_color,"left",a.id)}</g>`:"";}).join("");
-  const kinds=[...new Set(doc.edges.map(e=>e.kind))].sort();
+  const kinds=(["activate","inhibit","transport","bind","indirect"] as const).filter(kind=>doc.edges.some(e=>e.kind===kind));
   const legend=kinds.length>=2&&doc.legend.mode==="auto"?(()=>{
     const w=Math.min(44,doc.canvas.width_mm-4),h=kinds.length*(font*1.4+1)+3;
     const x=doc.legend.position.endsWith("right")?doc.canvas.width_mm-w-2:2,y=doc.legend.position.startsWith("bottom")?doc.canvas.height_mm-h-2:2;
-    return `<g data-diagram-legend="true"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${esc(doc.canvas.background)}" fill-opacity="0.96"/>${kinds.map((kind,i)=>{const cy=y+2+(i+.5)*(font*1.4+1);return `<path d="M${x+1} ${cy} H${x+8}" stroke="${esc(kind==="inhibit"?paletteOf(doc.style.palette).c:style.line_color)}" stroke-width="${line}" marker-end="${marker(kind==="inhibit"?"inhibit":kind==="bind"?"bind":"arrow")}"${kind==="indirect"?' stroke-dasharray="1.5 1"':""}/>${text(edgeNames[kind],{x:x+9,y:cy-font*.8,w:w-10,h:font*1.5},style.text_color,"left")}`;}).join("")}</g>`;
+    return `<g data-diagram-legend="true"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${esc(doc.canvas.background)}" fill-opacity="0.96"/>${kinds.map((kind,i)=>{const cy=y+2+(i+.5)*(font*1.4+1);return `<path d="M${x+1} ${cy} H${x+8}" stroke="${esc(kind==="inhibit"?paletteOf(doc.style.palette).c:style.line_color)}" stroke-width="${edgeLine}" marker-end="${marker(kind==="inhibit"?"inhibit":kind==="bind"?"bind":"arrow")}"${["indirect","transport"].includes(kind)?' stroke-dasharray="1.5 1"':""}/>${text(edgeNames[kind],{x:x+9,y:cy-font*.8,w:w-10,h:font*1.5},style.text_color,"left")}`;}).join("")}</g>`;
   })():"";
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${doc.canvas.width_mm}mm" height="${doc.canvas.height_mm}mm" viewBox="0 0 ${doc.canvas.width_mm} ${doc.canvas.height_mm}" role="img" aria-label="机制图" font-family="${esc(style.font_family)}"><title>Mechanism diagram</title>${defs}<rect width="100%" height="100%" fill="${esc(doc.canvas.background)}"/>${zones}${edges}${nodes}${annotations}${legend}</svg>`;
 }

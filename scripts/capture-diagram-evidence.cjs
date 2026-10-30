@@ -1,6 +1,6 @@
 // Standalone visual evidence from the production renderer, not snapshot acceptance.
 const fs=require('node:fs'),path=require('node:path');
-const root=path.resolve(__dirname,'..'),out=path.join(root,'docs/test-evidence/diagram-checkpoint-a');
+const root=path.resolve(__dirname,'..'),out=path.resolve(root,process.env.LABFLOW_DIAGRAM_EVIDENCE_DIR||'docs/test-evidence/diagram-checkpoint-a');
 const {buildSync}=require(path.join(root,'frontend/node_modules/esbuild'));
 const {chromium}=require(path.join(root,'frontend/node_modules/@playwright/test'));
 const resource=p=>JSON.parse(fs.readFileSync(path.join(root,'backend/src/main/resources/diagram',p+'.json'),'utf8'));

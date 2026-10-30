@@ -74,7 +74,7 @@ public final class DiagramValidator {
     }
     for(var z:d.path("zones")) {
       fields(z,"id kind label x y w h zoom_of","id kind label x y w h zoom_of");choice(z.get("kind"),ZONE_KINDS);text(z.get("label"),200);rect(z,width,height);
-      if(!z.path("zoom_of").isNull())require(zones.contains(id(z.get("zoom_of")))&&!z.get("zoom_of").equals(z.get("id")),"放大框引用无效");
+      if(!z.path("zoom_of").isNull())require((zones.contains(id(z.get("zoom_of")))||nodes.contains(z.path("zoom_of").asText()))&&!z.get("zoom_of").equals(z.get("id")),"放大框引用无效");
     }
     for(var n:d.path("nodes")) {
       fields(n,"id kind x y w h label zone icon role style_ref glyph label_pos boxed badges","id kind x y w h label zone icon role style_ref");

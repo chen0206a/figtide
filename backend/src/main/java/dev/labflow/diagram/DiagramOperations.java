@@ -37,7 +37,7 @@ public final class DiagramOperations {
       new Spec("add_edge","添加连线",object(edgeFields(),List.of("id","from","to","kind"),4)),
       new Spec("update_edge","修改连线",object(edgeFields(),List.of("id"),2)),
       new Spec("remove_edge","移除连线",object(properties("id",ID),List.of("id"),1)),
-      new Spec("set_style","设置风格（覆盖项合并，null清空）",object(properties("preset",enumeration(PRESETS),"overrides",overrideSchema()),List.of(),1)),
+      new Spec("set_style","设置风格（覆盖项合并，null清空）",object(properties("preset",enumeration(PRESETS),"palette",enumeration(Set.of("okabe-ito","npg","aaas","nejm","lancet","jama")),"overrides",overrideSchema()),List.of(),1)),
       new Spec("set_canvas","设置成品画布",object(properties("width_mm",number(10,2000),"height_mm",number(10,2000),"background",COLOR),List.of(),1)),
       new Spec("set_legend","设置图例",object(properties("mode",enumeration("auto","off"),"position",enumeration("bottom-right","bottom-left","top-right","top-left")),List.of(),1)),
       new Spec("add_annotation","添加注释",object(properties("id",ID,"kind",enumeration("panel_letter","callout","note"),"target",ID,"text",string(200)),List.of("id","kind","target","text"),4)));
@@ -61,11 +61,11 @@ public final class DiagramOperations {
         case "update_zone"->{var z=(ObjectNode)find(doc.path("zones"),id);double x=z.path("x").asDouble(),y=z.path("y").asDouble();patch(z,args);double dx=z.path("x").asDouble()-x,dy=z.path("y").asDouble()-y;for(var n:doc.path("nodes"))if(n.path("zone").asText().equals(id)){((ObjectNode)n).put("x",n.path("x").asDouble()+dx).put("y",n.path("y").asDouble()+dy);}}
         case "add_node"->{var n=copy(args);for(String key:List.of("zone","icon","style_ref"))if(!n.has(key))n.putNull(key);((ArrayNode)doc.path("nodes")).add(n);}
         case "update_node"->patch((ObjectNode)find(doc.path("nodes"),id),args);
-        case "remove_node"->{find(doc.path("nodes"),id);remove((ArrayNode)doc.path("nodes"),id);var edges=(ArrayNode)doc.path("edges");for(int i=edges.size()-1;i>=0;i--)if(edges.get(i).path("from").asText().equals(id)||edges.get(i).path("to").asText().equals(id))edges.remove(i);var notes=(ArrayNode)doc.path("annotations");for(int i=notes.size()-1;i>=0;i--)if(notes.get(i).path("target").asText().equals(id))notes.remove(i);}
+        case "remove_node"->{for(var z:doc.path("zones"))if(z.path("zoom_of").asText().equals(id))((ObjectNode)z).putNull("zoom_of");find(doc.path("nodes"),id);remove((ArrayNode)doc.path("nodes"),id);var edges=(ArrayNode)doc.path("edges");for(int i=edges.size()-1;i>=0;i--)if(edges.get(i).path("from").asText().equals(id)||edges.get(i).path("to").asText().equals(id))edges.remove(i);var notes=(ArrayNode)doc.path("annotations");for(int i=notes.size()-1;i>=0;i--)if(notes.get(i).path("target").asText().equals(id))notes.remove(i);}
         case "add_edge"->{var e=copy(args);if(!e.has("label"))e.put("label","");if(!e.has("route"))e.put("route","straight");((ArrayNode)doc.path("edges")).add(e);}
         case "update_edge"->patch((ObjectNode)find(doc.path("edges"),id),args);
         case "remove_edge"->{find(doc.path("edges"),id);remove((ArrayNode)doc.path("edges"),id);}
-        case "set_style"->{var style=(ObjectNode)doc.path("style");if(args.has("preset"))style.set("preset",args.get("preset").deepCopy());if(args.has("overrides")){if(args.get("overrides").isNull())style.putObject("overrides");else ((ObjectNode)style.path("overrides")).setAll(copy(args.get("overrides")));}}
+        case "set_style"->{var style=(ObjectNode)doc.path("style");if(args.has("palette"))style.set("palette",args.get("palette").deepCopy());if(args.has("preset"))style.set("preset",args.get("preset").deepCopy());if(args.has("overrides")){if(args.get("overrides").isNull())style.putObject("overrides");else ((ObjectNode)style.path("overrides")).setAll(copy(args.get("overrides")));}}
         case "set_canvas"->patch((ObjectNode)doc.path("canvas"),args);
         case "set_legend"->patch((ObjectNode)doc.path("legend"),args);
         case "add_annotation"->((ArrayNode)doc.path("annotations")).add(copy(args));
