@@ -1,5 +1,17 @@
 # API v1
 
+## 18-B 协作与深度审稿（未发布）
+
+`POST /api/projects/{p}/agent/runs` 兼容扩展 mode：省略为 single，支持 single/team/review；既有 edit（单助手别名）、recommend 不变。team 默认 max_steps=8、max_tokens=60000；review 只运行审稿专家，允许附 render_facts?/target?，仍须 share_metadata=true。原 request_id、session_id、parent_run_id、会话预算、取消及恢复接口继续适用。
+
+2026-10-27：team可选role_budget_percentages（省略或null为角色共同使用单次额度；对象为coordinator/data/plotter/reviewer四个正整数百分比，总和100）。例如50/10/30/10表示累计上限50/60/90/100%，前序剩余可顺延。只对team有效，非法值在模型调用前400；返回值反映本次设置，审计trace保留budget_configuration。用户端可调整既有max_tokens（2000–60000）和新会话session_budget（60000–600000）。内部EVALUATION_UNBOUNDED不是HTTP参数，普通请求不能绕过预算/步数/超时；该策略仅由评测构造入口启用。
+
+新模式响应附 phase、roles（role/steps/tokens/status/summary/prompt_version）及 deep_review。进行中 status 仍为 running，包括 phase=awaiting_render；此时可附只读 proposal，但 persisted=false，不能确认。原 review 路由在该阶段只接收几何并唤醒审稿，不替换服务端配置；随后只有最终 proposed/pending 记录可以确定性重审。预算/超时使用原 incomplete 状态，phase 分别为 budget_limited/timeout。trace 每步附 role。
+
+派生候选附 processing：`{source_dataset_version_id,name,rules,preview_hash}`，config.datasetVersionId 为 `$derived`；preview_dataset 是仅供本机预览的内存数据，绝不进入模型或审计。原 figure-tools/preview 新增可选 agent_run_id，绑定可信未落库候选并复查来源/revision；不含此字段时原协议不变，没有新增可接收数据行的公开 lint 接口。
+
+接受派生提案时按运行 ID 锁定并创建一次派生数据、替换占位 ID、应用 accepted_fixes、重新 lint，再调用原决定路径；响应 config 为真实数据版本 ID，附 processing_commit（dataset_version_id/source_dataset_version_id/preview_hash/final_lint）。重复确认复用同一版本。数据创建后最终 lint/决定失败返回错误，派生数据保留，审计仍记录版本 ID 和失败状态，重试不重复创建；图表仍未保存。规则、隐私、共享方法和完整流程见 [AGENT-TEAM.md](AGENT-TEAM.md)。
+
 ## 任务 01：评估图例可选指标（2026-10-22）
 
 schema_version:1 新增可选 `evaluation.legendMetric:boolean`。true 时 ROC 图例显示实际计算的 AUC，PR 图例显示 AP（3位小数）；false 或字段缺失时保留原有图例文字。新图默认 true，旧图打开时不补写此字段。服务端拒绝非布尔值；保存、重新打开和导出使用同一配置，不改统计算法或原始数据。
@@ -333,3 +345,11 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 ## 会话预算与恢复（2026-10-22）
 
 运行POST支持 `request_id / session_id / session_budget / user_message`；返回session预算摘要。新增只读 `GET /projects/{p}/agent/runs/{id}/resume`，恢复存活运行、近期对话、可信基线与待确认提案，不重新调用模型。重复请求ID同内容复用运行、不同内容409；会话预算在数据库预留与结算，未知用量不误退款。协议、恢复限制及字段见 [AGENT-SESSIONS.md](AGENT-SESSIONS.md)。
+## 确定性审稿（18-A）
+
+`POST /api/projects/{p}/agent/runs/{id}/review`：`{render_facts?,target?}`，对服务端提案审稿，返回带 review_hash 的 review-v1 结果；相同提案/几何/目标幂等，只有未决定且未在续改的 proposed 运行可以使用，否则 409。运行详情/审计新增可选 review。
+
+`POST /api/projects/{p}/agent/runs/{id}/decision` 新增可选 accepted_fixes（问题 ID 数组）与 review_hash。仅接受时可选修复；重新 lint 并复用原决定事务，报告/版本变化 409。新版接受响应可附最终 config、accepted_fixes、final_config_hash，仍不保存图表。未传 accepted_fixes 保持原行为。
+
+`POST /api/projects/{p}/figure-tools/review`（只读）：请求 `{protocol_version:1,config,render_facts?,target?:{width_mm?,journal?},chart_id?}`；返回 `{protocol_version:1,rules_version:"review-v1",journal,issues,passed,skipped}`。可选 chart_id 用于排除自身并校验项目归属。未知键或渲染事实超限 400、跨项目资源 404。规则、操作和几何上限详见 [FIGURE-TOOLS.md](FIGURE-TOOLS.md)、[REVIEW.md](REVIEW.md)。
+

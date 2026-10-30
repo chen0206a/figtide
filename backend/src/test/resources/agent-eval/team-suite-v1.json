@@ -1,0 +1,6438 @@
+{
+  "suite_version": "figtide-team-eval-v1",
+  "synthetic": true,
+  "fixture_provenance": "hand-authored synthetic tasks and protocol outputs; not captured model responses",
+  "csv": "epoch,model,seed,accuracy,latency,error\n1,A,1,0.7,12,0.01\n1,A,2,0.9,14,0.01\n1,B,3,0.6,16,0.02\n1,B,4,0.8,18,0.02\n2,A,1,0.75,11,0.01\n2,A,2,0.95,13,0.01\n2,B,3,0.65,15,0.02\n2,B,4,0.85,17,0.02\n3,A,1,0.8,10,0.01\n3,A,2,1,12,0.01\n3,B,3,0.7,14,0.02\n3,B,4,0.9,16,0.02\n",
+  "cases": [
+    {
+      "id": "S01",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "全图字号设为 16 px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 16
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/style/fontSize"
+      ],
+      "setup": {},
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "authored-0",
+                  "type": "function",
+                  "function": {
+                    "name": "set_style",
+                    "arguments": "{\"fontSize\":16}"
+                  }
+                },
+                {
+                  "id": "authored-99",
+                  "type": "function",
+                  "function": {
+                    "name": "lint_figure",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "tool_calls"
+          },
+          {
+            "message": {
+              "role": "assistant",
+              "content": "候选通过校验，请预览确认；尚未应用和保存。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"plotter\",\"goal\":\"全图字号设为 16 px，其他不改。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "set_style",
+                      "arguments": "{\"fontSize\":16}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": true,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "S02",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "全图字号设为 17 px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 17
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/style/fontSize"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S03",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "全图字号设为 18 px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 18
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/style/fontSize"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S04",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "全图字号设为 19 px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 19
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/style/fontSize"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S05",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "全图字号设为 20 px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 20
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/style/fontSize"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S06",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "全图字号设为 21 px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 21
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/style/fontSize"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S07",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "全图字号设为 22 px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 22
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/style/fontSize"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S08",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "全图字号设为 23 px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 23
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/style/fontSize"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S09",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1线宽设为 1px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "width": 1
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/width"
+      ],
+      "allowed_paths": [
+        "/series/0/width"
+      ],
+      "setup": {},
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "authored-0",
+                  "type": "function",
+                  "function": {
+                    "name": "set_series",
+                    "arguments": "{\"seriesId\":\"s1\",\"width\":1}"
+                  }
+                },
+                {
+                  "id": "authored-99",
+                  "type": "function",
+                  "function": {
+                    "name": "lint_figure",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "tool_calls"
+          },
+          {
+            "message": {
+              "role": "assistant",
+              "content": "候选通过校验，请预览确认；尚未应用和保存。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"plotter\",\"goal\":\"Accuracy 序列s1线宽设为 1px，其他不改。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "set_series",
+                      "arguments": "{\"seriesId\":\"s1\",\"width\":1}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": true,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "S10",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1线宽设为 1.5px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "width": 1.5
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/width"
+      ],
+      "allowed_paths": [
+        "/series/0/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S11",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1线宽设为 2px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "width": 2
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/width"
+      ],
+      "allowed_paths": [
+        "/series/0/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S12",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1线宽设为 2.5px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "width": 2.5
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/width"
+      ],
+      "allowed_paths": [
+        "/series/0/width"
+      ],
+      "setup": {
+        "/series/0/width": 2
+      }
+    },
+    {
+      "id": "S13",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1线宽设为 3px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "width": 3
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/width"
+      ],
+      "allowed_paths": [
+        "/series/0/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S14",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1线宽设为 3.5px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "width": 3.5
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/width"
+      ],
+      "allowed_paths": [
+        "/series/0/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S15",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1线宽设为 4px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "width": 4
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/width"
+      ],
+      "allowed_paths": [
+        "/series/0/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S16",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1线宽设为 4.5px，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "width": 4.5
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/width"
+      ],
+      "allowed_paths": [
+        "/series/0/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S17",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1颜色设为 #0072B2，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "color": "#0072B2"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/color"
+      ],
+      "allowed_paths": [
+        "/series/0/color"
+      ],
+      "setup": {},
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "authored-0",
+                  "type": "function",
+                  "function": {
+                    "name": "set_series",
+                    "arguments": "{\"seriesId\":\"s1\",\"color\":\"#0072B2\"}"
+                  }
+                },
+                {
+                  "id": "authored-99",
+                  "type": "function",
+                  "function": {
+                    "name": "lint_figure",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "tool_calls"
+          },
+          {
+            "message": {
+              "role": "assistant",
+              "content": "候选通过校验，请预览确认；尚未应用和保存。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"plotter\",\"goal\":\"Accuracy 序列s1颜色设为 #0072B2，其他不改。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "set_series",
+                      "arguments": "{\"seriesId\":\"s1\",\"color\":\"#0072B2\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": true,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "S18",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1颜色设为 #E69F00，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "color": "#E69F00"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/color"
+      ],
+      "allowed_paths": [
+        "/series/0/color"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S19",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1颜色设为 #009E73，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "color": "#009E73"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/color"
+      ],
+      "allowed_paths": [
+        "/series/0/color"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S20",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1颜色设为 #D55E00，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "color": "#D55E00"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/color"
+      ],
+      "allowed_paths": [
+        "/series/0/color"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S21",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1颜色设为 #CC79A7，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "color": "#CC79A7"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/color"
+      ],
+      "allowed_paths": [
+        "/series/0/color"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S22",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1颜色设为 #56B4E9，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "color": "#56B4E9"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/color"
+      ],
+      "allowed_paths": [
+        "/series/0/color"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S23",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1颜色设为 #000000，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "color": "#000000"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/color"
+      ],
+      "allowed_paths": [
+        "/series/0/color"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S24",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "Accuracy 序列s1颜色设为 #666666，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "color": "#666666"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/color"
+      ],
+      "allowed_paths": [
+        "/series/0/color"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S25",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "图例位置设为 right，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/legend/position"
+      ],
+      "setup": {},
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "authored-0",
+                  "type": "function",
+                  "function": {
+                    "name": "set_legend",
+                    "arguments": "{\"position\":\"right\"}"
+                  }
+                },
+                {
+                  "id": "authored-99",
+                  "type": "function",
+                  "function": {
+                    "name": "lint_figure",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "tool_calls"
+          },
+          {
+            "message": {
+              "role": "assistant",
+              "content": "候选通过校验，请预览确认；尚未应用和保存。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"plotter\",\"goal\":\"图例位置设为 right，其他不改。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "set_legend",
+                      "arguments": "{\"position\":\"right\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": true,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "S26",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "图例位置设为 bottom，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "bottom"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/legend/position"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S27",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "图例位置设为 top-left，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "top-left"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/legend/position"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S28",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "图例位置设为 bottom-right，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "bottom-right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/legend/position"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S29",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "标题改为“Synthetic result S29”，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic result S29"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/style/title"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S30",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "标题改为“Synthetic result S30”，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic result S30"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/style/title"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S31",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "标题改为“Synthetic result S31”，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic result S31"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/style/title"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S32",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "标题改为“Synthetic result S32”，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic result S32"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/style/title"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S33",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "显示X轴网格，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "x",
+            "grid": true
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/x/grid"
+      ],
+      "allowed_paths": [
+        "/axes/x/grid"
+      ],
+      "setup": {
+        "/axes/x/grid": false
+      }
+    },
+    {
+      "id": "S34",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "显示Y轴网格，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "grid": true
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/y/grid"
+      ],
+      "allowed_paths": [
+        "/axes/y/grid"
+      ],
+      "setup": {
+        "/axes/y/grid": false
+      }
+    },
+    {
+      "id": "S35",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "隐藏X轴网格，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "x",
+            "grid": false
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/x/grid"
+      ],
+      "allowed_paths": [
+        "/axes/x/grid"
+      ],
+      "setup": {
+        "/axes/x/grid": true
+      }
+    },
+    {
+      "id": "S36",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "隐藏Y轴网格，其他不改。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "grid": false
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/y/grid"
+      ],
+      "allowed_paths": [
+        "/axes/y/grid"
+      ],
+      "setup": {
+        "/axes/y/grid": true
+      }
+    },
+    {
+      "id": "S37",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "画布宽度 800px，保留高度及其他配置。",
+      "expected_operations": [
+        {
+          "tool": "set_canvas",
+          "arguments": {
+            "width": 800
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/width"
+      ],
+      "allowed_paths": [
+        "/style/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S38",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "画布宽度 880px，保留高度及其他配置。",
+      "expected_operations": [
+        {
+          "tool": "set_canvas",
+          "arguments": {
+            "width": 880
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/width"
+      ],
+      "allowed_paths": [
+        "/style/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S39",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "画布宽度 960px，保留高度及其他配置。",
+      "expected_operations": [
+        {
+          "tool": "set_canvas",
+          "arguments": {
+            "width": 960
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/width"
+      ],
+      "allowed_paths": [
+        "/style/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "S40",
+      "category": "single_step",
+      "synthetic": true,
+      "prompt": "画布宽度 1040px，保留高度及其他配置。",
+      "expected_operations": [
+        {
+          "tool": "set_canvas",
+          "arguments": {
+            "width": 1040
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/width"
+      ],
+      "allowed_paths": [
+        "/style/width"
+      ],
+      "setup": {}
+    },
+    {
+      "id": "M01",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "字号18px，标题“Synthetic multi M1”，图例right。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 18,
+            "title": "Synthetic multi M1"
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize",
+        "/style/title",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/style/fontSize",
+        "/style/title",
+        "/legend/position"
+      ],
+      "setup_operations": [],
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "authored-0",
+                  "type": "function",
+                  "function": {
+                    "name": "set_style",
+                    "arguments": "{\"fontSize\":18,\"title\":\"Synthetic multi M1\"}"
+                  }
+                },
+                {
+                  "id": "authored-1",
+                  "type": "function",
+                  "function": {
+                    "name": "set_legend",
+                    "arguments": "{\"position\":\"right\"}"
+                  }
+                },
+                {
+                  "id": "authored-99",
+                  "type": "function",
+                  "function": {
+                    "name": "lint_figure",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "tool_calls"
+          },
+          {
+            "message": {
+              "role": "assistant",
+              "content": "候选通过校验，请预览确认；尚未应用和保存。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"plotter\",\"goal\":\"字号18px，标题“Synthetic multi M1”，图例right。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "set_style",
+                      "arguments": "{\"fontSize\":18,\"title\":\"Synthetic multi M1\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-1",
+                    "type": "function",
+                    "function": {
+                      "name": "set_legend",
+                      "arguments": "{\"position\":\"right\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": true,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "M02",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "字号19px，标题“Synthetic multi M2”，图例bottom。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 19,
+            "title": "Synthetic multi M2"
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "bottom"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize",
+        "/style/title",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/style/fontSize",
+        "/style/title",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M03",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "字号20px，标题“Synthetic multi M3”，图例top-left。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 20,
+            "title": "Synthetic multi M3"
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "top-left"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize",
+        "/style/title",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/style/fontSize",
+        "/style/title",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M04",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "字号21px，标题“Synthetic multi M4”，图例bottom-right。",
+      "expected_operations": [
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 21,
+            "title": "Synthetic multi M4"
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "bottom-right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/fontSize",
+        "/style/title",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/style/fontSize",
+        "/style/title",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M05",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "X轴标题Epoch index，范围0到10，图标题“Synthetic multi M5”。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "x",
+            "title": "Epoch index",
+            "min": 0,
+            "max": 10
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M5"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/x/title",
+        "/axes/x/min",
+        "/axes/x/max",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/axes/x/title",
+        "/axes/x/min",
+        "/axes/x/max",
+        "/style/title"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M06",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "X轴标题Epoch index，范围1到11，图标题“Synthetic multi M6”。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "x",
+            "title": "Epoch index",
+            "min": 1,
+            "max": 11
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M6"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/x/title",
+        "/axes/x/min",
+        "/axes/x/max",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/axes/x/title",
+        "/axes/x/min",
+        "/axes/x/max",
+        "/style/title"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M07",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "X轴标题Epoch index，范围2到12，图标题“Synthetic multi M7”。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "x",
+            "title": "Epoch index",
+            "min": 2,
+            "max": 12
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M7"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/x/title",
+        "/axes/x/min",
+        "/axes/x/max",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/axes/x/title",
+        "/axes/x/min",
+        "/axes/x/max",
+        "/style/title"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M08",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "X轴标题Epoch index，范围3到13，图标题“Synthetic multi M8”。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "x",
+            "title": "Epoch index",
+            "min": 3,
+            "max": 13
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M8"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/x/title",
+        "/axes/x/min",
+        "/axes/x/max",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/axes/x/title",
+        "/axes/x/min",
+        "/axes/x/max",
+        "/style/title"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M09",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "s1改画latency、清空误差列，Y轴标题Latency (ms)，图标题“Synthetic multi M9”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "title": "Latency (ms)"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M9"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/y",
+        "/series/0/error",
+        "/axes/y/title",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/series/0/y",
+        "/series/0/error",
+        "/axes/y/title",
+        "/style/title"
+      ],
+      "setup_operations": [],
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "authored-0",
+                  "type": "function",
+                  "function": {
+                    "name": "map_series",
+                    "arguments": "{\"seriesId\":\"s1\",\"y\":\"latency\",\"error\":\"\"}"
+                  }
+                },
+                {
+                  "id": "authored-1",
+                  "type": "function",
+                  "function": {
+                    "name": "set_axis",
+                    "arguments": "{\"axis\":\"y\",\"title\":\"Latency (ms)\"}"
+                  }
+                },
+                {
+                  "id": "authored-2",
+                  "type": "function",
+                  "function": {
+                    "name": "set_style",
+                    "arguments": "{\"title\":\"Synthetic multi M9\"}"
+                  }
+                },
+                {
+                  "id": "authored-99",
+                  "type": "function",
+                  "function": {
+                    "name": "lint_figure",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "tool_calls"
+          },
+          {
+            "message": {
+              "role": "assistant",
+              "content": "候选通过校验，请预览确认；尚未应用和保存。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"plotter\",\"goal\":\"s1改画latency、清空误差列，Y轴标题Latency (ms)，图标题“Synthetic multi M9”。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "map_series",
+                      "arguments": "{\"seriesId\":\"s1\",\"y\":\"latency\",\"error\":\"\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-1",
+                    "type": "function",
+                    "function": {
+                      "name": "set_axis",
+                      "arguments": "{\"axis\":\"y\",\"title\":\"Latency (ms)\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-2",
+                    "type": "function",
+                    "function": {
+                      "name": "set_style",
+                      "arguments": "{\"title\":\"Synthetic multi M9\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": true,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "M10",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "s1改画latency、清空误差列，Y轴标题Latency (ms)，图标题“Synthetic multi M10”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "title": "Latency (ms)"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M10"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/y",
+        "/series/0/error",
+        "/axes/y/title",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/series/0/y",
+        "/series/0/error",
+        "/axes/y/title",
+        "/style/title"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M11",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "s1改画latency、清空误差列，Y轴标题Latency (ms)，图标题“Synthetic multi M11”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "title": "Latency (ms)"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M11"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/y",
+        "/series/0/error",
+        "/axes/y/title",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/series/0/y",
+        "/series/0/error",
+        "/axes/y/title",
+        "/style/title"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M12",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "s1改画latency、清空误差列，Y轴标题Latency (ms)，图标题“Synthetic multi M12”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "title": "Latency (ms)"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M12"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/y",
+        "/series/0/error",
+        "/axes/y/title",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/series/0/y",
+        "/series/0/error",
+        "/axes/y/title",
+        "/style/title"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M13",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "切为柱状图，图例right，保留字段。",
+      "expected_operations": [
+        {
+          "tool": "set_chart",
+          "arguments": {
+            "type": "bar"
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/type",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/type",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M14",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "切为柱状图，图例bottom，保留字段。",
+      "expected_operations": [
+        {
+          "tool": "set_chart",
+          "arguments": {
+            "type": "bar"
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "bottom"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/type",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/type",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M15",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "切为柱状图，图例top-left，保留字段。",
+      "expected_operations": [
+        {
+          "tool": "set_chart",
+          "arguments": {
+            "type": "bar"
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "top-left"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/type",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/type",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M16",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "切为柱状图，图例bottom-right，保留字段。",
+      "expected_operations": [
+        {
+          "tool": "set_chart",
+          "arguments": {
+            "type": "bar"
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "bottom-right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/type",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/type",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M17",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "添加s2，Y字段latency，名为Latency，无误差列、颜色#0072B2，保留s1。",
+      "expected_operations": [
+        {
+          "tool": "add_series",
+          "arguments": {
+            "id": "s2",
+            "y": "latency",
+            "name": "Latency",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s2",
+            "color": "#0072B2"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series"
+      ],
+      "allowed_paths": [
+        "/series"
+      ],
+      "setup_operations": [],
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "authored-0",
+                  "type": "function",
+                  "function": {
+                    "name": "add_series",
+                    "arguments": "{\"id\":\"s2\",\"y\":\"latency\",\"name\":\"Latency\",\"error\":\"\"}"
+                  }
+                },
+                {
+                  "id": "authored-1",
+                  "type": "function",
+                  "function": {
+                    "name": "set_series",
+                    "arguments": "{\"seriesId\":\"s2\",\"color\":\"#0072B2\"}"
+                  }
+                },
+                {
+                  "id": "authored-99",
+                  "type": "function",
+                  "function": {
+                    "name": "lint_figure",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "tool_calls"
+          },
+          {
+            "message": {
+              "role": "assistant",
+              "content": "候选通过校验，请预览确认；尚未应用和保存。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"plotter\",\"goal\":\"添加s2，Y字段latency，名为Latency，无误差列、颜色#0072B2，保留s1。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "add_series",
+                      "arguments": "{\"id\":\"s2\",\"y\":\"latency\",\"name\":\"Latency\",\"error\":\"\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-1",
+                    "type": "function",
+                    "function": {
+                      "name": "set_series",
+                      "arguments": "{\"seriesId\":\"s2\",\"color\":\"#0072B2\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": true,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "M18",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "添加s2，Y字段latency，名为Latency，无误差列、颜色#E69F00，保留s1。",
+      "expected_operations": [
+        {
+          "tool": "add_series",
+          "arguments": {
+            "id": "s2",
+            "y": "latency",
+            "name": "Latency",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s2",
+            "color": "#E69F00"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series"
+      ],
+      "allowed_paths": [
+        "/series"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M19",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "添加s2，Y字段latency，名为Latency，无误差列、颜色#009E73，保留s1。",
+      "expected_operations": [
+        {
+          "tool": "add_series",
+          "arguments": {
+            "id": "s2",
+            "y": "latency",
+            "name": "Latency",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s2",
+            "color": "#009E73"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series"
+      ],
+      "allowed_paths": [
+        "/series"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M20",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "添加s2，Y字段latency，名为Latency，无误差列、颜色#D55E00，保留s1。",
+      "expected_operations": [
+        {
+          "tool": "add_series",
+          "arguments": {
+            "id": "s2",
+            "y": "latency",
+            "name": "Latency",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s2",
+            "color": "#D55E00"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series"
+      ],
+      "allowed_paths": [
+        "/series"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M21",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "按model分组，epoch作X画散点，保留s1的Y字段。",
+      "expected_operations": [
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_chart",
+          "arguments": {
+            "type": "scatter"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/group",
+        "/type"
+      ],
+      "allowed_paths": [
+        "/group",
+        "/type"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M22",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "按model分组，epoch作X画散点，保留s1的Y字段。",
+      "expected_operations": [
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_chart",
+          "arguments": {
+            "type": "scatter"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/group",
+        "/type"
+      ],
+      "allowed_paths": [
+        "/group",
+        "/type"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M23",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "按model分组，epoch作X画散点，保留s1的Y字段。",
+      "expected_operations": [
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_chart",
+          "arguments": {
+            "type": "scatter"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/group",
+        "/type"
+      ],
+      "allowed_paths": [
+        "/group",
+        "/type"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M24",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "按model分组，epoch作X画散点，保留s1的Y字段。",
+      "expected_operations": [
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_chart",
+          "arguments": {
+            "type": "scatter"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/group",
+        "/type"
+      ],
+      "allowed_paths": [
+        "/group",
+        "/type"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M25",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "s1线型dash，线宽3px，菱形点。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "dash": "dash",
+            "width": 3,
+            "symbol": "diamond"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/dash",
+        "/series/0/width",
+        "/series/0/symbol"
+      ],
+      "allowed_paths": [
+        "/series/0/dash",
+        "/series/0/width",
+        "/series/0/symbol"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M26",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "s1线型dot，线宽4px，菱形点。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "dash": "dot",
+            "width": 4,
+            "symbol": "diamond"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/dash",
+        "/series/0/width",
+        "/series/0/symbol"
+      ],
+      "allowed_paths": [
+        "/series/0/dash",
+        "/series/0/width",
+        "/series/0/symbol"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M27",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "s1线型dashdot，线宽5px，菱形点。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "dash": "dashdot",
+            "width": 5,
+            "symbol": "diamond"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/dash",
+        "/series/0/width",
+        "/series/0/symbol"
+      ],
+      "allowed_paths": [
+        "/series/0/dash",
+        "/series/0/width",
+        "/series/0/symbol"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M28",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "s1线型solid，线宽6px，菱形点。",
+      "expected_operations": [
+        {
+          "tool": "set_series",
+          "arguments": {
+            "seriesId": "s1",
+            "dash": "solid",
+            "width": 6,
+            "symbol": "diamond"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series/0/dash",
+        "/series/0/width",
+        "/series/0/symbol"
+      ],
+      "allowed_paths": [
+        "/series/0/dash",
+        "/series/0/width",
+        "/series/0/symbol"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M29",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "删除s2，保留s1，标题“Synthetic multi M29”。",
+      "expected_operations": [
+        {
+          "tool": "remove_series",
+          "arguments": {
+            "seriesId": "s2"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M29"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/series",
+        "/style/title"
+      ],
+      "setup_operations": [
+        {
+          "tool": "add_series",
+          "arguments": {
+            "id": "s2",
+            "y": "latency",
+            "name": "Latency",
+            "error": ""
+          }
+        }
+      ],
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "authored-0",
+                  "type": "function",
+                  "function": {
+                    "name": "remove_series",
+                    "arguments": "{\"seriesId\":\"s2\"}"
+                  }
+                },
+                {
+                  "id": "authored-1",
+                  "type": "function",
+                  "function": {
+                    "name": "set_style",
+                    "arguments": "{\"title\":\"Synthetic multi M29\"}"
+                  }
+                },
+                {
+                  "id": "authored-99",
+                  "type": "function",
+                  "function": {
+                    "name": "lint_figure",
+                    "arguments": "{}"
+                  }
+                }
+              ]
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "tool_calls"
+          },
+          {
+            "message": {
+              "role": "assistant",
+              "content": "候选通过校验，请预览确认；尚未应用和保存。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"plotter\",\"goal\":\"删除s2，保留s1，标题“Synthetic multi M29”。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "remove_series",
+                      "arguments": "{\"seriesId\":\"s2\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-1",
+                    "type": "function",
+                    "function": {
+                      "name": "set_style",
+                      "arguments": "{\"title\":\"Synthetic multi M29\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": true,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "M30",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "删除s2，保留s1，标题“Synthetic multi M30”。",
+      "expected_operations": [
+        {
+          "tool": "remove_series",
+          "arguments": {
+            "seriesId": "s2"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M30"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/series",
+        "/style/title"
+      ],
+      "setup_operations": [
+        {
+          "tool": "add_series",
+          "arguments": {
+            "id": "s2",
+            "y": "latency",
+            "name": "Latency",
+            "error": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "M31",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "删除s2，保留s1，标题“Synthetic multi M31”。",
+      "expected_operations": [
+        {
+          "tool": "remove_series",
+          "arguments": {
+            "seriesId": "s2"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M31"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/series",
+        "/style/title"
+      ],
+      "setup_operations": [
+        {
+          "tool": "add_series",
+          "arguments": {
+            "id": "s2",
+            "y": "latency",
+            "name": "Latency",
+            "error": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "M32",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "删除s2，保留s1，标题“Synthetic multi M32”。",
+      "expected_operations": [
+        {
+          "tool": "remove_series",
+          "arguments": {
+            "seriesId": "s2"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic multi M32"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/series",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/series",
+        "/style/title"
+      ],
+      "setup_operations": [
+        {
+          "tool": "add_series",
+          "arguments": {
+            "id": "s2",
+            "y": "latency",
+            "name": "Latency",
+            "error": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "M33",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "Y轴对数坐标、标题Accuracy (log)，全图字号20px。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "log": true,
+            "title": "Accuracy (log)"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 20
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/y/log",
+        "/axes/y/title",
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/axes/y/log",
+        "/axes/y/title",
+        "/style/fontSize"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M34",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "Y轴对数坐标、标题Accuracy (log)，全图字号21px。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "log": true,
+            "title": "Accuracy (log)"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 21
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/y/log",
+        "/axes/y/title",
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/axes/y/log",
+        "/axes/y/title",
+        "/style/fontSize"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M35",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "Y轴对数坐标、标题Accuracy (log)，全图字号22px。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "log": true,
+            "title": "Accuracy (log)"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 22
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/y/log",
+        "/axes/y/title",
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/axes/y/log",
+        "/axes/y/title",
+        "/style/fontSize"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M36",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "Y轴对数坐标、标题Accuracy (log)，全图字号23px。",
+      "expected_operations": [
+        {
+          "tool": "set_axis",
+          "arguments": {
+            "axis": "y",
+            "log": true,
+            "title": "Accuracy (log)"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 23
+          }
+        }
+      ],
+      "expected_changes": [
+        "/axes/y/log",
+        "/axes/y/title",
+        "/style/fontSize"
+      ],
+      "allowed_paths": [
+        "/axes/y/log",
+        "/axes/y/title",
+        "/style/fontSize"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M37",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "画布900×600px，字号20px，图例右侧。",
+      "expected_operations": [
+        {
+          "tool": "set_canvas",
+          "arguments": {
+            "width": 900,
+            "height": 600
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 20
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/width",
+        "/style/height",
+        "/style/fontSize",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/style/width",
+        "/style/height",
+        "/style/fontSize",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M38",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "画布1000×650px，字号21px，图例右侧。",
+      "expected_operations": [
+        {
+          "tool": "set_canvas",
+          "arguments": {
+            "width": 1000,
+            "height": 650
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 21
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/width",
+        "/style/height",
+        "/style/fontSize",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/style/width",
+        "/style/height",
+        "/style/fontSize",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M39",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "画布1100×700px，字号22px，图例右侧。",
+      "expected_operations": [
+        {
+          "tool": "set_canvas",
+          "arguments": {
+            "width": 1100,
+            "height": 700
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 22
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/width",
+        "/style/height",
+        "/style/fontSize",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/style/width",
+        "/style/height",
+        "/style/fontSize",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "M40",
+      "category": "multi_step",
+      "synthetic": true,
+      "prompt": "画布1200×750px，字号23px，图例右侧。",
+      "expected_operations": [
+        {
+          "tool": "set_canvas",
+          "arguments": {
+            "width": 1200,
+            "height": 750
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "fontSize": 23
+          }
+        },
+        {
+          "tool": "set_legend",
+          "arguments": {
+            "position": "right"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/style/width",
+        "/style/height",
+        "/style/fontSize",
+        "/legend/position"
+      ],
+      "allowed_paths": [
+        "/style/width",
+        "/style/height",
+        "/style/fontSize",
+        "/legend/position"
+      ],
+      "setup_operations": []
+    },
+    {
+      "id": "P01",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P1”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P1"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      },
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": "当前单助手没有派生数据工具，请先使用数据处理页或切换协作模式。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"data\",\"goal\":\"按明确规则生成派生数据预览\"},{\"role\":\"plotter\",\"goal\":\"每行是固定epoch与model的独立seed重复；先按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P1”。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "data": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "propose_processing",
+                      "arguments": "{\"schema_version\":1,\"mode\":\"aggregate\",\"groupBy\":[\"epoch\"],\"metrics\":[\"accuracy\"],\"filters\":[],\"sort\":[{\"field\":\"epoch\",\"direction\":\"asc\"}],\"missingGroup\":\"include\",\"error\":\"sem\",\"observationUnit\":\"independent repeated run at a fixed epoch and model\",\"replicate\":\"seed\",\"x\":\"epoch\",\"group\":\"\",\"display\":\"bars\"}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "map_series",
+                      "arguments": "{\"seriesId\":\"s1\",\"y\":\"accuracy__mean\",\"error\":\"accuracy__sem\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-1",
+                    "type": "function",
+                    "function": {
+                      "name": "set_mapping",
+                      "arguments": "{\"x\":\"epoch\",\"group\":\"\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-2",
+                    "type": "function",
+                    "function": {
+                      "name": "set_style",
+                      "arguments": "{\"title\":\"Synthetic processed P1\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": false,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "P02",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P2”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P2"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P03",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P3”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P3"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P04",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P4”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P4"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P05",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按model、epoch分组，计算accuracy均值和SD；seed是重复ID，缺失分组include，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P5”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P5"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P06",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按model、epoch分组，计算accuracy均值和SD；seed是重复ID，缺失分组include，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P6”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P6"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P07",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按model、epoch分组，计算accuracy均值和SD；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P7”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P7"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P08",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按model、epoch分组，计算accuracy均值和SD；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P8”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P8"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P09",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P9”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P9"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P10",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P10”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P10"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P11",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P11”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P11"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P12",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P12”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P12"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P13",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按model、epoch分组，计算latency均值和SD；seed是重复ID，缺失分组include，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P13”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency__mean",
+            "error": "latency__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P13"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "latency"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      },
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": "当前单助手没有派生数据工具，请先使用数据处理页或切换协作模式。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"data\",\"goal\":\"按明确规则生成派生数据预览\"},{\"role\":\"plotter\",\"goal\":\"每行是固定epoch与model的独立seed重复；先按model、epoch分组，计算latency均值和SD；seed是重复ID，缺失分组include，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P13”。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "data": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "propose_processing",
+                      "arguments": "{\"schema_version\":1,\"mode\":\"aggregate\",\"groupBy\":[\"model\",\"epoch\"],\"metrics\":[\"latency\"],\"filters\":[],\"sort\":[{\"field\":\"epoch\",\"direction\":\"asc\"}],\"missingGroup\":\"include\",\"error\":\"sd\",\"observationUnit\":\"independent repeated run at a fixed epoch and model\",\"replicate\":\"seed\",\"x\":\"epoch\",\"group\":\"model\",\"display\":\"bars\"}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "map_series",
+                      "arguments": "{\"seriesId\":\"s1\",\"y\":\"latency__mean\",\"error\":\"latency__sd\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-1",
+                    "type": "function",
+                    "function": {
+                      "name": "set_mapping",
+                      "arguments": "{\"x\":\"epoch\",\"group\":\"model\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-2",
+                    "type": "function",
+                    "function": {
+                      "name": "set_style",
+                      "arguments": "{\"title\":\"Synthetic processed P13\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": false,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "P14",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按model、epoch分组，计算latency均值和SD；seed是重复ID，缺失分组include，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P14”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency__mean",
+            "error": "latency__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P14"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "latency"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P15",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按model、epoch分组，计算latency均值和SD；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P15”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency__mean",
+            "error": "latency__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P15"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "latency"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P16",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先按model、epoch分组，计算latency均值和SD；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P16”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency__mean",
+            "error": "latency__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P16"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "latency"
+        ],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P17",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch gte 1，按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P17”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P17"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "gte",
+            "value": "1"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P18",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch lte 3，按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P18”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P18"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "lte",
+            "value": "3"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P19",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch gte 1，按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P19”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P19"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "gte",
+            "value": "1"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P20",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch lte 3，按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P20”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P20"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "lte",
+            "value": "3"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P21",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch gte 1，按model、epoch分组，计算accuracy均值和SD；seed是重复ID，缺失分组include，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P21”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P21"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "gte",
+            "value": "1"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P22",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch lte 3，按model、epoch分组，计算accuracy均值和SD；seed是重复ID，缺失分组include，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P22”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P22"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "lte",
+            "value": "3"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P23",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch gte 1，按model、epoch分组，计算accuracy均值和SD；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P23”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P23"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "gte",
+            "value": "1"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P24",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch lte 3，按model、epoch分组，计算accuracy均值和SD；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P24”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P24"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "lte",
+            "value": "3"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P25",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch gte 1，按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P25”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P25"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "gte",
+            "value": "1"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      },
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": "当前单助手没有派生数据工具，请先使用数据处理页或切换协作模式。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"data\",\"goal\":\"按明确规则生成派生数据预览\"},{\"role\":\"plotter\",\"goal\":\"每行是固定epoch与model的独立seed重复；先过滤epoch gte 1，按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P25”。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "data": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "propose_processing",
+                      "arguments": "{\"schema_version\":1,\"mode\":\"aggregate\",\"groupBy\":[\"epoch\"],\"metrics\":[\"accuracy\"],\"filters\":[{\"field\":\"epoch\",\"operator\":\"gte\",\"value\":\"1\"}],\"sort\":[{\"field\":\"epoch\",\"direction\":\"asc\"}],\"missingGroup\":\"include\",\"error\":\"sem\",\"observationUnit\":\"independent repeated run at a fixed epoch and model\",\"replicate\":\"seed\",\"x\":\"epoch\",\"group\":\"\",\"display\":\"bars\"}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "map_series",
+                      "arguments": "{\"seriesId\":\"s1\",\"y\":\"accuracy__mean\",\"error\":\"accuracy__sem\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-1",
+                    "type": "function",
+                    "function": {
+                      "name": "set_mapping",
+                      "arguments": "{\"x\":\"epoch\",\"group\":\"\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-2",
+                    "type": "function",
+                    "function": {
+                      "name": "set_style",
+                      "arguments": "{\"title\":\"Synthetic processed P25\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": false,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "P26",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch lte 3，按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组include，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P26”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P26"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "lte",
+            "value": "3"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P27",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch gte 1，按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P27”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P27"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "gte",
+            "value": "1"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P28",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch lte 3，按epoch分组，计算accuracy均值和SEM；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，s1画均值与SEM误差棒，标题“Synthetic processed P28”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy__mean",
+            "error": "accuracy__sem"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P28"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "epoch"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "lte",
+            "value": "3"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sem",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P29",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch gte 1，按model、epoch分组，计算latency均值和SD；seed是重复ID，缺失分组include，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P29”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency__mean",
+            "error": "latency__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P29"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "latency"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "gte",
+            "value": "1"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P30",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch lte 3，按model、epoch分组，计算latency均值和SD；seed是重复ID，缺失分组include，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P30”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency__mean",
+            "error": "latency__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P30"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "latency"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "lte",
+            "value": "3"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P31",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch gte 1，按model、epoch分组，计算latency均值和SD；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P31”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency__mean",
+            "error": "latency__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P31"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "latency"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "gte",
+            "value": "1"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P32",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是固定epoch与model的独立seed重复；先过滤epoch lte 3，按model、epoch分组，计算latency均值和SD；seed是重复ID，缺失分组exclude，epoch升序；X=epoch，按model分组，s1画均值与SD误差棒，标题“Synthetic processed P32”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "latency__mean",
+            "error": "latency__sd"
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": "model"
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P32"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "aggregate",
+        "groupBy": [
+          "model",
+          "epoch"
+        ],
+        "metrics": [
+          "latency"
+        ],
+        "filters": [
+          {
+            "field": "epoch",
+            "operator": "lte",
+            "value": "3"
+          }
+        ],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "sd",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "seed",
+        "x": "epoch",
+        "group": "model",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P33",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是独立重复；保留所有原始列，按epoch asc排序成独立派生数据；s1画accuracy、清空误差列，标题“Synthetic processed P33”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P33"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "sort",
+        "groupBy": [],
+        "metrics": [],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "none",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P34",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是独立重复；保留所有原始列，按epoch desc排序成独立派生数据；s1画accuracy、清空误差列，标题“Synthetic processed P34”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P34"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "sort",
+        "groupBy": [],
+        "metrics": [],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "desc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "none",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P35",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是独立重复；保留所有原始列，按epoch asc排序成独立派生数据；s1画accuracy、清空误差列，标题“Synthetic processed P35”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P35"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "sort",
+        "groupBy": [],
+        "metrics": [],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "none",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P36",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是独立重复；保留所有原始列，按epoch desc排序成独立派生数据；s1画accuracy、清空误差列，标题“Synthetic processed P36”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P36"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "sort",
+        "groupBy": [],
+        "metrics": [],
+        "filters": [],
+        "sort": [
+          {
+            "field": "epoch",
+            "direction": "desc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "none",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P37",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是独立重复；保留所有原始列，按latency asc排序成独立派生数据；s1画accuracy、清空误差列，标题“Synthetic processed P37”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P37"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "sort",
+        "groupBy": [],
+        "metrics": [],
+        "filters": [],
+        "sort": [
+          {
+            "field": "latency",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "none",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      },
+      "replay": {
+        "fixture_provenance": "hand-authored synthetic assistant outputs; not captured model responses",
+        "single": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": "当前单助手没有派生数据工具，请先使用数据处理页或切换协作模式。"
+            },
+            "prompt_tokens": 120,
+            "completion_tokens": 40,
+            "finish_reason": "stop"
+          }
+        ],
+        "team": {
+          "coordinator": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "{\"action\":\"plan\",\"message\":\"按明确目标分阶段处理\",\"tasks\":[{\"role\":\"data\",\"goal\":\"按明确规则生成派生数据预览\"},{\"role\":\"plotter\",\"goal\":\"每行是独立重复；保留所有原始列，按latency asc排序成独立派生数据；s1画accuracy、清空误差列，标题“Synthetic processed P37”。\"},{\"role\":\"reviewer\",\"goal\":\"检查单位与误差图注\"}]}"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "data": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "propose_processing",
+                      "arguments": "{\"schema_version\":1,\"mode\":\"sort\",\"groupBy\":[],\"metrics\":[],\"filters\":[],\"sort\":[{\"field\":\"latency\",\"direction\":\"asc\"}],\"missingGroup\":\"include\",\"error\":\"none\",\"observationUnit\":\"independent repeated run at a fixed epoch and model\",\"replicate\":\"\",\"x\":\"epoch\",\"group\":\"\",\"display\":\"bars\"}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "plotter": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "authored-0",
+                    "type": "function",
+                    "function": {
+                      "name": "map_series",
+                      "arguments": "{\"seriesId\":\"s1\",\"y\":\"accuracy\",\"error\":\"\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-1",
+                    "type": "function",
+                    "function": {
+                      "name": "set_mapping",
+                      "arguments": "{\"x\":\"epoch\",\"group\":\"\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-2",
+                    "type": "function",
+                    "function": {
+                      "name": "set_style",
+                      "arguments": "{\"title\":\"Synthetic processed P37\"}"
+                    }
+                  },
+                  {
+                    "id": "authored-99",
+                    "type": "function",
+                    "function": {
+                      "name": "lint_figure",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "tool_calls"
+            },
+            {
+              "message": {
+                "role": "assistant",
+                "content": "候选通过校验，请预览确认；尚未应用和保存。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ],
+          "reviewer": [
+            {
+              "message": {
+                "role": "assistant",
+                "content": "请依据实验定义核对坐标单位和误差图注，不自动修改。"
+              },
+              "prompt_tokens": 120,
+              "completion_tokens": 40,
+              "finish_reason": "stop"
+            }
+          ]
+        },
+        "expected_mechanical_pass": {
+          "single": false,
+          "team": true
+        }
+      }
+    },
+    {
+      "id": "P38",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是独立重复；保留所有原始列，按latency desc排序成独立派生数据；s1画accuracy、清空误差列，标题“Synthetic processed P38”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P38"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "sort",
+        "groupBy": [],
+        "metrics": [],
+        "filters": [],
+        "sort": [
+          {
+            "field": "latency",
+            "direction": "desc"
+          }
+        ],
+        "missingGroup": "include",
+        "error": "none",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P39",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是独立重复；保留所有原始列，按latency asc排序成独立派生数据；s1画accuracy、清空误差列，标题“Synthetic processed P39”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P39"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "sort",
+        "groupBy": [],
+        "metrics": [],
+        "filters": [],
+        "sort": [
+          {
+            "field": "latency",
+            "direction": "asc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "none",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    },
+    {
+      "id": "P40",
+      "category": "processing",
+      "synthetic": true,
+      "prompt": "每行是独立重复；保留所有原始列，按latency desc排序成独立派生数据；s1画accuracy、清空误差列，标题“Synthetic processed P40”。",
+      "expected_operations": [
+        {
+          "tool": "map_series",
+          "arguments": {
+            "seriesId": "s1",
+            "y": "accuracy",
+            "error": ""
+          }
+        },
+        {
+          "tool": "set_mapping",
+          "arguments": {
+            "x": "epoch",
+            "group": ""
+          }
+        },
+        {
+          "tool": "set_style",
+          "arguments": {
+            "title": "Synthetic processed P40"
+          }
+        }
+      ],
+      "expected_changes": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "allowed_paths": [
+        "/datasetVersionId",
+        "/series/0/y",
+        "/series/0/error",
+        "/group",
+        "/style/title"
+      ],
+      "expected_processing": {
+        "schema_version": 1,
+        "mode": "sort",
+        "groupBy": [],
+        "metrics": [],
+        "filters": [],
+        "sort": [
+          {
+            "field": "latency",
+            "direction": "desc"
+          }
+        ],
+        "missingGroup": "exclude",
+        "error": "none",
+        "observationUnit": "independent repeated run at a fixed epoch and model",
+        "replicate": "",
+        "x": "epoch",
+        "group": "",
+        "display": "bars"
+      }
+    }
+  ]
+}

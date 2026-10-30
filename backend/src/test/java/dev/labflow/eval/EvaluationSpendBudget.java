@@ -13,14 +13,23 @@ final class EvaluationSpendBudget {
   private int unknownUsage;
 
   EvaluationSpendBudget(String ceiling, String price) {
-    this.ceiling = positive(ceiling);
+    this(ceiling, price, false);
+  }
+
+  private EvaluationSpendBudget(String ceiling, String price, boolean unlimited) {
+    this.ceiling = unlimited ? null : positive(ceiling);
     this.price = positive(price);
+  }
+
+  static EvaluationSpendBudget unlimited(String price) {
+    return new EvaluationSpendBudget(null, price, true);
   }
 
   static EvaluationSpendBudget configured() {
     return new EvaluationSpendBudget(
         System.getProperty("labflow.eval.maxCostCny", "6"),
-        System.getProperty("labflow.eval.pricePerMillionCny", "8"));
+        System.getProperty("labflow.eval.pricePerMillionCny", "8"),
+        Boolean.getBoolean("labflow.eval.unlimitedCost"));
   }
 
   private static BigDecimal positive(String value) {
@@ -39,7 +48,10 @@ final class EvaluationSpendBudget {
   }
 
   boolean canStartCase() {
-    return estimate(charged + CASE_TOKENS).compareTo(ceiling) <= 0;
+    return ceiling == null || estimate(charged + CASE_TOKENS).compareTo(ceiling) <= 0;
+  }
+  boolean canStartPair() {
+    return ceiling == null || estimate(charged + 2L * CASE_TOKENS).compareTo(ceiling) <= 0;
   }
 
   void record(JsonNode row) {
@@ -54,8 +66,9 @@ final class EvaluationSpendBudget {
   }
 
   ObjectNode report(ObjectMapper json, int skipped) {
-    return json.createObjectNode()
+    var result = json.createObjectNode()
         .put("ceiling_cny", ceiling)
+        .put("cost_limit_enabled", ceiling != null)
         .put("worst_case_price_per_million_cny", price)
         .put("spent_tokens", reported)
         .put("reserved_or_reported_tokens", charged)
@@ -65,8 +78,11 @@ final class EvaluationSpendBudget {
         .put("skipped_cases", skipped)
         .put(
             "note",
-            "Before each live case reserve 60000 tokens at the configured price; unknown usage"
+            (ceiling == null ? "Owner explicitly disabled the total estimated cost limit; usage is still recorded. " : "")
+                + "Before each live case account for 60000 tokens at the configured price; unknown usage"
                 + " retains the reservation. Estimate only, not verified provider pricing or a"
                 + " billing guarantee.");
+    if(Boolean.getBoolean("labflow.team.unbounded")&&unknownUsage>0){result.putNull("estimated_cny").put("estimate_incomplete",true).put("note","Unrestricted evaluation has unknown usage with no known upper bound. Nominal reservations are bookkeeping, not a spending bound; only reported tokens are measured.");}
+    return result;
   }
 }

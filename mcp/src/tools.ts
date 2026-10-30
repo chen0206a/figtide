@@ -105,6 +105,12 @@ export function sanitizeDatasetList(datasets: unknown): unknown[] {
 export class FigTideTools {
   constructor(private readonly client: FigTideClient) {}
 
+  async reviewChart(projectId: number, config: JsonObject, target?: {width_mm?: number; journal?: string}, chartId?: number) {
+    return (await this.client.request<JsonObject>(`projects/${projectId}/figure-tools/review`, post({
+      protocol_version: 1, config, ...(target ? {target} : {}), ...(chartId ? {chart_id: chartId} : {}),
+    }))).data;
+  }
+
   async listProjects() {
     return (await this.client.request<unknown[]>("projects")).data;
   }
@@ -227,6 +233,12 @@ export class FigTideTools {
 }
 
 export function registerTools(server: McpServer, tools: FigTideTools): void {
+  server.registerTool('review_chart', {
+    title: '确定性审稿', description: '只读检查图表规格，不调用模型，不写入配置。没有编辑器几何信息，R7/R8 明确跳过；修复须经预览并由用户确认。',
+    inputSchema: {project_id: positiveId, config: jsonObject, chart_id: positiveId.optional(),
+      target: z.object({width_mm: z.number().min(40).max(300).optional(), journal: z.string().max(64).optional()}).strict().optional()},
+    annotations: readAnnotations,
+  }, async ({project_id, config, target, chart_id}) => safe(() => tools.reviewChart(project_id, config, target, chart_id)));
   server.registerTool(
     "list_projects",
     {

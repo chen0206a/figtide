@@ -58,6 +58,9 @@ class H2CompatibilityProbeTest {
     EXPECTED_MYSQL_SCRIPT.put("V7#2", false);  // agent_runs 多列 ADD + ADD INDEX：语法不支持
     EXPECTED_MYSQL_SCRIPT.put("V8#1", true);   // agent_sessions ADD turn_count
     EXPECTED_MYSQL_SCRIPT.put("V8#2", true);   // agent_runs ADD turn_index
+    EXPECTED_MYSQL_SCRIPT.put("V9#1", true);   // agent_runs ADD mode DEFAULT single（18-A 实测）
+    EXPECTED_MYSQL_SCRIPT.put("V9#2", true);   // JSON DDL；H2 产品迁移仍使用 CLOB
+    EXPECTED_MYSQL_SCRIPT.put("V9#3", true);   // accepted_fixes JSON DDL
 
     // U 探针（编号沿用盘点报告附录 U1–U7）。实测推翻了盘点报告里 ON UPDATE、
     // LONGBLOB、内联 INDEX、TIMESTAMPDIFF(MICROSECOND)、REPEATABLE_READ 的判断。

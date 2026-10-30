@@ -8,6 +8,7 @@ import {
   publicationWidthLabels,
 } from "./publication";
 import { NumberInput, Toggle } from "./workbench/controls";
+import {journalPreset, journalRule, journalRules} from './journals';
 
 export function PublicationPresets({
   config: c,
@@ -20,13 +21,15 @@ export function PublicationPresets({
   label: string;
   compact?: boolean;
 }) {
+  const journal = journalRule(c.publication?.journal);
+  const widths = [journal.single_column_mm ?? publicationWidths[0], publicationWidths[1], journal.double_column_mm ?? publicationWidths[2]];
   return (
     <div
       className={`publication-presets ${compact ? "is-compact" : ""}`}
       role="group"
       aria-label={label}
     >
-      {publicationWidths.map((width, i) => (
+      {widths.map((width, i) => (
         <button
           key={width}
           aria-label={`${publicationWidthLabels[i]} · ${width} mm`}
@@ -57,6 +60,13 @@ export function PublicationPanel({
   return (
     <section className="property-section publication-section">
       <h3>论文尺寸</h3>
+      <label>目标期刊
+        <select aria-label="目标期刊" value={p.journal || 'default'}
+          onChange={event => onChange(journalPreset(c, event.target.value))}>
+          {journalRules.map(rule => <option key={rule.id} value={rule.id}>{rule.name}</option>)}
+        </select>
+      </label>
+      <p className="tiny-note">审稿最小字号 {journalRule(p.journal).min_font_pt ?? 6} pt。未注明的要求使用通用值。</p>
       <Toggle
         label="按论文物理尺寸输出"
         value={p.enabled}

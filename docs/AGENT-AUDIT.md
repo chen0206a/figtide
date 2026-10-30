@@ -1,5 +1,7 @@
 # Step 2c：运行审计与用户决策
 
+2026-10-26 · 18-A：运行增加可选确定性 `review`。V9 review_json 存审稿结果和上下文指纹；accepted_fixes_json 存选择的修复 ID 与最终配置指纹。新接受请求的 accepted_fixes/review_hash 经相同 revision/lint 和原决定事务保护，失败回滚，不自动保存。报告可能含项目图表名称及绘图修复参数，仅存本机，不包含原始行/文件名/样例或完整配置；这是旧审计自由文本脱敏说明之外的新增报告范围。详见 [REVIEW.md](REVIEW.md)。预算、恢复、原决定幂等及项目备份不包含审计的边界保持不变。
+
 本轮继续使用 Java Harness，不新增 Python 服务、模型 SDK 或收费调用。运行结束时把脱敏的 trace、用量和提案摘要存进 MySQL；用户接受／拒绝由独立接口记录。后续已补齐[2d的30条双模式评测](AGENT-EVALUATION.md)，真实模型语义效果仍需手动评审。
 
 ## 界面

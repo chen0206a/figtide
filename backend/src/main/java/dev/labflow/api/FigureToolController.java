@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class FigureToolController {
   private final FigureToolService service;
+  @org.springframework.beans.factory.annotation.Autowired private dev.labflow.agent.AgentRunService agent;
 
   public FigureToolController(FigureToolService service) {
     this.service = service;
@@ -31,6 +32,7 @@ public class FigureToolController {
 
   @PostMapping("/projects/{p}/figure-tools/preview")
   Object preview(@PathVariable long p, @RequestBody JsonNode request) {
+    if(request.has("agent_run_id"))return agent.preview(p,request);
     return service.preview(p, request);
   }
 }

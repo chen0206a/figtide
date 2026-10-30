@@ -72,7 +72,7 @@ jobs:
           cache: maven
           cache-dependency-path: backend/pom.xml
       - run: mvn -B -f backend/pom.xml verify
-      - name: Upload deterministic agent evaluation report
+      - name: Upload deterministic agent and review evaluation reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -96,3 +96,10 @@ jobs:
         env:
           LABFLOW_TEST_DB: h2
         run: mvn -B -f backend/pom.xml verify
+      - name: Upload H2 agent and review evaluation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-evaluation-h2
+          path: backend/target/agent-eval/
+          if-no-files-found: warn

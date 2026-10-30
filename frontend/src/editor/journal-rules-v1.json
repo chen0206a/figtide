@@ -1,0 +1,8 @@
+[
+  {"id":"default","name":"通用（FigTide 默认）","single_column_mm":88,"double_column_mm":180,"min_font_pt":6,"max_font_pt":null,"min_line_pt":0.5,"source_url":"","checked_at":"2026-10-26"},
+  {"id":"nature","name":"Nature（主刊，最终稿）","single_column_mm":89,"double_column_mm":183,"min_font_pt":5,"max_font_pt":7,"min_line_pt":null,"source_url":"https://www.nature.com/documents/nature-final-artwork.pdf","checked_at":"2026-10-26"},
+  {"id":"ieee","name":"IEEE Journals（通用图形指南）","single_column_mm":88.9,"double_column_mm":182,"min_font_pt":null,"max_font_pt":null,"min_line_pt":null,"source_url":"https://journals.ieeeauthorcenter.ieee.org/create-your-ieee-journal-article/create-graphics-for-your-article/resolution-and-size/","checked_at":"2026-10-26"},
+  {"id":"plos-one","name":"PLOS ONE","single_column_mm":null,"double_column_mm":null,"min_font_pt":8,"max_font_pt":12,"min_line_pt":null,"source_url":"https://journals.plos.org/plosone/s/figures","checked_at":"2026-10-26"},
+  {"id":"elsevier","name":"Elsevier（通用图形指南）","single_column_mm":90,"double_column_mm":190,"min_font_pt":7,"max_font_pt":null,"min_line_pt":null,"source_url":"https://www.elsevier.com/about/policies-and-standards/author/artwork-and-media-instructions/artwork-sizing","checked_at":"2026-10-26"},
+  {"id":"acs-crt","name":"ACS · Chemical Research in Toxicology","single_column_mm":84.6666666667,"double_column_mm":177.8,"min_font_pt":4.5,"max_font_pt":null,"min_line_pt":0.5,"source_url":"https://researcher-resources.acs.org/publish/author_guidelines?coden=crtoec","checked_at":"2026-10-26"}
+]

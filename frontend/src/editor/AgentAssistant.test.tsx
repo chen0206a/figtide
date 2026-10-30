@@ -75,6 +75,8 @@ const run: AgentRun = {
 afterEach(() => {
   cleanup();
   sessionStorage.clear();
+  localStorage.removeItem('figtide-agent-budget-v1');
+  localStorage.removeItem('figtide-agent-mode-v1');
   vi.unstubAllGlobals();
 });
 it("permits explicit appearance edits in a structural batch without allowing other series styles to drift", () => {
@@ -648,4 +650,34 @@ it("keeps the reconnect entry when the start failure is an offline ApiError", as
     ),
   ).toHaveLength(1);
   expect(screen.getByRole("button", { name: "应用这组调整" })).toBeEnabled();
+});
+
+it('sends and remembers the user run budget and role percentages',async()=>{
+  localStorage.clear();const s=setup(undefined,true);
+  fireEvent.change(screen.getByLabelText('助手模式'),{target:{value:'team'}});
+  fireEvent.change(screen.getByLabelText('单次用量额度'),{target:{value:'48000'}});
+  fireEvent.change(screen.getByLabelText('角色用量分配'),{target:{value:'custom'}});
+  fireEvent.change(screen.getByLabelText('协调者配额百分比'),{target:{value:'50'}});
+  expect(screen.getByRole('alert')).toHaveTextContent('总和为 100%');
+  fireEvent.change(screen.getByLabelText('数据专家配额百分比'),{target:{value:'10'}});
+  fireEvent.change(screen.getByLabelText('绘图专家配额百分比'),{target:{value:'25'}});
+  await screen.findByText('fixture');
+  fireEvent.change(screen.getByRole('textbox',{name:'希望怎样调整？'}),{target:{value:'字号18'}});
+  fireEvent.click(screen.getByRole('checkbox'));
+  fireEvent.click(screen.getByRole('button',{name:'生成调整提案'}));
+  await waitFor(()=>expect(s.fetcher.mock.calls.some(([url,init])=>url.endsWith('/runs')&&init?.method==='POST')).toBe(true));
+  const sent=s.fetcher.mock.calls.find(([url,init])=>url.endsWith('/runs')&&init?.method==='POST')!;
+  expect(JSON.parse(sent[1]!.body as string)).toMatchObject({max_tokens:48000,role_budget_percentages:{coordinator:50,data:10,plotter:25,reviewer:15}});
+  expect(JSON.parse(localStorage.getItem('figtide-agent-budget-v1')!)).toEqual({runLimit:48000,roles:{coordinator:50,data:10,plotter:25,reviewer:15}});
+  localStorage.clear();
+});
+
+it('does not call a model when user budget configuration is invalid',async()=>{
+  localStorage.clear();const s=setup(undefined,true);await screen.findByText('fixture');
+  fireEvent.change(screen.getByLabelText('单次用量额度'),{target:{value:'1000'}});
+  fireEvent.change(screen.getByRole('textbox',{name:'希望怎样调整？'}),{target:{value:'字号18'}});
+  fireEvent.click(screen.getByRole('checkbox',{name:agentConsent}));
+  expect(screen.getByRole('button',{name:'生成调整提案'})).toBeDisabled();
+  expect(s.fetcher.mock.calls.filter(([url,init])=>url.endsWith('/runs')&&init?.method==='POST')).toHaveLength(0);
+  localStorage.clear();
 });

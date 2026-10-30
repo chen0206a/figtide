@@ -109,7 +109,7 @@ public final class FigureOperations {
                   "show",
                   BOOL,
                   "position",
-                  enumeration("top", "bottom", "right"),
+                  enumeration("top", "bottom", "right", "top-left", "top-right", "bottom-left", "bottom-right"),
                   "orientation",
                   enumeration("h", "v")),
               List.of()),

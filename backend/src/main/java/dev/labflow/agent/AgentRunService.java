@@ -21,23 +21,36 @@ public class AgentRunService {
   private final WorkspaceService workspace;
   private final ObjectMapper json;
   private final AgentAuditService audit;
+  private final AgentExecutionPolicy executionPolicy;
+  @org.springframework.beans.factory.annotation.Value("${labflow.agent.team.role-budget-limits-enabled:false}")
+  private boolean legacyRoleBudgetLimits;
+  @org.springframework.beans.factory.annotation.Autowired
+  private dev.labflow.review.ProposalReviewService proposalReviews;
+  @org.springframework.beans.factory.annotation.Autowired private dev.labflow.agent.team.TeamDraftService teamDrafts;
+  @org.springframework.beans.factory.annotation.Autowired private dev.labflow.agent.team.TeamDecisionService teamDecisions;
   private final Map<String, Run> runs = new LinkedHashMap<>();
   private final ThreadPoolExecutor workers =
       new ThreadPoolExecutor(2, 2, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(6));
   private final ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
   private final Semaphore slots = new Semaphore(6);
 
+  @org.springframework.beans.factory.annotation.Autowired
   public AgentRunService(
       ModelProvider provider,
       FigureToolService figures,
       WorkspaceService workspace,
       ObjectMapper json,
       AgentAuditService audit) {
+    this(provider,figures,workspace,json,audit,AgentExecutionPolicy.USER_CONFIGURED);
+  }
+
+  public AgentRunService(ModelProvider provider,FigureToolService figures,WorkspaceService workspace,ObjectMapper json,AgentAuditService audit,AgentExecutionPolicy executionPolicy) {
     this.provider = provider;
     this.figures = figures;
     this.workspace = workspace;
     this.json = json;
     this.audit = audit;
+    this.executionPolicy = Objects.requireNonNull(executionPolicy);
   }
 
   public ModelProvider.Info info() {
@@ -49,12 +62,20 @@ public class AgentRunService {
     String sessionId = UUID.randomUUID().toString(), requestHash, inputText = "";
     boolean newSession = true;
     boolean recommending;
+    String mode="single",phase="queued",deepReview="";
+    String currentRole="";
+    boolean pendingReview;
+    Map<String,Object> previewData;
+    ObjectNode reviewRequest;
+    final CompletableFuture<JsonNode> geometry=new CompletableFuture<>();
     ArrayNode recommendations;
     int sessionBudget = 180000;
     final long project, created = System.currentTimeMillis();
     final ObjectNode snapshot;
     final int maxSteps, timeout;
     int maxTokens;
+    boolean unboundedEvaluation;
+    int[] roleBudgetPercentages;
     final String hash;
     final ArrayNode trace;
     final ModelProvider selectedProvider;
@@ -68,6 +89,7 @@ public class AgentRunService {
     ObjectNode proposal;
     String parentId;
     ArrayNode inherited;
+    ObjectNode inheritedProcessing;
     int depth;
     Future<?> task;
     ScheduledFuture<?> deadline;
@@ -94,7 +116,7 @@ public class AgentRunService {
     }
 
     boolean active() {
-      return status.equals("queued") || status.equals("running");
+      return status.equals("queued") || status.equals("running") || pendingReview;
     }
   }
 
@@ -136,11 +158,19 @@ public class AgentRunService {
             "session_budget",
             "request_id",
             "user_message",
-            "mode"));
-    String mode = request.path("mode").asText("edit");
-    if (!Set.of("edit", "recommend").contains(mode)
+            "mode", "render_facts", "target", "role_budget_percentages"));
+    String mode = request.path("mode").asText("single");
+    if (!Set.of("single", "edit", "recommend", "team", "review").contains(mode)
         || (request.has("mode") && !request.path("mode").isTextual()))
       throw ApiException.bad("不支持的运行模式");
+    if((request.has("render_facts")||request.has("target"))&&!mode.equals("review"))throw ApiException.bad("只有独立深度审稿可以附初始渲染事实");
+    if(request.has("role_budget_percentages")&&!mode.equals("team"))throw ApiException.bad("角色配额只适用于协作模式");
+    int[] rolePercentages=request.has("role_budget_percentages")?dev.labflow.agent.team.TeamBudget.percentages(request.path("role_budget_percentages")):legacyRoleBudgetLimits?new int[]{15,45,85,100}:null;
+    if(mode.equals("review")){
+      if(request.has("parent_run_id"))throw ApiException.bad("深度审稿不能续改提案");
+      var facts=dev.labflow.review.RenderFacts.validate(request.path("render_facts"));dev.labflow.review.RenderFacts.target(request.path("target"));
+      if(facts!=null&&(facts.at("/canvas/width").asDouble()!=request.at("/config/style/width").asDouble()||facts.at("/canvas/height").asDouble()!=request.at("/config/style/height").asDouble()))throw ApiException.bad("渲染事实与画布尺寸不一致");
+    }
     if (mode.equals("recommend")
         && (request.has("parent_run_id") || request.path("chart_id").isIntegralNumber()))
       throw ApiException.bad("推荐阶段只绑定数据，不续改已有图表");
@@ -175,10 +205,12 @@ public class AgentRunService {
     if (selected == null)
       selected = provider; // Mockito/custom providers may not implement snapshot.
     if (!selected.info().available()) throw new ApiException(503, selected.info().reason());
-    int steps = limit(request, "max_steps", 6, 1, 8);
-    int tokens = limit(request, "max_tokens", 32000, 2000, 60000);
-    int timeout = limit(request, "timeout_seconds", 60, 1, 120);
+    int steps = executionPolicy==AgentExecutionPolicy.EVALUATION_UNBOUNDED?Integer.MAX_VALUE:limit(request, "max_steps", mode.equals("team")?8:6, 1, 8);
+    int tokens = executionPolicy==AgentExecutionPolicy.EVALUATION_UNBOUNDED?Integer.MAX_VALUE:limit(request, "max_tokens", mode.equals("team")?60000:32000, 2000, 60000);
+    int timeout = executionPolicy==AgentExecutionPolicy.EVALUATION_UNBOUNDED?0:limit(request, "timeout_seconds", 60, 1, 120);
     var tools = mode.equals("recommend") ? recommendationDefinitions() : definitions();
+    JsonNode catalog=tools;
+    if(Set.of("team","review").contains(mode)){var combined=json.createObjectNode().put("orchestrator",dev.labflow.agent.team.TeamPrompts.VERSION);combined.set("plotting",tools);combined.set("processing",teamDrafts.processingTools());catalog=combined;}
     var run =
         new Run(
             project,
@@ -187,13 +219,23 @@ public class AgentRunService {
             tokens,
             timeout,
             selected.info().model(),
-            hash(tools),
+            hash(catalog),
             json.createArrayNode(),
             selected);
     run.recommending = mode.equals("recommend");
+    run.mode=mode;
+    run.unboundedEvaluation=executionPolicy==AgentExecutionPolicy.EVALUATION_UNBOUNDED;
+    run.roleBudgetPercentages=run.unboundedEvaluation?null:rolePercentages;
+    if(mode.equals("team")||run.unboundedEvaluation){
+      var budgetEvent=run.trace.addObject().put("step",0).put("event","budget_configuration").put("evaluation_unbounded",run.unboundedEvaluation);
+      if(run.unboundedEvaluation)budgetEvent.putNull("run_budget");else budgetEvent.put("run_budget",tokens);
+      if(run.roleBudgetPercentages==null)budgetEvent.putNull("role_percentages");else{var shares=budgetEvent.putObject("role_percentages");var names=List.of("coordinator","data","plotter","reviewer");for(int i=0;i<4;i++)shares.put(names.get(i),run.roleBudgetPercentages[i]-(i==0?0:run.roleBudgetPercentages[i-1]));}
+    }
+    run.reviewRequest=json.createObjectNode();
+    for(String key:List.of("render_facts","target"))if(request.has(key))run.reviewRequest.set(key,request.path(key).deepCopy());
     run.id = requestId;
     run.requestHash = requestHash;
-    run.sessionBudget = limit(request, "session_budget", 180000, 60000, 600000);
+    run.sessionBudget = run.unboundedEvaluation?Integer.MAX_VALUE:limit(request, "session_budget", 180000, 60000, 600000);
     run.inputText = request.path("user_message").asText(request.path("prompt").asText());
     String safeInput = selected.redactSecret(run.inputText);
     if (safeInput != null) run.inputText = safeInput;
@@ -208,6 +250,10 @@ public class AgentRunService {
       var parent = live(project, request.path("parent_run_id").asText());
       if (parent == null) throw new ApiException(409, "原提案已过期，请按当前画布重新生成");
       synchronized (parent) {
+        if(parent.proposal!=null&&parent.proposal.has("processing")){
+          if(!mode.equals("team"))throw new ApiException(409,"包含派生数据的提案需要使用协作模式续改");
+          run.inheritedProcessing=(ObjectNode)parent.proposal.path("processing").deepCopy();run.previewData=parent.previewData;
+        }
         if (!parent.status.equals("proposed")
             || !parent.persisted
             || parent.proposal == null
@@ -311,7 +357,7 @@ public class AgentRunService {
         finish(run, "failed", "运行队列已满，请稍后重试", null);
         throw new ApiException(429, "运行队列已满，请稍后重试");
       }
-      run.deadline =
+      if(!run.unboundedEvaluation)run.deadline =
           timer.schedule(() -> stop(run, "incomplete", "运行超时，未应用任何修改"), timeout, TimeUnit.SECONDS);
     }
     return view(run);
@@ -409,6 +455,13 @@ public class AgentRunService {
   }
 
   public Object decide(long project, String id, JsonNode request) {
+    var team=live(project,id);
+    if(team!=null&&request.path("outcome").asText().equals("accepted"))synchronized(team){
+      if(team.proposal!=null&&team.proposal.has("processing")){
+        if(!team.status.equals("proposed")||!team.persisted||team.pendingReview)throw new ApiException(409,"提案尚未完成");
+        return teamDecisions.decide(project,id,team.proposal,request);
+      }
+    }
     var record = audit.detail(project, id);
     boolean eligible = false;
     String proposalHash = "";
@@ -434,7 +487,41 @@ public class AgentRunService {
       String safe = currentRun.selectedProvider.redactSecret(safeRequest.path("reason").asText());
       if (safe != null) ((ObjectNode) safeRequest).put("reason", safe);
     }
+    if(request.has("accepted_fixes")){
+      JsonNode proposal=null;
+      if(currentRun!=null)synchronized(currentRun){if(currentRun.proposal!=null)proposal=currentRun.proposal.deepCopy();}
+      return proposalReviews.decide(project,id,(ObjectNode)safeRequest,eligible,proposalHash,proposal);
+    }
     return audit.decide(project, id, safeRequest, eligible, proposalHash);
+  }
+
+  public Object review(long project,String id,JsonNode request){
+    audit.detail(project,id);
+    var run=live(project,id);
+    if(run==null)throw new ApiException(409,"历史提案仅供追溯，请重新生成后审稿");
+    synchronized(run){
+      if(run.pendingReview){
+        dev.labflow.review.RenderFacts.fields(request,Set.of("render_facts","target"),Set.of());
+        var facts=dev.labflow.review.RenderFacts.validate(request.path("render_facts"));dev.labflow.review.RenderFacts.target(request.path("target"));
+        if(facts!=null&&(facts.at("/canvas/width").asDouble()!=run.proposal.at("/config/style/width").asDouble()||facts.at("/canvas/height").asDouble()!=run.proposal.at("/config/style/height").asDouble()))throw ApiException.bad("渲染事实与提案画布不一致");
+        run.geometry.complete(request.deepCopy());return Map.of("pending",true,"phase","reviewing");
+      }
+      if(!run.status.equals("proposed")||!run.persisted||run.proposal==null)throw new ApiException(409,"只有已完成的提案可以审稿");
+      return proposalReviews.review(project,id,run.snapshot.path("config"),run.proposal,request,run.previewData);
+    }
+  }
+
+  /** Existing preview protocol with an optional trusted run binding for uncommitted derived data. */
+  public Object preview(long project,JsonNode request){
+    dev.labflow.review.RenderFacts.fields(request,Set.of("agent_run_id","protocol_version","chart_id","base_revision","config","operations"),Set.of("agent_run_id","protocol_version","config","operations"));
+    var id=request.path("agent_run_id");if(!id.isTextual())throw ApiException.bad("运行标识无效");var run=live(project,id.asText());
+    if(run==null)throw new ApiException(409,"提案已过期，请重新生成");
+    synchronized(run){
+      if(!run.status.equals("proposed")||!run.persisted||run.pendingReview||run.proposal==null||!audit.detail(project,run.id).path("outcome").asText().equals("pending"))throw new ApiException(409,"提案已结束");
+      if(!request.path("protocol_version").isIntegralNumber()||request.path("protocol_version").asInt()!=1||!request.path("config").equals(run.proposal.path("config"))||!request.path("chart_id").equals(run.snapshot.path("chart_id"))||!request.path("base_revision").equals(run.snapshot.path("base_revision")))throw new ApiException(409,"提案预览上下文已变化");
+      if(run.previewData==null){var body=(ObjectNode)request.deepCopy();body.remove("agent_run_id");return figures.preview(project,body);}
+      return figures.memoryPreview(project,run.snapshot,run.proposal.path("config"),request.path("operations"),run.previewData);
+    }
   }
 
   private void stop(Run run, String status, String reason) {
@@ -458,6 +545,7 @@ public class AgentRunService {
         var saved = audit.detail(r.project, r.id);
         for (String field : List.of("outcome", "proposal_hash", "decision_at", "decision_reason"))
           result.set(field, saved.path(field));
+        for(String field:List.of("review","accepted_fixes","final_config_hash"))if(saved.has(field))result.set(field,saved.path(field));
         if (!saved.path("outcome").asText().equals("pending")) result.remove("proposal");
       } else if (!r.active()) {
         result.remove("proposal");
@@ -475,8 +563,8 @@ public class AgentRunService {
             .put("session_id", r.sessionId)
             .put("status", r.status)
             .put("model", r.model)
-            .put("prompt_version", r.recommending ? "chart-recommender-v1" : PROMPT_VERSION)
-            .put("mode", r.recommending ? "recommend" : "edit")
+            .put("prompt_version", r.recommending ? "chart-recommender-v1" : Set.of("team","review").contains(r.mode)?dev.labflow.agent.team.TeamPrompts.VERSION:PROMPT_VERSION)
+            .put("mode", r.mode)
             .put("catalog_hash", r.hash)
             .put("steps", r.steps)
             .put("tokens", r.tokens)
@@ -497,6 +585,15 @@ public class AgentRunService {
             && r.proposal != null
             && (r.status.equals("proposed") || r.status.equals("answered")));
     result.set("trace", r.trace.deepCopy());
+    if(r.unboundedEvaluation)result.put("budget_limit_enabled",false).put("execution_policy","evaluation_unbounded");
+    if(r.mode.equals("team")){
+      if(r.roleBudgetPercentages==null)result.putNull("role_budget_percentages");
+      else{var shares=result.putObject("role_budget_percentages");var names=List.of("coordinator","data","plotter","reviewer");for(int i=0;i<4;i++)shares.put(names.get(i),r.roleBudgetPercentages[i]-(i==0?0:r.roleBudgetPercentages[i-1]));}
+    }
+    if(Set.of("team","review").contains(r.mode)){
+      result.put("phase",r.phase);result.put("deep_review",r.deepReview);
+      result.set("roles",dev.labflow.agent.team.TeamRoles.summarize(r.trace,json));
+    }
     if (r.proposal != null) result.set("proposal", r.proposal.deepCopy());
     if (r.status.equals("answered") && r.recommendations != null)
       result.set("recommendations", r.recommendations.deepCopy());
@@ -603,12 +700,14 @@ public class AgentRunService {
   }
 
   private ObjectNode preview(Run r, ArrayNode operations) {
+    if(r.previewData!=null)return teamDrafts.preview(r.project,r.snapshot,operations,r.previewData);
     var req = r.snapshot.deepCopy();
     req.set("operations", operations.deepCopy());
     return json.valueToTree(figures.preview(r.project, req));
   }
 
   private void execute(Run r, String prompt, ArrayNode tools) {
+    if(Set.of("team","review").contains(r.mode)){executeTeam(r,prompt,tools);return;}
     try {
       synchronized (r) {
         if (!r.active()) return;
@@ -660,15 +759,15 @@ public class AgentRunService {
       messages.addObject().put("role", "user").put("content", prompt);
       ArrayNode operations = r.inherited == null ? json.createArrayNode() : r.inherited.deepCopy();
       boolean nudged = false;
-      for (int step = 0; step < r.maxSteps; step++) {
+      for (int step = 0; r.unboundedEvaluation || step < r.maxSteps; step++) {
         ArrayNode requestTools = tools;
         int inputCost = cost(messages) + cost(requestTools) + 256;
         boolean closing =
             !operations.isEmpty()
-                && (step == r.maxSteps - 1 || r.maxTokens - r.charged < 2L * (inputCost + 2048));
+                && (step == r.maxSteps - 1 || (!r.unboundedEvaluation&&r.maxTokens - r.charged < 2L * (inputCost + 2048)));
         // Reserve a text-only closing response for an already validated candidate. Never turn
         // a budget warning into permission to guess missing scientific information.
-        if (closing || (!nudged && r.maxTokens - r.charged < 2L * (inputCost + 2048))) {
+        if (closing || (!r.unboundedEvaluation&&!nudged && r.maxTokens - r.charged < 2L * (inputCost + 2048))) {
           nudged = true;
           messages
               .addObject()
@@ -692,12 +791,12 @@ public class AgentRunService {
         int output;
         synchronized (r) {
           if (!r.active()) return;
-          long available = r.maxTokens - r.charged - inputCost;
+          long available = r.unboundedEvaluation?Long.MAX_VALUE:r.maxTokens - r.charged - inputCost;
           if (available < 128) {
             finish(r, "incomplete", "token 预算不足，未生成可应用提案", null);
             return;
           }
-          output = (int) Math.min(2048, available);
+          output = r.unboundedEvaluation?0:(int) Math.min(2048, available);
           r.steps++;
           r.trace
               .addObject()
@@ -707,7 +806,7 @@ public class AgentRunService {
               .put("max_output_tokens", output);
         }
         long started = System.currentTimeMillis();
-        long remaining = r.created + r.timeout * 1000L - started;
+        long remaining = r.unboundedEvaluation?120000:r.created + r.timeout * 1000L - started;
         if (remaining <= 0) {
           finish(r, "incomplete", "运行超时", null);
           return;
@@ -745,7 +844,7 @@ public class AgentRunService {
                       : "other")
               .put("response_hash", AuditSanitizer.hash(message))
               .put("latency_ms", System.currentTimeMillis() - started);
-          if (r.charged > r.maxTokens) {
+          if (!r.unboundedEvaluation&&r.charged > r.maxTokens) {
             finish(r, "incomplete", "已达到 token 预算，未应用任何修改", null);
             return;
           }
@@ -937,9 +1036,78 @@ public class AgentRunService {
     }
   }
 
+  private void executeTeam(Run r,String prompt,ArrayNode tools){
+    try{
+      synchronized(r){if(!r.active())return;r.status="running";}
+      var port=new dev.labflow.agent.team.TeamOrchestrator.Port(){
+        public ModelProvider.Reply complete(String role,ArrayNode messages,ArrayNode allowed) throws Exception {
+          int input=cost(messages)+cost(allowed)+256,output;long started=System.currentTimeMillis();
+          long ceiling=dev.labflow.agent.team.TeamBudget.ceiling(role,r.maxTokens,r.mode.equals("review"),r.roleBudgetPercentages);
+          synchronized(r){
+            if(!r.active())throw new InterruptedException();
+            if(!r.unboundedEvaluation&&r.steps>=r.maxSteps)throw new dev.labflow.agent.team.TeamBudget.Limit("已达到模型步数预算上限");
+            long available=r.unboundedEvaluation?Long.MAX_VALUE:Math.min(ceiling,r.maxTokens)-r.charged-input;
+            if(available<128)throw new dev.labflow.agent.team.TeamBudget.Limit("角色 token 预算不足，未交付半成品");
+            output=r.unboundedEvaluation?0:(int)Math.min(2048,available);r.steps++;
+            r.trace.addObject().put("step",r.steps).put("event","model_request").put("role",role).put("prompt_version",dev.labflow.agent.team.TeamPrompts.version(role)).put("request_hash",AuditSanitizer.hash(messages)).put("max_output_tokens",output);
+          }
+          long remaining=r.unboundedEvaluation?120000:r.created+r.timeout*1000L-started;if(remaining<=0)throw new TimeoutException();
+          var reply=r.selectedProvider.complete(messages.deepCopy(),allowed.deepCopy(),output,Duration.ofMillis(remaining));
+          synchronized(r){
+            if(!r.active())throw new InterruptedException();
+            long actual=(long)reply.promptTokens()+reply.completionTokens();
+            if(reply.promptTokens()<0||reply.completionTokens()<0||actual>Integer.MAX_VALUE)throw new IllegalStateException("无效 token 用量");
+            if(!r.unboundedEvaluation&&actual>r.maxTokens-r.charged){r.trace.addObject().put("step",r.steps).put("role",role).put("event","usage_outside_reservation").put("reported_tokens",actual);throw new dev.labflow.agent.team.TeamBudget.Limit("模型报告用量超出剩余 token 预算，用量不完整，按预留保守结算");}
+            r.tokens+=actual;r.promptTokens+=reply.promptTokens();r.completionTokens+=reply.completionTokens();r.responses++;
+            long nextCharge=r.charged+Math.max(actual,(long)input+cost(reply.message()));
+            r.charged=r.unboundedEvaluation?nextCharge:Math.min(r.maxTokens,nextCharge);
+            String model=r.selectedProvider.redactSecret(reply.model());r.model=model==null?reply.model():model;
+            r.trace.addObject().put("step",r.steps).put("event","model_response").put("role",role).put("tokens",actual).put("prompt_tokens",reply.promptTokens()).put("completion_tokens",reply.completionTokens()).put("response_hash",AuditSanitizer.hash(reply.message())).put("latency_ms",System.currentTimeMillis()-started);
+            if(!r.unboundedEvaluation&&(nextCharge>ceiling||nextCharge>r.maxTokens))throw new dev.labflow.agent.team.TeamBudget.Limit("已达到角色 token 预算上限，未交付半成品");
+          }
+          var message=reply.message().deepCopy();if(message.path("content").isTextual()){String safe=r.selectedProvider.redactSecret(message.path("content").asText());if(safe!=null)message.put("content",safe.substring(0,Math.min(4000,safe.length())));}
+          return new ModelProvider.Reply(message,reply.promptTokens(),reply.completionTokens(),reply.model(),reply.finishReason());
+        }
+        public void phase(String role,String phase){synchronized(r){if(!r.active())return;r.currentRole=role;r.phase=phase;r.trace.addObject().put("step",r.steps).put("role",role).put("phase",phase).put("event","role_start");}}
+        public void end(String role,String status,String summary){synchronized(r){if(!r.active())return;r.trace.addObject().put("step",r.steps).put("role",role).put("event","role_end").put("status",status).put("summary",summary);}}
+        public void tool(String role,String name,JsonNode args,JsonNode result){synchronized(r){if(!r.active())return;
+          r.trace.addObject().put("step",r.steps).put("role",role).put("event","tool_call").put("name",AuditSanitizer.toolName(name)).set("arguments",AuditSanitizer.arguments(name,args));
+          r.trace.addObject().put("step",r.steps).put("role",role).put("event","tool").put("name",AuditSanitizer.toolName(name)).put("ok",true).set("result",AuditSanitizer.result(name,result));}}
+        public JsonNode geometry(ObjectNode proposal,Map<String,Object> memory) throws Exception {
+          synchronized(r){if(!r.active())throw new InterruptedException();r.proposal=proposal;r.previewData=memory;r.pendingReview=true;r.status="running";r.phase="awaiting_render";r.currentRole="reviewer";r.trace.addObject().put("step",r.steps).put("event","render_wait").put("role","reviewer").put("phase","awaiting_render");}
+          JsonNode request;
+          try{request=r.geometry.get(r.unboundedEvaluation?5000:Math.max(1,Math.min(5000,r.created+r.timeout*1000L-System.currentTimeMillis())),TimeUnit.MILLISECONDS);}
+          catch(TimeoutException missing){request=json.createObjectNode();}
+          synchronized(r){if(!r.active())throw new InterruptedException();r.pendingReview=false;r.status="running";r.proposal=null;r.reviewRequest=(ObjectNode)request.deepCopy();}
+          return request;
+        }
+      };
+      var engine=new dev.labflow.agent.team.TeamOrchestrator(json,teamDrafts,port,r.project,r.id,r.snapshot,profile(r),tools,r.inherited,r.inheritedProcessing,r.previewData);
+      var output=engine.execute(prompt,r.mode.equals("review"),r.reviewRequest,r.unboundedEvaluation);
+      synchronized(r){
+        if(!r.active())return;r.text=output.text();r.deepReview=output.deepReview();r.previewData=output.memory();
+        finish(r,output.proposal()==null?"answered":"proposed","",output.proposal());
+        if(r.persisted&&output.proposal()!=null){proposalReviews.review(r.project,r.id,r.snapshot.path("config"),r.proposal,output.reviewRequest(),r.previewData);}
+        else if(r.persisted&&r.mode.equals("review")){var report=teamDrafts.report(r.project,r.snapshot,r.snapshot.path("config"),r.reviewRequest.path("render_facts"),r.reviewRequest.path("target"),null);report.put("deep_review",r.deepReview);audit.standaloneReview(r.project,r.id,report);}
+      }
+    }catch(Exception error){
+      synchronized(r){if(!r.active())return;
+        boolean budget=error instanceof dev.labflow.agent.team.TeamBudget.Limit;
+        boolean timeout=error instanceof TimeoutException||error instanceof java.net.http.HttpTimeoutException;
+        String reason=budget?error.getMessage():timeout?"运行超时，未交付半成品":error instanceof ApiException a&&a.status==409?"图表保存版本已变化，请重新生成":"协作阶段失败，未交付半成品，请检查服务配置与协议";
+        r.trace.addObject().put("step",r.steps).put("event","role_end").put("role",r.currentRole).put("status",budget?"budget_limited":timeout?"timeout":"failed").put("summary",reason);
+        finish(r,budget||timeout?"incomplete":"failed",reason,null);
+      }
+    }
+  }
+
   private void finish(Run r, String status, String reason, ObjectNode proposal) {
     synchronized (r) {
       if (!r.active()) return;
+      r.pendingReview=false;
+      r.phase=reason.contains("超时")?"timeout":reason.contains("预算")?"budget_limited":status;
+      if(Set.of("team","review").contains(r.mode)&&!Set.of("proposed","answered").contains(status)&&!r.currentRole.isBlank())r.trace.addObject().put("step",r.steps).put("role",r.currentRole).put("event","role_end").put("status",r.phase).put("summary",reason);
+      if(Set.of("team","review").contains(r.mode))r.trace.addObject().put("step",r.steps).put("role",r.currentRole).put("event","run_end").put("phase",r.phase);
       r.status = status;
       r.reason = reason;
       r.proposal = proposal;

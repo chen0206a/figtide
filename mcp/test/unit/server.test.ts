@@ -35,6 +35,7 @@ describe("MCP protocol", () => {
     const client = await connected();
     const listed = await client.listTools();
     expect(listed.tools.map((tool) => tool.name)).toEqual([
+      "review_chart",
       "list_projects",
       "list_datasets",
       "get_dataset_profile",
@@ -47,8 +48,8 @@ describe("MCP protocol", () => {
       "save_chart_version",
       "create_chart",
     ]);
-    for (const tool of listed.tools.slice(0, 9)) expect(tool.annotations?.readOnlyHint).toBe(true);
-    for (const tool of listed.tools.slice(9))
+    for (const tool of listed.tools.slice(0, 10)) expect(tool.annotations?.readOnlyHint).toBe(true);
+    for (const tool of listed.tools.slice(10))
       expect(tool.annotations).toMatchObject({
         readOnlyHint: false,
         destructiveHint: false,
@@ -59,6 +60,7 @@ describe("MCP protocol", () => {
   it("validates the parameters of every parameterized tool", async () => {
     const client = await connected();
     const invalid: Array<[string, Record<string, unknown>]> = [
+      ['review_chart', {project_id: 1, config: {}, target: {width_mm: -1}}],
       ["list_datasets", { project_id: 0 }],
       ["get_dataset_profile", { project_id: 1, dataset_version_id: -1 }],
       ["list_charts", { project_id: "1" }],

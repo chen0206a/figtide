@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
   Loader2,
@@ -30,6 +30,12 @@ import { conversationPrompt, type ConversationTurn } from "./agentConversation";
 import {agentConsent,agentSuggestions,type AssistantSubmission} from "./agentPresentation";
 import {useAssistantAutoStart} from "./useAssistantAutoStart";
 import type {CanvasProposal} from "./workbench/useProposalCanvas";
+import {useProposalReview} from './useProposalReview';
+import {ReviewIssues} from './ReviewIssues';
+import type {ReviewResult} from './review';
+import type {RenderFacts} from './renderFacts';
+import {TeamProgress} from './TeamProgress';
+import {readBudgetPreferences,storeBudgetPreferences,budgetPreferenceError,type AgentBudgetPreferences} from './agentBudgetPreferences';
 
 import {
   recoveryKey,
@@ -40,6 +46,7 @@ import {
 } from "./agentRecovery";
 
 function AssistantSurface(p: {
+  controls?:ReactNode;
   children: ReactNode;
   docked?: boolean;
   open: boolean;
@@ -58,6 +65,7 @@ function AssistantSurface(p: {
         wide
         className="quick-actions-dialog agent-assistant-dialog"
       >
+        {p.controls}
         {p.children}
       </Dialog>
     );
@@ -75,6 +83,7 @@ function AssistantSurface(p: {
             绘图助手
           </h2>
         </div>
+        {p.controls}
         <Button
           variant="ghost"
           size="sm"
@@ -91,6 +100,10 @@ function AssistantSurface(p: {
 }
 
 export type AgentRun = {
+  mode?:'single'|'edit'|'recommend'|'team'|'review';
+  phase?:string;
+  deep_review?:string;
+  roles?:{role:string;steps:number;tokens:number;status:string;summary:string;prompt_version?:string}[];
   run_id: string;
   session_id?: string;
   session?: SessionBudget;
@@ -117,8 +130,10 @@ export type AgentRun = {
   persisted?: boolean;
   outcome?: string;
   proposal_hash?: string;
+  review?: ReviewResult;
   audit_error?: boolean;
   trace: {
+    role?:string;
     step: number;
     event: string;
     name?: string;
@@ -130,7 +145,7 @@ export type AgentRun = {
   proposal?: ToolPreview & { operations: ToolOperation[] };
 };
 const active = (run: AgentRun | null) =>
-  !!run && ["queued", "running"].includes(run.status);
+  !!run && (["queued", "running"].includes(run.status)||run.phase==='awaiting_render');
 const statusNames: Record<AgentRun["status"], string> = {
   queued: "等待运行",
   running: "正在分析",
@@ -159,6 +174,7 @@ export function AgentAssistant(p: {
   onClose: () => void;
   onApply: (token: string, config: Config, count: number) => boolean;
 }) {
+  const queryClient=useQueryClient();
   const provider = useQuery({
     queryKey: ["agent-provider"],
     queryFn: () =>
@@ -171,7 +187,11 @@ export function AgentAssistant(p: {
     staleTime: 0,
   });
   const [session, setSession] = useState<SessionBudget | null>(null);
+  const [mode,setMode]=useState<'single'|'team'>(()=>{try{return localStorage.getItem('figtide-agent-mode-v1')==='team'?'team':'single'}catch{return 'single'}});
   const [sessionLimit, setSessionLimit] = useState(180000);
+  const [budgetPreferences,setBudgetPreferences]=useState(readBudgetPreferences);
+  const budgetError=budgetPreferenceError(mode==='team'?budgetPreferences:{...budgetPreferences,roles:null})||(!session&&(!Number.isInteger(sessionLimit)||sessionLimit<60000||sessionLimit>600000)?'会话额度须为 60,000–600,000 的整数。':'');
+  const changeBudget=(value:AgentBudgetPreferences)=>{setBudgetPreferences(value);storeBudgetPreferences(value)};
   const [recovering, setRecovering] = useState(false);
   const [disconnected, setDisconnected] = useState(false);
   const [storageNote, setStorageNote] = useState("");
@@ -389,6 +409,7 @@ export function AgentAssistant(p: {
     };
   }, [run, path, recovering]);
   async function start() {
+    if(budgetError){setError(budgetError);return;}
     const previousCursor = cursor.current;
     const requestId = crypto.randomUUID();
     remember(requestId);
@@ -418,7 +439,9 @@ export function AgentAssistant(p: {
           ...(pendingRun ? { parent_run_id: pendingRun.run_id } : {}),
           prompt: context.prompt,
           share_metadata: consent,
-          max_tokens: 60000,
+          ...(mode==='team'?{mode:'team',max_steps:8}:{}),
+          max_tokens: budgetPreferences.runLimit,
+          ...(mode==='team'?{role_budget_percentages:budgetPreferences.roles}:{}),
         }),
       );
       if (!mounted.current) {
@@ -466,23 +489,30 @@ export function AgentAssistant(p: {
     result.protocol_version === 1 &&
     result.source.dataset_version_id === p.data.id &&
     result.source.sha256 === p.data.sha256 &&
-    result.config.datasetVersionId === p.config.datasetVersionId &&
+    (result.config.datasetVersionId === p.config.datasetVersionId || (String(result.config.datasetVersionId)==='$derived'&&result.processing?.source_dataset_version_id===p.data.id&&!!result.preview_dataset&&result.preview_dataset.sha256===result.processing.preview_hash)) &&
     Array.isArray(result.operations) &&
     sameProtectedFigure(
       snapshot.config,
-      result.config,
+      result.processing?{...result.config,datasetVersionId:p.data.id}:result.config,
       structuralAllowance(result.operations),
     );
   const busy = submitting || active(run) || applying || recovering;
+  const proposalReview=useProposalReview({project:p.project,runId:pendingRun?.run_id,chartId:p.chartId,revision:p.revision,
+    proposal:result,awaitGeometry:!!p.onPreview,enabled:p.open!==false&&trusted&&!active(run)&&!submitting&&!recovering});
+  const displayResult=proposalReview.result||result;
   const context = conversationPrompt(turns, prompt);
   useAssistantAutoStart({submission:p.submission,autoStart:p.autoStart,initialConsent:p.initialConsent,initialPrompt:p.initialPrompt,prompt,consent,
     ready:p.open!==false&&!busy&&!disconnected&&!!provider.data?.available&&!(session&&session.remaining_budget<2000)&&!(result&&!trusted)&&p.config.datasetVersionId===p.data.id,
     recoveringExisting:!!cursor.current,setPrompt,setConsent,start});
   const canPreview=p.open!==false&&!busy&&!disconnected&&trusted&&!!result?.changes.length&&snapshot?.token===p.token;
+  const waitingProposal=useMemo(()=>run?.phase==='awaiting_render'?run.proposal:undefined,[run?.phase,run?.run_id]);
+  const geometrySent=useRef(new Set<string>());
+  const awaitingId=run?.phase==='awaiting_render'?run.run_id:undefined;
+  const captureTeamGeometry=useCallback((facts:RenderFacts|null)=>{if(!facts||!awaitingId||geometrySent.current.has(awaitingId))return;geometrySent.current.add(awaitingId);api(`${path}/${awaitingId}/review`,send('POST',{render_facts:facts})).catch(()=>{geometrySent.current.delete(awaitingId)})},[awaitingId,path]);
   useEffect(()=>{
-    p.onPreview?.(canPreview?{preview:result!,token:snapshot!.token}:null);
+    p.onPreview?.(waitingProposal&&captured.current?.token===p.token&&p.open!==false?{preview:waitingProposal,token:p.token,data:waitingProposal.preview_dataset,onRendered:captureTeamGeometry}:canPreview?{preview:displayResult!,token:snapshot!.token,data:result?.preview_dataset,reviewIssues:proposalReview.remaining,onRendered:proposalReview.rendered}:null);
     return()=>p.onPreview?.(null);
-  },[canPreview,result,snapshot?.token,p.onPreview]);
+  },[canPreview,displayResult,snapshot?.token,p.onPreview,proposalReview.remaining,proposalReview.rendered,waitingProposal,captureTeamGeometry,p.token,p.open]);
   useEffect(() => {
     if (!p.docked || p.open === false) return;
     const target = result ? reply.current : thread.current;
@@ -558,9 +588,17 @@ export function AgentAssistant(p: {
               </option>
             ))}
           </select>
+          <input aria-label="自定义会话额度" type="number" min={60000} max={600000} step={1000} disabled={busy} value={sessionLimit} onChange={event=>setSessionLimit(Number(event.target.value))}/>
         </label>
       )}
       <p>跨轮累计的保守预算单位，不是实际账单 token；单轮最多 60,000。</p>
+      <label>单次用量额度<input aria-label="单次用量额度" type="number" min={2000} max={60000} step={1000} disabled={busy} value={budgetPreferences.runLimit} onChange={e=>changeBudget({...budgetPreferences,runLimit:Number(e.target.value)})}/></label>
+      {mode==='team'&&<>
+        <label>角色用量分配<select aria-label="角色用量分配" disabled={busy} value={budgetPreferences.roles?'custom':'shared'} onChange={e=>changeBudget({...budgetPreferences,roles:e.target.value==='custom'?{coordinator:15,data:30,plotter:40,reviewer:15}:null})}><option value="shared">共同使用单次额度</option><option value="custom">自定义角色百分比</option></select></label>
+        {budgetPreferences.roles&&(['coordinator','data','plotter','reviewer'] as const).map((role,i)=><label key={role}>{['协调者','数据专家','绘图专家','审稿专家'][i]}（%）<input aria-label={`${['协调者','数据专家','绘图专家','审稿专家'][i]}配额百分比`} type="number" min={1} max={100} disabled={busy} value={budgetPreferences.roles![role]} onChange={e=>changeBudget({...budgetPreferences,roles:{...budgetPreferences.roles!,[role]:Number(e.target.value)}})}/></label>)}
+        <p>选择共同使用时，各角色共享单次额度；自定义比例按执行顺序累计，前序未用额度可留给后续角色。</p>
+      </>}
+      {!!budgetError&&<p role="alert">{budgetError}</p>}
       {session && (
         <p>
           已用 {session.used_budget.toLocaleString()} · 预留{" "}
@@ -626,6 +664,7 @@ export function AgentAssistant(p: {
         />
         <span>
           {agentConsent}
+          {mode==='team'&&' 协作审稿还会发送图表纯几何的边界框及数量摘要，不含文字内容或数据值。'}
         </span>
       </label>
       <div className="agent-controls">
@@ -633,6 +672,7 @@ export function AgentAssistant(p: {
           onClick={start}
           disabled={
             busy ||
+            !!budgetError ||
             disconnected ||
             (!!session && session.remaining_budget < 2000) ||
             !provider.data?.available ||
@@ -680,8 +720,11 @@ export function AgentAssistant(p: {
       {!!result && (
       <Button
         className="agent-apply"
+        aria-label="应用这组调整"
         disabled={
           busy ||
+          proposalReview.busy ||
+          (!!proposalReview.report&&proposalReview.accepted.length>0&&!proposalReview.preview) ||
           disconnected ||
           !trusted ||
           !result?.changes.length ||
@@ -702,13 +745,13 @@ export function AgentAssistant(p: {
               setRun(latest);
               throw new Error("提案已失效，请重新生成");
             }
-            await api(
+            if(!result.processing)await api(
               `/projects/${p.project}/figure-tools/lint`,
               send("POST", {
                 protocol_version: 1,
                 chart_id: p.chartId,
                 base_revision: p.chartId ? p.revision : 0,
-                config: result.config,
+                config: displayResult!.config,
               }),
             ).then((lint) => {
               if (!lint.ok) throw new Error("提案未通过校验，请重新生成");
@@ -717,15 +760,19 @@ export function AgentAssistant(p: {
             if (current.current.token !== snapshot.token)
               throw new Error("画布已变化，请重新生成提案");
             // Acceptance records user approval, before applying to the local draft. It is not a chart save.
-            const decision = await api<AgentRun>(
+            const decision = await api<AgentRun & {config?:Config}>(
               `${path}/${pendingRun.run_id}/decision`,
               send("POST", {
                 outcome: "accepted",
                 proposal_hash: pendingRun.proposal_hash,
+                ...(proposalReview.report?{accepted_fixes:proposalReview.accepted,review_hash:proposalReview.report.review_hash}:{}),
               }),
             );
             if (decision.outcome !== "accepted")
               throw new Error("确认记录未写入，请重试");
+            if(result.processing)void queryClient.invalidateQueries({queryKey:['datasets',p.project]});
+            if(decision.config&&!sameConfig(result.processing?{...decision.config,datasetVersionId:displayResult!.config.datasetVersionId}:decision.config,displayResult!.config))
+              throw new Error('确认已记录，但修复预览已变化，本次未应用。请重新生成提案。');
             if (!mounted.current) return;
             setCandidate(null);
             setRun({ ...pendingRun, outcome: "accepted", proposal: undefined });
@@ -736,8 +783,8 @@ export function AgentAssistant(p: {
             if (
               !current.current.onApply(
                 snapshot.token,
-                result.config,
-                result.operation_count,
+                decision.config||displayResult!.config,
+                displayResult!.operation_count,
               )
             )
               throw new Error("画布已变化，请重新生成提案");
@@ -750,7 +797,7 @@ export function AgentAssistant(p: {
           }
         }}
       >
-        应用这组调整
+        应用这组调整（{displayResult?.operation_count||0} 项）
         <ArrowRight size={15} />
       </Button>
       )}
@@ -807,6 +854,7 @@ export function AgentAssistant(p: {
   );
   return (
     <AssistantSurface
+      controls={<select className="agent-mode" aria-label="助手模式" value={mode} disabled={busy||!!result} onChange={event=>{const value=event.target.value==='team'?'team':'single';setMode(value);try{localStorage.setItem('figtide-agent-mode-v1',value)}catch{/* preference is optional */}}}><option value="single">单助手</option><option value="team">协作</option></select>}
       docked={p.docked}
       open={p.open !== false}
       locked={submitting || applying}
@@ -993,12 +1041,13 @@ export function AgentAssistant(p: {
               )}
               {run && (
                 <div className="agent-reply" aria-live="polite" ref={reply}>
+                  <TeamProgress run={run}/>
                   <div className="agent-run-status">
                     <strong>
                       {run.outcome &&
                       ["accepted", "rejected"].includes(run.outcome)
                         ? outcomeLabels[run.outcome]
-                        : statusNames[run.status]}
+                        : run.phase==='awaiting_render'?'等待提案渲染与审稿':statusNames[run.status]}
                     </strong>
                   </div>
                   {!turns.some((turn) => turn.id === run.run_id) &&
@@ -1042,15 +1091,30 @@ export function AgentAssistant(p: {
               )}
             </section>
             <aside className="quick-result" ref={proposalPreview}>
+              {!!result&&<h3 className="proposal-user-heading">你要求的修改</h3>}
+              {result?.processing&&<p className="proposal-processing">新建派生数据：{result.processing.name}。确认后才会创建独立数据集，原始数据保持只读；撤销只撤回草稿图表调整。</p>}
               {(!p.docked || !!result) && (
                 <ProposalPreview
                   numbered
                   showPlot={!p.docked}
                   config={snapshot?.config || p.config}
-                  data={p.data}
+                  data={result?.preview_dataset||p.data}
                   preview={trusted ? result : undefined}
                 />
               )}
+              {!!result&&proposalReview.busy&&<p className="tiny-note">正在生成确定性审稿与修复预览…</p>}
+              {!!result&&proposalReview.error&&<p className="tiny-note">审稿未完成：{proposalReview.error}。{proposalReview.report?'取消全部审稿修复后可只确认原提案。':'可以只确认原提案，或重新预览。'}</p>}
+              {!!result&&proposalReview.report&&<>
+                <section className="proposal-review-group" aria-label="审稿修复"><h3>审稿修复 · 可逐条取消</h3>
+                  <ReviewIssues showChecks={false} report={{...proposalReview.report,issues:proposalReview.report.issues.filter(issue=>issue.fixable)}} selected={proposalReview.selected} onSelect={proposalReview.toggle}/>
+                  {!proposalReview.report.issues.some(issue=>issue.fixable)&&<p className="tiny-note">没有可自动修复的问题。</p>}
+                </section>
+                <section className="proposal-review-group" aria-label="审稿意见"><h3>审稿意见 · 不改图</h3>
+                  {pendingRun?.deep_review&&<p>{pendingRun.deep_review}</p>}
+                  <ReviewIssues report={{...proposalReview.report,issues:proposalReview.report.issues.filter(issue=>!issue.fixable)}} selected={proposalReview.selected} onSelect={proposalReview.toggle}/>
+                </section>
+                <p className="tiny-note">确定性检查 0 token{pendingRun?.mode==='team'?' · 深度审稿用量已计入本次协作预算':' · 没有调用模型'}</p>
+              </>}
               {!p.docked && proposalActions}
             </aside>
           </div>

@@ -1,3 +1,9 @@
+## 2026-10-30 · 任务18功能集成（不含本地评测归档）
+
+- 从 main 单独整理审稿/协作功能及离线测试，未合入 feature/agent-team 历史；真实模型评测报告、原始结果及原本地分支保留在本地。移除对未发布验收JSON的链接。
+- `LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test`：373总计，0失败/错误，1既有opt-in跳过；`npm test`：59文件、294/294；`npm run build`通过（既有大块警告）；MCP `npm run check`通过、单测16/16。
+- 本轮没有收费模型调用；MySQL、Linux/Windows MCP与Windows打包由本次PR的完整CI验证，远端结果另记。任务19功能尚未开始。
+
 ## 2026-10-26 · 任务 16/17：审查修复与联合总验收
 
 改动文件：`mcp/src/tools.ts` 及单元/真实集成测试；`DesktopWindow.java`、`DesktopLauncher.java`、`DesktopWindowTest.java`、仅测试用的 `DesktopWindowProbeMain.java`；窗口进程探针/测试、CI、AGENTS、CHANGELOG 和桌面文档。保留原分节提交，`feature/app-window` 普通合并修复后的 `feature/mcp`，未合并 main。
