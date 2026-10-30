@@ -18,7 +18,7 @@ import {glyphMarkup,type GlyphKind} from "./render/glyphs";
 export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:DiagramRecord;catalog:DiagramCatalog;onLeaveGuard:(g:(()=>boolean)|null)=>void;notify:(s:string)=>void}) {
   const state=useDiagramDocument(record,onLeaveGuard,notify),{doc,edit}=state;
   const [selected,setSelected]=useState(new Set<string>()),[zoom,setZoom]=useState(1),[nodeKind,setNodeKind]=useState<DiagramNode["kind"]>("box"),[zoneKind,setZoneKind]=useState<DiagramZone["kind"]>("panel"),[edgeKind,setEdgeKind]=useState<DiagramEdge["kind"]>("flow"),[from,setFrom]=useState(""),[to,setTo]=useState("");
-  const [glyphCategory,setGlyphCategory]=useState(doc.meta.template?.includes("mechanism")?"biology":["framework","pipeline","architecture"].includes(doc.meta.template||"")?"ml":"all");
+  const [glyphCategory,setGlyphCategory]=useState(doc.meta.skill==="bio-mechanism"||doc.meta.template?.includes("mechanism")?"biology":["physics-device","chem-materials","workflow"].includes(doc.meta.skill||"")||["workflow","zoom-workflow"].includes(doc.meta.template||"")?"experiment":doc.meta.skill==="ml-framework"||["framework","pipeline"].includes(doc.meta.template||"")?"ml":"all");
   const [exportOpen,setExportOpen]=useState(false);
   const [versionsOpen,setVersionsOpen]=useState(false),[restoring,setRestoring]=useState(false);
   const {confirm,dialog}=useConfirm(),canvasHost=useRef<HTMLDivElement>(null),inspector=useRef<HTMLDivElement>(null);

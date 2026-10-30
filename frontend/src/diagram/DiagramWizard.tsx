@@ -5,9 +5,9 @@ import { Button } from "../components/ui/button";
 import type { DiagramCatalog, DiagramDoc } from "./model";
 import { renderDiagram } from "./render/renderDiagram";
 import {api,send} from "../lib/api";
-export function DiagramWizard({catalog,onClose,onCreate}:{catalog:DiagramCatalog;onClose:()=>void;onCreate:(name:string,doc:DiagramDoc)=>Promise<void>}) {
+export function DiagramWizard({catalog,onClose,onCreate,initialTemplate}:{initialTemplate?:string;catalog:DiagramCatalog;onClose:()=>void;onCreate:(name:string,doc:DiagramDoc)=>Promise<void>}) {
   const [palette,setPalette]=useState("okabe-ito");
-  const [template,setTemplate]=useState(catalog.templates[0]?.id||""),[style,setStyle]=useState("nature-flat"),[language,setLanguage]=useState<"en"|"zh">("en");
+  const [template,setTemplate]=useState(initialTemplate||catalog.templates[0]?.id||""),[style,setStyle]=useState("nature-flat"),[language,setLanguage]=useState<"en"|"zh">("en");
   const [name,setName]=useState("新机制图"),[size,setSize]=useState("double"),[journal,setJournal]=useState("default"),[width,setWidth]=useState(180),[height,setHeight]=useState(110),[busy,setBusy]=useState(false),[error,setError]=useState(""),[skill,setSkill]=useState("all"),[galleryFallback,setGalleryFallback]=useState(false);
   const selected=catalog.templates.find(t=>t.id===template),doc=selected?.documents[language];
   const rule=catalog.journals.find(j=>j.id===journal),w=size==="single"?rule?.single_column_mm||88:size==="double"?rule?.double_column_mm||180:width;

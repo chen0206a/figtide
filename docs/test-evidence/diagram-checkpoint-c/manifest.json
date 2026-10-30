@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-10-30T23:14:21.154661+09:00",
+  "captured_at": "2026-10-30T23:36:33.786852+09:00",
   "timezone": "Asia/Tokyo",
   "branch": "feature/diagrams",
   "visual_acceptance": "pending_owner_review",
@@ -9,9 +9,9 @@
   ],
   "glyph_sheet_px_per_mm": 7.5,
   "build": {
-    "frontend_stage": "D:\\RAG-agent项目\\LabFlow\\.runtime\\desktop-ui-0a799cec6b2146c8aa4a919d68a13a36\\frontend",
-    "jar_sha256": "5b93bca26ca250f9a5f275181d5ff89e2be1c7d7887011625a61e9b68e2ac10c",
-    "created_at": "2026-10-30T14:03:21.1413879Z",
+    "frontend_stage": "D:\\RAG-agent项目\\LabFlow\\.runtime\\desktop-ui-eb5ff124d300413b9d116949b20466ea\\frontend",
+    "jar_sha256": "481f87fc13db10abe51848f3c6ad830d46c806c17526b81826cfec8542aacbd6",
+    "created_at": "2026-10-30T14:31:36.8799301Z",
     "frontend_lock_sha256": "4b15b4fbb344c9b83dba007c35a846f846ac023f66d1c152bd8b9ff0ac91b731"
   },
   "files": [
@@ -71,8 +71,8 @@
     },
     {
       "path": "07-export-dialog.png",
-      "bytes": 231019,
-      "sha256": "4212b35af1773a7c04bf2956ec6d879eff613b5c77f0cb62400bfc9809d17e9a",
+      "bytes": 231024,
+      "sha256": "f407222f238fdc315d3b377377570fa2d2c36de0b5cac3f1630a201efa6e2f26",
       "pixels": [
         1920,
         1144
@@ -89,11 +89,20 @@
     },
     {
       "path": "09-version-history.png",
-      "bytes": 188144,
-      "sha256": "ec963695d31ad3757b0eec7f623a52062495814871a2834b52db3313dd2c2113",
+      "bytes": 187873,
+      "sha256": "decf340f327df99d6e48dac562bca918a31b280a10ebda9a551ccda3df44c934",
       "pixels": [
         1920,
         1144
+      ]
+    },
+    {
+      "path": "10-optics-editor.png",
+      "bytes": 106729,
+      "sha256": "49bfbdfefee9e8061abbcf3b63201b28f3522d05a3cd49f64557961a45fbb966",
+      "pixels": [
+        1440,
+        960
       ]
     },
     {
@@ -116,8 +125,8 @@
     },
     {
       "path": "export-dialog.png",
-      "bytes": 198382,
-      "sha256": "856462dd2ab9ca966f1750fedca4afe09319dab0635a600a63cf9006d2432732",
+      "bytes": 198389,
+      "sha256": "fedc3f12f9d62463a4b0c6ad282512e5b37ea60ddcac45c84bb43badd3c02bfd",
       "pixels": [
         1440,
         960
@@ -135,7 +144,7 @@
     {
       "path": "exports/mechanism-en.pdf",
       "bytes": 23273,
-      "sha256": "8feb970a6f3676fc645ab4af03f2a44b68076907d4079349ea5e034a1d5249fc"
+      "sha256": "6bdca310befd2013609df4a8d069965eb7188561c3d3458d6f774b77051ee820"
     },
     {
       "path": "exports/mechanism-zh-render.png",
@@ -149,12 +158,12 @@
     {
       "path": "exports/mechanism-zh.pdf",
       "bytes": 67273,
-      "sha256": "b941fb3552e1abfe64ba43b7c679fbc478b03a98d10032fab48e246b92c90de3"
+      "sha256": "126f54ae9d0cfd9c527949448f9a8bc6c559e5385f876878981feba99449a2e4"
     },
     {
       "path": "exports/verification.json",
       "bytes": 883,
-      "sha256": "f1ac011efca8a139116194dd59d111b854f5ef40e7b86cd86c54e8b564a0c8ba"
+      "sha256": "d20fb014d2c70ac058b386f44d3815b573cbe507a7738c9128bd2f617bcc9aea"
     },
     {
       "path": "framework-1440.png",
@@ -570,8 +579,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 8587,
-      "sha256": "3bf19bf7436f7a9cad8080bd684b51c33c7940c9e390b0a26ae59b78b2f78d67"
+      "bytes": 8960,
+      "sha256": "9d476d1b8850929a80e756c03fcbdf339df94289cfbd0212585fc794351e0892"
     },
     {
       "path": "templates-overview.png",

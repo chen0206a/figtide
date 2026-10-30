@@ -8,6 +8,7 @@
 
 | 材料 | 文件 |
 | --- | --- |
+| 物理装置分类与分区拖动复核 | [10-optics-editor.png](10-optics-editor.png) |
 | 新建页完整文档截图 | [new-page.png](new-page.png) |
 | 分区机制编辑器，1440×960 | [mechanism-1440.png](mechanism-1440.png) |
 | 方法框架编辑器，1440×960 | [framework-1440.png](framework-1440.png) |
@@ -60,7 +61,7 @@
 
 ## 真实交互与导出
 
-GIF由gif-frames/内21张顺序采集的真实浏览器操作帧合成，延长停留便于观看，不作为性能计时。顺序为拖动JAK、拉出连线（含拖动预览线）、切柔和风格、切NPG配色、撤销配色、保存。对应浏览器还测试了点击添加、原生dragTo添加、一次撤销、草稿恢复、框选、分区带节点移动、Ctrl+S、409和历史恢复。
+GIF由gif-frames/内21张顺序采集的真实浏览器操作帧合成，延长停留便于观看，不作为性能计时。顺序为拖动JAK、拉出连线（含拖动预览线）、切柔和风格、切NPG配色、撤销配色、保存。对应浏览器还测试了空列表卡片预选对应模板、光学平台携带子节点/撤销、按metadata初始化图元分类、点击添加、原生dragTo添加、一次撤销、草稿恢复、框选、分区带节点移动、Ctrl+S、409和历史恢复。
 
 [英文PDF](exports/mechanism-en.pdf)、[中文PDF](exports/mechanism-zh.pdf)及各自Poppler预览在exports/。检查：180×110mm、无位图、中文嵌入字体且可提取；预览人工查看。显式矢量箭头避免marker缩放，斜体用矢量倾斜保留，PDF将500/600规范到已有常规/粗体字库；原数据图PDF代码未改。
 
@@ -71,6 +72,7 @@ GIF由gif-frames/内21张顺序采集的真实浏览器操作帧合成，延长�
 - 后端MySQL全量：446项，445通过、1同上跳过，0失败/错误。
 - 相关E2E：diagram.spec.ts、diagram-visual-rework.spec.ts、diagram-capture.spec.ts共8/8通过；独立JVM重启审计探针通过。
 - 跳过的是ServerEvaluationTest（未指定labflow.eval.server），没有调用真实收费服务。完整19-A总验收、全产品Playwright及MCP全套未执行：按要求先交视觉返工，且本轮未改MCP；不能写成全部总验收通过。
+- 最后一次纯模板zone关联调整后H2相关67/67通过；MySQL未再复跑（无Java/SQL/API变化，已有全量结果，同一校验/存储逻辑由H2确认）。
 - 首轮夹具、样式控件折叠断言、旧图元数量、过期快照、斜体/箭头/字体权重导出问题均已修复后复跑；原失败日志保留在.runtime/logs/task19-rework-*。
 
 ## 兼容扩展与边界
