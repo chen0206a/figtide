@@ -1,4 +1,4 @@
-// 设计稿原型：机制图 / 方法框架图的渲染与科学图元（示意实现，仅供参考，不能直接进产品代码）。
+// 设计稿原型（仓库主人提供，可按规范移植）：机制图 / 方法框架图的渲染、科学图元、线宽和配色。几何比例、层次、标签位置、线宽数值以此为准；移植时补类型和测试。
 const MECH_STYLES = {
   "nature-flat": { name: "Nature 扁平", note: "白底 · Arial · 0.5 pt 细线", paper: "#FFFFFF", font: "Arial, Helvetica, sans-serif", fw: 500, fg: "#1A1F26", line: "#2B323C", sw: 0.28, r: 1.0,
     zone: ["#F7F8FA", "#C9D0D9"], zoneDash: false, membrane: ["#E3EAF2", "#9FB0C4"], nucleus: ["#EEF3F8", "#8A9BB0"], panel: ["#FFFFFF", "#C9D0D9"],
@@ -24,6 +24,15 @@ const MECH_STYLES = {
     zone: ["#FBF7EA", "#8C877A"], zoneDash: true, membrane: ["#F3E6CF", "#8C877A"], nucleus: ["#EEF1E6", "#8C877A"], panel: ["#FBF7EA", "#8C877A"],
     roles: { a: ["#DCEBFA", "#262626"], b: ["#DDF2E6", "#262626"], c: ["#FBE0CF", "#262626"], d: ["#ECE4F6", "#262626"], n: ["#FFFFFF", "#262626"] },
     accent: "#C2410C", beam: "#C2410C", shadow: "none", iso: false, sketch: true, zl: "#5A564C", panelHead: false },
+};
+
+const MECH_PALETTES = {
+  "okabe-ito": { name: "色盲友好（Okabe–Ito）", src: "Okabe & Ito 2008", a: "#0072B2", b: "#009E73", c: "#D55E00", d: "#CC79A7", n: "#666666" },
+  "npg": { name: "NPG 风格", src: "参考 ggsci 整理的 Nature 系列常见配色（非官方）", a: "#3C5488", b: "#00A087", c: "#E64B35", d: "#4DBBD5", n: "#7E6148" },
+  "aaas": { name: "AAAS 风格", src: "参考 ggsci 整理的 Science 常见配色（非官方）", a: "#3B4992", b: "#008B45", c: "#EE0000", d: "#631879", n: "#808180" },
+  "nejm": { name: "NEJM 风格", src: "参考 ggsci 整理的 NEJM 常见配色（非官方）", a: "#0072B5", b: "#20854E", c: "#BC3C29", d: "#7876B1", n: "#6F99AD" },
+  "lancet": { name: "Lancet 风格", src: "参考 ggsci 整理的 Lancet 常见配色（非官方）", a: "#00468B", b: "#42B540", c: "#ED0000", d: "#925E9F", n: "#ADB6B6" },
+  "jama": { name: "JAMA 风格", src: "参考 ggsci 整理的 JAMA 常见配色（非官方）", a: "#00A1D5", b: "#79AF97", c: "#B24745", d: "#6A6599", n: "#374E55" },
 };
 
 const MECH_SKILLS = [
@@ -200,10 +209,19 @@ const EDGE_KINDS = [
 
 function mechBuild(tpl, styleId, k, opt) {
   opt = opt || {};
-  const S = MECH_STYLES[styleId];
+  let S = MECH_STYLES[styleId];
+  if (opt && opt.palette && styleId !== "line-minimal") {
+    const P = MECH_PALETTES[opt.palette];
+    const role = (c) => [mix(c, "#FFFFFF", 0.82), mix(c, "#000000", 0.08)];
+    S = { ...S, roles: { a: role(P.a), b: role(P.b), c: role(P.c), d: role(P.d), n: [mix(P.n, "#FFFFFF", 0.88), mix(P.n, "#000000", 0.05)] }, accent: P.c, beam: P.c,
+      membrane: [mix(P.a, "#FFFFFF", 0.9), mix(P.a, "#FFFFFF", 0.35)], nucleus: [mix(P.d, "#FFFFFF", 0.93), mix(P.d, "#000000", 0.05)] };
+  }
+  if (opt && opt.weights === "paper") S = { ...S, sw: Math.max(S.sw, 0.35) };
   const W = 180 * k, H = 110 * k;
   const minPx = opt.minPx || 0;
-  const fsMM = opt.fontMM || 2.3;
+  const fsMM = opt.fontMM || 2.47;
+  const PT = 0.3528;
+  const wOutline = Math.max(1, 1.0 * PT * k), wEdge = Math.max(1.2, 1.25 * PT * k), wZone = Math.max(1, 0.75 * PT * k);
   const labelPx = (mm) => (opt.hideText ? 0 : Math.max(mm * k, minPx));
   const hidden = opt.hidden || {};
   const labels = opt.labels || {};
@@ -213,11 +231,11 @@ function mechBuild(tpl, styleId, k, opt) {
     const base = { l: z.x * k, t: z.y * k, w: z.w * k, h: z.h * k, bg: "transparent", bd: "0", bt: "", bb: "", r: "0", label: opt.hideText ? "" : z.label, lfs: labelPx(1.9), lfg: S.zl, lfw: 500, lst: "normal", jc: "flex-start", ai: "flex-start", pad: `${1.2 * k}px ${1.6 * k}px`, head: false, headBg: "transparent", hpad: "0", mh: "M0 0", mt: "M0 0", mf: "none", ms: "none", msw: 0, lbg: "transparent" };
     const dash = S.zoneDash ? "dashed" : "solid";
     if (z.kind === "space") return { ...base, lst: "italic" };
-    if (z.kind === "compartment") return { ...base, bg: S.zone[0], bd: `1px ${dash} ${S.zone[1]}`, r: `${S.r * 2 * k}px`, lst: "italic" };
-    if (z.kind === "membrane") { const m = bilayer(z.w * k, z.h * k, k); return { ...base, bg: S.membrane[0], jc: "flex-end", ai: "center", pad: `0 ${1.6 * k}px`, lst: "italic", mh: m.heads, mt: m.tails, mf: styleId === "line-minimal" ? "#FFFFFF" : mix(S.membrane[1], "#FFFFFF", 0.25), ms: S.membrane[1], msw: Math.max(0.6, 0.12 * k), headBg: S.membrane[0], hpad: "0 3px" }; }
-    if (z.kind === "nucleus") return { ...base, bg: S.nucleus[0], bd: k > 2 ? `${Math.max(3, 0.9 * k)}px double ${S.nucleus[1]}` : `1px ${dash} ${S.nucleus[1]}`, r: "50%", jc: "center", pad: `${2.4 * k}px 0 0`, lst: "italic" };
-    if (z.kind === "zoom") return { ...base, bg: S.paper, bd: `1px dashed ${S.line}`, r: `${S.r * k}px`, lfw: 600 };
-    return { ...base, bg: S.panel[0], bd: `1px ${dash} ${S.panel[1]}`, r: `${S.r * 1.6 * k}px`, lfw: 700, lfg: S.panelHead ? "#FFFFFF" : S.zl, head: S.panelHead, headBg: S.panelHead ? S.panel[1] : "transparent", hpad: S.panelHead ? "1px 6px" : "0", pad: S.panelHead ? `0` : base.pad };
+    if (z.kind === "compartment") return { ...base, bg: S.zone[0], bd: `${wZone}px ${dash} ${S.zone[1]}`, r: `${S.r * 2 * k}px`, lst: "italic" };
+    if (z.kind === "membrane") { const m = bilayer(z.w * k, z.h * k, k); return { ...base, bg: S.membrane[0], jc: "flex-end", ai: "center", pad: `0 ${1.6 * k}px`, lst: "italic", mh: m.heads, mt: m.tails, mf: styleId === "line-minimal" ? "#FFFFFF" : mix(S.membrane[1], "#FFFFFF", 0.25), ms: S.membrane[1], msw: Math.max(0.7, 0.5 * PT * k), headBg: S.membrane[0], hpad: "0 3px" }; }
+    if (z.kind === "nucleus") return { ...base, bg: S.nucleus[0], bd: k > 2 ? `${Math.max(3, 1.15 * k)}px double ${S.nucleus[1]}` : `1px ${dash} ${S.nucleus[1]}`, r: "50%", jc: "center", pad: `${2.4 * k}px 0 0`, lst: "italic" };
+    if (z.kind === "zoom") return { ...base, bg: S.paper, bd: `${wZone}px dashed ${S.line}`, r: `${S.r * k}px`, lfw: 600 };
+    return { ...base, bg: S.panel[0], bd: `${wZone}px ${dash} ${S.panel[1]}`, r: `${S.r * 1.6 * k}px`, lfw: 700, lfg: S.panelHead ? "#FFFFFF" : S.zl, head: S.panelHead, headBg: S.panelHead ? S.panel[1] : "transparent", hpad: S.panelHead ? "1px 6px" : "0", pad: S.panelHead ? `0` : base.pad };
   });
   const byId = {};
   tpl.nodes.forEach((n) => (byId[n.id] = n));
@@ -249,11 +267,11 @@ function mechBuild(tpl, styleId, k, opt) {
     }
     nodes.push({
       id: n.id, l: n.x * k, t: n.y * k, w: n.w * k, h: n.h * k,
-      bg: isText || isGlyph ? "transparent" : fill, bd: isText || isGlyph ? "0" : `${S.sketch ? 1.4 : n.role === "c" && styleId === "line-minimal" ? 1.4 : 1}px solid ${stroke}`,
+      bg: isText || isGlyph ? "transparent" : fill, bd: isText || isGlyph ? "0" : `${S.sketch ? wOutline * 1.3 : wOutline}px solid ${stroke}`,
       r, shadow: isText || isGlyph ? "none" : S.shadow, label: opt.hideText ? "" : labels[n.id] || n.label,
       fs: labelPx(isText ? 2.1 : fsMM), fg: isText ? S.zl : S.fg, fw: isText ? 500 : S.fw, font: S.font, fst: isText ? "italic" : "normal",
       outline: opt.sel === n.id ? "2px solid #1F4FB8" : "none", jc, ai, pad,
-      gx: (ga.x - n.x) * k, gy: (ga.y - n.y) * k, gw: n.glyph ? ga.w * k : 0, gh: n.glyph ? ga.h * k : 0, gsw: Math.max(0.8, S.sw * k * 0.9),
+      gx: (ga.x - n.x) * k, gy: (ga.y - n.y) * k, gw: n.glyph ? ga.w * k : 0, gh: n.glyph ? ga.h * k : 0, gsw: wOutline,
       l1d: L(0).d, l1f: L(0).fill, l1s: L(0).stroke, l2d: L(1).d, l2f: L(1).fill, l2s: L(1).stroke, l3d: L(2).d, l3f: L(2).fill, l3s: L(2).stroke,
       b1x: B(0).x, b1y: B(0).y, b2x: B(1).x, b2y: B(1).y, br: 1.35 * k, bfs: Math.max(1.8 * k, opt.hideText ? 0 : 6), bo: g.badges.length && !opt.hideText ? 1 : 0, bo2: g.badges.length > 1 && !opt.hideText ? 1 : 0,
     });
@@ -271,17 +289,17 @@ function mechBuild(tpl, styleId, k, opt) {
     if (e.pts) pts = e.pts.map(([x, y]) => [x * k, y * k]);
     else pts = connect(anchorOf(byId[e.from]), anchorOf(byId[e.to]), route, k);
     const color = kind === "inhibit" ? S.accent : kind === "beam" ? S.beam : kind === "guide" || kind === "axis" ? mix(S.line, "#FFFFFF", kind === "guide" ? 0.45 : 0) : S.line;
-    const sw = Math.max(1, (kind === "beam" ? 0.55 : kind === "guide" ? 0.2 : S.sw) * k);
+    const sw = kind === "beam" ? Math.max(1.4, 1.8 * PT * k) : kind === "guide" ? Math.max(1, 0.6 * PT * k) : wEdge;
     const dash = kind === "indirect" || kind === "transport" || kind === "guide" ? `${1.4 * k} ${1 * k}` : "none";
     const g = geom(pts, route, kind, k, S.sketch);
     if (["activate", "inhibit", "transport", "bind", "indirect", "flow"].includes(kind)) used[kind] = true;
-    edges.push({ id: e.id, d: g.d, d2: g.d2, stroke: opt.selEdge === e.id ? "#1F4FB8" : color, sw: opt.selEdge === e.id ? sw + 1.2 : sw, dash, head: g.head, headFill: opt.selEdge === e.id ? "#1F4FB8" : color, bar: g.bar, op2: S.sketch ? 0.55 : 0 });
+    edges.push({ id: e.id, d: g.d, d2: g.d2, stroke: opt.selEdge === e.id ? "#1F4FB8" : color, sw: opt.selEdge === e.id ? sw + 1.2 : sw, dash, head: g.head, headFill: opt.selEdge === e.id ? "#1F4FB8" : color, bar: g.bar, barW: (opt.selEdge === e.id ? sw + 1.2 : sw) * 1.7, op2: S.sketch ? 0.55 : 0 });
     if (e.from) mids.push({ id: e.id, l: g.mid[0] - 7, t: g.mid[1] - 7, on: opt.selEdge === e.id });
   });
   const kindsUsed = EDGE_KINDS.filter((x) => used[x.id]);
   const legendOn = opt.legend !== false && tpl.legend && kindsUsed.filter((x) => x.id !== "flow").length >= 2 && !opt.hideText;
   const legend = { show: !!legendOn, l: tpl.legend ? tpl.legend.x * k : 0, t: tpl.legend ? tpl.legend.y * k : 0, fs: labelPx(1.9), fg: S.fg, font: S.font,
-    items: kindsUsed.filter((x) => x.id !== "flow").map((x) => { const gk = 6 * k; const g = geom([[0, gk * 0.35], [gk, gk * 0.35]], "straight", x.id, k, false); return { name: legendName(x.id), d: g.d, head: g.head, bar: g.bar, w: gk, h: gk * 0.7, stroke: x.id === "inhibit" ? S.accent : S.line, sw: Math.max(1, S.sw * k), dash: x.id === "indirect" || x.id === "transport" ? `${1.4 * k} ${1 * k}` : "none" }; }) };
+    items: kindsUsed.filter((x) => x.id !== "flow").map((x) => { const gk = 6 * k; const g = geom([[0, gk * 0.35], [gk, gk * 0.35]], "straight", x.id, k, false); return { name: legendName(x.id), d: g.d, head: g.head, bar: g.bar, w: gk, h: gk * 0.7, stroke: x.id === "inhibit" ? S.accent : S.line, sw: wEdge, dash: x.id === "indirect" || x.id === "transport" ? `${1.4 * k} ${1 * k}` : "none" }; }) };
   return { W, H, paper: S.paper, zones, faces, nodes, ghosts, edges, mids, legend, font: S.font };
 }
 
@@ -336,7 +354,7 @@ function geom(pts, route, kind, k, sketch) {
   const ux0 = e[0] - prev[0], uy0 = e[1] - prev[1];
   const len = Math.hypot(ux0, uy0) || 1;
   const ux = ux0 / len, uy = uy0 / len, vx = -uy, vy = ux;
-  const a = 2.0 * k;
+  const a = 2.5 * k;
   const hasHead = ["activate", "transport", "indirect", "flow", "beam", "axis"].includes(kind);
   const end = hasHead ? [e[0] - ux * a * 0.85, e[1] - uy * a * 0.85] : e;
   let head = "0,0 0,0 0,0", bar = "M0 0";
