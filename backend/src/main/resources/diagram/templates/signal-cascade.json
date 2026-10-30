@@ -1,0 +1,251 @@
+{
+  "id": "signal-cascade",
+  "name": "信号级联",
+  "pattern": "mechanism",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 7,
+          "y": 42,
+          "w": 30,
+          "h": 24,
+          "label": "Input",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "receptor",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 50,
+          "y": 42,
+          "w": 30,
+          "h": 24,
+          "label": "Stage A",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "protein",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 93,
+          "y": 42,
+          "w": 30,
+          "h": 24,
+          "label": "Stage B",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "dimer",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 136,
+          "y": 42,
+          "w": 30,
+          "h": 24,
+          "label": "Output",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "activate",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "inhibit",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "activate",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "signal-cascade",
+        "brief": "",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 7,
+          "y": 42,
+          "w": 30,
+          "h": 24,
+          "label": "输入",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "receptor",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 50,
+          "y": 42,
+          "w": 30,
+          "h": 24,
+          "label": "步骤甲",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "protein",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 93,
+          "y": 42,
+          "w": 30,
+          "h": 24,
+          "label": "步骤乙",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "dimer",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 136,
+          "y": 42,
+          "w": 30,
+          "h": 24,
+          "label": "输出",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "activate",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "inhibit",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "activate",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "signal-cascade",
+        "brief": "",
+        "facts": []
+      }
+    }
+  }
+}

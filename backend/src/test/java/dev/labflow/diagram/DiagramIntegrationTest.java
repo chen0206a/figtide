@@ -46,6 +46,13 @@ class DiagramIntegrationTest {
     mvc.perform(get("/api/projects/"+project+"/diagrams/"+d+"/versions")).andExpect(status().isOk());
     assertEquals(1,diagrams.versions(project,d).size());
   }
+  @Test void templateCreationUsesTheSameValidatorAndExistingOriginProtection() throws Exception {
+    var in=json.createObjectNode().put("name","Template synthetic").put("template","mechanism").put("style","nature-flat").put("label_language","zh");
+    var created=json.readTree(mvc.perform(post("/api/projects/"+project+"/diagrams").contentType("application/json").content(in.toString())).andExpect(status().isOk()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8));
+    assertEquals("zh",created.at("/doc/label_language").asText());assertEquals(1,created.path("revision").asInt());
+    mvc.perform(post("/api/projects/"+project+"/diagrams").header("Origin","https://attacker.example").contentType("application/json").content(in.toString())).andExpect(status().isForbidden());
+    in.set("doc",doc);mvc.perform(post("/api/projects/"+project+"/diagrams").contentType("application/json").content(in.toString())).andExpect(status().isBadRequest());
+  }
   @Test void projectBackupRoundTripRemapsIdsAndKeepsDocumentsAndHistory() {
     long d=id(diagrams.create(project,"Synthetic",doc));diagrams.save(project,d,1,doc);diagrams.archive(project,d,2,true);
     var restored=backups.restore(backups.export(project),"Restored diagrams synthetic");long p=id(restored);

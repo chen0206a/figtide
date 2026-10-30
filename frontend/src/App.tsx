@@ -1,3 +1,4 @@
+import "./diagram/diagram.css";
 import {
   useState,
   useEffect,
@@ -51,6 +52,7 @@ import { useConfirm } from "./components/useConfirm";
 import { Experiments } from "./experiments/Experiments";
 const Editor = lazy(loadEditor);
 const ProductIntro = lazy(() => import("./welcome/ProductIntro"));
+const DiagramWorkspace = lazy(() => import("./diagram/DiagramWorkspace"));
 export default function App() {
   const qc = useQueryClient();
   const location = useLocation();
@@ -451,7 +453,8 @@ export default function App() {
             </div>
           ) : page === "editor" && project ? (
             <Suspense fallback={<WorkbenchSkeleton />}>
-              {datasets.isPending ? (
+              <nav className="figure-kind-switch" aria-label="绘图类型"><Link to={workspaceUrl("editor",project,chart)} aria-current={!route.diagramMode?"page":undefined}>数据图</Link><Link to={`/projects/${project}/diagrams`} aria-current={route.diagramMode?"page":undefined}>机制图</Link></nav>
+              {route.diagramMode ? <DiagramWorkspace project={project} id={route.diagram??null} onLeaveGuard={registerEditorGuard} notify={setMessage}/> : datasets.isPending ? (
                 <WorkbenchSkeleton />
               ) : (
                 <Editor

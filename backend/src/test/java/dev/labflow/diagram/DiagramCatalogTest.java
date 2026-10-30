@@ -23,4 +23,9 @@ class DiagramCatalogTest {
     ((ObjectNode)doc.path("style")).put("preset","sketch");assertTrue(catalog.effective(doc).path("sketch").asBoolean());assertEquals(nodes,doc.path("nodes"));
     ((ObjectNode)catalog.style("nature-flat")).put("font_size_pt",72);assertEquals(6.5,catalog.style("nature-flat").path("font_size_pt").asDouble());
   }
+  @Test void allTwelveSelfAuthoredTemplatesCoverEveryPatternInBothLanguages() {
+    assertEquals(12,catalog.templates().size());var patterns=new java.util.HashSet<String>();
+    for(var template:catalog.templates()){patterns.add(template.path("pattern").asText());for(String language:java.util.List.of("en","zh")){var doc=template.at("/documents/"+language);DiagramValidator.validate(doc);assertEquals(language,doc.path("label_language").asText());}}
+    assertEquals(java.util.Set.of("conceptual","framework","pipeline","architecture","taxonomy","teaser","mechanism","workflow","comparison"),patterns);
+  }
 }

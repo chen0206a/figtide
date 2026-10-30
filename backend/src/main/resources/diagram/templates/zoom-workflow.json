@@ -1,0 +1,293 @@
+{
+  "id": "zoom-workflow",
+  "name": "步骤与放大框",
+  "pattern": "workflow",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "Panel A",
+          "x": 5,
+          "y": 10,
+          "w": 72,
+          "h": 80,
+          "zoom_of": null
+        },
+        {
+          "id": "z2",
+          "kind": "zoom",
+          "label": "Detail",
+          "x": 103,
+          "y": 10,
+          "w": 72,
+          "h": 80,
+          "zoom_of": "z1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 20,
+          "y": 28,
+          "w": 42,
+          "h": 14,
+          "label": "Input",
+          "zone": "z1",
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "tube",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 20,
+          "y": 60,
+          "w": 42,
+          "h": 14,
+          "label": "Stage A",
+          "zone": "z1",
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "flask",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 118,
+          "y": 28,
+          "w": 42,
+          "h": 14,
+          "label": "Stage B",
+          "zone": "z2",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 118,
+          "y": 60,
+          "w": 42,
+          "h": 14,
+          "label": "Output",
+          "zone": "z2",
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n3",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n2",
+          "to": "n3",
+          "kind": "indirect",
+          "label": "",
+          "route": "orthogonal"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "zoom-workflow",
+        "brief": "",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "面板甲",
+          "x": 5,
+          "y": 10,
+          "w": 72,
+          "h": 80,
+          "zoom_of": null
+        },
+        {
+          "id": "z2",
+          "kind": "zoom",
+          "label": "细节",
+          "x": 103,
+          "y": 10,
+          "w": 72,
+          "h": 80,
+          "zoom_of": "z1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 20,
+          "y": 28,
+          "w": 42,
+          "h": 14,
+          "label": "输入",
+          "zone": "z1",
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "tube",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 20,
+          "y": 60,
+          "w": 42,
+          "h": 14,
+          "label": "步骤甲",
+          "zone": "z1",
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "flask",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 118,
+          "y": 28,
+          "w": 42,
+          "h": 14,
+          "label": "步骤乙",
+          "zone": "z2",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 118,
+          "y": 60,
+          "w": 42,
+          "h": 14,
+          "label": "输出",
+          "zone": "z2",
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n3",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n2",
+          "to": "n3",
+          "kind": "indirect",
+          "label": "",
+          "route": "orthogonal"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "zoom-workflow",
+        "brief": "",
+        "facts": []
+      }
+    }
+  }
+}

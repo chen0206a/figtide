@@ -17,7 +17,7 @@ public class DiagramCatalog {
   private final List<JsonNode> glyphs;
   private final JournalRules journals;
   public DiagramCatalog(ObjectMapper json,JournalRules journals) {
-    this.journals=journals;styles=load(json,"styles");templates=load(json,"templates");
+    this.journals=journals;var order=List.of("nature-flat","soft-illustration","line-minimal","conference-framework","isometric","sketch");styles=load(json,"styles").stream().sorted(Comparator.comparingInt(s->order.indexOf(s.path("id").asText()))).toList();templates=load(json,"templates");
     try(var in=getClass().getResourceAsStream("/diagram/glyphs.json")){var entries=json.readTree(in);require(entries.isArray(),"图元目录无效");var list=new ArrayList<JsonNode>();Set<String> glyphIds=new HashSet<>();for(var glyph:entries){fields(glyph,"id name category","id name category");require(glyphIds.add(choice(glyph.get("id"),GLYPHS)),"图元ID重复");text(glyph.get("name"),120);choice(glyph.get("category"),Set.of("biology","ml","experiment","markers"));list.add(glyph);}require(glyphIds.equals(GLYPHS),"图元目录不完整");glyphs=List.copyOf(list);}catch(java.io.IOException e){throw new IllegalStateException("图元目录不可读",e);}
     var ids=new HashSet<String>();
     for(var s:styles) {

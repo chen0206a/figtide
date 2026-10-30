@@ -1,0 +1,201 @@
+{
+  "id": "architecture",
+  "name": "层次架构",
+  "pattern": "architecture",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 65,
+          "y": 10,
+          "w": 50,
+          "h": 16,
+          "label": "Input",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "input-frames",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 65,
+          "y": 42,
+          "w": 50,
+          "h": 16,
+          "label": "Stage A",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "layers",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 65,
+          "y": 74,
+          "w": 50,
+          "h": 16,
+          "label": "Stage B",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "result-bars",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "architecture",
+        "brief": "",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 65,
+          "y": 10,
+          "w": 50,
+          "h": 16,
+          "label": "输入",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "input-frames",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 65,
+          "y": 42,
+          "w": 50,
+          "h": 16,
+          "label": "步骤甲",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "layers",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 65,
+          "y": 74,
+          "w": 50,
+          "h": 16,
+          "label": "步骤乙",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "result-bars",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "architecture",
+        "brief": "",
+        "facts": []
+      }
+    }
+  }
+}

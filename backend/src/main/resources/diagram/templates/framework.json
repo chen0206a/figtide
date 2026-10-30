@@ -1,0 +1,577 @@
+{
+  "id": "framework",
+  "name": "分组框架",
+  "pattern": "framework",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "Input pathway",
+          "x": 3,
+          "y": 4,
+          "w": 61,
+          "h": 46,
+          "zoom_of": null
+        },
+        {
+          "id": "z2",
+          "kind": "zoom",
+          "label": "Module detail",
+          "x": 26,
+          "y": 66,
+          "w": 150,
+          "h": 40,
+          "zoom_of": "z1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 7,
+          "y": 13,
+          "w": 24,
+          "h": 29,
+          "label": "Input frames",
+          "zone": "z1",
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "input-frames",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 35,
+          "y": 13,
+          "w": 25,
+          "h": 29,
+          "label": "Encoder",
+          "zone": "z1",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "encoder",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [
+            "frozen"
+          ]
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 73,
+          "y": 18,
+          "w": 35,
+          "h": 16,
+          "label": "Attention",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "attention",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 122,
+          "y": 9,
+          "w": 29,
+          "h": 33,
+          "label": "Language model",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "llm",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [
+            "trainable"
+          ]
+        },
+        {
+          "id": "n5",
+          "kind": "box",
+          "x": 157,
+          "y": 20,
+          "w": 20,
+          "h": 12,
+          "label": "Output",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "x": 147,
+          "y": 46,
+          "w": 30,
+          "h": 12,
+          "label": "Input text",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "text-input",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n7",
+          "kind": "glyph",
+          "x": 32,
+          "y": 76,
+          "w": 26,
+          "h": 24,
+          "label": "Attention map",
+          "zone": "z2",
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "attention",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n8",
+          "kind": "glyph",
+          "x": 65,
+          "y": 80,
+          "w": 32,
+          "h": 14,
+          "label": "Tokens",
+          "zone": "z2",
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n9",
+          "kind": "glyph",
+          "x": 104,
+          "y": 80,
+          "w": 31,
+          "h": 14,
+          "label": "Module",
+          "zone": "z2",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "layers",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n10",
+          "kind": "glyph",
+          "x": 142,
+          "y": 80,
+          "w": 28,
+          "h": 14,
+          "label": "Result",
+          "zone": "z2",
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "result-bars",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e4",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e5",
+          "from": "n6",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e6",
+          "from": "n7",
+          "to": "n8",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e7",
+          "from": "n8",
+          "to": "n9",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e8",
+          "from": "n9",
+          "to": "n10",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "framework",
+        "brief": "",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "输入通路",
+          "x": 3,
+          "y": 4,
+          "w": 61,
+          "h": 46,
+          "zoom_of": null
+        },
+        {
+          "id": "z2",
+          "kind": "zoom",
+          "label": "模块细节",
+          "x": 26,
+          "y": 66,
+          "w": 150,
+          "h": 40,
+          "zoom_of": "z1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 7,
+          "y": 13,
+          "w": 24,
+          "h": 29,
+          "label": "输入帧",
+          "zone": "z1",
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "input-frames",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 35,
+          "y": 13,
+          "w": 25,
+          "h": 29,
+          "label": "编码器",
+          "zone": "z1",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "encoder",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [
+            "frozen"
+          ]
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 73,
+          "y": 18,
+          "w": 35,
+          "h": 16,
+          "label": "注意力",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "attention",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 122,
+          "y": 9,
+          "w": 29,
+          "h": 33,
+          "label": "语言模型",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "llm",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [
+            "trainable"
+          ]
+        },
+        {
+          "id": "n5",
+          "kind": "box",
+          "x": 157,
+          "y": 20,
+          "w": 20,
+          "h": 12,
+          "label": "输出",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "x": 147,
+          "y": 46,
+          "w": 30,
+          "h": 12,
+          "label": "文字输入",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "text-input",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n7",
+          "kind": "glyph",
+          "x": 32,
+          "y": 76,
+          "w": 26,
+          "h": 24,
+          "label": "注意力图",
+          "zone": "z2",
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "attention",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n8",
+          "kind": "glyph",
+          "x": 65,
+          "y": 80,
+          "w": 32,
+          "h": 14,
+          "label": "词元",
+          "zone": "z2",
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n9",
+          "kind": "glyph",
+          "x": 104,
+          "y": 80,
+          "w": 31,
+          "h": 14,
+          "label": "处理模块",
+          "zone": "z2",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "layers",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n10",
+          "kind": "glyph",
+          "x": 142,
+          "y": 80,
+          "w": 28,
+          "h": 14,
+          "label": "结果示意",
+          "zone": "z2",
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "result-bars",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e4",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e5",
+          "from": "n6",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e6",
+          "from": "n7",
+          "to": "n8",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e7",
+          "from": "n8",
+          "to": "n9",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e8",
+          "from": "n9",
+          "to": "n10",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "framework",
+        "brief": "",
+        "facts": []
+      }
+    }
+  }
+}

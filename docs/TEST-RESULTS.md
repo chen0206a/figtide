@@ -1,3 +1,11 @@
+## 2026-10-30 · 任务19-3：新版机制图编辑器与模板
+
+- 独立列表/路由、三列新建流程及实时预览、12自制模板×中英文、30图元分类面板、标签方位/boxed/标记、统一SVG渲染器、图元本体吸附、双膜、六风格切换、属性/连接点拖线/框选/拖动/分区联动、确定性分区排版、快捷键与草稿/冲突/历史接入。实际截图复核后修正DNA实心填充与属性面板选项切换后的滚动位置。
+- `LABFLOW_TEST_DB=h2/mysql mvn -B -f backend/pom.xml test -Dtest=DiagramCatalogTest,DiagramValidatorTest,DiagramIntegrationTest,DiagramGalleryControllerTest` 各47/47；目录固定12模板覆盖全部9模式、模板双语合法、模板/文档请求互斥和Origin拦截均验证。新增desktop固定Gallery入口仅在用户点击调用现有系统浏览器方法，无自定义URL，测试用Consumer隔离，未打开外部网站。
+- `npm test -- --run src/diagram --update`269/269，覆盖6风格×12模板和6风格×30图元及膜快照、标签/连接点、编辑/撤销/排版/草稿。`npm test`最终63文件563/563；此前与build并发时4个旧UI测试5秒超时，未修改断言，单独重跑通过。`npm run build`和隔离桌面重建通过。
+- `scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('diagram.spec.ts')`最终3/3（7.8秒）：新建→科学图元/连线编辑→风格撤销→保存→409→恢复；草稿/键盘/复制；分区拖动/连接点/框选/可撤销排版。真JVM重启审计与中断恢复通过，清理3个合成项目。截图用LABFLOW_CAPTURE=1实际生成，未改用户桌面数据。
+- 依赖@dagrejs/dagre 1.1.5及graphlib 2.2.4均MIT，声明齐全；既有图表源码业务未改，共享仅新路由及类型切换接线、已有DesktopUi调用。任务19仍不推送、不发起收费请求；导出及审稿将在后续节完成。
+
 ## 2026-10-30 · 任务19-2b：新版参数化科学图元
 
 - 新增30种自制、至少主体/细节两层的参数化矢量图元及磷脂双层/双核膜；纯函数输出，毫米坐标，pt线宽，固定seed手绘。原型仅供视觉参考，未复制其实现或执行。服务端图元清单与前端实现一致性测试；label_pos/boxed/badges严格校验，未知图元、标记和重复标记拒绝。旧方框文档无新字段仍可读。

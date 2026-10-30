@@ -1,0 +1,301 @@
+{
+  "id": "concept-abstract",
+  "name": "概念摘要",
+  "pattern": "conceptual",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 72,
+          "y": 44,
+          "w": 34,
+          "h": 16,
+          "label": "Concept",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "dataset",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 12,
+          "y": 12,
+          "w": 34,
+          "h": 16,
+          "label": "Part 1",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "layers",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 132,
+          "y": 12,
+          "w": 34,
+          "h": 16,
+          "label": "Part 2",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "flask",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 12,
+          "y": 78,
+          "w": 34,
+          "h": 16,
+          "label": "Part 3",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "result-bars",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "x": 132,
+          "y": 78,
+          "w": 34,
+          "h": 16,
+          "label": "Part 4",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "text-input",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n1",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n1",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e4",
+          "from": "n1",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "concept-abstract",
+        "brief": "",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 72,
+          "y": 44,
+          "w": 34,
+          "h": 16,
+          "label": "核心概念",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "dataset",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 12,
+          "y": 12,
+          "w": 34,
+          "h": 16,
+          "label": "部分1",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "layers",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 132,
+          "y": 12,
+          "w": 34,
+          "h": 16,
+          "label": "部分2",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "flask",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 12,
+          "y": 78,
+          "w": 34,
+          "h": 16,
+          "label": "部分3",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "result-bars",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "x": 132,
+          "y": 78,
+          "w": 34,
+          "h": 16,
+          "label": "部分4",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "text-input",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n1",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n1",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e4",
+          "from": "n1",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "concept-abstract",
+        "brief": "",
+        "facts": []
+      }
+    }
+  }
+}

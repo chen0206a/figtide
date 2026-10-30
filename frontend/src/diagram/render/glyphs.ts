@@ -96,7 +96,8 @@ export function drawGlyph(kind:GlyphKind,w:number,h:number,palette:GlyphPalette)
       body.push(ellipse(.5,.5,.43,.43));detail.push(path([[.38,.33],[.53,.22],[.53,.77]]),line(.35,.77,.7,.77));break;
   }
   const fill=palette.fill==="outline"?"none":palette.accent_colors[0],secondary=palette.accent_colors[1]||palette.accent_colors[0];
-  return {bounds,layers:[{paths:body,fill,stroke:palette.line_color,opacity:palette.fill==="soft"?.35:1},{paths:detail,fill:"none",stroke:palette.line_color},{paths:accent,fill:palette.fill==="outline"?"none":secondary,stroke:palette.fill==="outline"?secondary:palette.line_color,opacity:palette.fill==="soft"?.6:1}].filter(layer=>layer.paths.length)};
+  if(kind==="dna")return {bounds,layers:[{paths:accent,fill:palette.fill==="outline"?"none":secondary,stroke:"none",opacity:.18},{paths:body,fill:"none",stroke:palette.line_color},{paths:detail,fill:"none",stroke:palette.line_color}]};
+  return {bounds,layers:[{paths:body,fill:kind==="small-molecule"?"none":fill,stroke:palette.line_color,opacity:palette.fill==="soft"?.35:1},{paths:detail,fill:"none",stroke:palette.line_color},{paths:accent,fill:palette.fill==="outline"?"none":secondary,stroke:palette.fill==="outline"?secondary:palette.line_color,opacity:palette.fill==="soft"?.6:1}].filter(layer=>layer.paths.length)};
 }
 const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"})[c]!);
 export function glyphMarkup(kind:GlyphKind,w:number,h:number,palette:GlyphPalette,seedKey:string=kind):string {

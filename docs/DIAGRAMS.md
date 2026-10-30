@@ -41,3 +41,21 @@ Gallery 77a7d84570a6a9f3e63c22bb31b9fb59757e3dab的LICENSE文本为代码专用M
 内置30种自制参数化矢量图元，目录通过diagram-catalog的glyphs下发：细胞、囊泡、受体、蛋白、二聚体、配体、小分子、DNA；输入帧、编码器、语言模型、注意力、token、堆叠层、数据集、结果柱、文字输入；试管、烧瓶、细胞群、激光、透镜、分束器、样品台、探测器、能级；P、冻结、可训练、编号。每种至少主体/细节两层，成品pt转换为mm描边，不通过缩放描边模拟尺寸；手绘路径仍由固定seed的rough generator生成。分区膜额外使用显式磷脂头/成对疏水尾，核膜为双层椭圆膜。
 
 图元是图示符号，不代表真实测量数据、化学结构鉴定或注意力矩阵；示意结果柱使用等高柱，不编码虚构数量。外部图标暂不启用。提供的设计原型只读参考其视觉组织，图元以TypeScript重新编写并补测试，未执行原型或将其直接用于产品。
+
+## 编辑器与模板（19-3）
+
+科研绘图增加数据图/机制图切换，机制图列表位于`/projects/:p/diagrams`，编辑器位于`/projects/:p/diagrams/:id`。独立保存历史和归档。新建使用自制12模板，覆盖9种视觉模式，中英文各一份；可按视觉模式浏览，右侧实时预览六种风格和期刊单/双栏或自定义尺寸。提供设计稿的三列组织，沿用现有Dialog/PageHeader/tokens。19-A用图元领域分类，实际skill包与AI尚未接入。
+
+唯一纯SVG渲染器供画布、缩略图、未来导出和几何事实采集。图元标签在节点框内预留位置，连接点根据图元本体范围计算；boxed时连接框本身。受体/双膜/DNA为分层矢量，DNA双链不填成实心、基因区域只做低透明度高亮。标签文字转义，文档不改变原始数据。
+
+编辑器支持拖动、框选、Alt/中键平移、缩放、连接点拖线、节点/分区/连线/标记属性、自动图例、分区连同节点移动、对齐/等距分布；方向键1mm、Shift方向键5mm、Delete、Ctrl+D、Ctrl+Z/Shift+Z/Y及Ctrl+S。排版按固定ID顺序调用dagre并在各分区独立排版，空间不足明确报错，不丢弃节点或悄悄压缩尺寸。排版可一次撤销。
+
+本机草稿使用`figtide-diagram-draft-v1:项目:机制图`，复用DraftWriter合并写入、离开/刷新前flush；损坏草稿不阻止读取服务器版本。恢复旧revision草稿保留原revision，避免覆盖别人更新。409保留本机草稿，只有用户明确重新载入才替换。保存中编辑继续保留，服务器仅存点击保存时的快照；恢复/归档均使用base_revision。
+
+GET diagram-catalog新增模板。POST diagrams兼容`{name,template,style,label_language?}`，与`{name,doc}`互斥；同一校验器处理两条路径。仅desktop profile新增固定`POST /api/desktop/diagram-gallery`，用户点击外链才调用已有DesktopUi系统浏览器入口，不接受自定义地址；开发环境退回普通外链。系统默认浏览器的实际打开需主人手动确认。
+
+新增布局依赖@dagrejs/dagre 1.1.5、@dagrejs/graphlib 2.2.4，均MIT并固定版本，声明见THIRD_PARTY_NOTICES。共享改动为新路由的识别/记忆和数据图/机制图切换；数据图页面/路由原有返回值及草稿命名空间不变。
+
+![新建流程](screenshots/diagram-new.png)
+
+![机制图编辑器](screenshots/diagram-editor.png)
