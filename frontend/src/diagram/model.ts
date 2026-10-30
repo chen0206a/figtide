@@ -6,7 +6,7 @@ export type DiagramStyle = {
   arrow: "open" | "filled"; fill: "flat" | "soft" | "outline";
   shadow: boolean; sketch: boolean; iso: boolean;
 };
-export type DiagramOverrides = Partial<Omit<DiagramStyle, "id" | "name" | "arrow">>;
+export type DiagramOverrides = Partial<Omit<DiagramStyle, "id" | "name">>;
 export type DiagramRect = {x: number; y: number; w: number; h: number};
 export type DiagramZone = DiagramRect & {
   id: string; kind: "compartment" | "membrane" | "nucleus" | "panel" | "zoom";

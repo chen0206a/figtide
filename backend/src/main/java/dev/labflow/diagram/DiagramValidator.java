@@ -42,7 +42,7 @@ public final class DiagramValidator {
     require(x+w <= width+1e-8 && y+h <= height+1e-8,"元素超出画布");
   }
   public static void overrides(JsonNode n) {
-    fields(n,"font_family font_size_pt line_width_pt radius_mm fill shadow sketch iso zone_colors accent_colors text_color line_color","");
+    fields(n,"font_family font_size_pt line_width_pt radius_mm arrow fill shadow sketch iso zone_colors accent_colors text_color line_color","");
     n.fields().forEachRemaining(e -> {
       switch(e.getKey()) {
         case "font_family" -> choice(e.getValue(),Set.of("Arial, Helvetica, sans-serif","Inter, Arial, sans-serif","Noto Sans SC"));
@@ -50,6 +50,7 @@ public final class DiagramValidator {
         case "line_width_pt" -> number(e.getValue(),.1,12);
         case "radius_mm" -> number(e.getValue(),0,20);
         case "fill" -> choice(e.getValue(),Set.of("flat","soft","outline"));
+        case "arrow" -> choice(e.getValue(),Set.of("open","filled"));
         case "shadow","sketch","iso" -> require(e.getValue().isBoolean(),"开关必须是布尔值");
         case "zone_colors","accent_colors" -> { array(e.getValue(),e.getKey().equals("zone_colors")?6:3); require(!e.getValue().isEmpty(),"调色板不能为空");for(var c:e.getValue())color(c); }
         default -> color(e.getValue());

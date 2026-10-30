@@ -1,3 +1,10 @@
+## 2026-10-30 · 任务19-2：六种风格与确定性手绘
+
+- 六个后端JSON为预设参数唯一来源，GET /api/diagram-catalog下发副本及期刊表；纯Java验证目录完整性、overrides边界。沿用ColorVision，分区/强调色对在三种缺陷下均ΔE00≥20。纯rough generator按元素ID固定seed，无随机/时钟依赖。模板/完整渲染器在19-3接入。
+- `LABFLOW_TEST_DB=h2/mysql mvn -B -f backend/pom.xml test -Dtest=DiagramCatalogTest,DiagramValidatorTest,DiagramIntegrationTest` 各38/38；首次Java泛型推断和未建模板目录的扫描错误已修正为显式类型及classpath*扫描，最终双库通过。`npm test`60文件295/295；`npm run build`通过（既有大块警告）。完整渲染器快照/切换撤销/E2E留19-3及总验收，未宣称本节已跑。
+- 新直接依赖roughjs 4.6.6，传递hachure-fill 0.5.2、path-data-parser 0.1.0、points-on-curve 0.2.0、points-on-path 0.2.1均MIT，锁文件固定，THIRD_PARTY_NOTICES保留许可全文。未调用收费模型。
+- 三个19-A方法上游实际提交/许可与参考位置见DIAGRAMS.md，均MIT。Gallery许可仅覆盖代码，未引入图片或代码。无新迁移；无修改共享图表业务。
+
 ## 2026-10-30 · 任务19-1：机制图文档、存储与备份迁移
 
 - 新增纯Java严格校验器、独立schema v1 TypeScript类型、配对V10（MySQL JSON/H2 CLOB）、列表/新建/读取/保存/历史/恢复/归档API。项目归属、未知字段、全局ID及引用、数值/尺寸/数量/字节上限校验；所有修改包括归档走revision并新增版本。原数据图业务和旧迁移未改。模板/目录按依赖在19-2/19-3接入。

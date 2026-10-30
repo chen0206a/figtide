@@ -1,0 +1,23 @@
+{
+  "id": "soft-illustration",
+  "name": "柔和插画",
+  "zone_colors": [
+    "#FAFBFC",
+    "#B6A18D"
+  ],
+  "accent_colors": [
+    "#516B85",
+    "#C4A475"
+  ],
+  "text_color": "#17212B",
+  "line_color": "#334155",
+  "font_family": "Inter, Arial, sans-serif",
+  "font_size_pt": 6.5,
+  "line_width_pt": 0.5,
+  "radius_mm": 4,
+  "arrow": "filled",
+  "fill": "soft",
+  "shadow": true,
+  "sketch": false,
+  "iso": false
+}
