@@ -352,4 +352,3 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 `POST /api/projects/{p}/agent/runs/{id}/decision` 新增可选 accepted_fixes（问题 ID 数组）与 review_hash。仅接受时可选修复；重新 lint 并复用原决定事务，报告/版本变化 409。新版接受响应可附最终 config、accepted_fixes、final_config_hash，仍不保存图表。未传 accepted_fixes 保持原行为。
 
 `POST /api/projects/{p}/figure-tools/review`（只读）：请求 `{protocol_version:1,config,render_facts?,target?:{width_mm?,journal?},chart_id?}`；返回 `{protocol_version:1,rules_version:"review-v1",journal,issues,passed,skipped}`。可选 chart_id 用于排除自身并校验项目归属。未知键或渲染事实超限 400、跨项目资源 404。规则、操作和几何上限详见 [FIGURE-TOOLS.md](FIGURE-TOOLS.md)、[REVIEW.md](REVIEW.md)。
-

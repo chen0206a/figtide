@@ -126,4 +126,3 @@ Codex CLI、Codex IDE 扩展和同一 Codex host 上的桌面客户端共享这�
 # 18-A：只读审稿工具
 
 新增 `review_chart({project_id,config,chart_id?,target?:{width_mm?,journal?}})`，通过现有 HTTP 客户端调用只读审稿接口，无数据库访问或模型调用。返回确定性问题、可预览的修复操作、通过与跳过项。MCP 不提交渲染事实，因此 R7/R8 显示「需要编辑器中的渲染信息」，不能视为通过。不会返回源文件名、原始数据行或样例；应用修复须继续走 `preview_chart_changes` 与用户确认。
-

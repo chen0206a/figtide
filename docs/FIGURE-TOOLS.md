@@ -143,4 +143,3 @@ npm.cmd run e2e
 `POST /api/projects/{p}/figure-tools/review`：`{protocol_version:1, config, render_facts?, target?:{width_mm?,journal?}, chart_id?}`。chart_id 是可选补充，用于校验图表归属并从项目配色比较中排除自身；不传时审稿仍可用。响应 `{protocol_version:1,rules_version:"review-v1",journal,issues,passed,skipped}`；Issue 包含稳定 id、rule、severity、title、detail、fixable、fix、anchor。
 
 接口事务只读，复用现有项目/数据归属与 lint 校验，不写配置、版本或审计，不调用模型。每条可修复操作仍是原有 `{tool,arguments}`，只经过现有 preview 后由用户确认。无渲染信息时 R7/R8 明确 skipped。未知字段、非法几何及数量超限返回 400；跨项目资源 404。规则与局限见 [REVIEW.md](REVIEW.md)。
-
