@@ -60,6 +60,7 @@ function countsOf(manifest) {
     experiments: t.experiments.length,
     experiment_dataset_links: t.experiment_datasets.length,
     style_templates: t.style_templates.length,
+    ...(t.diagrams ? {diagrams:t.diagrams.length,diagram_versions:t.diagram_versions.length} : {}),
   };
 }
 

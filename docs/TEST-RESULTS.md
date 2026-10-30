@@ -1,3 +1,11 @@
+## 2026-10-30 · 任务19-1：机制图文档、存储与备份迁移
+
+- 新增纯Java严格校验器、独立schema v1 TypeScript类型、配对V10（MySQL JSON/H2 CLOB）、列表/新建/读取/保存/历史/恢复/归档API。项目归属、未知字段、全局ID及引用、数值/尺寸/数量/字节上限校验；所有修改包括归档走revision并新增版本。原数据图业务和旧迁移未改。模板/目录按依赖在19-2/19-3接入。
+- BackupService扩展表、CLOB编码、ID映射、完整历史校验与旧备份兼容；迁移工具规范化/计数覆盖同名重复图。全新隔离.runtime/task19-mysql，仅创建labflow_test；未连接真实labflow库。
+- 双库定向 `mvn -B -f backend/pom.xml test -Dtest=DiagramValidatorTest,DiagramIntegrationTest,MigrationParityTest,BackupLimitsIntegrationTest` 各40/40。全量H2首次409项中1失败（既有兼容性探针缺V10期望），补探针V10记录及两处数字排序，V1–V9断言原样。最终 `LABFLOW_TEST_DB=h2/mysql mvn -B -f backend/pom.xml test`：409/414总计，各0失败/错误、1既有ServerEvaluationTest opt-in跳过。
+- `node --test scripts/migration/*.test.cjs`43/43；`npm test`59文件294/294；`npm run build`通过（既有大块警告）。E2E：本节仅类型和后端，无机制图界面，diagram.spec.ts将在19-3至总验收执行，未宣称通过；无收费请求。
+- 后端授权类别：任务19明确要求的新文档/API/配对迁移/备份兼容及测试。新增依赖：无。
+
 ## 2026-10-30 · 任务19-0：前置集成与开发基线
 
 - 任务18功能PR #5全部检查通过后普通合并，main=c90ec1d650bbe8dfcb635026ed116e3b5b392a9b；从该main新建feature/diagrams。真实评测归档未上传，原feature/agent-team及.runtime/task18-evaluation-archive-local.zip保留本地。

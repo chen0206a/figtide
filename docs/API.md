@@ -1,5 +1,21 @@
 # API v1
 
+## 机制图存储（19-A，未发布）
+
+机制图独立使用 `DiagramDoc schema_version:1`，坐标/尺寸单位mm；现有图表接口不变。
+
+| 接口 | 请求与行为 |
+| --- | --- |
+| GET `/api/projects/{p}/diagrams` | 列表，包括archived、revision和version_count |
+| POST `/api/projects/{p}/diagrams` | `{name,doc}`，首版revision=1；模板创建将在目录接入时提供 |
+| GET `/api/projects/{p}/diagrams/{id}` | 当前doc、revision、名称与归档状态 |
+| PUT `/api/projects/{p}/diagrams/{id}` | `{base_revision,doc}`，创建新版本；冲突409 |
+| GET `/api/projects/{p}/diagrams/{id}/versions` | 倒序历史，每项含version、schema_version、doc和created_at |
+| POST `/api/projects/{p}/diagrams/{id}/restore` | `{base_revision,version}`，恢复也生成新版本 |
+| PUT `/api/projects/{p}/diagrams/{id}/archive` | `{base_revision,archived}`，元信息变更同样创建文档版本并提升revision |
+
+所有写入拒绝未知字段，检查项目归属、文档与revision；沿用全局Host/Origin保护，不提供删除接口。归档不删除历史。备份追加diagrams/diagram_versions并重映射ID；旧v1备份缺少这两张表时按空表恢复，只缺其中一张或引用损坏则拒绝并回滚。
+
 ## 18-B 协作与深度审稿（未发布）
 
 `POST /api/projects/{p}/agent/runs` 兼容扩展 mode：省略为 single，支持 single/team/review；既有 edit（单助手别名）、recommend 不变。team 默认 max_steps=8、max_tokens=60000；review 只运行审稿专家，允许附 render_facts?/target?，仍须 share_metadata=true。原 request_id、session_id、parent_run_id、会话预算、取消及恢复接口继续适用。

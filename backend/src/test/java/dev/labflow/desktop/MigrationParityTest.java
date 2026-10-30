@@ -45,7 +45,7 @@ class MigrationParityTest {
     for (Resource r : resources) {
       names.add(r.getFilename());
     }
-    names.sort(String::compareTo);
+    names.sort(java.util.Comparator.comparingInt(name -> Integer.parseInt(name.substring(1, name.indexOf("__")))));
     assertTrue(names.size() >= 8, "db/migration-h2 至少应有 V1–V8，实际 " + names);
 
     try (Connection conn = DriverManager.getConnection(

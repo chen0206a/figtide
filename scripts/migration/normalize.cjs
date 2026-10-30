@@ -290,6 +290,25 @@ function normalizeManifest(manifest) {
   const styleTemplates = styleRows.map(row => ({ key: templateKeys.get(row.id), ...templateFields(row) }));
   styleTemplates.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
 
+  // Diagram IDs are independent of datasets. Legacy archives omit both tables.
+  const hasDiagrams = 'diagrams' in manifest.tables || 'diagram_versions' in manifest.tables;
+  const diagramRows = hasDiagrams ? table(manifest, 'diagrams') : [];
+  const diagramVersionRows = hasDiagrams ? table(manifest, 'diagram_versions') : [];
+  const diagramContent = row => {
+    requireFields(row, ['id','name','revision','archived','created_at','updated_at'], 'diagrams');
+    return {name:row.name, revision:num(row.revision,'diagrams.revision'), archived:row.archived,
+      created_at:iso(row.created_at,'diagrams.created_at'),updated_at:iso(row.updated_at,'diagrams.updated_at'),
+      versions:diagramVersionRows.filter(v=>v.diagram_id===row.id).map(v=>({version:v.version,schema_version:v.schema_version,doc:parseJsonColumn(v.doc_json,'diagram_versions.doc_json'),created_at:v.created_at})).sort((a,b)=>a.version-b.version)};
+  };
+  const diagramKeys = stableKeys(diagramRows,row=>`diagram:${row.name}`,diagramContent,'diagrams');
+  const diagrams = diagramRows.map(row=>({key:diagramKeys.get(row.id),...diagramContent(row)})).sort((a,b)=>a.key.localeCompare(b.key));
+  const diagramVersions = diagramVersionRows.map(row=>{
+    requireFields(row,['id','diagram_id','version','schema_version','doc_json','created_at'],'diagram_versions');
+    const key=diagramKeys.get(row.diagram_id);if(!key)fail('diagram_versions 引用了未知 diagram_id');
+    return {key:`${key}/v${num(row.version,'diagram_versions.version')}`,diagram_key:key,version:row.version,schema_version:row.schema_version,
+      doc:canonicalize(parseJsonColumn(row.doc_json,'diagram_versions.doc_json')),created_at:iso(row.created_at,'diagram_versions.created_at')};
+  }).sort((a,b)=>a.key.localeCompare(b.key));
+
   return {
     format: manifest.format,
     project: {
@@ -304,6 +323,8 @@ function normalizeManifest(manifest) {
     charts,
     chart_versions: chartVersions,
     style_templates: styleTemplates,
+    // Empty new tables compare equal to a legacy backup without the tables.
+    ...(diagrams.length || diagramVersions.length ? {diagrams,diagram_versions:diagramVersions} : {}),
   };
 }
 

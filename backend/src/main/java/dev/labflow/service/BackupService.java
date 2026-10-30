@@ -72,6 +72,8 @@ public class BackupService {
     COLUMNS.put(
         "style_templates",
         List.of("id", "project_id", "name", "schema_version", "profile_json", "created_at"));
+    COLUMNS.put("diagrams", List.of("id", "project_id", "name", "revision", "archived", "created_at", "updated_at"));
+    COLUMNS.put("diagram_versions", List.of("id", "diagram_id", "version", "schema_version", "doc_json", "created_at"));
   }
 
   private final WorkspaceRepository db;
@@ -146,6 +148,8 @@ public class BackupService {
             case "chart_versions" ->
                 "SELECT t.* FROM chart_versions t JOIN charts c ON c.id=t.chart_id WHERE"
                     + " c.project_id=? ORDER BY t.id";
+            case "diagram_versions" ->
+                "SELECT t.* FROM diagram_versions t JOIN diagrams d ON d.id=t.diagram_id WHERE d.project_id=? ORDER BY t.id";
             case "experiment_datasets" ->
                 "SELECT t.* FROM experiment_datasets t JOIN experiments e ON e.id=t.experiment_id"
                     + " WHERE e.project_id=? ORDER BY t.experiment_id,t.dataset_version_id";
@@ -179,6 +183,7 @@ public class BackupService {
         (k, v) -> {
           if (v instanceof Timestamp t) result.put(k, t.toInstant().toString());
           else if (v instanceof byte[] b) result.put(k, Base64.getEncoder().encodeToString(b));
+          else if (v instanceof java.sql.Clob) result.put(k, dev.labflow.diagram.DiagramService.string(v));
           else result.set(k, json.valueToTree(v));
         });
     return result;
@@ -229,6 +234,12 @@ public class BackupService {
             && node.path("format").asText().equals("labflow-project-v1"),
         "不支持的备份格式");
     var root = (ObjectNode) node;
+    // Old v1 archives predate diagrams. Only the complete absence of both tables is legacy.
+    var oldTables = root.path("tables");
+    if (oldTables.isObject() && !oldTables.has("diagrams") && !oldTables.has("diagram_versions")) {
+      ((ObjectNode)oldTables).putArray("diagrams");
+      ((ObjectNode)oldTables).putArray("diagram_versions");
+    }
     validate(root);
     return root;
   }
@@ -364,6 +375,20 @@ public class BackupService {
               && versions.size() == rev
               && versions.stream().allMatch(v -> v >= 1 && v <= rev),
           "图表历史不完整");
+    }
+    var diagramVersions = new HashMap<Long, Set<Integer>>();
+    for (var r : root.path("tables").path("diagram_versions")) {
+      foreign(ids,"diagrams",r.path("diagram_id").asLong());
+      int version=r.path("version").asInt();
+      require(r.path("version").isIntegralNumber() && r.path("version").canConvertToInt() && version>0
+          && diagramVersions.computeIfAbsent(r.path("diagram_id").asLong(),k->new HashSet<>()).add(version),"机制图版本重复或无效");
+      require(r.path("schema_version").asInt()==1,"机制图版本无效");
+      dev.labflow.diagram.DiagramValidator.validate(tree(r.path("doc_json").asText()));
+    }
+    for (var d : root.path("tables").path("diagrams")) {
+      require(d.path("name").isTextual() && !d.path("name").asText().isBlank() && d.path("name").asText().length()<=120 && d.path("archived").isBoolean(),"机制图元信息无效");
+      var versions=diagramVersions.get(d.path("id").asLong());int revision=d.path("revision").asInt();
+      require(d.path("revision").isIntegralNumber() && d.path("revision").canConvertToInt() && versions!=null && revision>0 && versions.size()==revision && versions.stream().allMatch(v->v>=1&&v<=revision),"机制图历史不完整");
     }
     // Validate provenance with an identity mapping before any writes.
     var identity = new HashMap<String, Map<Long, Long>>();
@@ -546,6 +571,8 @@ public class BackupService {
                 value = mapped(maps, "dataset_versions", v.asLong());
               else if (col.equals("experiment_id")) value = mapped(maps, "experiments", v.asLong());
               else if (col.equals("chart_id")) value = mapped(maps, "charts", v.asLong());
+              else if (col.equals("diagram_id")) value = mapped(maps, "diagrams", v.asLong());
+              else if (col.equals("archived")) value = v.asBoolean();
               else if (col.equals("source_meta_json"))
                 value = null; // Resolve after all identities exist.
               else if (col.equals("config_json")) {
