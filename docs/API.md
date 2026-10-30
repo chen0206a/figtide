@@ -377,3 +377,14 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 `POST /api/projects/{p}/diagram-tools/preview`：`{protocol_version:1,doc,operations:[{tool,arguments}],diagram_id?,base_revision?}`；存在diagram_id时检查归属，base_revision需要diagram_id并检查409。返回`{protocol_version:1,doc,changes:[{path,before,after}]}`。path为JSON Pointer，差异数字按数值比较。请求拒绝未知字段，操作≤400、操作JSON≤2MiB；文档仍经过同一DiagramValidator。预览只读，无新版本。
 
 update_zone移动坐标时平移该分区中的节点；改变尺寸不擅自缩放节点。remove_node清除其关联边与注释。set_style保留未指定字段；overrides按字段合并，null明确清空；set_canvas/set_legend按指定属性更新。新增节点默认zone/icon/style_ref=null，新增边默认空标签和直线。所有参数结构以目录为准；未通过校验的批次不返回半成品，也不改变输入。
+
+
+### 机制图视觉返工兼容扩展（19-A，2026-10-30）
+
+DiagramDoc.style新增可选palette，取okabe-ito/npg/aaas/nejm/lancet/jama，省略为okabe-ito，schema_version仍为1。保存仍走已有revision乐观锁。旧文档不用迁移；palette不在overrides中。
+
+GET /api/diagram-catalog兼容增加palettes（原始a/b/c/d/n色值及非官方来源说明）、palette_audits。每项审查含id、safe、threshold=20及failing_pairs（roles、minimum_delta_e）；计算三种色觉缺陷下最小ΔE00，不达标如实提示，不调整色值或阈值。
+
+已有zoom_of可引用同一文档节点或分区；旧分区引用继续有效。已有glyph枚举增加result-bars-low，对应规范低值柱图；旧30项继续有效。确定性set_style操作增加可选palette参数，仍由同一文档校验器检查。无新迁移。
+
+19-5只读审稿控制器目前是封存的WIP，不属于本次已完成接口验收；应在视觉确认后完成审稿面板、几何事实对接和规则回归。

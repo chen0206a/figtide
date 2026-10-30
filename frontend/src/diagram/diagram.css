@@ -6,7 +6,7 @@
 .diagram-toolbar strong { max-width:25vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .diagram-toolbar-actions { display:flex; flex-wrap:wrap; gap:var(--lf-space-2); margin-left:auto; }
 .diagram-toolbar [role="status"] { font-size:var(--lf-text-xs); color:var(--lf-text-2); }
-.diagram-body { display:grid; grid-template-columns:220px minmax(0,1fr) 260px; min-height:680px; }
+.diagram-body { display:grid; grid-template-columns:260px minmax(0,1fr) 260px; min-height:680px; }
 .diagram-tools,.diagram-inspector { background:var(--lf-surface); padding:var(--lf-space-4); max-height:calc(100vh - 190px); overflow:auto; }
 .diagram-tools { border-right:1px solid var(--lf-border); display:flex; flex-direction:column; gap:var(--lf-space-2); }
 .diagram-inspector { border-left:1px solid var(--lf-border); }
@@ -76,9 +76,42 @@
 .diagram-tools .diagram-glyph-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--lf-space-1); }
 .diagram-tools .diagram-glyph-grid button { min-width:0; padding:var(--lf-space-1); cursor:grab; }
 .diagram-tools .diagram-glyph-grid button:active { cursor:grabbing; }
-.diagram-tools .diagram-glyph-grid button span { display:block; white-space:nowrap; font-size:var(--lf-text-xs); letter-spacing:-.03em; }
+.diagram-tools .diagram-glyph-grid button span { display:block; white-space:nowrap; font-size:var(--lf-text-2xs); letter-spacing:-.03em; }
 .diagram-tools .diagram-glyph-grid svg { width:100%; height:40px; }
 .diagram-inspector details { border-top:1px solid var(--lf-border); margin-top:var(--lf-space-3); padding-top:var(--lf-space-2); }
 .diagram-inspector summary { cursor:pointer; font-size:var(--lf-text-sm); font-weight:600; margin-bottom:var(--lf-space-2); }
 .diagram-inspector .diagram-element-list { max-height:none; }
 
+/* New diagram page follows the reference's three simultaneous columns. */
+.diagram-new-page { background:var(--lf-bg); padding:var(--lf-space-5); }
+.diagram-new-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--lf-space-4); }
+.diagram-new-header h1 { font-size:var(--lf-text-xl); margin:0 0 var(--lf-space-2); }
+.diagram-new-header p { margin:0; color:var(--lf-text-2); font-size:var(--lf-text-sm); }
+.diagram-new-page .diagram-wizard-layout { display:grid; grid-template-columns:180px minmax(400px,1fr) minmax(532px,560px); gap:var(--lf-space-5); align-items:start; }
+.diagram-new-page .diagram-template-filters,.diagram-new-page .diagram-template-browser,.diagram-new-page .diagram-wizard-preview { background:var(--lf-surface); border:1px solid var(--lf-border); border-radius:var(--lf-radius-sm); padding:var(--lf-space-4); min-width:0; }
+.diagram-new-page .diagram-template-filters button { display:flex; position:relative; flex-direction:column; gap:var(--lf-space-1); width:100%; text-align:left; margin-bottom:var(--lf-space-2); padding:var(--lf-space-3) var(--lf-space-2); border:1px solid var(--lf-border); background:var(--lf-surface); border-radius:var(--lf-radius-xs); color:var(--lf-text); }
+.diagram-new-page .diagram-template-filters button[aria-pressed=true] { border-color:var(--lf-link); background:var(--lf-selected); }
+.diagram-new-page .diagram-template-filters small { font-size:var(--lf-text-xs); color:var(--lf-text-2); }
+.diagram-new-page .diagram-template-filters button .lf-mono { align-self:flex-end; }
+.diagram-new-page .diagram-thumbnail-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.diagram-new-page .diagram-wizard-preview > .diagram-thumbnail-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.diagram-new-page .diagram-large-preview { min-height:280px; }
+.diagram-new-page .diagram-wizard-preview { max-height:none; min-height:600px; overflow:visible; padding-bottom:var(--lf-space-14); }
+.diagram-new-page label { display:flex; flex-direction:column; gap:var(--lf-space-1); margin-bottom:var(--lf-space-3); font-size:var(--lf-text-sm); }
+.diagram-new-page input,.diagram-new-page select { width:100%; min-width:0; }
+.diagram-create-actions { position:fixed; right:var(--lf-space-5); bottom:var(--lf-space-4); z-index:10; border-radius:var(--lf-radius-sm); box-shadow:var(--lf-shadow-sm); padding:var(--lf-space-3); display:flex; justify-content:flex-end; background:var(--lf-surface); padding:var(--lf-space-3) 0 0; border-top:1px solid var(--lf-border); }
+.diagram-start { padding:var(--lf-space-5) 0; }
+.diagram-start-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--lf-space-4); }
+.diagram-start-grid button { display:flex; flex-direction:column; gap:var(--lf-space-3); background:var(--lf-surface); border:1px solid var(--lf-border); border-radius:var(--lf-radius-sm); padding:var(--lf-space-4); color:var(--lf-text); text-align:left; }
+.diagram-start-grid svg { width:100%; height:auto; }
+.diagram-start-grid small { color:var(--lf-text-2); }
+.diagram-export-preview svg { display:block; width:100%; height:auto; max-height:260px; }
+@media(max-width:1279px) { .diagram-new-page .diagram-wizard-layout { grid-template-columns:150px minmax(300px,1fr) minmax(360px,1fr); gap:var(--lf-space-3); } }
+@media(max-width:1000px) { .diagram-new-page .diagram-wizard-layout { grid-template-columns:1fr; } .diagram-new-page .diagram-wizard-preview { max-height:none; } }
+
+.diagram-new-page .diagram-style-choice span { height:48px; aspect-ratio:auto; }
+.diagram-new-page .diagram-style-choice svg { height:48px; }
+
+.diagram-connection-guide { fill:none; stroke:var(--lf-focus); stroke-width:.4; stroke-dasharray:1 1; pointer-events:none; }
+
+.diagram-glyph-grid svg path { vector-effect:non-scaling-stroke; stroke-width:1px; }

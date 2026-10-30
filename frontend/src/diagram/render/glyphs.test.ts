@@ -10,10 +10,10 @@ describe.each(["nature-flat","soft-illustration","line-minimal","conference-fram
   it("renders phospholipid bilayers and double nuclear membranes as layered vectors",()=>{expect(membraneMarkup(100,8,style)).toMatchSnapshot("bilayer");expect(nuclearEnvelopeMarkup(40,30,style)).toMatchSnapshot("nuclear envelope");});
   it.each(glyphKinds)("renders %s as deterministic multi-layer vectors",kind=>{
     const drawing=drawGlyph(kind,24,18,style),markup=glyphMarkup(kind,24,18,style);
-    expect(drawing.layers.length).toBeGreaterThanOrEqual(1);expect(markup).toEqual(glyphMarkup(kind,24,18,style));expect(markup).not.toMatch(/NaN|Infinity|undefined|<image|<script|https?:/);
+    expect(drawing.layers.length).toBeGreaterThanOrEqual(1);expect(drawing.layers.some(l=>l.fill!=="none"||l.stroke!=="none")).toBe(true);expect(markup).toEqual(glyphMarkup(kind,24,18,style));expect(markup).not.toMatch(/NaN|Infinity|undefined|<image|<script|https?:/);
     const svg=new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg">${markup}</svg>`,"image/svg+xml");expect(svg.querySelector("parsererror")).toBeNull();expect(svg.querySelectorAll("path").length).toBeGreaterThan(0);
     expect(drawing.bounds.x).toBeGreaterThanOrEqual(0);expect(drawing.bounds.x+drawing.bounds.w).toBeLessThanOrEqual(24.001);
-    if(style.fill==="outline")expect(drawing.layers.every(l=>l.fill==="none")).toBe(true);
+    if(style.fill==="outline")expect(drawing.layers.every(l=>["none","#FFFFFF"].includes(l.fill))).toBe(true);
     expect(markup).toMatchSnapshot();
   });
 });

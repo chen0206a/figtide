@@ -148,5 +148,10 @@
     "id": "number",
     "name": "数字编号",
     "category": "markers"
+  },
+  {
+    "id": "result-bars-low",
+    "name": "低值柱图",
+    "category": "ml"
   }
 ]

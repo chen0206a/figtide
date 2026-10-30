@@ -1,3 +1,22 @@
+## 2026-10-30 — 19-A视觉返工A–C交付（待主人视觉验收）
+
+范围：VISUAL-REVIEW-19A.md的05 #1–#15、08 #1–#6、02–04 #1–#4，以及01/06/07的本轮要求；09保留恢复语义。六步分别本地提交；19-5在41ab753封存后未再修改。主人已授权连续从A到C，未启动19-A总验收或收费调用。
+
+最终证据：docs/test-evidence/diagram-checkpoint-c/README.md；含6风格31图元样张（7.5px/mm）、6原值配色机制图、1440×960两编辑器左右对照、12模板总览、新建/属性/导出/历史完整截图、21张真实操作帧合成GIF、实际中英文矢量PDF及Poppler预览。A/B阶段截图保留历史，C为最终版本。截图/快照不代表主人视觉已通过。
+
+实际运行命令及结果：
+
+- frontend：npm test -- --run src/diagram -u：286/286；npm test -- --run：67文件580/580。更新快照对应明确规范变更，并增加规范几何、参数、图元可见性、旧文档默认palette及物理箭头回归；未降低ΔE≥20。
+- backend：LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test：441项，440通过、1跳过、0失败/错误；mysql同命令：446项，445通过、1跳过、0失败/错误。跳过均为既有ServerEvaluationTest（未设置labflow.eval.server），没有发起真实模型评测。
+- $env:LABFLOW_CAPTURE='1'; $env:LABFLOW_DIAGRAM_CAPTURE_PHASE='diagram-checkpoint-c'; .\scripts\test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('diagram-visual-rework.spec.ts','diagram.spec.ts','diagram-capture.spec.ts')：frontend tsc/vite及desktop JAR构建通过，相关E2E8/8；独立JVM审计重启/中断恢复探针通过。
+- node scripts/capture-diagram-evidence.cjs、node scripts/compose-diagram-comparisons.cjs、python scripts/assemble-diagram-operation-gif.py：完成。pypdf检查实际PDF180×110mm、0位图、中文嵌入及可提取，Poppler190.5dpi渲染后查看。
+
+首轮问题及复跑保留：夹具description遗漏、配体跨原分区边界、折叠控件定位/旧图元数量、旧快照、纯填充图元在outline中不可见；PDF斜体被拒、marker箭头缩小、500/600权重导致中文字体回退。均修复后跑最终上述命令；失败日志不覆盖最终证明，留在.runtime/logs/task19-rework-*。最后一个新增资源尺寸回归确保小分子节点不宽于JAK。
+
+偏差/共享范围：zoom_of兼容节点来源、glyph兼容增加原型chartlow低值柱图；唯一新文档字段是可选style.palette，无新迁移。图层数按新规范，蛋白单层不加内部装饰；outline允许none/白色遮挡并新增可见性断言。PDF修正限机制图导出，不改数据图PDF。原型标题白字可读性不足时用深色，原配色色值与阈值不变。
+
+未执行：完整19-A总验收（等待主人视觉验收后恢复19-5）；全产品Playwright/MCP全套（本轮为相关机制图回归，MCP无改动）；系统默认浏览器打开图库的人工项。不得将这些写为通过。未推送GitHub、未重写历史、未操作真实工作区。
+
 ## 2026-10-30 — 19-A视觉返工步骤5
 
 05 #13–#15、06属性折叠：四列图元面板支持点击添加到中心及HTML拖拽，结构/连接控制移到右栏折叠区；未选中显示画布尺寸/期刊参考/字号/语言，图层默认折叠。标记与编号折叠。证据暂见diagram-checkpoint-b新版编辑器，C将另附最终完整截图与交互GIF。

@@ -18,7 +18,7 @@ V10新建diagrams/diagram_versions；MySQL文档为JSON、H2为CLOB，显式UTC�
 
 ## 风格（19-2）
 
-六种预设参数只存在后端`diagram/styles/*.json`，`GET /api/diagram-catalog`下发副本、期刊尺寸表及当前模板/skill/图标目录。Nature扁平、柔和插画、线稿极简、会议框架、等距3D、手绘草图；均为矢量。预设基准6.5pt、线宽≥0.5pt；每个分区/强调调色板任意两色在三种色觉缺陷下CIEDE2000≥20，由既有ColorVision逐项验证。UI颜色仍使用lf tokens，图形颜色来自预设。
+六种预设参数只存在后端`diagram/styles/*.json`，`GET /api/diagram-catalog`下发副本、期刊尺寸表及当前模板/skill/图标目录。Nature扁平、柔和插画、线稿极简、会议框架、等距3D、手绘草图；均为矢量。预设正文7pt、轮廓1pt、连线1.25pt、分区0.75pt；每个分区/强调调色板任意两色在三种色觉缺陷下CIEDE2000≥20，由既有ColorVision逐项验证。UI颜色仍使用lf tokens，图形颜色来自预设。
 
 `style.overrides`只接受字体、字号/线宽/圆角、箭头/填充、阴影/sketch/iso开关、分区/强调调色板和文字/线色。换预设只改preset；overrides继续保留，用户可显式清空。字体单项限制为目录使用的Arial/Helvetica、Inter或内嵌Noto Sans SC组合，避免任意URL。
 
@@ -38,9 +38,9 @@ Gallery 77a7d84570a6a9f3e63c22bb31b9fb59757e3dab的LICENSE文本为代码专用M
 
 以2026-10-30新版任务书为准：节点kind使用box/pill/ellipse/glyph/text；旧草稿方案中未发布的cell/molecule类型撤换为glyph。glyph节点必须指定服务端清单中的glyph ID，非glyph节点不得夹带glyph。可选label_pos为center/below/above/left/right（缺省center）、boxed为布尔值、badges为至多8个不重复标记（phospho/frozen/trainable/number:1至number:99）。未添加这些可选字段的方框文档继续有效。
 
-内置30种自制参数化矢量图元，目录通过diagram-catalog的glyphs下发：细胞、囊泡、受体、蛋白、二聚体、配体、小分子、DNA；输入帧、编码器、语言模型、注意力、token、堆叠层、数据集、结果柱、文字输入；试管、烧瓶、细胞群、激光、透镜、分束器、样品台、探测器、能级；P、冻结、可训练、编号。每种至少主体/细节两层，成品pt转换为mm描边，不通过缩放描边模拟尺寸；手绘路径仍由固定seed的rough generator生成。分区膜额外使用显式磷脂头/成对疏水尾，核膜为双层椭圆膜。
+内置30种自制参数化矢量图元，目录通过diagram-catalog的glyphs下发：细胞、囊泡、受体、蛋白、二聚体、配体、小分子、DNA；输入帧、编码器、语言模型、注意力、token、堆叠层、数据集、结果柱、文字输入；试管、烧瓶、细胞群、激光、透镜、分束器、样品台、探测器、能级；P、冻结、可训练、编号。图层数量以规范为准（蛋白为单层轮廓，受体三层等），不为凑图层数添加装饰，成品pt转换为mm描边，不通过缩放描边模拟尺寸；手绘路径仍由固定seed的rough generator生成。分区膜额外使用显式磷脂头/成对疏水尾，核膜为双层椭圆膜。
 
-图元是图示符号，不代表真实测量数据、化学结构鉴定或注意力矩阵；示意结果柱使用等高柱，不编码虚构数量。外部图标暂不启用。提供的设计原型只读参考其视觉组织，图元以TypeScript重新编写并补测试，未执行原型或将其直接用于产品。
+图元是图示符号，不代表真实测量数据、化学结构鉴定或注意力矩阵；示意结果柱使用等高柱，不编码虚构数量。外部图标暂不启用。设计原型现为主人提供的规范，纯几何按TypeScript移植；产品不执行参考JS，测试逐项对照规范路径和badge坐标。
 
 ## 编辑器与模板（19-3）
 
@@ -56,9 +56,9 @@ GET diagram-catalog新增模板。POST diagrams兼容`{name,template,style,label
 
 新增布局依赖@dagrejs/dagre 1.1.5、@dagrejs/graphlib 2.2.4，均MIT并固定版本，声明见THIRD_PARTY_NOTICES。共享改动为新路由的识别/记忆和数据图/机制图切换；数据图页面/路由原有返回值及草稿命名空间不变。
 
-![新建流程](screenshots/diagram-new.png)
+![新建流程](test-evidence/diagram-checkpoint-c/new-page.png)
 
-![机制图编辑器](screenshots/diagram-editor.png)
+![机制图编辑器](test-evidence/diagram-checkpoint-c/mechanism-1440.png)
 
 ## 导出（19-4）
 
@@ -88,3 +88,14 @@ PDF复用jspdf+svg2pdf.js与现有Noto Sans SC本地子集/字形检查及文字
 style.palette为新增可选字段，省略使用okabe-ito，旧文档无需迁移。六配色数值统一维护在backend/src/main/resources/diagram/palettes.json，TypeScript直接引用同一JSON；隔离桌面构建复制该资源。NPG/AAAS/NEJM/Lancet/JAMA只引用规范中整理的ggsci配色色值，未复制ggsci实现代码。界面全部标“风格（非官方）”。色值来源说明见各项source，参考https://nanx.me/ggsci/。
 
 palette_audits使用原ColorVision和MIN_DELTA_E=20，枚举a/b/c/d/n所有色对及三种色觉缺陷；低于20的色对返回真实minimum_delta_e并在界面提示，不改变色值、不降低阈值。“色盲友好”是Okabe–Ito惯用名称，不等于本图所有选用色对均满足严格20门槛。
+
+
+## A–C返工交付状态
+
+返工实现与相关验证完成，最终材料见[test-evidence/diagram-checkpoint-c/README.md](test-evidence/diagram-checkpoint-c/README.md)。尚待主人视觉验收，19-5暂停；未执行19-A总验收，不宣称已经满足投稿/发布验收。
+
+六风格默认圆角/文字色/线色已按原型复核；黑线风格保留白色遮挡与轮廓以避免叠层穿透及无描边填充图元隐形。图元由原30种兼容扩展为31种，新增result-bars-low来自原型chartlow。小分子在旗舰模板进一步收窄到不超过JAK，遵循05 #6；会议标题采用可读深色文字并保留浅标题带。正文7pt；原型分区小字/徽标在19-5恢复时仍须按真实几何和期刊门槛审查，不降低检查阈值。
+
+六配色仅使用固定原值；风格控制形状/填充，不绑定某套期刊配色。旧颜色overrides字段合法保留以兼容旧文档格式；本轮规范渲染以style.palette的语义色映射为准，字体/线宽/圆角覆盖继续生效。新增palette不要求迁移，旧文档省略时使用okabe-ito。
+
+zoom_of已有字符串引用兼容节点与分区；节点删除清理放大来源，不增加新必填字段。渲染器提供显式矢量箭头和data-edge-tip数值端点；PDF不依赖marker缩放。机制图PDF的斜体通过矢量倾斜保留，500/600权重映射到现有常规/粗体字体，避免中文回退。仅改机制图导出，数据图PDF代码与既有行为不变。

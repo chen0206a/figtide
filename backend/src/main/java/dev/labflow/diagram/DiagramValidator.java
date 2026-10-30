@@ -10,7 +10,7 @@ public final class DiagramValidator {
   public static final int MAX_BYTES = 2 * 1024 * 1024;
   public static final Set<String> PRESETS = Set.of("nature-flat", "soft-illustration", "line-minimal", "conference-framework", "isometric", "sketch");
   public static final Set<String> NODE_KINDS = Set.of("box", "pill", "ellipse", "glyph", "icon", "text");
-  public static final Set<String> GLYPHS = Set.of("cell","vesicle","receptor","protein","dimer","ligand","small-molecule","dna","input-frames","encoder","llm","attention","tokens","layers","dataset","result-bars","text-input","tube","flask","cell-cluster","laser","lens","beam-splitter","sample-stage","detector","energy-levels","phospho","frozen","trainable","number");
+  public static final Set<String> GLYPHS = Set.of("cell","vesicle","receptor","protein","dimer","ligand","small-molecule","dna","input-frames","encoder","llm","attention","tokens","layers","dataset","result-bars","result-bars-low","text-input","tube","flask","cell-cluster","laser","lens","beam-splitter","sample-stage","detector","energy-levels","phospho","frozen","trainable","number");
   public static final Set<String> ZONE_KINDS = Set.of("compartment", "membrane", "nucleus", "panel", "zoom");
   public static final Set<String> EDGE_KINDS = Set.of("flow", "activate", "inhibit", "transport", "bind", "indirect");
   public static final Set<String> ROLES = Set.of("actor", "process", "data", "model", "output", "note");

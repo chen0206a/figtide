@@ -21,3 +21,13 @@ it('uses the exact source palette values and prescribed role mixes',()=>{
   for(const p of palettes){expect(roleColor('actor',p.id)).toEqual({fill:tintColor(p.a,'#FFFFFF',.82),stroke:tintColor(p.a,'#000000',.08)});}
   expect(roleColor('actor')).toEqual(roleColor('actor','okabe-ito'));
 });
+
+it('keeps all six preset radii and outline/fill modes consistent with the owner specification',()=>{
+  const source=readFileSync(resolve(process.cwd(),'../docs/development/reference/diagram-engine-sketch.js'),'utf8');
+  const spec=JSON.parse(vm.runInNewContext(source+';JSON.stringify(MECH_STYLES)'));
+  for(const id of Object.keys(spec)){
+    const style=JSON.parse(readFileSync(resolve(process.cwd(),'../backend/src/main/resources/diagram/styles/'+id+'.json'),'utf8'));
+    expect(style.radius_mm).toBe(spec[id].r);expect(style.line_color).toBe(spec[id].line);expect(style.text_color).toBe(spec[id].fg);
+    expect(style.fill==='outline').toBe(id==='line-minimal');expect(style.font_size_pt).toBe(7);expect(style.line_width_pt).toBe(1);
+  }
+});

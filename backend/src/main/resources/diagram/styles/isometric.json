@@ -10,15 +10,15 @@
     "#45C5A1",
     "#D55E00"
   ],
-  "text_color": "#17212B",
-  "line_color": "#17212B",
+  "text_color": "#0E1116",
+  "line_color": "#2B323C",
   "font_family": "Inter, Arial, sans-serif",
   "font_size_pt": 7,
   "line_width_pt": 1,
-  "radius_mm": 0,
+  "radius_mm": 0.3,
   "arrow": "filled",
   "fill": "flat",
-  "shadow": true,
+  "shadow": false,
   "sketch": false,
   "iso": true
 }

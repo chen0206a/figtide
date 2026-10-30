@@ -6,7 +6,7 @@ import rough from "roughjs";
 import { ptToMm } from "../units";
 import { stableSeed } from "./sketch";
 
-export const glyphKinds=["cell","vesicle","receptor","protein","dimer","ligand","small-molecule","dna","input-frames","encoder","llm","attention","tokens","layers","dataset","result-bars","text-input","tube","flask","cell-cluster","laser","lens","beam-splitter","sample-stage","detector","energy-levels","phospho","frozen","trainable","number"] as const;
+export const glyphKinds=["cell","vesicle","receptor","protein","dimer","ligand","small-molecule","dna","input-frames","encoder","llm","attention","tokens","layers","dataset","result-bars","result-bars-low","text-input","tube","flask","cell-cluster","laser","lens","beam-splitter","sample-stage","detector","energy-levels","phospho","frozen","trainable","number"] as const;
 export type GlyphKind=typeof glyphKinds[number];
 export type GlyphPalette=Pick<DiagramStyle,"zone_colors"|"accent_colors"|"line_color"|"text_color"|"fill"|"line_width_pt"|"sketch"|"iso"|"radius_mm"> & {body_fill?:string};
 export type GlyphLayer={paths:string[];fill:string;stroke:string;opacity?:number};
@@ -100,12 +100,12 @@ function legacyGlyph(kind:GlyphKind,w:number,h:number,palette:GlyphPalette):Glyp
   if(kind==="dna")return {bounds,layers:[{paths:accent,fill:palette.fill==="outline"?"none":secondary,stroke:"none",opacity:.18},{paths:body,fill:"none",stroke:palette.line_color},{paths:detail,fill:"none",stroke:palette.line_color}]};
   return {bounds,layers:[{paths:body,fill:kind==="small-molecule"?"none":fill,stroke:palette.line_color},{paths:detail,fill:"none",stroke:palette.line_color},{paths:accent,fill:palette.fill==="outline"?"none":tintColor(secondary,palette.zone_colors[0],.7),stroke:palette.fill==="outline"?secondary:palette.line_color}].filter(layer=>layer.paths.length)};
 }
-const aliases:Partial<Record<GlyphKind,string>>={"small-molecule":"drug","input-frames":"frames",layers:"stack",dataset:"database","result-bars":"chart","text-input":"text","cell-cluster":"cells","beam-splitter":"cube","sample-stage":"sample","energy-levels":"level",frozen:"snow",trainable:"flame"};
+const aliases:Partial<Record<GlyphKind,string>>={"small-molecule":"drug","input-frames":"frames",layers:"stack",dataset:"database","result-bars":"chart","result-bars-low":"chartlow","text-input":"text","cell-cluster":"cells","beam-splitter":"cube","sample-stage":"sample","energy-levels":"level",frozen:"snow",trainable:"flame"};
 export function drawGlyph(kind:GlyphKind,w:number,h:number,palette:GlyphPalette):GlyphDrawing {
   if(!glyphKinds.includes(kind)||![w,h].every(n=>Number.isFinite(n)&&n>0))throw new Error("图元类型或尺寸无效");
   const raw=prototypeGlyph(aliases[kind]||kind,w,h,palette.body_fill||tintColor(palette.accent_colors[0],"#FFFFFF",.82),palette.line_color,{r:palette.radius_mm},1);
-  if(!raw.layers.length)return legacyGlyph(kind,w,h,palette);
-  return {bounds:glyphBounds(kind,w,h),badges:raw.badges,layers:raw.layers.map(l=>({paths:[l.d],fill:palette.fill==="outline"?"none":l.fill,stroke:l.stroke}))};
+  if(!raw.layers.length){const drawing=legacyGlyph(kind,w,h,palette);if(palette.fill==="outline")drawing.layers=drawing.layers.map(l=>({...l,stroke:l.stroke==="none"?"none":palette.line_color}));return drawing;}
+  return {bounds:glyphBounds(kind,w,h),badges:raw.badges,layers:raw.layers.map((l,i)=>({paths:[l.d],fill:palette.fill==="outline"?(l.fill==="none"?"none":"#FFFFFF"):l.fill,stroke:palette.fill==="outline"&&l.stroke==="none"&&l.fill!=="none"?palette.line_color:palette.fill==="outline"&&l.stroke==="#2C6CB0"?palette.line_color:l.stroke,...(kind==="attention"&&palette.fill==="outline"?{opacity:.3+i*.35}:{})}))};
 }
 const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"})[c]!);
 export function glyphMarkup(kind:GlyphKind,w:number,h:number,palette:GlyphPalette,seedKey:string=kind):string {

@@ -8,12 +8,12 @@
   "accent_colors": [
     "#0072B2"
   ],
-  "text_color": "#17212B",
-  "line_color": "#17212B",
+  "text_color": "#0E1116",
+  "line_color": "#0E1116",
   "font_family": "Inter, Arial, sans-serif",
   "font_size_pt": 7,
   "line_width_pt": 1,
-  "radius_mm": 0,
+  "radius_mm": 0.4,
   "arrow": "open",
   "fill": "outline",
   "shadow": false,
