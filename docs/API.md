@@ -368,3 +368,12 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 `POST /api/projects/{p}/agent/runs/{id}/decision` 新增可选 accepted_fixes（问题 ID 数组）与 review_hash。仅接受时可选修复；重新 lint 并复用原决定事务，报告/版本变化 409。新版接受响应可附最终 config、accepted_fixes、final_config_hash，仍不保存图表。未传 accepted_fixes 保持原行为。
 
 `POST /api/projects/{p}/figure-tools/review`（只读）：请求 `{protocol_version:1,config,render_facts?,target?:{width_mm?,journal?},chart_id?}`；返回 `{protocol_version:1,rules_version:"review-v1",journal,issues,passed,skipped}`。可选 chart_id 用于排除自身并校验项目归属。未知键或渲染事实超限 400、跨项目资源 404。规则、操作和几何上限详见 [FIGURE-TOOLS.md](FIGURE-TOOLS.md)、[REVIEW.md](REVIEW.md)。
+
+
+## 机制图操作（19-6，未发布）
+
+`GET /api/diagram-tools/catalog` 返回protocol_version=1、schema_version=1、execution=preview-only及12项tools（name、中文label、拒绝额外属性的input_schema）。操作为add_zone/update_zone/add_node/update_node/remove_node/add_edge/update_edge/remove_edge/set_style/set_canvas/set_legend/add_annotation。
+
+`POST /api/projects/{p}/diagram-tools/preview`：`{protocol_version:1,doc,operations:[{tool,arguments}],diagram_id?,base_revision?}`；存在diagram_id时检查归属，base_revision需要diagram_id并检查409。返回`{protocol_version:1,doc,changes:[{path,before,after}]}`。path为JSON Pointer，差异数字按数值比较。请求拒绝未知字段，操作≤400、操作JSON≤2MiB；文档仍经过同一DiagramValidator。预览只读，无新版本。
+
+update_zone移动坐标时平移该分区中的节点；改变尺寸不擅自缩放节点。remove_node清除其关联边与注释。set_style保留未指定字段；overrides按字段合并，null明确清空；set_canvas/set_legend按指定属性更新。新增节点默认zone/icon/style_ref=null，新增边默认空标签和直线。所有参数结构以目录为准；未通过校验的批次不返回半成品，也不改变输入。

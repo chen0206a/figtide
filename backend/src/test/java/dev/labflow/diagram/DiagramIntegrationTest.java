@@ -60,6 +60,13 @@ class DiagramIntegrationTest {
     assertEquals(doc,diagrams.get(p,newId).get("doc"));assertEquals(true,diagrams.get(p,newId).get("archived"));assertEquals(3,diagrams.versions(p,newId).size());
     assertEquals(diagrams.versions(project,d).stream().map(v->v.get("doc")).toList(),diagrams.versions(p,newId).stream().map(v->v.get("doc")).toList());
   }
+  @Test void toolPreviewIsReadOnlyWithOwnershipAndRevisionChecks()throws Exception{
+    long d=id(diagrams.create(project,"Preview synthetic",doc));var input=json.createObjectNode().put("protocol_version",1).put("diagram_id",d).put("base_revision",1);input.set("doc",doc);input.putArray("operations").addObject().put("tool","set_style").putObject("arguments").put("preset","sketch");
+    var out=json.readTree(mvc.perform(post("/api/projects/"+project+"/diagram-tools/preview").contentType("application/json").content(input.toString())).andExpect(status().isOk()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8));assertEquals("sketch",out.at("/doc/style/preset").asText());assertFalse(out.path("changes").isEmpty());assertEquals(doc,diagrams.get(project,d).get("doc"));assertEquals(1,diagrams.versions(project,d).size());
+    long other=id(workspace.createProject("Other preview synthetic","test only"));mvc.perform(post("/api/projects/"+other+"/diagram-tools/preview").contentType("application/json").content(input.toString())).andExpect(status().isNotFound());
+    input.put("base_revision",0);mvc.perform(post("/api/projects/"+project+"/diagram-tools/preview").contentType("application/json").content(input.toString())).andExpect(status().isConflict());
+    input.put("base_revision",1).put("save",true);mvc.perform(post("/api/projects/"+project+"/diagram-tools/preview").contentType("application/json").content(input.toString())).andExpect(status().isBadRequest());
+  }
   byte[] archive(ObjectNode root) throws Exception {
     byte[] manifest=json.writeValueAsBytes(root);var bytes=new ByteArrayOutputStream();try(var zip=new ZipOutputStream(bytes)){
       zip.putNextEntry(new ZipEntry("manifest.json"));zip.write(manifest);zip.closeEntry();zip.putNextEntry(new ZipEntry("sha256.txt"));zip.write(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(manifest)).getBytes(StandardCharsets.US_ASCII));zip.closeEntry();}return bytes.toByteArray();

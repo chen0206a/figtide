@@ -1,3 +1,9 @@
+## 2026-10-30 · 任务19-6：机制图白名单操作与只读预览
+
+- 作为19-5自动修复的前置依赖先完成。新增纯Java DiagramOperations：12操作、拒绝额外属性/错误类型/未知值、400项与2MiB限制、完整文档再校验、输入不可变、分区移动联动节点、删除节点清理引用、覆盖项合并/显式null清空、稳定JSON Pointer差异（数值等价不算差异）。目录下发全部schema；客户端仅按目录生成操作。
+- 新接口GET /api/diagram-tools/catalog与POST /api/projects/{p}/diagram-tools/preview；后者只读，检查项目/可选图ID归属与revision冲突。旧接口/迁移/图表业务未改。
+- `LABFLOW_TEST_DB=h2/mysql mvn -B -f backend/pom.xml test -Dtest=DiagramOperationsTest,DiagramIntegrationTest,DiagramCatalogTest,DiagramValidatorTest` 各66/66；首次测试var复合声明编译错误已改为独立声明，未减少断言。最后修正nullable enum目录一致性后DiagramOperationsTest 19/19。前端目录构造器2/2；UI端到端在19-5修复面板接入后运行，不把未运行的修复E2E算通过。无新增依赖/迁移，无收费调用，不推送。
+
 ## 2026-10-30 · 任务19-4：SVG/PNG/PDF导出
 
 - 导出从同一渲染器读取当前草稿，SVG保留mm/风格字体，PNG300/600按物理尺寸换算且写pHYs密度，PDF中非ASCII标签嵌入已有Noto子集、ASCII用Helvetica。最小字号/成品尺寸及审稿error提示不阻断导出；PNG有明确像素内存保护。不保存版本、不发模型请求。
