@@ -14,6 +14,9 @@ public class DiagramService {
   private final ObjectMapper json;
   public DiagramService(WorkspaceRepository db,ObjectMapper json) { this.db=db;this.json=json; }
   public void project(long p) { db.one("SELECT id FROM projects WHERE id=?",p); }
+  public void checkContext(long p,JsonNode in) {
+    project(p);if(in.has("diagram_id")){DiagramValidator.require(in.get("diagram_id").isIntegralNumber()&&in.get("diagram_id").canConvertToLong()&&in.get("diagram_id").asLong()>0,"diagram_id无效");var current=get(p,in.get("diagram_id").asLong());if(in.has("base_revision")){var revision=in.get("base_revision");DiagramValidator.require(revision.isIntegralNumber()&&revision.canConvertToInt(),"base_revision无效");if(revision.asInt()!=((Number)current.get("revision")).intValue())throw new ApiException(409,"机制图已被更新，请重新载入");}}else DiagramValidator.require(!in.has("base_revision"),"base_revision需要diagram_id");
+  }
   public List<Map<String,Object>> list(long p) { project(p);return db.query("SELECT d.*,d.revision AS version_count FROM diagrams d WHERE project_id=? ORDER BY updated_at DESC,id DESC",p); }
   public static String string(Object value) {
     try { return value instanceof Clob c?c.getSubString(1,Math.toIntExact(c.length())):value.toString(); }
