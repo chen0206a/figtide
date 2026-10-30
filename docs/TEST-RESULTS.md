@@ -1,3 +1,9 @@
+## 2026-10-30 · 任务19-2b：新版参数化科学图元
+
+- 新增30种自制、至少主体/细节两层的参数化矢量图元及磷脂双层/双核膜；纯函数输出，毫米坐标，pt线宽，固定seed手绘。原型仅供视觉参考，未复制其实现或执行。服务端图元清单与前端实现一致性测试；label_pos/boxed/badges严格校验，未知图元、标记和重复标记拒绝。旧方框文档无新字段仍可读。
+- 双库 `mvn -B -f backend/pom.xml test -Dtest=DiagramCatalogTest,DiagramValidatorTest,DiagramIntegrationTest` 各44/44；`npm test -- --run src/diagram --update`214/214（其中图元矩阵180项+6项膜/核膜+1项目录/尺寸，192个图元/分区快照）；`npm test`当前工作树63文件508/508；`npm run build`通过（既有大块警告）。全量数包含正在开发的19-3测试，不表示19-3已验收。图元标签/端点、画布及完整模板矩阵将在19-3集成验证。
+- 修正TypeScript对rough路径可选fill/stroke的类型检查。无新增依赖、接口或迁移；diagram-catalog增加glyphs字段。所有新增素材为项目自制，无第三方图片、收费请求或推送。
+
 ## 2026-10-30 · 任务19新版任务书切换
 
 - 主人提供task19 (1).zip，覆盖任务书并新增7张设计截图和只读参考原型。新版保留19-A/B/C阶段、main前置和不推送约束；新增19-2b参数化科学图元、glyph/label_pos/boxed/badges字段，以及6风格×全部模板/全部图元快照。

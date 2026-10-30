@@ -1,0 +1,152 @@
+[
+  {
+    "id": "cell",
+    "name": "细胞",
+    "category": "biology"
+  },
+  {
+    "id": "vesicle",
+    "name": "囊泡",
+    "category": "biology"
+  },
+  {
+    "id": "receptor",
+    "name": "跨膜受体",
+    "category": "biology"
+  },
+  {
+    "id": "protein",
+    "name": "蛋白",
+    "category": "biology"
+  },
+  {
+    "id": "dimer",
+    "name": "二聚体",
+    "category": "biology"
+  },
+  {
+    "id": "ligand",
+    "name": "三亚基配体",
+    "category": "biology"
+  },
+  {
+    "id": "small-molecule",
+    "name": "小分子",
+    "category": "biology"
+  },
+  {
+    "id": "dna",
+    "name": "DNA 双螺旋",
+    "category": "biology"
+  },
+  {
+    "id": "input-frames",
+    "name": "输入帧堆叠",
+    "category": "ml"
+  },
+  {
+    "id": "encoder",
+    "name": "编码器",
+    "category": "ml"
+  },
+  {
+    "id": "llm",
+    "name": "语言模型块",
+    "category": "ml"
+  },
+  {
+    "id": "attention",
+    "name": "注意力热图（示意）",
+    "category": "ml"
+  },
+  {
+    "id": "tokens",
+    "name": "Token 序列",
+    "category": "ml"
+  },
+  {
+    "id": "layers",
+    "name": "堆叠层",
+    "category": "ml"
+  },
+  {
+    "id": "dataset",
+    "name": "数据集",
+    "category": "ml"
+  },
+  {
+    "id": "result-bars",
+    "name": "结果柱状图（示意）",
+    "category": "ml"
+  },
+  {
+    "id": "text-input",
+    "name": "文字输入",
+    "category": "ml"
+  },
+  {
+    "id": "tube",
+    "name": "试管",
+    "category": "experiment"
+  },
+  {
+    "id": "flask",
+    "name": "烧瓶",
+    "category": "experiment"
+  },
+  {
+    "id": "cell-cluster",
+    "name": "细胞群",
+    "category": "experiment"
+  },
+  {
+    "id": "laser",
+    "name": "激光器",
+    "category": "experiment"
+  },
+  {
+    "id": "lens",
+    "name": "双凸透镜",
+    "category": "experiment"
+  },
+  {
+    "id": "beam-splitter",
+    "name": "分束器",
+    "category": "experiment"
+  },
+  {
+    "id": "sample-stage",
+    "name": "样品台",
+    "category": "experiment"
+  },
+  {
+    "id": "detector",
+    "name": "探测器",
+    "category": "experiment"
+  },
+  {
+    "id": "energy-levels",
+    "name": "能级线（示意）",
+    "category": "experiment"
+  },
+  {
+    "id": "phospho",
+    "name": "磷酸化 P",
+    "category": "markers"
+  },
+  {
+    "id": "frozen",
+    "name": "冻结",
+    "category": "markers"
+  },
+  {
+    "id": "trainable",
+    "name": "可训练",
+    "category": "markers"
+  },
+  {
+    "id": "number",
+    "name": "数字编号",
+    "category": "markers"
+  }
+]

@@ -14,9 +14,11 @@ import static dev.labflow.diagram.DiagramValidator.*;
 public class DiagramCatalog {
   private final List<JsonNode> styles;
   private final List<JsonNode> templates;
+  private final List<JsonNode> glyphs;
   private final JournalRules journals;
   public DiagramCatalog(ObjectMapper json,JournalRules journals) {
     this.journals=journals;styles=load(json,"styles");templates=load(json,"templates");
+    try(var in=getClass().getResourceAsStream("/diagram/glyphs.json")){var entries=json.readTree(in);require(entries.isArray(),"图元目录无效");var list=new ArrayList<JsonNode>();Set<String> glyphIds=new HashSet<>();for(var glyph:entries){fields(glyph,"id name category","id name category");require(glyphIds.add(choice(glyph.get("id"),GLYPHS)),"图元ID重复");text(glyph.get("name"),120);choice(glyph.get("category"),Set.of("biology","ml","experiment","markers"));list.add(glyph);}require(glyphIds.equals(GLYPHS),"图元目录不完整");glyphs=List.copyOf(list);}catch(java.io.IOException e){throw new IllegalStateException("图元目录不可读",e);}
     var ids=new HashSet<String>();
     for(var s:styles) {
       fields(s,"id name zone_colors accent_colors text_color line_color font_family font_size_pt line_width_pt radius_mm arrow fill shadow sketch iso","id name zone_colors accent_colors text_color line_color font_family font_size_pt line_width_pt radius_mm arrow fill shadow sketch iso");
@@ -39,5 +41,5 @@ public class DiagramCatalog {
   public List<JsonNode> templates() { return templates.stream().<JsonNode>map(JsonNode::deepCopy).toList(); }
   public JsonNode template(String id,String language) { for(var t:templates)if(t.path("id").asText().equals(id))return t.at("/documents/"+language).deepCopy();throw ApiException.bad("机制图：未知模板"); }
   public ObjectNode effective(JsonNode doc) { var out=(ObjectNode)style(doc.at("/style/preset").asText());out.setAll((ObjectNode)doc.at("/style/overrides"));return out; }
-  public Map<String,Object> all() { return Map.of("schema_version",1,"styles",styles(),"templates",templates(),"skills",List.of(),"icons",List.of(),"journals",journals.all()); }
+  public Map<String,Object> all() { return Map.of("schema_version",1,"styles",styles(),"templates",templates(),"skills",List.of(),"icons",List.of(),"journals",journals.all(),"glyphs",glyphs.stream().<JsonNode>map(JsonNode::deepCopy).toList()); }
 }

@@ -17,7 +17,8 @@ class DiagramValidatorTest {
   @Test void acceptsSyntheticDocumentAndAllAvailableKindsAndPresets() {
     var d=doc();DiagramValidator.validate(d);
     for(String s:DiagramValidator.PRESETS){((ObjectNode)d.path("style")).put("preset",s);DiagramValidator.validate(d);}
-    for(String k:DiagramValidator.NODE_KINDS)if(!k.equals("icon")){((ObjectNode)d.path("nodes").get(0)).put("kind",k);DiagramValidator.validate(d);}
+    for(String k:DiagramValidator.NODE_KINDS)if(!Set.of("icon","glyph").contains(k)){((ObjectNode)d.path("nodes").get(0)).put("kind",k);DiagramValidator.validate(d);}
+    var node=(ObjectNode)d.path("nodes").get(0);node.put("kind","glyph").put("label_pos","below").put("boxed",false);node.putArray("badges").add("phospho");for(String glyph:DiagramValidator.GLYPHS){node.put("glyph",glyph);DiagramValidator.validate(d);}
     for(String k:DiagramValidator.EDGE_KINDS){((ObjectNode)d.path("edges").get(0)).put("kind",k);DiagramValidator.validate(d);}
   }
   static Stream<Consumer<ObjectNode>> invalid() { return Stream.of(
@@ -30,6 +31,9 @@ class DiagramValidatorTest {
     d->((ObjectNode)d.at("/nodes/0")).put("zone","missing"),d->((ObjectNode)d.at("/nodes/0")).put("x",1),
     d->((ObjectNode)d.at("/nodes/0")).put("icon","missing"),d->((ObjectNode)d.at("/nodes/0")).put("kind","icon"),
     d->((ObjectNode)d.at("/nodes/0")).put("kind","artwork"),d->((ObjectNode)d.at("/nodes/0")).put("role","invented"),
+    d->((ObjectNode)d.at("/nodes/0")).put("kind","glyph"),d->((ObjectNode)d.at("/nodes/0")).put("glyph","protein"),
+    d->((ObjectNode)d.at("/nodes/0")).put("label_pos","offcanvas"),d->((ObjectNode)d.at("/nodes/0")).put("boxed","true"),
+    d->((ObjectNode)d.at("/nodes/0")).putArray("badges").add("invented"),d->((ObjectNode)d.at("/nodes/0")).putArray("badges").add("phospho").add("phospho"),
     d->((ObjectNode)d.at("/edges/0")).put("from","missing"),d->((ObjectNode)d.at("/edges/0")).put("route","unknown"),
     d->((ObjectNode)d.at("/zones/0")).put("zoom_of","missing"),d->((ObjectNode)d.at("/zones/0")).put("zoom_of","z1"),
     d->((ArrayNode)d.path("annotations")).addObject().put("id","a1").put("kind","note").put("target","missing").put("text","note"),

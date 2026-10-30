@@ -13,7 +13,9 @@ export type DiagramZone = DiagramRect & {
   label: string; zoom_of: string | null;
 };
 export type DiagramNode = DiagramRect & {
-  id: string; kind: "box" | "pill" | "ellipse" | "cell" | "molecule" | "text";
+  id: string; kind: "box" | "pill" | "ellipse" | "glyph" | "text";
+  glyph?: string | null; label_pos?: "center"|"below"|"above"|"left"|"right";
+  boxed?: boolean; badges?: string[];
   label: string; zone: string | null; icon: null;
   role: "actor" | "process" | "data" | "model" | "output" | "note";
   style_ref: DiagramNode["role"] | null;
@@ -33,5 +35,5 @@ export type DiagramDoc = {
 };
 export type DiagramRecord = {id: number; project_id: number; name: string; revision: number; version_count: number; archived: boolean; doc: DiagramDoc};
 export type DiagramTemplate = {id: string; name: string; pattern: string; documents: {en: DiagramDoc; zh: DiagramDoc}};
-export type DiagramCatalog = {schema_version: 1; styles: DiagramStyle[]; templates: DiagramTemplate[]; skills: unknown[]; icons: unknown[]; journals: {id: string; name: string; single_column_mm: number | null; double_column_mm: number | null}[]};
+export type DiagramCatalog = {schema_version: 1; styles: DiagramStyle[]; templates: DiagramTemplate[]; skills: unknown[]; icons: unknown[]; glyphs:{id:string;name:string;category:string}[]; journals: {id: string; name: string; single_column_mm: number | null; double_column_mm: number | null}[]};
 export const effectiveStyle = (doc: DiagramDoc, style: DiagramStyle): DiagramStyle => ({...style, ...doc.style.overrides});

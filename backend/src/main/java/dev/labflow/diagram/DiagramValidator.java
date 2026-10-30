@@ -9,7 +9,8 @@ import java.util.*;
 public final class DiagramValidator {
   public static final int MAX_BYTES = 2 * 1024 * 1024;
   public static final Set<String> PRESETS = Set.of("nature-flat", "soft-illustration", "line-minimal", "conference-framework", "isometric", "sketch");
-  public static final Set<String> NODE_KINDS = Set.of("box", "pill", "ellipse", "cell", "molecule", "icon", "text");
+  public static final Set<String> NODE_KINDS = Set.of("box", "pill", "ellipse", "glyph", "icon", "text");
+  public static final Set<String> GLYPHS = Set.of("cell","vesicle","receptor","protein","dimer","ligand","small-molecule","dna","input-frames","encoder","llm","attention","tokens","layers","dataset","result-bars","text-input","tube","flask","cell-cluster","laser","lens","beam-splitter","sample-stage","detector","energy-levels","phospho","frozen","trainable","number");
   public static final Set<String> ZONE_KINDS = Set.of("compartment", "membrane", "nucleus", "panel", "zoom");
   public static final Set<String> EDGE_KINDS = Set.of("flow", "activate", "inhibit", "transport", "bind", "indirect");
   public static final Set<String> ROLES = Set.of("actor", "process", "data", "model", "output", "note");
@@ -76,8 +77,13 @@ public final class DiagramValidator {
       if(!z.path("zoom_of").isNull())require(zones.contains(id(z.get("zoom_of")))&&!z.get("zoom_of").equals(z.get("id")),"放大框引用无效");
     }
     for(var n:d.path("nodes")) {
-      fields(n,"id kind x y w h label zone icon role style_ref","id kind x y w h label zone icon role style_ref");
+      fields(n,"id kind x y w h label zone icon role style_ref glyph label_pos boxed badges","id kind x y w h label zone icon role style_ref");
       String kind=choice(n.get("kind"),NODE_KINDS);rect(n,width,height);text(n.get("label"),200);choice(n.get("role"),ROLES);
+      if(kind.equals("glyph"))choice(n.get("glyph"),GLYPHS);
+      else require(!n.hasNonNull("glyph"),"glyph只能用于科学图元节点");
+      if(n.has("label_pos"))choice(n.get("label_pos"),Set.of("center","below","above","left","right"));
+      if(n.has("boxed"))require(n.get("boxed").isBoolean(),"boxed必须是布尔值");
+      if(n.has("badges")){array(n.get("badges"),8);Set<String> seen=new HashSet<>();for(var b:n.path("badges")){String badge=text(b,16);require(seen.add(badge)&&(Set.of("phospho","frozen","trainable").contains(badge)||badge.matches("number:([1-9]|[1-9][0-9])")),"图元标记无效或重复");}}
       if(!n.path("zone").isNull()) { require(zones.contains(id(n.get("zone"))),"分区引用无效");var z=find(d.path("zones"),n.path("zone").asText()); require(n.path("x").asDouble()>=z.path("x").asDouble() && n.path("y").asDouble()>=z.path("y").asDouble() && n.path("x").asDouble()+n.path("w").asDouble()<=z.path("x").asDouble()+z.path("w").asDouble()+1e-8 && n.path("y").asDouble()+n.path("h").asDouble()<=z.path("y").asDouble()+z.path("h").asDouble()+1e-8,"节点超出所属分区"); }
       require(n.path("icon").isNull()&&!kind.equals("icon"),"19-A尚未开放图标");
       if(!n.path("style_ref").isNull())choice(n.get("style_ref"),ROLES);
