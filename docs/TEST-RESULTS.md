@@ -1,3 +1,22 @@
+# 2026-10-31 · 19-A-7
+
+# 19-A-7 收尾（2026-10-31）
+
+任务19-A-7：真实科研示例与创建页收尾。
+
+改动文件：10个模板JSON；DiagramWizard/diagram.css；geometry.wrapLabel；glyphs；DiagramPaletteAudit/DiagramCatalog；PaletteSelect/model；相关单测、E2E和证据。后端改动属于任务19配色目录/确定性审稿授权；无迁移、保存或预算语义改变。
+
+验证：前端全量 `npm test -- --run` 582/582（69文件）；精确源副本 `npm run build` 通过；H2 `mvn -B -f backend/pom.xml test -Dtest=DiagramCatalogTest,DiagramValidatorTest,DiagramOperationsTest,DiagramIntegrationTest` 67/67；桌面 `scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs diagram-cleanup.spec.ts,diagram-capture.spec.ts,diagram.spec.ts` 6/6、真实JVM重启审计通过。MySQL全量未执行：留待19-5完成后统一执行总验收。本节没有宣称19-A总验收通过。
+
+首次新增E2E夹具漏传项目description，导致项目创建失败、导航undefined、1失败/1通过；已补齐必填字段并断言ID，第二轮6/6。右栏高度改为扣除完整导航和页头，按钮在1440×960首屏内，滚动内容与操作栏无交叠。
+
+与任务文件的偏差：按主人最新收尾要求替换原占位文字；12模板保留。双组对比为平行实验组；概览对比为共享输入的两条方法分支；步骤放大为顶层流程+文库细节展开。示例无虚构测量数值，化学图明确示意。
+
+对应原视觉问题：05/08图元标记与文字、05模板示例、19-1新建页布局/缩略图/配色；本轮新增1–6项均已实现。原A–C主体验收按主人本轮反馈记为通过；19-5及19-A总验收仍待完成。
+
+
+证据：`docs/test-evidence/diagram-19-A-7/`。
+
 ## 2026-10-30 — 19-A / 01卡片预选复核
 
 打包前补齐空列表卡片绑定：点击“从分区机制/分组框架/实验步骤开始”预选对应模板，普通新建清除预选；仍须点击创建才保存。同步按metadata选择初始图元分类，光路模板显示实验/装置而非ML图元，光学平台带动子节点，并加实际页面与撤销断言。相关E2E沿用同一用例增加明确预选断言。最终前端580/580、相关浏览器8/8及build通过；末次模板zone关联由H2相关67/67复核。没有后端Java/SQL/API改动，沿用前一条MySQL/H2全量结果；末次纯模板关联后MySQL未再复跑（已有全量结果、同一校验/存储逻辑由H2确认）。C截图/manifest/验收包随新提交更新。

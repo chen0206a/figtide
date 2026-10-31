@@ -51,10 +51,9 @@ export function wrapLabel(label:string,width:number,fontMm:number):string[]{
   const limit=Math.max(width,fontMm),lines:string[]=[];
   for(const paragraph of label.split("\n")){
     let line="";
-    for(const token of paragraph.match(/[A-Za-z0-9–−-]+|\s+|./gu)||[]){
+    for(const token of paragraph.match(/[^\s\u2e80-\u9fff]+|\s+|[\s\S]/gu)||[]){
       if(line&&advance(line+token)>limit){lines.push(line.trimEnd());line="";}
-      if(advance(token)>limit){for(const char of token){if(line&&advance(line+char)>limit){lines.push(line);line="";}line+=char;}}
-      else if(line||token.trim())line+=token;
+      if(line||token.trim())line+=token;
     }
     lines.push(line.trimEnd());
   }

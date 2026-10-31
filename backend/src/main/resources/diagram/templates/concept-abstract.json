@@ -46,7 +46,7 @@
         {
           "id": "r",
           "kind": "glyph",
-          "label": "Reactants",
+          "label": "A + B",
           "x": 12,
           "y": 70,
           "w": 28,
@@ -63,7 +63,7 @@
         {
           "id": "t1",
           "kind": "glyph",
-          "label": "TS1",
+          "label": "Binding barrier",
           "x": 46,
           "y": 20,
           "w": 20,
@@ -80,7 +80,7 @@
         {
           "id": "i",
           "kind": "glyph",
-          "label": "Intermediate",
+          "label": "A–B complex",
           "x": 74,
           "y": 50,
           "w": 32,
@@ -97,7 +97,7 @@
         {
           "id": "t2",
           "kind": "glyph",
-          "label": "TS2",
+          "label": "Conversion barrier",
           "x": 112,
           "y": 32,
           "w": 20,
@@ -114,7 +114,7 @@
         {
           "id": "p",
           "kind": "glyph",
-          "label": "Products",
+          "label": "AB",
           "x": 142,
           "y": 82,
           "w": 32,
@@ -135,7 +135,7 @@
           "label_pos": "below",
           "boxed": false,
           "badges": [],
-          "label": "Molecule (schematic)",
+          "label": "A scaffold",
           "x": 14,
           "y": 83,
           "w": 24,
@@ -189,7 +189,7 @@
         "skill": "chem-materials",
         "skill_version": null,
         "template": "concept-abstract",
-        "brief": "Illustrative schematic only; not measured energy or optical data.",
+        "brief": "Scientific example schematic; no measured values are encoded.",
         "facts": []
       }
     },
@@ -236,7 +236,7 @@
         {
           "id": "r",
           "kind": "glyph",
-          "label": "反应物",
+          "label": "A + B",
           "x": 12,
           "y": 70,
           "w": 28,
@@ -253,7 +253,7 @@
         {
           "id": "t1",
           "kind": "glyph",
-          "label": "TS1",
+          "label": "结合势垒",
           "x": 46,
           "y": 20,
           "w": 20,
@@ -270,7 +270,7 @@
         {
           "id": "i",
           "kind": "glyph",
-          "label": "中间态",
+          "label": "A–B复合物",
           "x": 74,
           "y": 50,
           "w": 32,
@@ -287,7 +287,7 @@
         {
           "id": "t2",
           "kind": "glyph",
-          "label": "TS2",
+          "label": "转化势垒",
           "x": 112,
           "y": 32,
           "w": 20,
@@ -304,7 +304,7 @@
         {
           "id": "p",
           "kind": "glyph",
-          "label": "产物",
+          "label": "AB",
           "x": 142,
           "y": 82,
           "w": 32,
@@ -325,7 +325,7 @@
           "label_pos": "below",
           "boxed": false,
           "badges": [],
-          "label": "分子示意",
+          "label": "A骨架",
           "x": 14,
           "y": 83,
           "w": 24,
@@ -379,7 +379,7 @@
         "skill": "chem-materials",
         "skill_version": null,
         "template": "concept-abstract",
-        "brief": "Illustrative schematic only; not measured energy or optical data.",
+        "brief": "Scientific example schematic; no measured values are encoded.",
         "facts": []
       }
     }

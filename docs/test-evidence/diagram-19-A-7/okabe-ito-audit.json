@@ -1,0 +1,103 @@
+{
+  "outlines": {
+    "actor": "#0069A4",
+    "process": "#00916A",
+    "data": "#616161",
+    "model": "#BC6F9A",
+    "output": "#00916A",
+    "note": "#C45600"
+  },
+  "preset": "nature-flat",
+  "id": "okabe-ito",
+  "failing_pairs": [
+    {
+      "minimum_delta_e": 11.802929479926393,
+      "roles": [
+        "actor",
+        "process"
+      ],
+      "colors": [
+        "#0069A4",
+        "#00916A"
+      ],
+      "delta_e": [
+        36.660111482595106,
+        32.66979278818927,
+        11.802929479926393
+      ]
+    },
+    {
+      "minimum_delta_e": 11.72481721271584,
+      "roles": [
+        "actor",
+        "model"
+      ],
+      "colors": [
+        "#0069A4",
+        "#BC6F9A"
+      ],
+      "delta_e": [
+        11.72481721271584,
+        24.333468074436304,
+        53.88971758424254
+      ]
+    },
+    {
+      "minimum_delta_e": 15.103759646541059,
+      "roles": [
+        "process",
+        "model"
+      ],
+      "colors": [
+        "#00916A",
+        "#BC6F9A"
+      ],
+      "delta_e": [
+        26.468016112168506,
+        15.103759646541059,
+        53.23829889358917
+      ]
+    },
+    {
+      "minimum_delta_e": 17.863662225794837,
+      "roles": [
+        "process",
+        "note"
+      ],
+      "colors": [
+        "#00916A",
+        "#C45600"
+      ],
+      "delta_e": [
+        17.863662225794837,
+        20.223497716395624,
+        60.40148835289835
+      ]
+    },
+    {
+      "minimum_delta_e": 13.643553588182037,
+      "roles": [
+        "model",
+        "note"
+      ],
+      "colors": [
+        "#BC6F9A",
+        "#C45600"
+      ],
+      "delta_e": [
+        39.609739313887964,
+        33.1262535842298,
+        13.643553588182037
+      ]
+    }
+  ],
+  "safe": false,
+  "threshold": 20,
+  "used_roles": [
+    "model",
+    "actor",
+    "process",
+    "note"
+  ],
+  "template": "mechanism"
+}

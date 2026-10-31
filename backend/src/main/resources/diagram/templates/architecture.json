@@ -65,7 +65,7 @@
         {
           "id": "bs",
           "kind": "glyph",
-          "label": "BS",
+          "label": "Beam splitter",
           "x": 72,
           "y": 43.5,
           "w": 14,
@@ -82,7 +82,7 @@
         {
           "id": "smp",
           "kind": "glyph",
-          "label": "Sample",
+          "label": "Fluorescent sample",
           "x": 106,
           "y": 43.5,
           "w": 26,
@@ -116,7 +116,7 @@
         {
           "id": "cam",
           "kind": "glyph",
-          "label": "Camera",
+          "label": "Imaging camera",
           "x": 68,
           "y": 80,
           "w": 22,
@@ -182,7 +182,7 @@
         "skill": "physics-device",
         "skill_version": null,
         "template": "architecture",
-        "brief": "Illustrative schematic only; not measured energy or optical data.",
+        "brief": "Scientific example schematic; no measured values are encoded.",
         "facts": []
       }
     },
@@ -248,7 +248,7 @@
         {
           "id": "bs",
           "kind": "glyph",
-          "label": "BS",
+          "label": "分束器",
           "x": 72,
           "y": 43.5,
           "w": 14,
@@ -265,7 +265,7 @@
         {
           "id": "smp",
           "kind": "glyph",
-          "label": "样品",
+          "label": "荧光样品",
           "x": 106,
           "y": 43.5,
           "w": 26,
@@ -299,7 +299,7 @@
         {
           "id": "cam",
           "kind": "glyph",
-          "label": "相机",
+          "label": "成像相机",
           "x": 68,
           "y": 80,
           "w": 22,
@@ -365,7 +365,7 @@
         "skill": "physics-device",
         "skill_version": null,
         "template": "architecture",
-        "brief": "Illustrative schematic only; not measured energy or optical data.",
+        "brief": "Scientific example schematic; no measured values are encoded.",
         "facts": []
       }
     }

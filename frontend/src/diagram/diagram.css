@@ -93,13 +93,13 @@
 .diagram-new-page .diagram-template-filters button[aria-pressed=true] { border-color:var(--lf-link); background:var(--lf-selected); }
 .diagram-new-page .diagram-template-filters small { font-size:var(--lf-text-xs); color:var(--lf-text-2); }
 .diagram-new-page .diagram-template-filters button .lf-mono { align-self:flex-end; }
-.diagram-new-page .diagram-thumbnail-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.diagram-new-page .diagram-thumbnail-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
 .diagram-new-page .diagram-wizard-preview > .diagram-thumbnail-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
 .diagram-new-page .diagram-large-preview { min-height:280px; }
 .diagram-new-page .diagram-wizard-preview { max-height:none; min-height:600px; overflow:visible; padding-bottom:var(--lf-space-14); }
 .diagram-new-page label { display:flex; flex-direction:column; gap:var(--lf-space-1); margin-bottom:var(--lf-space-3); font-size:var(--lf-text-sm); }
 .diagram-new-page input,.diagram-new-page select { width:100%; min-width:0; }
-.diagram-create-actions { position:fixed; right:var(--lf-space-5); bottom:var(--lf-space-4); z-index:10; border-radius:var(--lf-radius-sm); box-shadow:var(--lf-shadow-sm); padding:var(--lf-space-3); display:flex; justify-content:flex-end; background:var(--lf-surface); padding:var(--lf-space-3) 0 0; border-top:1px solid var(--lf-border); }
+.diagram-create-actions { flex:none; display:flex; justify-content:flex-end; padding:var(--lf-space-3) 0 0; border-top:1px solid var(--lf-border); background:var(--lf-surface); }
 .diagram-start { padding:var(--lf-space-5) 0; }
 .diagram-start-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--lf-space-4); }
 .diagram-start-grid button { display:flex; flex-direction:column; gap:var(--lf-space-3); background:var(--lf-surface); border:1px solid var(--lf-border); border-radius:var(--lf-radius-sm); padding:var(--lf-space-4); color:var(--lf-text); text-align:left; }
@@ -115,3 +115,10 @@
 .diagram-connection-guide { fill:none; stroke:var(--lf-focus); stroke-width:.4; stroke-dasharray:1 1; pointer-events:none; }
 
 .diagram-glyph-grid svg path { vector-effect:non-scaling-stroke; stroke-width:1px; }
+
+.diagram-new-page .diagram-wizard-preview { display:flex; flex-direction:column; position:sticky; top:var(--lf-space-3); height:calc(100dvh - 260px); min-height:420px; padding-bottom:var(--lf-space-4); overflow:hidden; }
+.diagram-wizard-preview-scroll { flex:1; min-height:0; overflow:auto; padding-right:var(--lf-space-2); }
+.diagram-new-page .diagram-wizard-preview-scroll .diagram-thumbnail-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.diagram-new-page .diagram-style-choice span,.diagram-new-page .diagram-style-choice svg { height:84px; }
+@media(max-width:1000px){.diagram-new-page .diagram-wizard-preview{position:static;height:900px;}}
+

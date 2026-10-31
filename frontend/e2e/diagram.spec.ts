@@ -8,7 +8,7 @@ test('diagram wizard → scientific glyphs → edits → style undo → save →
   await page.getByRole('button',{name:'新建机制图',exact:true}).click();
   const wizard=page.getByRole('region',{name:'新建机制图'});
   await wizard.getByRole('button',{name:'分区机制',exact:true}).click();
-  await page.screenshot({path:artifactPath(testInfo,'../docs/screenshots/diagram-new.png'),fullPage:true});
+  await page.screenshot({path:artifactPath(testInfo,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-19-A-acceptance"}/diagram-new.png`),fullPage:true});
   await wizard.getByRole('button',{name:'Nature 扁平',exact:true}).click();
   await wizard.getByRole('textbox',{name:'机制图名称'}).fill('Synthetic mechanism acceptance');await wizard.getByRole('combobox',{name:'成品规格'}).selectOption('double');
   await wizard.getByRole('button',{name:'创建机制图',exact:true}).click();
@@ -21,7 +21,7 @@ test('diagram wizard → scientific glyphs → edits → style undo → save →
   await page.getByRole('button',{name:'e6 · n7 → n3',exact:true}).click();await page.getByRole('combobox',{name:'走线方式'}).selectOption('orthogonal');
   await page.getByRole('button',{name:'保存机制图',exact:true}).click();await expect(page.getByRole('status').filter({hasText:/^已保存$/})).toBeVisible();
   const edited=await(await request.get(endpoint)).json();expect(edited.revision).toBe(2);expect(edited.doc.nodes.find((n:any)=>n.id==='n3').label).toBe('Edited protein');expect(edited.doc.edges.find((e:any)=>e.id==='e6').route).toBe('orthogonal');
-  await page.screenshot({path:artifactPath(testInfo,'../docs/screenshots/diagram-editor.png'),fullPage:true});
+  await page.screenshot({path:artifactPath(testInfo,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-19-A-acceptance"}/diagram-editor.png`),fullPage:true});
   await request.put(endpoint,{data:{base_revision:2,doc:edited.doc}});await page.getByRole('button',{name:'保存机制图',exact:true}).click();await expect(page.getByRole('alert').filter({hasText:'机制图已被更新，本机草稿仍保留'})).toBeVisible();
   await page.getByRole('button',{name:'重新载入最新版本'}).click();await page.getByRole('dialog').getByRole('button',{name:'继续',exact:true}).click();
   await page.getByRole('button',{name:'版本历史',exact:true}).click();await page.getByRole('button',{name:'恢复第 1 版',exact:true}).click();await page.getByRole('dialog').filter({hasText:'将第 1 版恢复为新版本'}).getByRole('button',{name:'继续',exact:true}).click();
@@ -32,13 +32,13 @@ test('diagram drafts, keyboard movements and duplication stay local until explic
   const project=await(await request.post('/api/projects',{data:{name:`机制图草稿验收 ${Date.now()}`,description:'Synthetic fixture only'}})).json();
   const created=await(await request.post(`/api/projects/${project.id}/diagrams`,{data:{name:'Draft synthetic',template:'pipeline',style:'conference-framework'}})).json();expect(created.id).toBeTruthy();
   const endpoint=`/api/projects/${project.id}/diagrams/${created.id}`;
-  await page.goto(`/projects/${project.id}/diagrams/${created.id}`);await openLayers(page);await page.getByRole('button',{name:'n1 · Input frames',exact:true}).click();
+  await page.goto(`/projects/${project.id}/diagrams/${created.id}`);await openLayers(page);await page.getByRole('button',{name:'n1 · Video frames',exact:true}).click();
   await page.keyboard.press('ArrowRight');await expect(page.getByRole('spinbutton',{name:'X（mm）'})).toHaveValue('6');
   await page.keyboard.press('Shift+ArrowRight');await expect(page.getByRole('spinbutton',{name:'X（mm）'})).toHaveValue('11');
   await page.keyboard.press('Control+d');await expect(page.getByTestId('diagram-canvas').locator('[data-node-id]')).toHaveCount(created.doc.nodes.length+1);
   await page.getByRole('button',{name:'撤销',exact:true}).click();await expect(page.getByTestId('diagram-canvas').locator('[data-node-id]')).toHaveCount(created.doc.nodes.length);
   await expect.poll(()=>page.evaluate(key=>localStorage.getItem(key),`figtide-diagram-draft-v1:${project.id}:${created.id}`)).not.toBeNull();
-  await page.reload();await page.getByRole('button',{name:'恢复本机草稿'}).click();await openLayers(page);await page.getByRole('button',{name:'n1 · Input frames',exact:true}).click();await expect(page.getByRole('spinbutton',{name:'X（mm）'})).toHaveValue('11');
+  await page.reload();await page.getByRole('button',{name:'恢复本机草稿'}).click();await openLayers(page);await page.getByRole('button',{name:'n1 · Video frames',exact:true}).click();await expect(page.getByRole('spinbutton',{name:'X（mm）'})).toHaveValue('11');
   expect((await(await request.get(endpoint)).json()).revision).toBe(1);expect((await(await request.get(endpoint)).json()).doc).toEqual(created.doc);
 });
 
@@ -81,7 +81,8 @@ test('SVG, 300/600dpi PNG and embedded-Chinese PDF preserve finished dimensions 
     await page.goto(`/projects/${project.id}/diagrams/${mechanism.id}`);await page.getByRole('button',{name:'导出机制图',exact:true}).click();await dialog.getByRole('combobox',{name:'机制图导出格式'}).selectOption('pdf');
     const file=await download(`mechanism-${language}.pdf`);expect(file.toString('latin1')).toContain('/MediaBox');
     expect(file.toString('latin1').includes('/FontFile2')).toBe(language==='zh');
-    writeFileSync(artifactPath(testInfo,`../docs/test-evidence/diagram-checkpoint-c/exports/mechanism-${language}.pdf`),file);
+    writeFileSync(artifactPath(testInfo,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-19-A-acceptance"}/exports/mechanism-${language}.pdf`),file);
   }
 
 });
+

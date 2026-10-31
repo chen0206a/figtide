@@ -25,9 +25,16 @@ class DiagramCatalogTest {
   }
   @Test void paletteWarningsReportUnmodifiedColorsAtTheExistingThreshold(){
     assertEquals(20,ColorVision.MIN_DELTA_E);
-    var data=json.valueToTree(catalog.all());assertEquals(6,data.path("palettes").size());assertEquals(6,catalog.paletteAudits().size());
-    for(var p:data.path("palettes")){var audit=data.path("palette_audits").findValues("id");boolean safe=true;var keys=java.util.List.of("a","b","c","d","n");int failures=0;for(int i=0;i<5;i++)for(int j=0;j<i;j++)if(ColorVision.minimum(p.path(keys.get(i)).asText(),p.path(keys.get(j)).asText())<20){safe=false;failures++;}
-      final String id=p.path("id").asText();var actual=catalog.paletteAudits().stream().filter(a->a.get("id").equals(id)).findFirst().orElseThrow();assertEquals(safe,actual.get("safe"));assertEquals(failures,((java.util.List<?>)actual.get("failing_pairs")).size());}
+    var data=json.valueToTree(catalog.all());assertEquals(6,data.path("palettes").size());assertEquals(36,catalog.paletteAudits().size());
+    for(var p:data.path("palettes")){
+      var actual=json.valueToTree(catalog.paletteAudits().stream().filter(v->v.get("id").equals(p.path("id").asText())&&v.get("preset").equals("nature-flat")).findFirst().orElseThrow());
+      for(var pair:actual.path("failing_pairs")){String a=pair.path("roles").get(0).asText(),b=pair.path("roles").get(1).asText();assertEquals(ColorVision.minimum(actual.path("outlines").path(a).asText(),actual.path("outlines").path(b).asText()),pair.path("minimum_delta_e").asDouble());assertTrue(pair.path("minimum_delta_e").asDouble()<20);}
+      assertEquals(DiagramPaletteAudit.outline(p,"nature-flat","actor"),actual.at("/outlines/actor").asText());
+    }
+    var scoped=catalog.template("mechanism","en");var audit=json.valueToTree(catalog.paletteAudit(scoped));var used=DiagramPaletteAudit.usedRoles(scoped);
+    for(var pair:audit.path("failing_pairs"))for(var r:pair.path("roles"))assertTrue(used.contains(r.asText()));
+    assertEquals("#0069A4",audit.at("/outlines/actor").asText());
+    ((ArrayNode)scoped.path("nodes")).removeAll();assertTrue(json.valueToTree(catalog.paletteAudit(scoped)).path("safe").asBoolean());
     var doc=DiagramValidatorTest.doc();DiagramValidator.validate(doc);((ObjectNode)doc.path("style")).put("palette","npg");DiagramValidator.validate(doc);((ObjectNode)doc.path("style")).put("palette","invalid");assertThrows(RuntimeException.class,()->DiagramValidator.validate(doc));
   }
   @Test void allTwelveSelfAuthoredTemplatesCoverEveryPatternInBothLanguages() {
