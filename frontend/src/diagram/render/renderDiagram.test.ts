@@ -40,3 +40,9 @@ it('keeps actual semantic outlines when only the fill mode is overridden',()=>{
  const doc=resource('templates/workflow').documents.en as DiagramDoc,style=resource('styles/nature-flat') as DiagramStyle;doc.style.overrides.fill='outline';
  const svg=new DOMParser().parseFromString(renderDiagram(doc,style),'image/svg+xml');expect(svg.querySelector('[data-node-id] > g')?.getAttribute('stroke')).toBe('#616161');
 });
+
+it('routes the visual-encoder output below its side caption',async()=>{
+ const {edgePoints,nodeLayout}=await import('./geometry');const doc=resource('templates/pipeline').documents.en as DiagramDoc;
+ const node=doc.nodes.find(n=>n.id==='n4')!,caption=nodeLayout(node).label,points=edgePoints(doc,doc.edges.find(e=>e.from==='n4')!);
+ expect(node.label_pos).toBe('right');expect(points.every(p=>p.y>caption.y+caption.h)).toBe(true);
+});

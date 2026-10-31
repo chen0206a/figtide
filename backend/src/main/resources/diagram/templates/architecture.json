@@ -1,7 +1,7 @@
 {
   "id": "architecture",
   "name": "光路装置架构",
-  "pattern": "architecture",
+  "pattern": "conceptual",
   "documents": {
     "en": {
       "schema_version": 1,

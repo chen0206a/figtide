@@ -34,7 +34,7 @@ test('capture final creation page, export preview and actual interaction frames'
   await wizard.getByRole('button',{name:'分区机制',exact:true}).click();
   await page.evaluate(()=>window.scrollTo(0,0));
   await expect(wizard.getByRole('heading',{name:'新建机制图',exact:true})).toBeInViewport();
-  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/new-page.png`),fullPage:true});
+  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/new-page.png`),fullPage:false});
   await wizard.getByRole('textbox',{name:'机制图名称'}).fill('JAK–STAT 操作验收');
   await wizard.getByRole('button',{name:'创建机制图',exact:true}).click();
   const canvas=page.getByTestId('diagram-canvas');await expect(canvas).toBeVisible();
