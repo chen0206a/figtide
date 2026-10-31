@@ -1,0 +1,11 @@
+{
+  "application_source_commit": "cd1be48b59d2fa4ed0ba431163d72a972bf33fdb",
+  "branch": "feature/diagrams",
+  "jar_sha256": "150d3ce0569dea2d1585a646f3b305d63b68f7c3f1b43d0987bc4d929e2bd457",
+  "frontend_lock_sha256": "4b15b4fbb344c9b83dba007c35a846f846ac023f66d1c152bd8b9ff0ac91b731",
+  "viewport": [
+    1440,
+    960
+  ],
+  "new_page_full_page": false
+}

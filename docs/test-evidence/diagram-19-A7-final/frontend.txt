@@ -1,0 +1,16 @@
+
+> labflow-ui@0.2.0 test
+> vitest run --run --maxWorkers=2
+
+
+ RUN  v5.0.5 D:/RAG-agent项目/LabFlow/frontend
+
+
+ Test Files  71 passed (71)
+      Tests  589 passed (589)
+   Start at  16:29:52
+   Duration  72.55s (environment 61%, setup 19%, tests 13%, import 4%, transform 1%)
+
+Environment  jsdom was created 71 times · 81.10s total, 61% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments

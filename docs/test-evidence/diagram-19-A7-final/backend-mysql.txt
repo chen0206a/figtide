@@ -1,0 +1,483 @@
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------< dev.labflow:labflow >-------------------------
+[INFO] Building labflow 0.2.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ labflow ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 44 resources from src\main\resources to target\classes
+[INFO]
+[INFO] --- compiler:3.14.1:compile (default-compile) @ labflow ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ labflow ---
+[INFO] Copying 8 resources from src\test\resources to target\test-classes
+[INFO]
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ labflow ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- surefire:3.5.4:test (default-test) @ labflow ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running dev.labflow.agent.AuditSanitizerTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.232 s -- in dev.labflow.agent.AuditSanitizerTest
+[INFO] Running dev.labflow.agent.ModelConnectionsTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.491 s -- in dev.labflow.agent.ModelConnectionsTest
+[INFO] Running dev.labflow.agent.team.TeamLabelNoticeTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in dev.labflow.agent.team.TeamLabelNoticeTest
+[INFO] Running dev.labflow.AgentAuditIntegrationTest
+07:39:11.076 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [dev.labflow.AgentAuditIntegrationTest]: AgentAuditIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+07:39:11.198 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.AgentAuditIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:11.561Z  INFO 54528 --- [           main] dev.labflow.AgentAuditIntegrationTest    : Starting AgentAuditIntegrationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:11.562Z  INFO 54528 --- [           main] dev.labflow.AgentAuditIntegrationTest    : No active profile set, falling back to 1 default profile: "default"
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (D:\1.IDEA\apache-maven-3.9.2\resp\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-10-31T07:39:15.027Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-31T07:39:15.590Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@31c5304f
+2026-10-31T07:39:15.592Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-31T07:39:15.671Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:15.989Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.117s)
+2026-10-31T07:39:16.004Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:16.008Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:18.975Z  INFO 54528 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-31T07:39:18.976Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-31T07:39:18.978Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-10-31T07:39:19.062Z  INFO 54528 --- [           main] dev.labflow.AgentAuditIntegrationTest    : Started AgentAuditIntegrationTest in 7.76 seconds (process running for 9.576)
+2026-10-31T07:39:20.575Z  WARN 54528 --- [pool-3-thread-2] dev.labflow.agent.AgentRunService        : Agent audit storage unavailable, run 3db87290-5812-4f22-9e86-7edaa07812fd
+2026-10-31T07:39:20.684Z  WARN 54528 --- [pool-3-thread-1] dev.labflow.agent.AgentRunService        : Agent audit storage unavailable, run fbd83a93-03a9-438f-afca-e9ad1ad1cbae
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.28 s -- in dev.labflow.AgentAuditIntegrationTest
+[INFO] Running dev.labflow.AgentRunIntegrationTest
+2026-10-31T07:39:21.222Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.AgentRunIntegrationTest]: AgentRunIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:21.226Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.AgentRunIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:21.272Z  INFO 54528 --- [           main] dev.labflow.AgentRunIntegrationTest      : Starting AgentRunIntegrationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:21.272Z  INFO 54528 --- [           main] dev.labflow.AgentRunIntegrationTest      : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:39:22.009Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-10-31T07:39:22.029Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1c63b39a
+2026-10-31T07:39:22.030Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-10-31T07:39:22.033Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:22.056Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.015s)
+2026-10-31T07:39:22.063Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:22.063Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:22.536Z  INFO 54528 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-31T07:39:22.537Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-31T07:39:22.537Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-31T07:39:22.547Z  INFO 54528 --- [           main] dev.labflow.AgentRunIntegrationTest      : Started AgentRunIntegrationTest in 1.313 seconds (process running for 13.061)
+[INFO] Tests run: 28, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.047 s -- in dev.labflow.AgentRunIntegrationTest
+[INFO] Running dev.labflow.BackupLimitsIntegrationTest
+2026-10-31T07:39:26.270Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.BackupLimitsIntegrationTest]: BackupLimitsIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:26.272Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.BackupLimitsIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:26.300Z  INFO 54528 --- [           main] d.labflow.BackupLimitsIntegrationTest    : Starting BackupLimitsIntegrationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:26.301Z  INFO 54528 --- [           main] d.labflow.BackupLimitsIntegrationTest    : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:39:26.716Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-10-31T07:39:26.732Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6431ab21
+2026-10-31T07:39:26.732Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-10-31T07:39:26.736Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:26.760Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.016s)
+2026-10-31T07:39:26.766Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:26.767Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:26.976Z  INFO 54528 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-31T07:39:26.976Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-31T07:39:26.978Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-10-31T07:39:26.984Z  INFO 54528 --- [           main] d.labflow.BackupLimitsIntegrationTest    : Started BackupLimitsIntegrationTest in 0.709 seconds (process running for 17.499)
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.896 s -- in dev.labflow.BackupLimitsIntegrationTest
+[INFO] Running dev.labflow.ChartRecommendationsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in dev.labflow.ChartRecommendationsTest
+[INFO] Running dev.labflow.ClassificationEvaluatorTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in dev.labflow.ClassificationEvaluatorTest
+[INFO] Running dev.labflow.ClassificationIntegrationTest
+2026-10-31T07:39:29.208Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.ClassificationIntegrationTest]: ClassificationIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:29.210Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.ClassificationIntegrationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.197 s -- in dev.labflow.ClassificationIntegrationTest
+[INFO] Running dev.labflow.CompatibleModelProviderTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.910 s -- in dev.labflow.CompatibleModelProviderTest
+[INFO] Running dev.labflow.ConfigValidatorTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.041 s -- in dev.labflow.ConfigValidatorTest
+[INFO] Running dev.labflow.DataImporterTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.080 s -- in dev.labflow.DataImporterTest
+[INFO] Running dev.labflow.DataProcessorTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in dev.labflow.DataProcessorTest
+[INFO] Running dev.labflow.DeliveryIntegrationTest
+2026-10-31T07:39:31.472Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.DeliveryIntegrationTest]: DeliveryIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:31.474Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.DeliveryIntegrationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.480 s -- in dev.labflow.DeliveryIntegrationTest
+[INFO] Running dev.labflow.desktop.DesktopLauncherTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.253 s -- in dev.labflow.desktop.DesktopLauncherTest
+[INFO] Running dev.labflow.desktop.DesktopPagesTest
+2026-10-31T07:39:32.228Z  INFO 54528 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-31T07:39:32.228Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-31T07:39:32.229Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-31T07:39:32.251Z  INFO 54528 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-31T07:39:32.252Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-31T07:39:32.252Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-31T07:39:32.259Z  INFO 54528 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-31T07:39:32.261Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-31T07:39:32.261Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-31T07:39:32.278Z  INFO 54528 --- [           main] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-10-31T07:39:32.279Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-31T07:39:32.279Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.089 s -- in dev.labflow.desktop.DesktopPagesTest
+[INFO] Running dev.labflow.desktop.DesktopPortTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.157 s -- in dev.labflow.desktop.DesktopPortTest
+[INFO] Running dev.labflow.desktop.DesktopWindowTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.564 s -- in dev.labflow.desktop.DesktopWindowTest
+[INFO] Running dev.labflow.desktop.DiagramGalleryControllerTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in dev.labflow.desktop.DiagramGalleryControllerTest
+[INFO] Running dev.labflow.desktop.H2CompatibilityProbeTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.198 s -- in dev.labflow.desktop.H2CompatibilityProbeTest
+[INFO] Running dev.labflow.desktop.H2RoundTripTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in dev.labflow.desktop.H2RoundTripTest
+[INFO] Running dev.labflow.desktop.LocalOriginMatrixTest
+[INFO] Tests run: 63, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.132 s -- in dev.labflow.desktop.LocalOriginMatrixTest
+[INFO] Running dev.labflow.desktop.MigrationParityTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.101 s -- in dev.labflow.desktop.MigrationParityTest
+[INFO] Running dev.labflow.desktop.UpdatedAtIntegrationTest
+2026-10-31T07:39:34.491Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.desktop.UpdatedAtIntegrationTest]: UpdatedAtIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:34.586Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.desktop.UpdatedAtIntegrationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.726 s -- in dev.labflow.desktop.UpdatedAtIntegrationTest
+[INFO] Running dev.labflow.diagram.DiagramCatalogTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.286 s -- in dev.labflow.diagram.DiagramCatalogTest
+[INFO] Running dev.labflow.diagram.DiagramIntegrationTest
+2026-10-31T07:39:39.503Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.diagram.DiagramIntegrationTest]: DiagramIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:39.564Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.diagram.DiagramIntegrationTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.387 s -- in dev.labflow.diagram.DiagramIntegrationTest
+[INFO] Running dev.labflow.diagram.DiagramOperationsTest
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.079 s -- in dev.labflow.diagram.DiagramOperationsTest
+[INFO] Running dev.labflow.diagram.DiagramValidatorTest
+[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.126 s -- in dev.labflow.diagram.DiagramValidatorTest
+[INFO] Running dev.labflow.eval.AgentEvaluationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:40.139Z  INFO 54528 --- [           main] dev.labflow.eval.AgentEvaluationTest     : Starting AgentEvaluationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:40.139Z  INFO 54528 --- [           main] dev.labflow.eval.AgentEvaluationTest     : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:39:40.523Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Starting...
+2026-10-31T07:39:40.539Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6da3dcc3
+2026-10-31T07:39:40.539Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Start completed.
+2026-10-31T07:39:40.545Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:40.562Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.014s)
+2026-10-31T07:39:40.569Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:40.569Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:40.762Z  INFO 54528 --- [           main] dev.labflow.eval.AgentEvaluationTest     : Started AgentEvaluationTest in 0.649 seconds (process running for 31.277)
+EVAL N01  normal  PASS   steps=2
+EVAL N02  normal  PASS   steps=2
+EVAL N03  normal  PASS   steps=2
+EVAL N04  normal  PASS   steps=2
+EVAL N05  normal  PASS   steps=2
+EVAL N06  normal  PASS   steps=2
+EVAL N07  normal  PASS   steps=2
+EVAL N08  normal  PASS   steps=3
+EVAL N09  normal  PASS   steps=3
+EVAL N10  normal  PASS   steps=2
+EVAL N11  normal  PASS   steps=2
+EVAL N12  normal  PASS   steps=2
+EVAL R01  refuse  PASS   steps=1
+EVAL R02  refuse  PASS   steps=1
+EVAL R03  refuse  PASS   steps=1
+EVAL R04  refuse  PASS   steps=1
+EVAL R05  refuse  PASS   steps=1
+EVAL R06  refuse  PASS   steps=1
+EVAL R07  refuse  PASS   steps=1
+EVAL R08  refuse  PASS   steps=1
+EVAL R09  refuse  PASS   steps=1
+EVAL R10  refuse  PASS   steps=1
+EVAL C01  clarify PASS   steps=1
+EVAL C02  clarify PASS   steps=1
+EVAL C03  clarify PASS   steps=1
+EVAL C04  clarify PASS   steps=1
+EVAL C05  clarify PASS   steps=1
+EVAL C06  clarify PASS   steps=1
+EVAL C07  clarify PASS   steps=1
+EVAL C08  clarify PASS   steps=1
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.712 s -- in dev.labflow.eval.AgentEvaluationTest
+[INFO] Running dev.labflow.eval.EvaluationJudgeTest
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.069 s -- in dev.labflow.eval.EvaluationJudgeTest
+[INFO] Running dev.labflow.eval.EvaluationRunnerIntegrationTest
+EVAL N01  normal  FAIL   steps=2
+EVAL N01  normal  PASS   steps=2
+EVAL R01  refuse  PASS   steps=1
+EVAL C03  clarify PASS   steps=1
+EVAL N01  normal  PASS   steps=2
+EVAL R01  refuse  REVIEW steps=1
+EVAL C03  clarify REVIEW steps=1
+EVAL N01  normal  FAIL   steps=1
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.680 s -- in dev.labflow.eval.EvaluationRunnerIntegrationTest
+[INFO] Running dev.labflow.eval.EvaluationSpendBudgetTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in dev.labflow.eval.EvaluationSpendBudgetTest
+[INFO] Running dev.labflow.eval.H2LegacyReplayTest
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in dev.labflow.eval.H2LegacyReplayTest
+[INFO] Running dev.labflow.eval.ProcessingRuleAssessmentTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in dev.labflow.eval.ProcessingRuleAssessmentTest
+[INFO] Running dev.labflow.eval.ServerEvaluationTest
+[WARNING] Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0 s -- in dev.labflow.eval.ServerEvaluationTest
+[INFO] Running dev.labflow.eval.TeamEvaluationTest
+TEAM_EVAL_PROGRESS 1/24 S01 repeat=1 single status=proposed pass=true tokens=320
+TEAM_EVAL_PROGRESS 2/24 S01 repeat=1 team status=proposed pass=true tokens=640
+TEAM_EVAL_PROGRESS 3/24 S09 repeat=1 single status=proposed pass=true tokens=320
+TEAM_EVAL_PROGRESS 4/24 S09 repeat=1 team status=proposed pass=true tokens=640
+TEAM_EVAL_PROGRESS 5/24 S17 repeat=1 single status=proposed pass=true tokens=320
+TEAM_EVAL_PROGRESS 6/24 S17 repeat=1 team status=proposed pass=true tokens=640
+TEAM_EVAL_PROGRESS 7/24 S25 repeat=1 single status=proposed pass=true tokens=320
+TEAM_EVAL_PROGRESS 8/24 S25 repeat=1 team status=proposed pass=true tokens=640
+TEAM_EVAL_PROGRESS 9/24 M01 repeat=1 single status=proposed pass=true tokens=320
+TEAM_EVAL_PROGRESS 10/24 M01 repeat=1 team status=proposed pass=true tokens=640
+TEAM_EVAL_PROGRESS 11/24 M09 repeat=1 single status=proposed pass=true tokens=320
+TEAM_EVAL_PROGRESS 12/24 M09 repeat=1 team status=proposed pass=true tokens=640
+TEAM_EVAL_PROGRESS 13/24 M17 repeat=1 single status=proposed pass=true tokens=320
+TEAM_EVAL_PROGRESS 14/24 M17 repeat=1 team status=proposed pass=true tokens=640
+TEAM_EVAL_PROGRESS 15/24 M29 repeat=1 single status=proposed pass=true tokens=320
+TEAM_EVAL_PROGRESS 16/24 M29 repeat=1 team status=proposed pass=true tokens=640
+TEAM_EVAL_PROGRESS 17/24 P01 repeat=1 single status=answered pass=false tokens=160
+TEAM_EVAL_PROGRESS 18/24 P01 repeat=1 team status=proposed pass=true tokens=960
+TEAM_EVAL_PROGRESS 19/24 P13 repeat=1 single status=answered pass=false tokens=160
+TEAM_EVAL_PROGRESS 20/24 P13 repeat=1 team status=proposed pass=true tokens=960
+TEAM_EVAL_PROGRESS 21/24 P25 repeat=1 single status=answered pass=false tokens=160
+TEAM_EVAL_PROGRESS 22/24 P25 repeat=1 team status=proposed pass=true tokens=960
+TEAM_EVAL_PROGRESS 23/24 P37 repeat=1 single status=answered pass=false tokens=160
+TEAM_EVAL_PROGRESS 24/24 P37 repeat=1 team status=proposed pass=true tokens=960
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.594 s -- in dev.labflow.eval.TeamEvaluationTest
+[INFO] Running dev.labflow.eval.TeamStatisticsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in dev.labflow.eval.TeamStatisticsTest
+[INFO] Running dev.labflow.eval.TeamTrialPlanTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in dev.labflow.eval.TeamTrialPlanTest
+[INFO] Running dev.labflow.ExperimentIntegrationTest
+2026-10-31T07:39:49.211Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.ExperimentIntegrationTest]: ExperimentIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:49.211Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.ExperimentIntegrationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.199 s -- in dev.labflow.ExperimentIntegrationTest
+[INFO] Running dev.labflow.FigureOperationsTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.033 s -- in dev.labflow.FigureOperationsTest
+[INFO] Running dev.labflow.FigureToolsIntegrationTest
+2026-10-31T07:39:49.447Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.FigureToolsIntegrationTest]: FigureToolsIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:49.450Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.FigureToolsIntegrationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.178 s -- in dev.labflow.FigureToolsIntegrationTest
+[INFO] Running dev.labflow.ModelConnectionIntegrationTest
+2026-10-31T07:39:49.625Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.ModelConnectionIntegrationTest]: ModelConnectionIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:49.628Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.ModelConnectionIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:49.650Z  INFO 54528 --- [           main] d.l.ModelConnectionIntegrationTest       : Starting ModelConnectionIntegrationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:49.651Z  INFO 54528 --- [           main] d.l.ModelConnectionIntegrationTest       : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:39:49.991Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Starting...
+2026-10-31T07:39:50.003Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-5 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7858257
+2026-10-31T07:39:50.003Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Start completed.
+2026-10-31T07:39:50.008Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:50.024Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.011s)
+2026-10-31T07:39:50.029Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:50.029Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:50.180Z  INFO 54528 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-31T07:39:50.180Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-31T07:39:50.180Z  INFO 54528 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-10-31T07:39:50.186Z  INFO 54528 --- [           main] d.l.ModelConnectionIntegrationTest       : Started ModelConnectionIntegrationTest in 0.556 seconds (process running for 40.7)
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.599 s -- in dev.labflow.ModelConnectionIntegrationTest
+[INFO] Running dev.labflow.ProcessingIntegrationTest
+2026-10-31T07:39:50.226Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.ProcessingIntegrationTest]: ProcessingIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:50.228Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.ProcessingIntegrationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.115 s -- in dev.labflow.ProcessingIntegrationTest
+[INFO] Running dev.labflow.ProposalReviewIntegrationTest
+2026-10-31T07:39:50.347Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.ProposalReviewIntegrationTest]: ProposalReviewIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:50.349Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.ProposalReviewIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:50.406Z  INFO 54528 --- [           main] d.labflow.ProposalReviewIntegrationTest  : Starting ProposalReviewIntegrationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:50.406Z  INFO 54528 --- [           main] d.labflow.ProposalReviewIntegrationTest  : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:39:50.725Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Starting...
+2026-10-31T07:39:50.739Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-6 - Added connection com.mysql.cj.jdbc.ConnectionImpl@232cf070
+2026-10-31T07:39:50.739Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Start completed.
+2026-10-31T07:39:50.742Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:50.762Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.013s)
+2026-10-31T07:39:50.768Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:50.768Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:50.931Z  INFO 54528 --- [           main] d.labflow.ProposalReviewIntegrationTest  : Started ProposalReviewIntegrationTest in 0.561 seconds (process running for 41.445)
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.003 s -- in dev.labflow.ProposalReviewIntegrationTest
+[INFO] Running dev.labflow.review.ColorVisionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in dev.labflow.review.ColorVisionTest
+[INFO] Running dev.labflow.review.diagram.DiagramReviewTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.247 s -- in dev.labflow.review.diagram.DiagramReviewTest
+[INFO] Running dev.labflow.review.JournalRulesTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in dev.labflow.review.JournalRulesTest
+[INFO] Running dev.labflow.review.RenderFactsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in dev.labflow.review.RenderFactsTest
+[INFO] Running dev.labflow.review.ReviewEvaluationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in dev.labflow.review.ReviewEvaluationTest
+[INFO] Running dev.labflow.review.ReviewMigrationTest
+2026-10-31T07:39:51.639Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.review.ReviewMigrationTest]: ReviewMigrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:51.694Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.review.ReviewMigrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:51.712Z  INFO 54528 --- [           main] dev.labflow.review.ReviewMigrationTest   : Starting ReviewMigrationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:51.712Z  INFO 54528 --- [           main] dev.labflow.review.ReviewMigrationTest   : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:39:52.053Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Starting...
+2026-10-31T07:39:52.066Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-7 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7231ce30
+2026-10-31T07:39:52.066Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Start completed.
+2026-10-31T07:39:52.069Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:52.089Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.013s)
+2026-10-31T07:39:52.092Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:52.092Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:52.247Z  INFO 54528 --- [           main] dev.labflow.review.ReviewMigrationTest   : Started ReviewMigrationTest in 0.551 seconds (process running for 42.761)
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.016 s -- in dev.labflow.review.ReviewMigrationTest
+[INFO] Running dev.labflow.review.ReviewRulesTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.038 s -- in dev.labflow.review.ReviewRulesTest
+[INFO] Running dev.labflow.ReviewIntegrationTest
+2026-10-31T07:39:52.695Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.ReviewIntegrationTest]: ReviewIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:52.698Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.ReviewIntegrationTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.200 s -- in dev.labflow.ReviewIntegrationTest
+[INFO] Running dev.labflow.SharedTeamBudgetIntegrationTest
+2026-10-31T07:39:52.897Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.SharedTeamBudgetIntegrationTest]: SharedTeamBudgetIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:52.898Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.SharedTeamBudgetIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:52.916Z  INFO 54528 --- [           main] d.l.SharedTeamBudgetIntegrationTest      : Starting SharedTeamBudgetIntegrationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:52.917Z  INFO 54528 --- [           main] d.l.SharedTeamBudgetIntegrationTest      : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:39:53.213Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Starting...
+2026-10-31T07:39:53.226Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-8 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c923e40
+2026-10-31T07:39:53.227Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Start completed.
+2026-10-31T07:39:53.229Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:53.249Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.013s)
+2026-10-31T07:39:53.255Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:53.255Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:53.391Z  INFO 54528 --- [           main] d.l.SharedTeamBudgetIntegrationTest      : Started SharedTeamBudgetIntegrationTest in 0.491 seconds (process running for 43.908)
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.233 s -- in dev.labflow.SharedTeamBudgetIntegrationTest
+[INFO] Running dev.labflow.TeamOptimizationIntegrationTest
+2026-10-31T07:39:56.139Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.TeamOptimizationIntegrationTest]: TeamOptimizationIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:56.144Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.TeamOptimizationIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:56.159Z  INFO 54528 --- [           main] d.l.TeamOptimizationIntegrationTest      : Starting TeamOptimizationIntegrationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:56.159Z  INFO 54528 --- [           main] d.l.TeamOptimizationIntegrationTest      : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:39:56.485Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Starting...
+2026-10-31T07:39:56.499Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-9 - Added connection com.mysql.cj.jdbc.ConnectionImpl@22cb9c3c
+2026-10-31T07:39:56.499Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Start completed.
+2026-10-31T07:39:56.501Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:56.518Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.011s)
+2026-10-31T07:39:56.522Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:56.523Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:56.745Z  INFO 54528 --- [           main] d.l.TeamOptimizationIntegrationTest      : Started TeamOptimizationIntegrationTest in 0.595 seconds (process running for 47.259)
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.853 s -- in dev.labflow.TeamOptimizationIntegrationTest
+[INFO] Running dev.labflow.TeamProcessingContractTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in dev.labflow.TeamProcessingContractTest
+[INFO] Running dev.labflow.TeamRunIntegrationTest
+2026-10-31T07:39:58.009Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.TeamRunIntegrationTest]: TeamRunIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:39:58.013Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.TeamRunIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:39:58.029Z  INFO 54528 --- [           main] dev.labflow.TeamRunIntegrationTest       : Starting TeamRunIntegrationTest using Java 21.0.12.1 with PID 54528 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:39:58.029Z  INFO 54528 --- [           main] dev.labflow.TeamRunIntegrationTest       : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:39:58.339Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Starting...
+2026-10-31T07:39:58.349Z  INFO 54528 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-10 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4b8832f
+2026-10-31T07:39:58.351Z  INFO 54528 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Start completed.
+2026-10-31T07:39:58.352Z  INFO 54528 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:33316/labflow_test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC (MySQL 8.0)
+2026-10-31T07:39:58.369Z  INFO 54528 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.011s)
+2026-10-31T07:39:58.373Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `labflow_test`: 10
+2026-10-31T07:39:58.373Z  INFO 54528 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `labflow_test` is up to date. No migration necessary.
+2026-10-31T07:39:58.523Z  INFO 54528 --- [           main] dev.labflow.TeamRunIntegrationTest       : Started TeamRunIntegrationTest in 0.509 seconds (process running for 49.038)
+[INFO] Tests run: 28, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.787 s -- in dev.labflow.TeamRunIntegrationTest
+[INFO] Running dev.labflow.TestSupportBoundaryTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.087 s -- in dev.labflow.TestSupportBoundaryTest
+[INFO] Running dev.labflow.WorkspaceIntegrationTest
+2026-10-31T07:40:04.884Z  INFO 54528 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [dev.labflow.WorkspaceIntegrationTest]: WorkspaceIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-31T07:40:04.886Z  INFO 54528 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.WorkspaceIntegrationTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.283 s -- in dev.labflow.WorkspaceIntegrationTest
+[INFO]
+[INFO] Results:
+[INFO]
+[WARNING] Tests run: 455, Failures: 0, Errors: 0, Skipped: 1
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  58.256 s
+[INFO] Finished at: 2026-10-31T16:40:05+09:00
+[INFO] ------------------------------------------------------------------------

@@ -17,5 +17,15 @@ const data=file=>'data:image/png;base64,'+fs.readFileSync(file).toString('base64
  await page.setViewportSize({width:1200,height:1050});await page.setContent('<style>body{margin:20px;font:16px Arial;background:#f5f6f8}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{padding:12px;background:white;border:1px solid #ddd}svg{width:100%;height:auto;display:block}</style><h2>12 个模板缩略图 · 线宽下限1px</h2><div class="grid"></div>');await page.addScriptTag({content:source});
  await page.evaluate(({templates,style})=>{document.querySelector('.grid').innerHTML=templates.map(t=>`<div class="card"><p>${t.name} · ${t.id}</p>${window.Evidence.renderDiagram(t.documents.en,style,true)}</div>`).join('');},{templates,style});
  await page.screenshot({path:path.join(out,'templates-overview.png'),fullPage:true});
+ // Full-size evidence for the three layouts refined after template acceptance.
+ for(const id of ['signal-cascade','workflow','pipeline']){
+  const doc=templates.find(t=>t.id===id).documents.en;
+  await page.setContent('<style>body{margin:0;background:white}svg{display:block;width:1350px;height:825px}</style>');
+  await page.addScriptTag({content:source});
+  const svg=await page.evaluate(({doc,style})=>window.Evidence.renderDiagram(doc,style),{doc,style});
+  fs.writeFileSync(path.join(out,'template-'+id+'.svg'),svg);
+  await page.evaluate(svg=>document.body.insertAdjacentHTML('beforeend',svg),svg);
+  await page.locator('svg').screenshot({path:path.join(out,'template-'+id+'.png')});
+ }
  console.log('Comparisons and thumbnail overview: '+out);
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
