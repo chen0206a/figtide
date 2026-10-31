@@ -1,0 +1,13 @@
+
+> labflow-ui@0.2.0 test
+> vitest run --run src/diagram/export/pdf.test.ts
+
+
+ RUN  v5.0.5 D:/RAG-agent项目/LabFlow/frontend
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:43:32
+   Duration  1.65s (environment 73%, setup 21%, tests 3%, transform 2%)
+

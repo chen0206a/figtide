@@ -1,3 +1,12 @@
+# 2026-10-31 · 19-5与19-A总验收
+
+任务19-5：确定性审稿、画布编号与显式确认修复完成；任务19-A总验收完成，仅本地提交。
+改动文件：机制图审稿/几何/渲染/导出与测试、App类型入口、兼容共享审稿组件、API/DIAGRAMS/进度/证据。
+验证：`LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test` 450总数=449通过/1跳过；mysql同命令455总数=454通过/1跳过；`npm test -- --run --maxWorkers=2` 587/587（71文件）；精确源码桌面构建通过；`scripts/test-agent.ps1 -All -Desktop -FixturePort 18770` 101通过/3专用迁移跳过，真实JVM重启审计通过。144模板风格语言组合实际几何均0 error；31图元事实完整/隐私通过；SVG/PNG/PDF与实际PDF渲染复核通过。
+未执行：两个数据库各1项真实服务ServerEvaluationTest（未提供labflow.eval.server）；3项migration.spec.ts（需专用已迁移夹具）；系统托盘/SmartScreen人工项本轮未执行。未将跳过写成通过。
+偏差：D3按最新用户要求只检查实际角色轮廓，默认Okabe–Ito失败待主人决定；旧数据图布局基线原样保留，入口移至顶栏。
+需要人决定：分区机制默认Okabe–Ito五组色对不达标，详见[报告](test-evidence/diagram-19-A-acceptance/README.md)。失败尝试、实际命令、截图/GIF/PDF和SHA清单均在该目录。未推送、未开PR；19-B未启动。
+
 # 2026-10-31 · 19-A-7
 
 # 19-A-7 收尾（2026-10-31）

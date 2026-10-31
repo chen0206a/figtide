@@ -1,0 +1,22 @@
+[
+  {
+    "file": "mechanism-en.pdf",
+    "width_mm": 180.0,
+    "height_mm": 110.00000000000001,
+    "images": 0,
+    "text_extracted": true,
+    "embedded_font": false,
+    "text_rendering_modes": [],
+    "rendered_px_per_mm": 7.5
+  },
+  {
+    "file": "mechanism-zh.pdf",
+    "width_mm": 180.0,
+    "height_mm": 110.00000000000001,
+    "images": 0,
+    "text_extracted": true,
+    "embedded_font": true,
+    "text_rendering_modes": [],
+    "rendered_px_per_mm": 7.5
+  }
+]

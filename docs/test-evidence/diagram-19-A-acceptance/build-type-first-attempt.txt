@@ -1,0 +1,12 @@
+
+added 244 packages, and audited 245 packages in 43s
+
+38 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+> labflow-ui@0.2.0 build
+> tsc -b && vite build
+
+src/diagram/DiagramReview.test.tsx(12,213): error TS2322: Type '{ font_size_pt: number; }' is not assignable to type 'string | number | boolean | null'.
