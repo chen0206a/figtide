@@ -61,7 +61,7 @@ If this is a long-running test, pass a timeout value as the last argument or con
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
 
 
-  Snapshots  8 updated 
+  Snapshots  8 updated
  Test Files  3 failed | 67 passed (70)
       Tests  3 failed | 582 passed (585)
    Start at  12:52:29

@@ -61,7 +61,7 @@
 
 ## 本地提交与复现
 
-19-A-7：e1195c1；19-5功能：8b1884711b2f0a68c446c302d6c659fb63da6db8。当前源代码与tested-source-sha256.json逐项按Git LF校验一致；精确构建JAR/依赖锁哈希见source-and-build.json。日志归档统一为LF文本，原始.log继续保存在本机.runtime，本轮没有改写收费评测原始文件。
+19-A-7：e1195c1；19-5功能：8b1884711b2f0a68c446c302d6c659fb63da6db8。当前源代码与tested-source-sha256.json逐项按Git LF校验一致；精确构建JAR/依赖锁哈希见source-and-build.json。日志归档统一为LF文本并去除行尾空白以符合Git校验，原始.log继续保存在本机.runtime，本轮没有改写收费评测原始文件。
 
 ```powershell
 # 在LabFlow仓库根目录；33316须为经datadir核验的本轮隔离MySQL

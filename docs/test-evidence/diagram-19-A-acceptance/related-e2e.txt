@@ -53,38 +53,38 @@ dist/assets/FigurePreview-Ca7Sgsus.js                             1,464.58 kB �
 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
 [INFO] Scanning for projects...
-[INFO] 
+[INFO]
 [INFO] ------------------------< dev.labflow:labflow >-------------------------
 [INFO] Building labflow 0.2.0
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
+[INFO]
 [INFO] --- resources:3.3.1:resources (default-resources) @ labflow ---
 [INFO] Copying 2 resources from src\main\resources to ..\.runtime\desktop-build\classes
 [INFO] Copying 44 resources from src\main\resources to ..\.runtime\desktop-build\classes
-[INFO] 
+[INFO]
 [INFO] --- resources:3.3.1:copy-resources (desktop-ui) @ labflow ---
 [INFO] Copying 62 resources from ..\frontend\dist to ..\.runtime\desktop-build\classes\desktop-static
-[INFO] 
+[INFO]
 [INFO] --- compiler:3.14.1:compile (default-compile) @ labflow ---
 [INFO] Recompiling the module because of changed source code.
 [INFO] Compiling 87 source files with javac [debug parameters release 21] to ..\.runtime\desktop-build\classes
 [INFO] /D:/RAG-agent��Ŀ/LabFlow/backend/src/main/java/dev/labflow/importer/DataImporter.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
 [INFO] /D:/RAG-agent��Ŀ/LabFlow/backend/src/main/java/dev/labflow/importer/DataImporter.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
-[INFO] 
+[INFO]
 [INFO] --- resources:3.3.1:testResources (default-testResources) @ labflow ---
 [INFO] Copying 8 resources from src\test\resources to ..\.runtime\desktop-build\test-classes
-[INFO] 
+[INFO]
 [INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ labflow ---
 [INFO] Recompiling the module because of changed dependency.
 [INFO] Compiling 69 source files with javac [debug parameters release 21] to ..\.runtime\desktop-build\test-classes
-[INFO] 
+[INFO]
 [INFO] --- surefire:3.5.4:test (default-test) @ labflow ---
 [INFO] Tests are skipped.
-[INFO] 
+[INFO]
 [INFO] --- jar:3.4.2:jar (default-jar) @ labflow ---
 [INFO] Building jar: D:\RAG-agent��Ŀ\LabFlow\.runtime\desktop-build\figtide.jar
-[INFO] 
+[INFO]
 [INFO] --- spring-boot:3.5.7:repackage (repackage) @ labflow ---
 [INFO] Replacing main artifact D:\RAG-agent��Ŀ\LabFlow\.runtime\desktop-build\figtide.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
 [INFO] The original artifact has been renamed to D:\RAG-agent��Ŀ\LabFlow\.runtime\desktop-build\figtide.jar.original
