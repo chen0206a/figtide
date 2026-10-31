@@ -1,4 +1,4 @@
-# 机制图（任务19-A，开发中）
+# 机制图（任务19-A）
 
 基线：任务18经PR #5全部CI通过后合并main c90ec1d；feature/diagrams仅本地开发。19-A涵盖毫米坐标文档、独立编辑器、六种风格、自制模板、矢量/位图导出及确定性审稿；19-B的AI与19-C素材暂不启用。
 
@@ -18,7 +18,7 @@ V10新建diagrams/diagram_versions；MySQL文档为JSON、H2为CLOB，显式UTC�
 
 ## 风格（19-2）
 
-六种预设参数只存在后端`diagram/styles/*.json`，`GET /api/diagram-catalog`下发副本、期刊尺寸表及当前模板/skill/图标目录。Nature扁平、柔和插画、线稿极简、会议框架、等距3D、手绘草图；均为矢量。预设正文7pt、轮廓1pt、连线1.25pt、分区0.75pt；每个分区/强调调色板任意两色在三种色觉缺陷下CIEDE2000≥20，由既有ColorVision逐项验证。UI颜色仍使用lf tokens，图形颜色来自预设。
+六种预设参数只存在后端`diagram/styles/*.json`，`GET /api/diagram-catalog`下发副本、期刊尺寸表及当前模板/skill/图标目录。Nature扁平、柔和插画、线稿极简、会议框架、等距3D、手绘草图；均为矢量。预设正文7pt、轮廓1pt、连线1.25pt、分区0.75pt；语义角色色来自可选style.palette，色觉检查复用既有ColorVision；原始配色并非所有使用色对都能满足严格的ΔE≥20门槛，实际失败色对如实提示。UI颜色仍使用lf tokens，图形颜色来自预设。
 
 `style.overrides`只接受字体、字号/线宽/圆角、箭头/填充、阴影/sketch/iso开关、分区/强调调色板和文字/线色。换预设只改preset；overrides继续保留，用户可显式清空。字体单项限制为目录使用的Arial/Helvetica、Inter或内嵌Noto Sans SC组合，避免任意URL。
 
@@ -87,15 +87,31 @@ PDF复用jspdf+svg2pdf.js与现有Noto Sans SC本地子集/字形检查及文字
 
 style.palette为新增可选字段，省略使用okabe-ito，旧文档无需迁移。六配色数值统一维护在backend/src/main/resources/diagram/palettes.json，TypeScript直接引用同一JSON；隔离桌面构建复制该资源。NPG/AAAS/NEJM/Lancet/JAMA只引用规范中整理的ggsci配色色值，未复制ggsci实现代码。界面全部标“风格（非官方）”。色值来源说明见各项source，参考https://nanx.me/ggsci/。
 
-palette_audits使用原ColorVision和MIN_DELTA_E=20，枚举a/b/c/d/n所有色对及三种色觉缺陷；低于20的色对返回真实minimum_delta_e并在界面提示，不改变色值、不降低阈值。“色盲友好”是Okabe–Ito惯用名称，不等于本图所有选用色对均满足严格20门槛。
+palette_audits使用原ColorVision和MIN_DELTA_E=20，按六配色×六风格枚举语义角色轮廓色对及三种色觉缺陷，界面只保留当前图实际使用的角色；低于20的色对返回真实minimum_delta_e并在界面提示，不改变色值、不降低阈值。“色盲友好”是Okabe–Ito惯用名称，不等于本图所有选用色对均满足严格20门槛。
 
 
 ## A–C返工交付状态
 
-返工实现与相关验证完成，最终材料见[test-evidence/diagram-checkpoint-c/README.md](test-evidence/diagram-checkpoint-c/README.md)。尚待主人视觉验收，19-5暂停；未执行19-A总验收，不宣称已经满足投稿/发布验收。
+返工实现与相关验证完成，最终材料见[test-evidence/diagram-checkpoint-c/README.md](test-evidence/diagram-checkpoint-c/README.md)。主人已通过A–C主体验收。19-A-7收尾见test-evidence/diagram-19-A-7，19-5已恢复；最终自动验收与截图以test-evidence/diagram-19-A-acceptance/README.md为准，不等同科学内容或期刊人工验收。
 
 六风格默认圆角/文字色/线色已按原型复核；黑线风格保留白色遮挡与轮廓以避免叠层穿透及无描边填充图元隐形。图元由原30种兼容扩展为31种，新增result-bars-low来自原型chartlow。小分子在旗舰模板进一步收窄到不超过JAK，遵循05 #6；会议标题采用可读深色文字并保留浅标题带。正文7pt；原型分区小字/徽标在19-5恢复时仍须按真实几何和期刊门槛审查，不降低检查阈值。
 
 六配色仅使用固定原值；风格控制形状/填充，不绑定某套期刊配色。旧颜色overrides字段合法保留以兼容旧文档格式；本轮规范渲染以style.palette的语义色映射为准，字体/线宽/圆角覆盖继续生效。新增palette不要求迁移，旧文档省略时使用okabe-ito。
 
 zoom_of已有字符串引用兼容节点与分区；节点删除清理放大来源，不增加新必填字段。渲染器提供显式矢量箭头和data-edge-tip数值端点；PDF不依赖marker缩放。机制图PDF的斜体通过矢量倾斜保留，500/600权重映射到现有常规/粗体字体，避免中文回退。仅改机制图导出，数据图PDF代码与既有行为不变。
+
+## 审稿与修复（19-5）
+
+顶栏“审稿这张图”打开复用的ReviewIssues面板；选择目标期刊和成品宽度后显式运行。collectDiagramFacts从同一个纯SVG渲染器离屏测量真实文字框和几何，包含内嵌P/数字符号；传输仅坐标/颜色/字号和数组索引，无标签或ID。面板编号与共享NumberMarker画布标记对应，忽略/恢复不改变文档。
+
+D1按目标宽度换算成品最小字号（默认6pt）；正文默认7pt，分区小字和二聚体P默认6pt，随字号覆盖同比缩放。D2检查轮廓及存在的细节线，默认底线0.5pt，线宽覆盖同比控制连线、分区、膜头和P圆。D3只比较实际使用角色的轮廓；填充模式覆盖也保留角色轮廓；standalone P/编号/冻结/训练符号不作为语义角色。默认Okabe–Ito的失败色对不自动改配色。D4实际文字框溢出为error，重叠为warning；仅安全放大节点可修复。D5无关节点穿越、重叠段>2mm、箭头间距<1.5mm、交叉>6次给意见，直角走线仅作可预览候选。D6忽略无图例语义的Flow，至少两种其他连线时建议打开图例。D7检查流程类孤立节点，不猜测关系；悬空端点引用在DiagramValidator阶段直接拒绝，不能伪装为可修复的有效图；装饰/语义标记不计。D8/9明确跳过。
+
+修复默认勾选可修复项；先“预览选中修复”调用原操作目录和只读校验接口，画布显示只读候选、底部列出字号/线宽等具体前后变化。取消不修改；“应用修复”一次加入撤销栈，Ctrl+Z一次可撤销整批。预览、应用均不自动保存，只有“保存机制图”写新版本。文档、revision、期刊/尺寸变化会使报告和候选失效，迟到请求结果被丢弃。导出显示最近有效报告的error数，未审稿不假称通过；error不阻止用户显式导出。
+
+## 真实示例与文字
+
+12模板均有中英文具体示例：JAK–STAT、视频问答、光路、野生型/EGFR敲除平行实验、反应能垒示意、单细胞图谱、视频表征/动作分类、EGF–EGFR–RAS–RAF–MEK–ERK、Transformer方法家族、共享视频输入的方法比较、单细胞测序、文库步骤与细胞条形码/UMI放大。所有图元仍为示意，未伪造测量结果。英文只在空格或用户手动换行处换行，长单词保持完整并交由D4报告；中文可按字换行。Beam splitter已加宽，144种模板/风格/语言组合用真实浏览器几何审稿要求0 error。
+
+局限：几何规则不证明科学关系正确，D5也不寻找全局最优布线；严格色觉门槛可能提示同色编码角色，保留标签/形状辅助，是否修改规范配色由主人决定。目标期刊数值来自现有版本化规则表，未知值仍用默认门槛，不假定已符合投稿要求。AI事实追溯和外部素材署名分别在19-B/C启用。
+
+数据图编辑器的类型切换入口放在主顶栏空位，保留原有editor/paper/toolbar毫米及像素几何；机制图页面仍使用已验收的独立切换行。原refactor09布局基线和既有数据图断言不更新。

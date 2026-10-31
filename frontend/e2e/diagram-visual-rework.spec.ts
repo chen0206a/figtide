@@ -15,9 +15,9 @@ test('diagram initially fits width, manual zoom and fit button reflect actual sc
   const width=(await canvas.boundingBox())!.width;
   await page.getByRole('button',{name:'适应宽度',exact:true}).click();await fit();
   expect((await canvas.boundingBox())!.width).toBeLessThan(width);
-  await page.screenshot({path:artifactPath(info,'../docs/test-evidence/diagram-step1/fit-1440.png'),fullPage:true});
+  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-step1"}/fit-1440.png`),fullPage:true});
   await page.setViewportSize({width:1920,height:1080});await fit();
-  await page.screenshot({path:artifactPath(info,'../docs/test-evidence/diagram-step1/fit-1920.png'),fullPage:true});
+  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-step1"}/fit-1920.png`),fullPage:true});
 });
 test('capture final creation page, export preview and actual interaction frames',async({page,request},info)=>{
   test.skip(process.env.LABFLOW_CAPTURE!=='1','Explicit visual capture');

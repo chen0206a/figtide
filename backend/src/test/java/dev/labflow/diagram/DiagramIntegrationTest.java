@@ -79,4 +79,14 @@ class DiagramIntegrationTest {
     long d=id(diagrams.create(project,"Synthetic",doc));root=manifest(backups.export(project));((ObjectNode)root.at("/tables/diagram_versions/0")).put("diagram_id",999999999L);
     var bad=root;int before=workspace.projects().size();assertThrows(dev.labflow.api.ApiException.class,()->backups.restore(archive(bad),"Reject reference"));assertEquals(before,workspace.projects().size());assertEquals(1,diagrams.versions(project,d).size());
   }
+
+  @Test void reviewIsReadOnlyStrictAndChecksRevisionAndOwnership()throws Exception{
+    long id=id(diagrams.create(project,"Review synthetic",doc));var in=json.createObjectNode().put("protocol_version",1).put("diagram_id",id).put("base_revision",1);in.set("doc",doc);
+    var endpoint="/api/projects/"+project+"/diagram-tools/review";
+    var result=json.readTree(mvc.perform(post(endpoint).contentType("application/json").content(in.toString())).andExpect(status().isOk()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8));
+    assertEquals(1,result.path("protocol_version").asInt());assertTrue(result.path("skipped").toString().contains("D4"));assertEquals(doc,diagrams.get(project,id).get("doc"));assertEquals(1,diagrams.versions(project,id).size());
+    in.put("base_revision",0);mvc.perform(post(endpoint).contentType("application/json").content(in.toString())).andExpect(status().isConflict());in.put("base_revision",1);
+    long other=id(workspace.createProject("Review other project","Ownership check"));mvc.perform(post("/api/projects/"+other+"/diagram-tools/review").contentType("application/json").content(in.toString())).andExpect(status().isNotFound());
+    in.put("unknown","PRIVATE_LABEL");mvc.perform(post(endpoint).contentType("application/json").content(in.toString())).andExpect(status().isBadRequest());in.remove("unknown");in.putObject("render_facts").put("label","PRIVATE_LABEL");mvc.perform(post(endpoint).contentType("application/json").content(in.toString())).andExpect(status().isBadRequest());
+  }
 }

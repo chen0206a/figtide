@@ -1,7 +1,7 @@
 import {palettes} from './palettes';
 import type {DiagramDoc,PaletteAudit} from './model';
 export const roleNames:Record<string,string>={actor:'参与者',process:'过程',data:'数据',model:'模型',output:'输出',note:'注释'};
-export function usedRoles(doc?:DiagramDoc):Set<string>{return new Set(doc?.nodes.filter(n=>n.kind!=='text'&&!['phospho','number','frozen','trainable'].includes(n.glyph||'')).map(n=>n.style_ref||n.role)||[]);}
+export function usedRoles(doc?:DiagramDoc):Set<string>{return new Set(doc?.nodes.filter(n=>n.kind!=='text'&&!(n.kind==='glyph'&&['phospho','number','frozen','trainable'].includes(n.glyph||''))).map(n=>n.style_ref||n.role)||[]);}
 export function PaletteSelect({value,onChange,audits=[],doc}:{value?:string;onChange:(id:string)=>void;audits?:PaletteAudit[];doc?:DiagramDoc}){
   const roles=usedRoles(doc),audit=audits.find(p=>p.id===(value||'okabe-ito')&&p.preset===(doc?.style.preset||'nature-flat'));
   const pairs=audit?.failing_pairs.filter(p=>p.roles.every(r=>roles.has(r)))||[];

@@ -35,3 +35,8 @@ it("opens old documents without palette using exactly the default palette",()=>{
 it("keeps the flagship inhibitor no wider than its neighbouring JAK protein",()=>{
   for(const language of ["en","zh"]){const doc=resource("templates/mechanism").documents[language] as DiagramDoc;expect(doc.nodes.find(n=>n.glyph==="small-molecule")!.w).toBeLessThanOrEqual(doc.nodes.find(n=>n.label==="JAK")!.w);}
 });
+
+it('keeps actual semantic outlines when only the fill mode is overridden',()=>{
+ const doc=resource('templates/workflow').documents.en as DiagramDoc,style=resource('styles/nature-flat') as DiagramStyle;doc.style.overrides.fill='outline';
+ const svg=new DOMParser().parseFromString(renderDiagram(doc,style),'image/svg+xml');expect(svg.querySelector('[data-node-id] > g')?.getAttribute('stroke')).toBe('#616161');
+});

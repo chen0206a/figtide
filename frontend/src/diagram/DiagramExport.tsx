@@ -13,7 +13,7 @@ export function DiagramExport({doc,style,name,onClose,reviewErrors}:{doc:Diagram
   return <Dialog open onOpenChange={open=>{if(!open&&!busy)onClose();}} title="导出机制图" description="从当前草稿生成文件，按成品物理尺寸导出。导出不会保存新版本。" closeDisabled={busy}>
     <div className="diagram-export-preview" aria-label="导出预览" dangerouslySetInnerHTML={{__html:renderDiagram(doc,style)}}/>
     <p className="tiny-note">SVG：可编辑矢量；PDF：按物理尺寸排版；PNG：300/600 dpi位图。</p>
-    <p className="lf-mono">成品：{doc.canvas.width_mm} × {doc.canvas.height_mm} mm · 最小字号：{current.font_size_pt} pt</p>
+    <p className="lf-mono">成品：{doc.canvas.width_mm} × {doc.canvas.height_mm} mm · 正文字号：{current.font_size_pt} pt</p>
     <label>格式<select aria-label="机制图导出格式" value={format} onChange={e=>setFormat(e.target.value)}><option value="svg">SVG · 矢量</option><option value="png">PNG · 位图</option><option value="pdf">PDF · 矢量</option></select></label>
     {format==="png"&&<><label>分辨率<select aria-label="PNG分辨率" value={dpi} onChange={e=>setDpi(Number(e.target.value))}><option value="300">300 dpi</option><option value="600">600 dpi</option></select></label><p className="lf-mono">{pixels}</p></>}
     {format==="pdf"&&<p className="tiny-note">英文使用Helvetica；中文等非ASCII标签使用现有内嵌Noto Sans SC子集。SVG保留所选风格字体。</p>}

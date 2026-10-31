@@ -23,6 +23,8 @@ export function captureArtifacts(testInfo: TestInfo) {
   if (process.env.LABFLOW_CAPTURE !== "1") return;
   for (const [output, destination] of captures.get(testInfo) ?? []) {
     if (!existsSync(output)) continue;
+    const prefix=process.env.LABFLOW_CAPTURE_PREFIX;
+    if(prefix&&!destination.startsWith(path.resolve(prefix)+path.sep))continue;
     mkdirSync(path.dirname(destination), { recursive: true });
     copyFileSync(output, destination);
   }

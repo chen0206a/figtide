@@ -387,4 +387,15 @@ GET /api/diagram-catalog兼容增加palettes（原始a/b/c/d/n色值及非官方
 
 已有zoom_of可引用同一文档节点或分区；旧分区引用继续有效。已有glyph枚举增加result-bars-low，对应规范低值柱图；旧30项继续有效。确定性set_style操作增加可选palette参数，仍由同一文档校验器检查。无新迁移。
 
-19-5只读审稿控制器目前是封存的WIP，不属于本次已完成接口验收；应在视觉确认后完成审稿面板、几何事实对接和规则回归。
+### 机制图确定性审稿（19-5）
+
+`POST /api/projects/{p}/diagram-tools/review`，只读、不调用模型、不创建版本。
+输入：`{protocol_version:1,doc,diagram_id?,base_revision?,render_facts?,target?:{journal?,width_mm?}}`。diagram_id与base_revision须成对；验证项目归属和当前revision（冲突409），文档必须通过DiagramValidator。所有对象拒绝未知字段。
+
+渲染事实：`{kind:"diagram",version:1,canvas:{width,height},nodes:[{index,box:{x,y,w,h}}],texts:[{owner_kind,owner_index,box,container,font_pt,color}],edges:[{index,points:[[x,y],...],arrow:{x,y}}]}`。所有几何单位mm，字号pt。owner_kind只允许node/zone/edge/annotation/legend；index引用文档数组序号，不发送元素ID或标签。完整校验文字（含二聚体P、独立P/编号、数字/磷酸化徽标）、节点、连线数量，无缺失或重复；有限数值和大小/数量限制防止隐藏载荷。固定枚举与十六进制颜色之外不允许字符串载荷。
+
+输出沿用ReviewResult：protocol_version、rules_version=diagram-review-v1、journal、issues、passed、skipped。规则D1–D7；无render_facts时D4/D5必须skipped。D8/D9分别等待19-B/19-C。每个issue包含稳定id、rule、severity、title/detail、fixable、fix操作、anchor（kind、ref数组序号）。
+
+D3复用ColorVision，只检查图中实际使用的语义角色轮廓，不比较浅填充。色对返回角色名、轮廓色和最小ΔE；阈值20保留。默认Okabe–Ito失败仅给意见，等待主人决定；其他配色仅在存在所有当前角色色对均达标的目录配色时提供可选set_style.palette修复，不改任何原色值。
+
+修复使用现有`GET /api/diagram-tools/catalog`目录和只读`POST /api/projects/{p}/diagram-tools/preview`；DiagramOperations→DiagramValidator同一校验链。返回候选doc和逐项changes；只有用户确认后才加入本机撤销栈，另行手动保存。

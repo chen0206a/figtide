@@ -16,7 +16,7 @@ public final class DiagramPaletteAudit {
   }
   public static Set<String> usedRoles(JsonNode doc) {
     var roles=new LinkedHashSet<String>();
-    for(var n:doc.path("nodes"))if(!n.path("kind").asText().equals("text")&&!Set.of("phospho","number","frozen","trainable").contains(n.path("glyph").asText()))roles.add(n.path("style_ref").isTextual()?n.path("style_ref").asText():n.path("role").asText());
+    for(var n:doc.path("nodes"))if(!n.path("kind").asText().equals("text")&&!(n.path("kind").asText().equals("glyph")&&Set.of("phospho","number","frozen","trainable").contains(n.path("glyph").asText())))roles.add(n.path("style_ref").isTextual()?n.path("style_ref").asText():n.path("role").asText());
     return roles;
   }
   public static Map<String,Object> audit(JsonNode palette,String preset,Set<String> used) {

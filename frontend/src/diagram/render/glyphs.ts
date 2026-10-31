@@ -8,7 +8,7 @@ import { stableSeed } from "./sketch";
 
 export const glyphKinds=["cell","vesicle","receptor","protein","dimer","ligand","small-molecule","dna","input-frames","encoder","llm","attention","tokens","layers","dataset","result-bars","result-bars-low","text-input","tube","flask","cell-cluster","laser","lens","beam-splitter","sample-stage","detector","energy-levels","phospho","frozen","trainable","number"] as const;
 export type GlyphKind=typeof glyphKinds[number];
-export type GlyphPalette=Pick<DiagramStyle,"zone_colors"|"accent_colors"|"line_color"|"text_color"|"fill"|"line_width_pt"|"sketch"|"iso"|"radius_mm"> & {body_fill?:string};
+export type GlyphPalette=Pick<DiagramStyle,"zone_colors"|"accent_colors"|"line_color"|"text_color"|"fill"|"line_width_pt"|"sketch"|"iso"|"radius_mm"> & {body_fill?:string;font_size_pt?:number};
 export type GlyphLayer={paths:string[];fill:string;stroke:string;opacity?:number};
 export type GlyphDrawing={layers:GlyphLayer[];bounds:DiagramRect;badges?:{x:number;y:number}[]};
 const f=(n:number)=>Number(n.toFixed(4));
@@ -108,19 +108,19 @@ export function drawGlyph(kind:GlyphKind,w:number,h:number,palette:GlyphPalette)
   return {bounds:glyphBounds(kind,w,h),badges:raw.badges,layers:raw.layers.map((l,i)=>({paths:[l.d],fill:palette.fill==="outline"?(l.fill==="none"?"none":"#FFFFFF"):l.fill,stroke:palette.fill==="outline"&&l.stroke==="none"&&l.fill!=="none"?palette.line_color:palette.fill==="outline"&&l.stroke==="#2C6CB0"?palette.line_color:l.stroke,...(kind==="attention"&&palette.fill==="outline"?{opacity:.3+i*.35}:{})}))};
 }
 const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"})[c]!);
-export function solidMarker(x:number,y:number,r:number,label:string):string {return `<g data-solid-marker="true"><circle cx="${x}" cy="${y}" r="${r}" fill="#F0C040" stroke="#B98B22" stroke-width="${ptToMm(.5)}"/><text x="${x}" y="${y+r*.36}" text-anchor="middle" font-weight="700" font-size="${r*1.35}" fill="#343434">${escape(label)}</text></g>`;}
+export function solidMarker(x:number,y:number,r:number,label:string,size=r*1.35,line=.5):string {return `<g data-solid-marker="true"><circle cx="${x}" cy="${y}" r="${r}" fill="#F0C040" stroke="#B98B22" stroke-width="${ptToMm(line)}"/><text x="${x}" y="${y+size*.34}" text-anchor="middle" font-weight="700" font-size="${size}" fill="#343434" stroke="none">${escape(label)}</text></g>`;}
 export function glyphMarkup(kind:GlyphKind,w:number,h:number,palette:GlyphPalette,seedKey:string=kind):string {
-  if(kind==="phospho"||kind==="number")return solidMarker(w/2,h/2,Math.min(w,h)*.43,kind==="phospho"?"P":"1");
+  if(kind==="phospho"||kind==="number")return solidMarker(w/2,h/2,Math.min(w,h)*.43,kind==="phospho"?"P":"1",Math.min(w,h)*.43*1.35*(palette.font_size_pt??7)/7,.5*palette.line_width_pt);
   const drawing=drawGlyph(kind,w,h,palette),line=ptToMm(palette.line_width_pt)*(palette.sketch?1.3:1),generator=palette.sketch?rough.generator():null;
   return drawing.layers.map((layer,i)=>`<g data-glyph-layer="${i===0?"body":"detail"}" fill="${escape(layer.fill)}" stroke="${escape(layer.stroke)}" stroke-width="${line}" opacity="${layer.opacity??1}" stroke-linejoin="round" stroke-linecap="round">${layer.paths.map((d,j)=>{
     if(!generator||layer.stroke==="none")return `<path d="${escape(d)}"/>`;
     return generator.toPaths(generator.path(d,{seed:stableSeed(`${seedKey}:${i}:${j}`),stroke:layer.stroke,strokeWidth:line,fill:layer.fill==="none"?undefined:layer.fill,fillStyle:"solid",roughness:.35,bowing:.1,disableMultiStroke:true})).map(p=>`<path d="${escape(p.d)}" fill="${escape(p.fill||"none")}" stroke="${escape(p.stroke||"none")}" stroke-width="${p.strokeWidth}"/>`).join("");
-  }).join("")}</g>`).join("")+(drawing.badges||[]).map(b=>`<g data-intrinsic-phospho="true">${solidMarker(b.x,b.y,1.35,"P")}</g>`).join("");
+  }).join("")}</g>`).join("")+(drawing.badges||[]).map(b=>`<g data-intrinsic-phospho="true">${solidMarker(b.x,b.y,1.65,"P",ptToMm((palette.font_size_pt??7)*6/7),.5*palette.line_width_pt)}</g>`).join("");
 }
 /** Two leaflets of explicit phospholipid heads and paired hydrophobic tails. */
 export function membraneMarkup(w:number,h:number,palette:GlyphPalette):string {
   const {heads,tails}=bilayer(w,h,1),stroke=palette.fill==="outline"?palette.line_color:palette.accent_colors[0],fill=palette.fill==="outline"?"#FFFFFF":tintColor(stroke,"#FFFFFF",.25);
-  return `<g data-glyph-layer="body" fill="${escape(fill)}" stroke="${escape(stroke)}" stroke-width="${ptToMm(.5)}"><path d="${heads}"/></g><g data-glyph-layer="detail" fill="none" stroke="${escape(stroke)}" stroke-width="${ptToMm(.5)}"><path d="${tails}"/></g>`;
+  return `<g data-glyph-layer="body" fill="${escape(fill)}" stroke="${escape(stroke)}" stroke-width="${ptToMm(.5*palette.line_width_pt)}"><path d="${heads}"/></g><g data-glyph-layer="detail" fill="none" stroke="${escape(stroke)}" stroke-width="${ptToMm(.5*palette.line_width_pt)}"><path d="${tails}"/></g>`;
 }
 export function nuclearEnvelopeMarkup(w:number,h:number,palette:GlyphPalette):string {
   const gap=Math.min(.8,w*.05,h*.05),stroke=escape(palette.line_color),width=ptToMm(palette.line_width_pt);

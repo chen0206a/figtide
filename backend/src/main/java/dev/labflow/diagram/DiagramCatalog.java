@@ -44,6 +44,7 @@ public class DiagramCatalog {
   public JsonNode template(String id,String language) { for(var t:templates)if(t.path("id").asText().equals(id))return t.at("/documents/"+language).deepCopy();throw ApiException.bad("机制图：未知模板"); }
   public ObjectNode effective(JsonNode doc) { var out=(ObjectNode)style(doc.at("/style/preset").asText());out.setAll((ObjectNode)doc.at("/style/overrides"));return out; }
   public Map<String,Object> paletteAudit(JsonNode doc){return DiagramPaletteAudit.audit(palettes.stream().filter(p->p.path("id").asText().equals(doc.at("/style/palette").asText("okabe-ito"))).findFirst().orElse(palettes.getFirst()),doc.at("/style/preset").asText(),DiagramPaletteAudit.usedRoles(doc));}
+  public List<JsonNode> palettes(){return palettes.stream().<JsonNode>map(JsonNode::deepCopy).toList();}
   public List<Map<String,Object>> paletteAudits(){var result=new ArrayList<Map<String,Object>>();for(var p:palettes)for(var s:styles)result.add(DiagramPaletteAudit.audit(p,s.path("id").asText(),new HashSet<>(DiagramPaletteAudit.ROLES)));return result;}
   public Map<String,Object> all() { return Map.of("schema_version",1,"palette_audits",paletteAudits(),"palettes",palettes.stream().<JsonNode>map(JsonNode::deepCopy).toList(),"styles",styles(),"templates",templates(),"skills",List.of(),"icons",List.of(),"journals",journals.all(),"glyphs",glyphs.stream().<JsonNode>map(JsonNode::deepCopy).toList()); }
 }

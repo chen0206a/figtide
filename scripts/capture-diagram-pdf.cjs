@@ -1,6 +1,6 @@
 // Visual export verification using a fresh isolated H2 desktop process and local fonts.
 const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process');
-const root=path.resolve(__dirname,'..'),out=path.join(root,'docs/test-evidence/diagram-checkpoint-c/exports');
+const root=path.resolve(__dirname,'..'),out=path.resolve(root,process.env.LABFLOW_DIAGRAM_PDF_EVIDENCE_DIR||'docs/test-evidence/diagram-checkpoint-c/exports');
 const {buildSync}=require(path.join(root,'frontend/node_modules/esbuild'));
 const {chromium}=require(path.join(root,'frontend/node_modules/@playwright/test'));
 const dataDir=path.join(root,'.runtime/diagram-pdf-'+Date.now());

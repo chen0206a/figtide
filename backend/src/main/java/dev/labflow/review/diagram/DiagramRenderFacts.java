@@ -16,8 +16,15 @@ public final class DiagramRenderFacts {
   private static void array(JsonNode n,int max){require(n!=null&&n.isArray()&&n.size()<=max,"渲染事实数量无效");}
   public static Map<String,Integer> expectedTexts(JsonNode doc){
     Map<String,Integer> expected=new HashMap<>();
-    for(String kind:List.of("node","zone","annotation")){String field=kind.equals("node")?"nodes":kind.equals("zone")?"zones":"annotations";for(int i=0;i<doc.path(field).size();i++){int count=1;if(kind.equals("node"))for(var badge:doc.path(field).get(i).path("badges"))if(badge.asText().startsWith("number:"))count++;expected.put(kind+":"+i,count);}}
-    Set<String> kinds=new HashSet<>();for(int i=0;i<doc.path("edges").size();i++){var edge=doc.path("edges").get(i);kinds.add(edge.path("kind").asText());if(!edge.path("label").asText().isEmpty())expected.put("edge:"+i,1);}
+    for(String kind:List.of("node","zone","annotation")){String field=kind.equals("node")?"nodes":kind.equals("zone")?"zones":"annotations";for(int i=0;i<doc.path(field).size();i++){
+      int count=1;var node=doc.path(field).get(i);
+      if(kind.equals("node")){
+        String glyph=node.path("glyph").asText();if(node.path("kind").asText().equals("glyph")){if(glyph.equals("dimer"))count+=2;if(Set.of("phospho","number").contains(glyph))count++;}
+        for(var badge:node.path("badges"))if(badge.asText().startsWith("number:")||badge.asText().equals("phospho")&&!glyph.equals("dimer"))count++;
+      }
+      expected.put(kind+":"+i,count);
+    }}
+    Set<String> kinds=new HashSet<>();for(int i=0;i<doc.path("edges").size();i++){var edge=doc.path("edges").get(i);if(!edge.path("kind").asText().equals("flow"))kinds.add(edge.path("kind").asText());if(!edge.path("label").asText().isEmpty())expected.put("edge:"+i,1);}
     if(kinds.size()>=2&&doc.at("/legend/mode").asText().equals("auto"))for(int i=0;i<kinds.size();i++)expected.put("legend:"+i,1);
     return expected;
   }

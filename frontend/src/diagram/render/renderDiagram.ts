@@ -22,7 +22,7 @@ export function edgeSymbol(start:{x:number;y:number},end:{x:number;y:number},kin
 }
 /** The only SVG renderer: editor, thumbnails, exports and geometry collection use this output. */
 export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=false): string {
-  const style=effectiveStyle(doc,preset),font=ptToMm(style.font_size_pt),line=ptToMm(style.line_width_pt)*(style.sketch?1.3:1),edgeLine=ptToMm(1.25)*(style.sketch?1.3:1),zoneLine=ptToMm(.75);
+  const style=effectiveStyle(doc,preset),font=ptToMm(style.font_size_pt),line=ptToMm(style.line_width_pt)*(style.sketch?1.3:1),edgeLine=ptToMm(1.25)*style.line_width_pt*(style.sketch?1.3:1),zoneLine=ptToMm(.75)*style.line_width_pt;
   const prefix="dg"+stableSeed(JSON.stringify(style));
   const text=(label:string,box:DiagramRect,fill=style.text_color,align:"center"|"left"="center",reference="",size=font)=>{
     const font=size;
@@ -44,7 +44,7 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
     let shape=space?"":`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="${style.radius_mm*2}" fill="${zoneFill}" stroke="${zoneStroke}" stroke-width="${zoneLine}"/>`;
     let labelBox={x:z.x+.6,y:z.y+1.2,w:z.w-2,h:2.6},center=false;
     if(z.kind==="membrane"){
-      shape=`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" fill="${membraneFill}"/><g transform="translate(${z.x} ${z.y})">${membraneMarkup(z.w,z.h,{...style,accent_colors:[membraneStroke],zone_colors:[membraneFill],line_width_pt:.5})}</g>`;
+      shape=`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" fill="${membraneFill}"/><g transform="translate(${z.x} ${z.y})">${membraneMarkup(z.w,z.h,{...style,accent_colors:[membraneStroke],zone_colors:[membraneFill],line_width_pt:style.line_width_pt})}</g>`;
       const labelWidth=Math.min(z.w-2,Math.max(24,z.label.length*1.05));labelBox={x:z.x+z.w-labelWidth-1.6,y:z.y+z.h/2-1.3,w:labelWidth,h:2.6};
       shape+=`<rect x="${labelBox.x}" y="${labelBox.y}" width="${labelBox.w}" height="${labelBox.h}" fill="${membraneFill}"/>`;center=true;
     }
@@ -56,8 +56,8 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
     if(z.kind==="zoom")shape=`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="${style.radius_mm}" fill="${doc.canvas.background}" stroke="${style.line_color}" stroke-width="${zoneLine}" stroke-dasharray="1.4 1"/>`;
     if(z.kind==="panel"&&style.id==="conference-framework")shape+=`<rect x="${z.x}" y="${z.y}" width="${Math.min(z.w,z.label.length*1.05+3)}" height="3.2" fill="${zoneStroke}" stroke="none"/>`;
     const source=[...doc.zones,...doc.nodes].find(a=>a.id===z.zoom_of);
-    const guides=source?`<path data-zoom-guides="true" d="M${source.x} ${source.y+source.h} L${z.x} ${z.y} M${source.x+source.w} ${source.y+source.h} L${z.x+z.w} ${z.y}" fill="none" stroke="${tintColor(style.line_color,"#FFFFFF",.45)}" stroke-width="${ptToMm(.6)}" stroke-dasharray="1.4 1"/>`:"";
-    return `${guides}<g data-zone-id="${esc(z.id)}">${shape}<g font-weight="${z.kind==="panel"?700:z.kind==="zoom"?600:500}" font-style="${["compartment","membrane","nucleus"].includes(z.kind)?"italic":"normal"}">${text(z.label,labelBox,z.kind==="panel"&&style.id==="conference-framework"?readableText(zoneStroke,"#FFFFFF"):"#5F6773",center?"center":"left",z.id,1.9)}</g></g>`;
+    const guides=source?`<path data-zoom-guides="true" d="M${source.x} ${source.y+source.h} L${z.x} ${z.y} M${source.x+source.w} ${source.y+source.h} L${z.x+z.w} ${z.y}" fill="none" stroke="${tintColor(style.line_color,"#FFFFFF",.45)}" stroke-width="${ptToMm(.6)*style.line_width_pt}" stroke-dasharray="1.4 1"/>`:"";
+    return `${guides}<g data-zone-id="${esc(z.id)}">${shape}<g font-weight="${z.kind==="panel"?700:z.kind==="zoom"?600:500}" font-style="${["compartment","membrane","nucleus"].includes(z.kind)?"italic":"normal"}">${text(z.label,labelBox,z.kind==="panel"&&style.id==="conference-framework"?readableText(zoneStroke,"#FFFFFF"):"#5F6773",center?"center":"left",z.id,ptToMm(style.font_size_pt*6/7))}</g></g>`;
   }).join("");
   const edges=doc.edges.map(e=>{
     const pts=edgePoints(doc,e,font);if(pts.length<2)return "";
@@ -69,13 +69,13 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
     const edgeInk=beam?P.c:e.kind==="inhibit"?(paletteOf(doc.style.palette).c):style.line_color;
     const dash=["indirect","transport"].includes(e.kind)?' stroke-dasharray="1.5 1"':"";
     const mid=pts[Math.floor(pts.length/2)];
-    return `<g data-edge-id="${esc(e.id)}"><path data-diagram-edge="true" data-edge-tip-x="${tip.x}" data-edge-tip-y="${tip.y}" d="${d}" fill="none" stroke="${esc(edgeInk)}" stroke-width="${beam?ptToMm(1.8):edgeLine}"${dash}/>${edgeSymbol(previous,tip,beam?"beam":e.kind,edgeInk,beam?ptToMm(1.8):edgeLine)}${e.label?text(e.label,{x:mid.x-15,y:mid.y-font*2,w:30,h:font*1.3},style.text_color,"center",e.id):""}</g>`;
+    return `<g data-edge-id="${esc(e.id)}"><path data-diagram-edge="true" data-edge-tip-x="${tip.x}" data-edge-tip-y="${tip.y}" d="${d}" fill="none" stroke="${esc(edgeInk)}" stroke-width="${beam?ptToMm(1.8)*style.line_width_pt:edgeLine}"${dash}/>${edgeSymbol(previous,tip,beam?"beam":e.kind,edgeInk,beam?ptToMm(1.8)*style.line_width_pt:edgeLine)}${e.label?text(e.label,{x:mid.x-15,y:mid.y-font*2,w:30,h:font*1.3},style.text_color,"center",e.id):""}</g>`;
   }).join("");
   const nodes=doc.nodes.map(n=>{
     const index=(roleColors[n.style_ref||n.role]||0)%style.accent_colors.length;
-    const resolved=roleColor(n.style_ref||n.role,doc.style.palette),color=style.id==="line-minimal"?(n.role==="note"?"#D55E00":"#0E1116"):resolved.stroke,bodyFill=style.id==="line-minimal"?"#FFFFFF":resolved.fill,layout=nodeLayout(n,font),body=layout.body;
+    const resolved=roleColor(n.style_ref||n.role,doc.style.palette),color=style.id==="line-minimal"?((n.style_ref||n.role)==="note"?"#D55E00":"#0E1116"):resolved.stroke,bodyFill=style.id==="line-minimal"?"#FFFFFF":resolved.fill,layout=nodeLayout(n,font),body=layout.body;
     const fill=style.fill==="outline"||n.kind==="text"?"none":bodyFill;
-    const stroke=style.id==="line-minimal"?color:style.fill==="outline"?style.line_color:color,rx=n.kind==="pill"?body.h/2:Math.min(style.radius_mm,body.w/4,body.h/4);
+    const stroke=color,rx=n.kind==="pill"?body.h/2:Math.min(style.radius_mm,body.w/4,body.h/4);
     const palette={...style,body_fill:bodyFill,line_color:stroke,accent_colors:[color,...style.accent_colors.filter(c=>c!==color)]};
     let shape="",frame="";
     if(n.kind==="glyph") {
@@ -87,7 +87,7 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
       const rise=Math.min(2,body.w/5,body.h/5),b=body;
       shape=`<path d="M${b.x} ${b.y+rise} L${b.x+rise} ${b.y} H${b.x+b.w} V${b.y+b.h-rise} L${b.x+b.w-rise} ${b.y+b.h} H${b.x} Z"/><path d="M${b.x} ${b.y+rise} H${b.x+b.w-rise} L${b.x+b.w} ${b.y} M${b.x+b.w-rise} ${b.y+rise} V${b.y+b.h}" fill="none"/>`;
     } else if(n.kind!=="text")shape=n.kind==="ellipse"?`<ellipse cx="${body.x+body.w/2}" cy="${body.y+body.h/2}" rx="${body.w/2}" ry="${body.h/2}"/>`:`<rect x="${body.x}" y="${body.y}" width="${body.w}" height="${body.h}" rx="${rx}"/>`;
-    const badgeSize=Math.max(2.8,Math.min(body.w,body.h)*.2),badges=(n.badges||[]).filter(b=>b!=="phospho"||n.glyph!=="dimer").map((badge,i)=>{
+    const badgeSize=Math.max(4,Math.min(body.w,body.h)*.2),badges=(n.badges||[]).filter(b=>b!=="phospho"||n.glyph!=="dimer").map((badge,i)=>{
       const x=n.x+n.w-(i+1)*badgeSize,y=n.y;
       if(badge.startsWith("number:"))return `<g data-node-badge="true"><circle cx="${x+badgeSize/2}" cy="${y+badgeSize/2}" r="${badgeSize/2}" fill="${esc(doc.canvas.background)}" stroke="${esc(stroke)}" stroke-width="${line}"/>${text(badge.slice(7),{x,y,w:badgeSize,h:badgeSize},style.text_color,"center",n.id)}</g>`;
       const ink=badge==="frozen"?style.accent_colors[0]:style.accent_colors[2]||color;return `<g data-node-badge="true" transform="translate(${x} ${y})">${glyphMarkup(badge as GlyphKind,badgeSize,badgeSize,{...palette,line_color:ink,accent_colors:[ink]},n.id+badge)}</g>`;

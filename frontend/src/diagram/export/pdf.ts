@@ -26,6 +26,10 @@ export async function diagramPdf(svgText:string,doc:DiagramDoc):Promise<Blob> {
       text.setAttribute("transform",`${text.getAttribute("transform")||""} translate(0 ${y}) skewX(-12) translate(0 ${-y})`);
     }
   }
-  await document.fonts.load(`400 16px "${family}"`);positionPdfText(svg,family);pdf.setFont(family,"normal");
+  await document.fonts.load(`400 16px "${family}"`);positionPdfText(svg,family);
+  // The shared glyph-origin freezer rebuilds text runs. Reset inherited shape
+  // strokes afterwards, so P/number symbols remain filled bold text in PDF.
+  for(const text of svg.querySelectorAll('text')){text.setAttribute('stroke','none');text.style.stroke='none';}
+  pdf.setFont(family,"normal");
   await pdf.svg(svg,{x:0,y:0,width,height});return pdf.output("blob");
 }

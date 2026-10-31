@@ -122,3 +122,23 @@
 .diagram-new-page .diagram-style-choice span,.diagram-new-page .diagram-style-choice svg { height:84px; }
 @media(max-width:1000px){.diagram-new-page .diagram-wizard-preview{position:static;height:900px;}}
 
+
+.diagram-review-panel header {display:flex;align-items:center;justify-content:space-between;gap:var(--lf-space-2);}
+.diagram-review-panel h2 {font-size:var(--lf-text-base);}
+.diagram-review-panel {display:grid;gap:var(--lf-space-3);}
+.diagram-repair-confirm {padding:var(--lf-space-3);border:1px solid var(--lf-focus);background:var(--lf-selected);display:grid;gap:var(--lf-space-2);}
+.diagram-review-markers .proposal-marker-box {stroke-width:1.5;stroke-dasharray:5 4;}
+.diagram-review-markers text {fill:var(--lf-text-on-inverse);font:600 12px var(--lf-font-mono);}
+.diagram-review-panel .review-issue header {flex-wrap:wrap;}
+
+.diagram-inspector:has(.diagram-review-panel) {overflow:hidden;}
+.diagram-review-panel {display:flex;flex-direction:column;height:calc(100vh - 222px);min-height:480px;gap:var(--lf-space-2);}
+.diagram-review-panel>header,.diagram-review-panel>label,.diagram-review-panel>button,.diagram-review-panel>p,.diagram-review-panel>footer {flex:none;margin:0;}
+.diagram-review-scroll {flex:1;min-height:0;overflow:auto;padding-right:var(--lf-space-1);}
+.diagram-review-panel>footer {padding-top:var(--lf-space-2);border-top:1px solid var(--lf-border);}
+.diagram-review-panel>footer>button {width:100%;}
+.diagram-repair-confirm ul {margin:0;padding-left:var(--lf-space-4);font-size:var(--lf-text-xs);max-height:100px;overflow:auto;}
+
+/* Chart editing keeps its original viewport geometry; its type switch uses the header's free space. */
+.masthead .figure-kind-switch-header {flex:none;border:0;padding:0;gap:var(--lf-space-1);}
+.masthead .figure-kind-switch-header a {padding:var(--lf-space-1) var(--lf-space-2);font-size:var(--lf-text-xs);white-space:nowrap;}

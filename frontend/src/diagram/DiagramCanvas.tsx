@@ -6,7 +6,7 @@ import { renderDiagram } from "./render/renderDiagram";
 import { moveSelection } from "./editing";
 
 type Drag={kind:"move"|"box"|"connect"|"pan";x:number;y:number;doc:DiagramDoc;ids:Set<string>;source?:string;scrollX?:number;scrollY?:number;clientX?:number;clientY?:number};
-export function DiagramCanvas({doc,style,selected,onSelect,onEdit,onConnect,zoom,onZoom,onDropGlyph,children}:{doc:DiagramDoc;style:DiagramStyle;selected:Set<string>;onSelect:(s:Set<string>)=>void;onEdit:(d:DiagramDoc)=>void;onConnect:(from:string,to:string)=>void;zoom:number;onZoom:(n:number)=>void;onDropGlyph?:(id:string,point:{x:number;y:number})=>void;children?:React.ReactNode}) {
+export function DiagramCanvas({doc,style,selected,onSelect,onEdit,onConnect,zoom,onZoom,onDropGlyph,children,readOnly=false}:{doc:DiagramDoc;style:DiagramStyle;selected:Set<string>;onSelect:(s:Set<string>)=>void;onEdit:(d:DiagramDoc)=>void;onConnect:(from:string,to:string)=>void;zoom:number;onZoom:(n:number)=>void;onDropGlyph?:(id:string,point:{x:number;y:number})=>void;children?:React.ReactNode;readOnly?:boolean}) {
   const scroll=useRef<HTMLDivElement>(null),surface=useRef<HTMLDivElement>(null),drag=useRef<Drag|null>(null);
   const [preview,setPreview]=useState<DiagramDoc|null>(null),[box,setBox]=useState<DiagramRect|null>(null);
   const [connection,setConnection]=useState<{x:number;y:number;toX:number;toY:number}|null>(null);
@@ -14,6 +14,7 @@ export function DiagramCanvas({doc,style,selected,onSelect,onEdit,onConnect,zoom
   useEffect(()=>{const element=scroll.current;if(!element)return;const wheel=(e:WheelEvent)=>{if(e.ctrlKey){e.preventDefault();onZoom(Math.max(.25,Math.min(10,zoom*(e.deltaY>0?.9:1.1))));}};element.addEventListener("wheel",wheel,{passive:false});return()=>element.removeEventListener("wheel",wheel);},[zoom,onZoom]);
   const point=(e:PointerEvent)=>{const r=surface.current!.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*doc.canvas.width_mm,y:(e.clientY-r.top)/r.height*doc.canvas.height_mm};};
   const down=(e:PointerEvent<HTMLDivElement>)=>{
+    if(readOnly)return;
     if(e.button!==0&&e.button!==1)return;
     const p=point(e),target=e.target as Element,connector=target.closest("[data-connect-node]");
     if(e.button===1||e.altKey){drag.current={kind:"pan",...p,doc,ids:selected,scrollX:scroll.current!.scrollLeft,scrollY:scroll.current!.scrollTop,clientX:e.clientX,clientY:e.clientY};}
@@ -42,11 +43,11 @@ export function DiagramCanvas({doc,style,selected,onSelect,onEdit,onConnect,zoom
     drag.current=null;setPreview(null);setBox(null);setConnection(null);if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);
   };
   return <div className="diagram-canvas-scroll" ref={scroll} tabIndex={0} aria-label="机制图画布，方向键移动，Alt拖动平移">
-    <div className="diagram-surface" data-testid="diagram-canvas" ref={surface} style={{width:doc.canvas.width_mm*96/25.4*zoom,height:doc.canvas.height_mm*96/25.4*zoom}} onDragOver={e=>{if(e.dataTransfer.types.includes("application/x-figtide-glyph")){e.preventDefault();e.dataTransfer.dropEffect="copy";}}} onDrop={e=>{const id=e.dataTransfer.getData("application/x-figtide-glyph");if(!id)return;e.preventDefault();const r=surface.current!.getBoundingClientRect();onDropGlyph?.(id,{x:(e.clientX-r.left)/r.width*doc.canvas.width_mm,y:(e.clientY-r.top)/r.height*doc.canvas.height_mm});}} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={()=>{drag.current=null;setPreview(null);setBox(null);setConnection(null);}}>
+    <div className="diagram-surface" data-testid="diagram-canvas" ref={surface} style={{width:doc.canvas.width_mm*96/25.4*zoom,height:doc.canvas.height_mm*96/25.4*zoom}} onDragOver={e=>{if(e.dataTransfer.types.includes("application/x-figtide-glyph")){e.preventDefault();e.dataTransfer.dropEffect="copy";}}} onDrop={e=>{if(readOnly)return;const id=e.dataTransfer.getData("application/x-figtide-glyph");if(!id)return;e.preventDefault();const r=surface.current!.getBoundingClientRect();onDropGlyph?.(id,{x:(e.clientX-r.left)/r.width*doc.canvas.width_mm,y:(e.clientY-r.top)/r.height*doc.canvas.height_mm});}} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={()=>{drag.current=null;setPreview(null);setBox(null);setConnection(null);}}>
       <div className="diagram-svg" dangerouslySetInnerHTML={{__html:svg}}/>
       <svg className="diagram-overlay" viewBox={`0 0 ${doc.canvas.width_mm} ${doc.canvas.height_mm}`} aria-hidden="true">
         {[...shown.nodes,...shown.zones].filter(n=>selected.has(n.id)).map(n=><rect key={n.id} className="diagram-selection" x={n.x} y={n.y} width={n.w} height={n.h}/>)}
-        {shown.nodes.filter(n=>selected.has(n.id)).map(n=>{const body=nodeLayout(n,ptToMm(effectiveStyle(doc,style).font_size_pt)).anchor;return <circle key={n.id} className="diagram-connector" data-connect-node={n.id} cx={body.x+body.w} cy={body.y+body.h/2} r={1.4}/>;})}
+        {shown.nodes.filter(n=>!readOnly&&selected.has(n.id)).map(n=>{const body=nodeLayout(n,ptToMm(effectiveStyle(doc,style).font_size_pt)).anchor;return <circle key={n.id} className="diagram-connector" data-connect-node={n.id} cx={body.x+body.w} cy={body.y+body.h/2} r={1.4}/>;})}
         {box&&<rect className="diagram-selection" x={box.x} y={box.y} width={box.w} height={box.h}/>}
         {connection&&<path data-connection-preview="true" className="diagram-connection-guide" d={`M${connection.x} ${connection.y} L${connection.toX} ${connection.toY}`}/>}
         {children}
