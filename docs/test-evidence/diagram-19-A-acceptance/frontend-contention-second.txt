@@ -48,4 +48,3 @@ If this is a long-running test, pass a timeout value as the last argument or con
 Environment  jsdom was created 70 times · 335.41s total, 44% of tracked time
              create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
              learn more: https://vitest.dev/guide/improving-performance#test-environments
-
