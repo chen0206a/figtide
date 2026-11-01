@@ -188,3 +188,9 @@
 .diagram-tools .diagram-icon-grid svg {height:calc(var(--lf-space-8) + var(--lf-space-4));}
 
 .diagram-tools .diagram-icon-grid button span {white-space:normal;letter-spacing:normal;}
+.diagram-extracted-colors {display:flex;gap:var(--lf-space-2);margin-block:var(--lf-space-2);}
+.diagram-extracted-colors>span {flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--lf-space-1);}
+.diagram-extracted-colors svg {width:100%;height:var(--lf-space-5);}
+.diagram-extracted-colors small {font-size:var(--lf-text-2xs);}
+.diagram-reference-preview svg {width:100%;height:180px;}
+.diagram-saved-styles {max-height:160px;overflow:auto;display:flex;flex-direction:column;}

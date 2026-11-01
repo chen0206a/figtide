@@ -20,14 +20,18 @@ public final class DiagramPaletteAudit {
     return roles;
   }
   public static Map<String,Object> audit(JsonNode palette,String preset,Set<String> used) {
-    var pairs=new ArrayList<Map<String,Object>>();var outlines=new LinkedHashMap<String,String>();
+    var outlines=new LinkedHashMap<String,String>();
     for(String role:ROLES)if(used.contains(role))outlines.put(role,outline(palette,preset,role));
+    return auditOutlines(palette.path("id").asText(),preset,outlines);
+  }
+  public static Map<String,Object> auditOutlines(String id,String preset,Map<String,String> outlines){
+    var pairs=new ArrayList<Map<String,Object>>();
     var roles=new ArrayList<>(outlines.keySet());
     for(int i=0;i<roles.size();i++)for(int j=0;j<i;j++){
       String a=roles.get(j),b=roles.get(i);double min=ColorVision.minimum(outlines.get(a),outlines.get(b));
       if(min<ColorVision.MIN_DELTA_E){var values=new ArrayList<Double>();for(int d=0;d<3;d++)values.add(ColorVision.deltaE(ColorVision.lab(outlines.get(a),d),ColorVision.lab(outlines.get(b),d)));
         pairs.add(Map.of("roles",List.of(a,b),"colors",List.of(outlines.get(a),outlines.get(b)),"minimum_delta_e",min,"delta_e",values));}
     }
-    return Map.of("id",palette.path("id").asText(),"preset",preset,"safe",pairs.isEmpty(),"outlines",outlines,"failing_pairs",pairs,"threshold",ColorVision.MIN_DELTA_E);
+    return Map.of("id",id,"preset",preset,"safe",pairs.isEmpty(),"outlines",outlines,"failing_pairs",pairs,"threshold",ColorVision.MIN_DELTA_E);
   }
 }

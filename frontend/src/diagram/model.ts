@@ -27,7 +27,7 @@ export type DiagramEdge = {
 };
 export type DiagramDoc = {
   schema_version: 1; canvas: {width_mm: number; height_mm: number; background: string};
-  style: {preset: string; palette?:string; overrides: DiagramOverrides}; label_language: "en" | "zh";
+  style: {preset: string; palette?:string; role_colors?:Record<DiagramNode["role"],string>; overrides: DiagramOverrides}; label_language: "en" | "zh";
   zones: DiagramZone[]; nodes: DiagramNode[]; edges: DiagramEdge[];
   annotations: {id: string; kind: "panel_letter" | "callout" | "note"; target: string; text: string}[];
   legend: {mode: "auto" | "off"; position: "bottom-right" | "bottom-left" | "top-right" | "top-left"};

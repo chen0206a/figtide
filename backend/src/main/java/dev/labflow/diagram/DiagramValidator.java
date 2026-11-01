@@ -58,13 +58,14 @@ public final class DiagramValidator {
       }
     });
   }
+  public static void style(JsonNode style){fields(style,"preset palette overrides role_colors","preset overrides");if(style.has("palette"))choice(style.get("palette"),Set.of("okabe-ito","npg","aaas","nejm","lancet","jama"));choice(style.get("preset"),PRESETS);overrides(style.path("overrides"));if(style.has("role_colors")){fields(style.get("role_colors"),"actor process data model output note","actor process data model output note");style.get("role_colors").forEach(DiagramValidator::color);}}
   public static void validate(JsonNode d) {
     fields(d,"schema_version canvas style label_language zones nodes edges annotations legend meta","schema_version canvas style label_language zones nodes edges annotations legend meta");
     require(d.path("schema_version").isIntegralNumber() && d.path("schema_version").canConvertToInt() && d.path("schema_version").asInt()==1,"不支持的schema_version");
     require(d.toString().getBytes(StandardCharsets.UTF_8).length <= MAX_BYTES,"文档超过2MB");
     var canvas=d.path("canvas");fields(canvas,"width_mm height_mm background","width_mm height_mm background");
     double width=number(canvas.get("width_mm"),10,2000),height=number(canvas.get("height_mm"),10,2000);color(canvas.get("background"));
-    var style=d.path("style");fields(style,"preset palette overrides","preset overrides");if(style.has("palette"))choice(style.get("palette"),Set.of("okabe-ito","npg","aaas","nejm","lancet","jama"));choice(style.get("preset"),PRESETS);overrides(style.path("overrides"));
+    style(d.path("style"));
     choice(d.get("label_language"),Set.of("en","zh"));
     array(d.get("zones"),30);array(d.get("nodes"),120);array(d.get("edges"),200);array(d.get("annotations"),120);
     Set<String> all=new HashSet<>(),zones=new HashSet<>(),nodes=new HashSet<>();

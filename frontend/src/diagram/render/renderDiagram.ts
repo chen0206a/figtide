@@ -36,7 +36,7 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
     <filter id="${prefix}-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="0.5" stdDeviation="0.4" flood-opacity="0.12"/></filter>
     ${style.accent_colors.map((c,i)=>`<linearGradient id="${prefix}-soft${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${esc(c)}" stop-opacity="0.32"/><stop offset="1" stop-color="${esc(c)}" stop-opacity="0.13"/></linearGradient>`).join("")}
   </defs>`;
-  const P=paletteOf(doc.style.palette),minimal=style.id==="line-minimal";
+  const basePalette=paletteOf(doc.style.palette),custom=doc.style.role_colors,P=custom?{...basePalette,a:custom.actor,b:custom.process,c:custom.note,d:custom.model,n:custom.data}:basePalette,minimal=style.id==="line-minimal";
   const zoneSkin=style.id==="soft-illustration"?["#F2F6FB","#DCE5F0"]:style.id==="conference-framework"?["#EEF4FB","#BFD3EA"]:style.id==="sketch"?["#FBF7EA","#8C877A"]:style.id==="isometric"?["#F5F7FA","#D5DAE1"]:["#F7F8FA","#C9D0D9"];
   const zones=doc.zones.map(z=>{
     const membraneFill=minimal?"#FFFFFF":tintColor(P.a,"#FFFFFF",.9),membraneStroke=minimal?"#0E1116":tintColor(P.a,"#FFFFFF",.35);
@@ -74,7 +74,7 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
   }).join("");
   const nodes=doc.nodes.map(n=>{
     const index=(roleColors[n.style_ref||n.role]||0)%style.accent_colors.length;
-    const resolved=roleColor(n.style_ref||n.role,doc.style.palette),color=style.id==="line-minimal"?((n.style_ref||n.role)==="note"?"#D55E00":"#0E1116"):resolved.stroke,bodyFill=style.id==="line-minimal"?"#FFFFFF":resolved.fill,layout=nodeLayout(n,font),body=layout.body;
+    const resolved=roleColor(n.style_ref||n.role,doc.style.palette),customColor=doc.style.role_colors?.[n.style_ref||n.role],color=customColor||(style.id==="line-minimal"?((n.style_ref||n.role)==="note"?"#D55E00":"#0E1116"):resolved.stroke),bodyFill=style.id==="line-minimal"?"#FFFFFF":customColor?tintColor(customColor,"#FFFFFF",.9):resolved.fill,layout=nodeLayout(n,font),body=layout.body;
     const fill=style.fill==="outline"||n.kind==="text"?"none":bodyFill;
     const stroke=color,rx=n.kind==="pill"?body.h/2:Math.min(style.radius_mm,body.w/4,body.h/4);
     const palette={...style,body_fill:bodyFill,line_color:stroke,accent_colors:[color,...style.accent_colors.filter(c=>c!==color)]};

@@ -1,3 +1,4 @@
+import {DiagramReferenceStyle} from "./DiagramReferenceStyle";
 import {DiagramIconPanel} from "./DiagramIconPanel";
 import {useDiagramAgent} from "./DiagramAgent";
 import {useDiagramReview,DiagramReviewMarkers} from "./DiagramReview";
@@ -25,7 +26,7 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
   const [glyphCategory,setGlyphCategory]=useState(doc.meta.skill==="bio-mechanism"||doc.meta.template?.includes("mechanism")?"biology":["physics-device","chem-materials","workflow"].includes(doc.meta.skill||"")||["workflow","zoom-workflow"].includes(doc.meta.template||"")?"experiment":doc.meta.skill==="ml-framework"||["framework","pipeline"].includes(doc.meta.template||"")?"ml":"all");
   const review=useDiagramReview(doc,record,state.revision,catalog,edit);
   const agent=useDiagramAgent(doc,record,state.revision,catalog,edit);
-  const [exportOpen,setExportOpen]=useState(false);
+  const [exportOpen,setExportOpen]=useState(false),[referenceOpen,setReferenceOpen]=useState(false);
   const [versionsOpen,setVersionsOpen]=useState(false),[restoring,setRestoring]=useState(false);
   const {confirm,dialog}=useConfirm(),canvasHost=useRef<HTMLDivElement>(null),inspector=useRef<HTMLDivElement>(null);
   const fitEnabled=useRef(true);
@@ -67,7 +68,7 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
   async function reload(){if(!await confirm("重新载入将替换当前草稿。继续？"))return;try{state.loadRecord(await api<DiagramRecord>(`/projects/${record.project_id}/diagrams/${record.id}`));setSelected(new Set());}catch(e){notify(e instanceof Error?e.message:"读取失败");}}
   return <main className="diagram-workbench" aria-label="机制图编辑器">
     <header className="diagram-toolbar"><Link to={`/projects/${record.project_id}/diagrams`}>机制图列表</Link><strong>{record.name}</strong><span className="lf-mono">v{state.revision}</span><span role="status">{state.dirty?state.draftStatus||"有未保存修改":"已保存"}</span>
-      <div className="diagram-toolbar-actions"><Button variant="ghost" onClick={()=>{agent.close();review.open();}}>审稿这张图</Button><Button variant="ghost" onClick={()=>{review.close();agent.open();}}>绘图助手</Button><Button variant="ghost" onClick={()=>setExportOpen(true)}>导出机制图</Button><Button variant="ghost" onClick={state.undo} disabled={!state.canUndo}>撤销</Button><Button variant="ghost" onClick={state.redo} disabled={!state.canRedo}>重做</Button><Button variant="ghost" onClick={()=>setVersionsOpen(true)}>版本历史</Button><Button variant="outline" disabled={state.saving||!!state.pendingDraft} onClick={()=>void state.save()}>保存机制图</Button></div>
+      <div className="diagram-toolbar-actions"><Button variant="ghost" onClick={()=>{agent.close();review.open();}}>审稿这张图</Button><Button variant="ghost" onClick={()=>{review.close();agent.open();}}>绘图助手</Button><Button variant="ghost" onClick={()=>setExportOpen(true)}>导出机制图</Button><Button variant="ghost" onClick={()=>setReferenceOpen(true)}>参考风格</Button><Button variant="ghost" onClick={state.undo} disabled={!state.canUndo}>撤销</Button><Button variant="ghost" onClick={state.redo} disabled={!state.canRedo}>重做</Button><Button variant="ghost" onClick={()=>setVersionsOpen(true)}>版本历史</Button><Button variant="outline" disabled={state.saving||!!state.pendingDraft} onClick={()=>void state.save()}>保存机制图</Button></div>
     </header>
     {state.conflict&&<div className="diagram-conflict" role="alert">机制图已被更新，本机草稿仍保留。<Button variant="outline" onClick={()=>void reload()}>重新载入最新版本</Button></div>}
     <div className="diagram-body">
@@ -83,7 +84,7 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
         {review.candidate&&<p role="status" className="diagram-conflict">修复预览 · 尚未应用；请在右栏确认或取消。</p>}
         <p className="diagram-keyboard-help">方向键 1 mm · Shift 5 mm · Ctrl+D 复制 · Delete 删除 · Alt 拖动平移</p>
       </section>
-      <div className="diagram-inspector" ref={inspector}>{agent.panel||review.panel||<><DiagramProperties doc={doc} selected={selected} edit={edit} journals={catalog.journals}/><PaletteSelect doc={doc} value={doc.style.palette} onChange={id=>mutate(d=>{d.style.palette=id;return d;})} audits={catalog.palette_audits}/><details className="diagram-extra-tools"><summary>结构与连接</summary>        <h2>结构</h2><label>新节点类型<select aria-label="新节点类型" value={nodeKind} onChange={e=>setNodeKind(e.target.value as DiagramNode["kind"])}>{Object.entries(nodeKinds).filter(([kind])=>kind!=="icon").map(([k,n])=><option key={k} value={k}>{n}</option>)}</select></label><Button variant="outline" onClick={()=>addNode()}>添加节点</Button>
+      <div className="diagram-inspector" ref={inspector}>{agent.panel||review.panel||<><DiagramProperties doc={doc} selected={selected} edit={edit} journals={catalog.journals}/><PaletteSelect doc={doc} value={doc.style.palette} onChange={id=>mutate(d=>{d.style.palette=id;delete d.style.role_colors;return d;})} audits={catalog.palette_audits}/><details className="diagram-extra-tools"><summary>结构与连接</summary>        <h2>结构</h2><label>新节点类型<select aria-label="新节点类型" value={nodeKind} onChange={e=>setNodeKind(e.target.value as DiagramNode["kind"])}>{Object.entries(nodeKinds).filter(([kind])=>kind!=="icon").map(([k,n])=><option key={k} value={k}>{n}</option>)}</select></label><Button variant="outline" onClick={()=>addNode()}>添加节点</Button>
         <label>新分区类型<select aria-label="新分区类型" value={zoneKind} onChange={e=>setZoneKind(e.target.value as DiagramZone["kind"])}>{Object.entries(zoneKinds).map(([k,n])=><option key={k} value={k}>{n}</option>)}</select></label><Button variant="outline" onClick={addZone}>添加分区</Button>
         <h3>连线</h3><label>新连线类型<select aria-label="新连线类型" value={edgeKind} onChange={e=>setEdgeKind(e.target.value as DiagramEdge["kind"])}>{Object.entries(edgeKinds).map(([k,n])=><option key={k} value={k}>{n}</option>)}</select></label>
         <p className="tiny-note">选择节点，从右侧连接点拖至目标节点；也可选择起终点。</p>
@@ -98,6 +99,7 @@ export function DiagramEditor({record,catalog,onLeaveGuard,notify}:{record:Diagr
     </div>
     {state.pendingDraft&&<Dialog open onOpenChange={()=>{}} title="发现机制图本机草稿" description={state.pendingDraft.revision===record.revision?"可以恢复上次未保存的编辑。":"草稿基于旧版本，恢复后保存可能遇到版本冲突；也可以使用当前已保存版本。"}><div className="dialog-actions"><Button variant="outline" onClick={state.discardDraft}>使用已保存版本</Button><Button onClick={state.restoreDraft}>恢复本机草稿</Button></div></Dialog>}
     <Dialog open={versionsOpen} onOpenChange={setVersionsOpen} title="机制图版本历史" description="恢复会创建一个新版本，原来的版本仍然保留。">{versions.isPending?<p>正在读取…</p>:versions.isError?<p role="alert">{versions.error.message}</p>:versions.data?.map(v=><div className="diagram-version" key={v.version}><span className="lf-mono">第 {v.version} 版 · {v.created_at}</span><Button variant="outline" disabled={restoring} onClick={()=>void restore(v.version)}>恢复第 {v.version} 版</Button></div>)}</Dialog>
+    {referenceOpen&&<DiagramReferenceStyle project={record.project_id} doc={doc} catalog={catalog} edit={edit} onClose={()=>setReferenceOpen(false)}/>}
     {exportOpen&&<DiagramExport icons={catalog.icons} reviewErrors={review.reviewErrors} doc={doc} style={style} name={record.name} onClose={()=>setExportOpen(false)}/>}
     {dialog}
   </main>;
