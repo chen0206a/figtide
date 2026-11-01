@@ -1070,7 +1070,7 @@ public class AgentRunService {
             long available=r.unboundedEvaluation?Long.MAX_VALUE:Math.min(ceiling,r.maxTokens)-r.charged-input;
             if(available<128)throw new dev.labflow.agent.team.TeamBudget.Limit("角色 token 预算不足，未交付半成品");
             output=r.unboundedEvaluation?0:(int)Math.min(2048,available);r.steps++;
-            r.trace.addObject().put("step",r.steps).put("event","model_request").put("role",role).put("prompt_version",dev.labflow.agent.team.TeamPrompts.version(role)).put("request_hash",AuditSanitizer.hash(messages)).put("max_output_tokens",output);
+            r.trace.addObject().put("step",r.steps).put("event","model_request").put("role",role).put("prompt_version",r.mode.equals("diagram")?dev.labflow.diagram.DiagramAgentEngine.PROMPT_VERSION:dev.labflow.agent.team.TeamPrompts.version(role)).put("request_hash",AuditSanitizer.hash(messages)).put("max_output_tokens",output);
           }
           long remaining=r.unboundedEvaluation?120000:r.created+r.timeout*1000L-started;if(remaining<=0)throw new TimeoutException();
           var reply=r.selectedProvider.complete(messages.deepCopy(),allowed.deepCopy(),output,Duration.ofMillis(remaining));

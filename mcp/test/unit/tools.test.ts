@@ -150,3 +150,24 @@ describe("FigTide tools", () => {
     expect(response.report.source.filename).toBe("private.csv");
   });
 });
+
+
+describe('diagram MCP routes and guarded writes',()=>{
+  it('reads brief/review, previews before save, and imports only through the sanitizer endpoint',async()=>{
+    const operations=[{tool:'set_style',arguments:{preset:'sketch'}}],doc={schema_version:1};
+    const f=fixture((path,init)=>{
+      if(path.endsWith('/brief'))return json({json:{brief:'Synthetic'},markdown:'# Synthetic'});
+      if(path.endsWith('/review')){expect(JSON.parse(String(init?.body))).toEqual({protocol_version:1,diagram_id:3,base_revision:2,doc});return json({skipped:[{rule:'D4'},{rule:'D5'}]});}
+      if(path.endsWith('/preview')){expect(JSON.parse(String(init?.body))).toEqual({protocol_version:1,diagram_id:3,base_revision:2,doc,operations});return json({doc:{...doc,changed:true},changes:['style']});}
+      if(path.endsWith('/import-svg')){expect(JSON.parse(String(init?.body))).toEqual({base_revision:2,svg:'<svg/>',name:'External'});return json({id:3,revision:3});}
+      if(init?.method==='PUT'){expect(JSON.parse(String(init.body))).toEqual({base_revision:2,doc:{...doc,changed:true}});return json({id:3,revision:3});}
+      if(path.endsWith('/diagrams'))return json([{id:3,revision:2}]);
+      return json({id:3,revision:2,version_count:2,doc});
+    });
+    expect(await f.tools.listDiagrams(1)).toHaveLength(1);expect(await f.tools.getDiagram(1,3)).toMatchObject({version_count:2});expect(await f.tools.getDiagramBrief(1,3)).toHaveProperty('markdown');expect(await f.tools.reviewDiagram(1,3)).toHaveProperty('skipped');
+    const saved=await f.tools.saveDiagramVersion(1,3,2,operations);expect(saved.editor_url).toBe('http://127.0.0.1:49100/projects/1/diagrams/3');expect(f.calls.slice(-2).map(c=>c.path)).toEqual(['/api/projects/1/diagram-tools/preview','/api/projects/1/diagrams/3']);expect(await f.tools.importDiagramSvg(1,3,2,'<svg/>','External')).toHaveProperty('saved',true);
+  });
+  it('never saves after a conflict or invalid preview',async()=>{
+    const f=fixture(path=>path.endsWith('/preview')?json({message:'Conflict'},409):json({revision:2,doc:{}}));await expect(f.tools.saveDiagramVersion(1,3,1,[{tool:'unknown',arguments:{}}])).rejects.toThrow();expect(f.calls.some(c=>c.init?.method==='PUT')).toBe(false);
+  });
+});

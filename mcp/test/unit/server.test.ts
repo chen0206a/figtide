@@ -35,6 +35,7 @@ describe("MCP protocol", () => {
     const client = await connected();
     const listed = await client.listTools();
     expect(listed.tools.map((tool) => tool.name)).toEqual([
+      "list_diagrams", "get_diagram", "get_diagram_brief", "review_diagram", "preview_diagram_changes", "save_diagram_version", "import_diagram_svg",
       "review_chart",
       "list_projects",
       "list_datasets",
@@ -48,8 +49,8 @@ describe("MCP protocol", () => {
       "save_chart_version",
       "create_chart",
     ]);
-    for (const tool of listed.tools.slice(0, 10)) expect(tool.annotations?.readOnlyHint).toBe(true);
-    for (const tool of listed.tools.slice(10))
+    for (const tool of listed.tools.filter(t=>!["save_diagram_version","import_diagram_svg","save_chart_version","create_chart"].includes(t.name))) expect(tool.annotations?.readOnlyHint).toBe(true);
+    for (const tool of listed.tools.filter(t=>["save_diagram_version","import_diagram_svg","save_chart_version","create_chart"].includes(t.name)))
       expect(tool.annotations).toMatchObject({
         readOnlyHint: false,
         destructiveHint: false,
@@ -60,6 +61,7 @@ describe("MCP protocol", () => {
   it("validates the parameters of every parameterized tool", async () => {
     const client = await connected();
     const invalid: Array<[string, Record<string, unknown>]> = [
+      ['list_diagrams',{project_id:0}],['get_diagram',{project_id:1,diagram_id:0}],['get_diagram_brief',{project_id:1,diagram_id:-1}],['review_diagram',{project_id:'1',diagram_id:1}],['preview_diagram_changes',{project_id:1,diagram_id:1,base_revision:1,operations:[]}],['save_diagram_version',{project_id:1,diagram_id:1,base_revision:0,operations:[{tool:'set_style',arguments:{}}]}],['import_diagram_svg',{project_id:1,diagram_id:1,base_revision:1,svg:''}],
       ['review_chart', {project_id: 1, config: {}, target: {width_mm: -1}}],
       ["list_datasets", { project_id: 0 }],
       ["get_dataset_profile", { project_id: 1, dataset_version_id: -1 }],

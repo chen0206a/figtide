@@ -60,16 +60,16 @@ public final class DiagramValidator {
   }
   public static void style(JsonNode style){fields(style,"preset palette overrides role_colors","preset overrides");if(style.has("palette"))choice(style.get("palette"),Set.of("okabe-ito","npg","aaas","nejm","lancet","jama"));choice(style.get("preset"),PRESETS);overrides(style.path("overrides"));if(style.has("role_colors")){fields(style.get("role_colors"),"actor process data model output note","actor process data model output note");style.get("role_colors").forEach(DiagramValidator::color);}}
   public static void validate(JsonNode d) {
-    fields(d,"schema_version canvas style label_language zones nodes edges annotations legend meta","schema_version canvas style label_language zones nodes edges annotations legend meta");
+    fields(d,"schema_version canvas style label_language zones nodes edges annotations legend meta artworks","schema_version canvas style label_language zones nodes edges annotations legend meta");
     require(d.path("schema_version").isIntegralNumber() && d.path("schema_version").canConvertToInt() && d.path("schema_version").asInt()==1,"不支持的schema_version");
     require(d.toString().getBytes(StandardCharsets.UTF_8).length <= MAX_BYTES,"文档超过2MB");
     var canvas=d.path("canvas");fields(canvas,"width_mm height_mm background","width_mm height_mm background");
     double width=number(canvas.get("width_mm"),10,2000),height=number(canvas.get("height_mm"),10,2000);color(canvas.get("background"));
     style(d.path("style"));
     choice(d.get("label_language"),Set.of("en","zh"));
-    array(d.get("zones"),30);array(d.get("nodes"),120);array(d.get("edges"),200);array(d.get("annotations"),120);
+    array(d.get("zones"),30);array(d.get("nodes"),120);array(d.get("edges"),200);array(d.get("annotations"),120);if(d.has("artworks"))array(d.get("artworks"),30);
     Set<String> all=new HashSet<>(),zones=new HashSet<>(),nodes=new HashSet<>();
-    for(String key:List.of("zones","nodes","edges","annotations"))for(var n:d.path(key)) {
+    for(String key:List.of("zones","nodes","edges","annotations","artworks"))for(var n:d.path(key)) {
       require(n.isObject(),"元素必须是对象");String ident=id(n.path("id"));require(all.add(ident),"ID重复");
       if(key.equals("zones"))zones.add(ident);if(key.equals("nodes"))nodes.add(ident);
     }
@@ -96,6 +96,7 @@ public final class DiagramValidator {
     for(var a:d.path("annotations")) {
       fields(a,"id kind target text","id kind target text");choice(a.get("kind"),Set.of("panel_letter","callout","note"));require(nodes.contains(id(a.get("target")))||zones.contains(a.path("target").asText()),"注释目标不存在");text(a.get("text"),200);
     }
+    for(var layer:d.path("artworks")){fields(layer,"id name x y w h locked hidden svg","id name x y w h locked hidden svg");text(layer.get("name"),120);rect(layer,width,height);require(layer.path("locked").isBoolean()&&layer.path("hidden").isBoolean(),"图层开关必须为布尔值");String svg=text(layer.get("svg"),MAX_BYTES);require(svg.equals(SvgSanitizer.sanitize(svg)),"外部SVG须先通过导入接口净化");}
     var legend=d.path("legend");fields(legend,"mode position","mode position");choice(legend.get("mode"),Set.of("auto","off"));choice(legend.get("position"),Set.of("bottom-right","bottom-left","top-right","top-left"));
     var meta=d.path("meta");fields(meta,"skill skill_version template brief facts source_text fact_sources ai_labels include_icon_attribution","skill skill_version template brief facts");
     for(String k:List.of("skill","skill_version","template"))nullableText(meta.get(k),120);text(meta.get("brief"),10000);array(meta.get("facts"),200);for(var f:meta.path("facts"))text(f,1000);

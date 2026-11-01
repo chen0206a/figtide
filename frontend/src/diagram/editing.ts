@@ -1,3 +1,4 @@
+import {safeArtwork} from "./artwork";
 import {builtinIcons} from "./builtinIcons";
 import type { DiagramDoc, DiagramRect } from "./model";
 import { contains } from "./render/geometry";
@@ -17,19 +18,20 @@ export function readDiagramDraft(storage: Pick<Storage,"getItem">, key: string):
     if(d.nodes.some((n:any)=>!["box","pill","ellipse","text","glyph","icon"].includes(n.kind)||n.kind==="icon"&&!builtinIcons[n.icon]||n.kind==="glyph"&&!glyphKinds.includes(n.glyph)||n.badges&&(!Array.isArray(n.badges)||n.badges.some((b:any)=>typeof b!=="string"||!(["phospho","frozen","trainable"].includes(b)||/^number:([1-9]|[1-9][0-9])$/.test(b))))))return null;
     for(const k of ["zone_colors","accent_colors"])if(k in d.style.overrides&&(!Array.isArray(d.style.overrides[k])||!d.style.overrides[k].length||d.style.overrides[k].some((c:any)=>typeof c!=="string"||!/^#[\da-f]{6}$/i.test(c))))return null;
     for(const k of ["font_size_pt","line_width_pt","radius_mm"])if(k in d.style.overrides&&!Number.isFinite(d.style.overrides[k]))return null;
+    if(d.artworks!==undefined&&(!Array.isArray(d.artworks)||d.artworks.length>30||d.artworks.some((a:any)=>typeof a.id!=="string"||typeof a.name!=="string"||typeof a.locked!=="boolean"||typeof a.hidden!=="boolean"||!safeArtwork(a.svg))))return null;
     return draft;
   }catch{return null;}
 }
 export function freshId(doc: DiagramDoc,prefix: string): string {
-  const ids=new Set([...doc.nodes,...doc.zones,...doc.edges,...doc.annotations].map(n=>n.id));let i=1;while(ids.has(prefix+i))i++;return prefix+i;
+  const ids=new Set([...doc.nodes,...doc.zones,...doc.edges,...doc.annotations,...(doc.artworks||[])].map(n=>n.id));let i=1;while(ids.has(prefix+i))i++;return prefix+i;
 }
 export function withinBounds(doc: DiagramDoc): boolean {
   const canvas={x:0,y:0,w:doc.canvas.width_mm,h:doc.canvas.height_mm};
-  return [...doc.zones,...doc.nodes].every(n=>[n.x,n.y,n.w,n.h].every(Number.isFinite)&&n.w>=.1&&n.h>=.1&&contains(canvas,n))&&doc.nodes.every(n=>!n.zone||doc.zones.some(z=>z.id===n.zone&&contains(z,n)));
+  return [...doc.zones,...doc.nodes,...(doc.artworks||[])].every(n=>[n.x,n.y,n.w,n.h].every(Number.isFinite)&&n.w>=.1&&n.h>=.1&&contains(canvas,n))&&doc.nodes.every(n=>!n.zone||doc.zones.some(z=>z.id===n.zone&&contains(z,n)));
 }
 export function moveSelection(doc: DiagramDoc, ids: ReadonlySet<string>, dx: number, dy: number): DiagramDoc {
   const next=structuredClone(doc),movingZones=new Set(doc.zones.filter(z=>ids.has(z.id)).map(z=>z.id));
-  const moving=[...next.zones.filter(z=>ids.has(z.id)),...next.nodes.filter(n=>ids.has(n.id)||!!n.zone&&movingZones.has(n.zone))];
+  const moving=[...next.zones.filter(z=>ids.has(z.id)),...next.nodes.filter(n=>ids.has(n.id)||!!n.zone&&movingZones.has(n.zone)),...(next.artworks||[]).filter(a=>ids.has(a.id)&&!a.locked)];
   if(!moving.length)return next;
   let x=dx,y=dy;
   for(const n of moving) {
@@ -42,6 +44,7 @@ export function moveSelection(doc: DiagramDoc, ids: ReadonlySet<string>, dx: num
 }
 export function removeSelection(doc: DiagramDoc, ids: ReadonlySet<string>): DiagramDoc {
   const next=structuredClone(doc);next.nodes=next.nodes.filter(n=>!ids.has(n.id));next.zones=next.zones.filter(z=>!ids.has(z.id));
+  if(next.artworks)next.artworks=next.artworks.filter(a=>!ids.has(a.id)||a.locked);
   const nodes=new Set(next.nodes.map(n=>n.id)),zones=new Set(next.zones.map(z=>z.id));
   next.edges=next.edges.filter(e=>!ids.has(e.id)&&nodes.has(e.from)&&nodes.has(e.to));
   next.annotations=next.annotations.filter(a=>!ids.has(a.id)&&(nodes.has(a.target)||zones.has(a.target)));
@@ -54,6 +57,7 @@ export function duplicateSelection(doc: DiagramDoc, ids: ReadonlySet<string>): D
   for(const z of next.zones)if(remap.has(z.zoom_of||"")&&[...remap.values()].includes(z.id))z.zoom_of=remap.get(z.zoom_of!)!;
   for(const e of doc.edges.filter(e=>remap.has(e.from)&&remap.has(e.to))){const id=freshId(next,"e");next.edges.push({...e,id,from:remap.get(e.from)!,to:remap.get(e.to)!});}
   for(const a of doc.annotations.filter(a=>remap.has(a.target))){next.annotations.push({...a,id:freshId(next,"a"),target:remap.get(a.target)!});}
+  for(const a of doc.artworks||[])if(ids.has(a.id)&&!a.locked){const id=freshId(next,"artwork");remap.set(a.id,id);(next.artworks??=[]).push({...a,id});}
   next=moveSelection(next,new Set(remap.values()),3,3);return next;
 }
 export function alignSelection(doc: DiagramDoc, ids: ReadonlySet<string>, mode: "left"|"top"|"horizontal"|"vertical"): DiagramDoc {

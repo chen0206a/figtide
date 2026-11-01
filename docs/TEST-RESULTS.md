@@ -1,3 +1,12 @@
+## 2026-11-01 · 19-14 外部agent通道
+
+- H2：`mvn -B -f backend/pom.xml -Dtest=DiagramExternalIntegrationTest,DiagramOperationsTest,SvgSanitizerTest test` 26/26。
+- 前端：`npm --prefix frontend test -- --run src/diagram/artwork.test.ts src/diagram/editing.test.ts --maxWorkers=2` 11/11；build通过（已知chunk体积提示）。
+- MCP：check/build通过；单测18/18；真实stdio集成4/4，使用隔离desktop JAR与临时H2。
+- 桌面：`./scripts/test-agent.ps1 -Desktop -Specs diagram-assets.spec.ts -FixturePort 18770` 3/3，真实JVM审计重启通过；含MCP简报→SVG导入→尺寸/锁定/隐藏→保存→恢复，复杂SVG净化前后200×120 RGBA逐像素一致。
+- MySQL本节未单跑，纳入C总验收。没有收费模型调用。证据docs/test-evidence/diagram-19-C/external-artwork.png。
+- 共享变更：editorUrl新增可选diagrams路由，旧默认figures保留；AgentRunService仅修正diagram模式trace的prompt_version来源。原预算/幂等/取消/恢复路径不变。新增接口见API.md；无新增依赖/迁移。
+
 ## 2026-11-01 · 19-13：本地参考图提取与参数模板
 
 PNG/JPG使用浏览器内确定性加权k-means提取最多6色并排除背景/透明像素；SVG本地统计显式颜色、CSS、物理线宽/圆角/字体。只向本机API发送风格参数及当前文档，不发送参考图片、文件名或像素；原图不保存。新增可选style.role_colors保存六角色原色值，实际渲染与共享ColorVision按相同轮廓检查；默认六套配色与ΔE20阈值不变。复用style_templates，kind=diagram；旧图表列表过滤此类型，备份恢复兼容，无新表/迁移/依赖。

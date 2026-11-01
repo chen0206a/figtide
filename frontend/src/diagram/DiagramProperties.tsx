@@ -7,9 +7,9 @@ export const zoneKinds={compartment:"分区",membrane:"膜",nucleus:"细胞核",
 export const edgeKinds={flow:"普通流程 →",activate:"激活 →",inhibit:"抑制 ⊣",transport:"转运",bind:"结合",indirect:"间接作用 ⇢"};
 export function DiagramProperties({doc,selected,edit,journals=[]}:Props) {
   const [journal,setJournal]=useState("default");
-  const id=[...selected][0],node=doc.nodes.find(n=>n.id===id),zone=doc.zones.find(n=>n.id===id),edge=doc.edges.find(n=>n.id===id),annotation=doc.annotations.find(n=>n.id===id);
-  const type=node?"nodes":zone?"zones":edge?"edges":"annotations",element=node||zone||edge||annotation;
-  const change=(key:string,value:unknown)=>edit(d=>{const target=d[type].find(n=>n.id===id);if(target)Object.assign(target,{[key]:value});return d;});
+  const id=[...selected][0],node=doc.nodes.find(n=>n.id===id),zone=doc.zones.find(n=>n.id===id),edge=doc.edges.find(n=>n.id===id),annotation=doc.annotations.find(n=>n.id===id),artwork=doc.artworks?.find(n=>n.id===id);
+  const type=node?"nodes":zone?"zones":edge?"edges":artwork?"artworks":"annotations",element=node||zone||edge||annotation||artwork;
+  const change=(key:string,value:unknown)=>edit(d=>{const target=d[type]?.find(n=>n.id===id);if(target)Object.assign(target,{[key]:value});return d;});
   const options=(values:Record<string,string>)=>Object.entries(values).map(([key,label])=><option value={key} key={key}>{label}</option>);
   return <aside className="diagram-properties" aria-label="机制图属性">
     <h2>{element?"选中元素":"画布属性"}</h2>
@@ -17,8 +17,13 @@ export function DiagramProperties({doc,selected,edit,journals=[]}:Props) {
     {element&&<p className="lf-mono">{element.id}</p>}
     {(node||zone)&&<>
       <label>{node?"节点文字":"分区文字"}<textarea aria-label={node?"节点文字":"分区文字"} maxLength={200} value={(node||zone)!.label} onChange={e=>change("label",e.target.value)}/></label>
-      <label>类型<select aria-label={node?"节点类型":"分区类型"} value={(node||zone)!.kind} onChange={e=>edit(d=>{const item=d[type].find(n=>n.id===id)!;Object.assign(item,{kind:e.target.value});if(type==="nodes"){const n=item as DiagramDoc["nodes"][number];if(n.kind==="glyph")n.glyph=n.glyph||"protein";else delete n.glyph;if(n.kind!=="icon")n.icon=null;}return d;})}>{options(node?node.kind==="icon"?nodeKinds:Object.fromEntries(Object.entries(nodeKinds).filter(([key])=>key!=="icon")):zoneKinds)}</select></label>
+      <label>类型<select aria-label={node?"节点类型":"分区类型"} value={(node||zone)!.kind} onChange={e=>edit(d=>{const item=d[type]?.find(n=>n.id===id)!;Object.assign(item,{kind:e.target.value});if(type==="nodes"){const n=item as DiagramDoc["nodes"][number];if(n.kind==="glyph")n.glyph=n.glyph||"protein";else delete n.glyph;if(n.kind!=="icon")n.icon=null;}return d;})}>{options(node?node.kind==="icon"?nodeKinds:Object.fromEntries(Object.entries(nodeKinds).filter(([key])=>key!=="icon")):zoneKinds)}</select></label>
       <div className="diagram-number-fields">{(["x","y","w","h"] as const).map(key=><label key={key}>{({x:"X",y:"Y",w:"宽",h:"高"})[key]}（mm）<input type="number" step="1" aria-label={`${({x:"X",y:"Y",w:"宽",h:"高"})[key]}（mm）`} value={(node||zone)![key]} onChange={e=>change(key,Number(e.target.value))}/></label>)}</div>
+    </>}
+    {artwork&&<><p className="tiny-note">外部SVG整体图层：内部文字不能单独编辑。可整体移动、缩放、锁定或隐藏；原图层仍保留。</p>
+      <label>图层名称<input aria-label="外部图层名称" value={artwork.name} maxLength={120} onChange={e=>change("name",e.target.value)}/></label>
+      <div className="diagram-number-fields">{(["x","y","w","h"] as const).map(k=><label key={k}>{k}（mm）<input aria-label={`外部图层 ${k}`} type="number" min={k==="w"||k==="h"?.1:0} step="1" disabled={artwork.locked} value={artwork[k]} onChange={e=>change(k,Number(e.target.value))}/></label>)}</div>
+      <label><input type="checkbox" checked={artwork.locked} onChange={e=>change("locked",e.target.checked)}/>锁定外部图层</label><label><input type="checkbox" checked={artwork.hidden} onChange={e=>change("hidden",e.target.checked)}/>隐藏外部图层</label>
     </>}
     {node&&<><label>语义角色<select aria-label="语义角色" value={node.role} onChange={e=>change("role",e.target.value)}>{options(roles)}</select></label>
       <label>配色<select aria-label="图元配色" value={node.style_ref||""} onChange={e=>change("style_ref",e.target.value||null)}><option value="">跟随语义角色</option><option value="actor">蓝色</option><option value="process">绿色</option><option value="note">强调色</option></select></label>

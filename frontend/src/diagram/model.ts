@@ -25,9 +25,11 @@ export type DiagramEdge = {
   kind: "flow" | "activate" | "inhibit" | "transport" | "bind" | "indirect";
   label: string; route: "straight" | "orthogonal" | "curved";
 };
+export type DiagramArtwork = DiagramRect & {id:string;name:string;locked:boolean;hidden:boolean;svg:string};
 export type DiagramDoc = {
   schema_version: 1; canvas: {width_mm: number; height_mm: number; background: string};
   style: {preset: string; palette?:string; role_colors?:Record<DiagramNode["role"],string>; overrides: DiagramOverrides}; label_language: "en" | "zh";
+  artworks?: DiagramArtwork[];
   zones: DiagramZone[]; nodes: DiagramNode[]; edges: DiagramEdge[];
   annotations: {id: string; kind: "panel_letter" | "callout" | "note"; target: string; text: string}[];
   legend: {mode: "auto" | "off"; position: "bottom-right" | "bottom-left" | "top-right" | "top-left"};

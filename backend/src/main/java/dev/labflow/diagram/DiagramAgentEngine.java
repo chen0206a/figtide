@@ -37,7 +37,7 @@ public class DiagramAgentEngine {
   public ArrayNode definitions(JsonNode request){
     var out=json.createArrayNode();if(request.path("diagram_stage").asText().equals("brief"))return out;
     for(var entry:DiagramOperations.catalog().path("tools")){
-      String name=entry.path("name").asText();if(Set.of("set_canvas","set_attribution").contains(name))continue;
+      String name=entry.path("name").asText();if(Set.of("set_canvas","set_attribution","update_artwork","remove_artwork").contains(name))continue;
       var schema=(ObjectNode)entry.path("input_schema").deepCopy();
       if(Set.of("add_node","update_node","add_zone","update_zone").contains(name)){
         var props=(ObjectNode)schema.path("properties");props.remove(List.of("x","y","w","h"));

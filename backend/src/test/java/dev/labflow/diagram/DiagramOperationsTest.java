@@ -31,7 +31,7 @@ class DiagramOperationsTest {
     assertEquals(16,after.at("/nodes/0/x").asDouble());assertEquals(3,after.path("nodes").size());assertTrue(after.path("annotations").isEmpty());
     assertEquals(8,after.at("/style/overrides/font_size_pt").asDouble());assertEquals(.6,after.at("/style/overrides/line_width_pt").asDouble());
     var changes=DiagramOperations.changes(before,after);assertTrue(changes.stream().anyMatch(c->c.get("path").equals("/style/preset")));assertEquals(changes,DiagramOperations.changes(before,after));
-    assertEquals(after,DiagramOperations.apply(before,operations));assertEquals(13,DiagramOperations.catalog().path("tools").size());
+    assertEquals(after,DiagramOperations.apply(before,operations));assertEquals(15,DiagramOperations.catalog().path("tools").size());
   }
   @Test void deletionCascadesReferencesAndFailedBatchesNeverMutateInput()throws Exception{
     var before=DiagramValidatorTest.doc();before.withArray("annotations").addObject().put("id","a1").put("kind","note").put("target","n1").put("text","Synthetic");

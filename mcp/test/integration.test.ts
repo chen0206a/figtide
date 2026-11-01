@@ -171,7 +171,7 @@ describe("FigTide desktop MCP stdio integration", () => {
 
   it("lists annotations, keeps profiles private, previews, saves and rejects stale revision", async () => {
     const listed = await client.listTools();
-    expect(listed.tools).toHaveLength(12);
+    expect(listed.tools).toHaveLength(19);
     expect(listed.tools.find((tool) => tool.name === "save_chart_version")?.annotations).toMatchObject({
       readOnlyHint: false,
       destructiveHint: false,
@@ -238,4 +238,19 @@ describe("FigTide desktop MCP stdio integration", () => {
     const after=await fetch(`${baseUrl}/api/projects/${projectId}/charts/${chartId}`).then(response=>response.json());
     expect(after).toEqual(before);
   });
+  it('external diagram brief → sanitized SVG layer → conflict → restore',async()=>{
+    const created=await(await fetch(`${baseUrl}/api/projects/${projectId}/diagrams`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'External diagram synthetic',template:'workflow',style:'nature-flat',label_language:'en'})})).json();
+    const args={project_id:projectId,diagram_id:created.id};
+    expect(parsed(await client.callTool({name:'list_diagrams',arguments:{project_id:projectId}}))).toHaveLength(1);
+    const brief=parsed(await client.callTool({name:'get_diagram_brief',arguments:args}));expect(brief.json.revision).toBe(1);expect(brief.markdown).toContain('机制图简报');
+    const operations=[{tool:'set_legend',arguments:{mode:'off'}}];
+    const preview=await client.callTool({name:'preview_diagram_changes',arguments:{...args,base_revision:1,operations}});expect(preview.isError).not.toBe(true);expect(parsed(await client.callTool({name:'get_diagram',arguments:args})).revision).toBe(1);
+    const saved=parsed(await client.callTool({name:'save_diagram_version',arguments:{...args,base_revision:1,operations}}));expect(saved.diagram.revision).toBe(2);expect(saved.editor_url).toContain('/diagrams/');
+    const review=parsed(await client.callTool({name:'review_diagram',arguments:args}));expect(review.skipped.map((s:any)=>s.rule)).toEqual(expect.arrayContaining(['D4','D5']));
+    const imported=parsed(await client.callTool({name:'import_diagram_svg',arguments:{...args,base_revision:2,svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60"><rect width="50" height="30" fill="#0072B2"/><text x="5" y="20">Synthetic</text><script>alert(1)</script></svg>',name:'Self drawn synthetic'}}));
+    expect(imported.diagram.revision).toBe(3);expect(imported.diagram.doc.artworks).toHaveLength(1);expect(imported.diagram.doc.artworks[0].svg).not.toContain('script');expect(imported.diagram.doc.nodes).toEqual(created.doc.nodes);
+    expect((await client.callTool({name:'import_diagram_svg',arguments:{...args,base_revision:2,svg:'<svg><rect/></svg>'}})).isError).toBe(true);
+    const restored=await(await fetch(`${baseUrl}/api/projects/${projectId}/diagrams/${created.id}/restore`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({base_revision:3,version:1})})).json();expect(restored.revision).toBe(4);expect(restored.doc).toEqual(created.doc);
+  });
+
 });

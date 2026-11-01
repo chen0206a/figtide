@@ -40,6 +40,8 @@ public final class DiagramOperations {
       new Spec("set_style","设置风格（覆盖项合并，null清空）",object(properties("preset",enumeration(PRESETS),"palette",enumeration(Set.of("okabe-ito","npg","aaas","nejm","lancet","jama")),"overrides",overrideSchema(),"role_colors",nullable(object(properties("actor",COLOR,"process",COLOR,"data",COLOR,"model",COLOR,"output",COLOR,"note",COLOR),List.of("actor","process","data","model","output","note"),6))),List.of(),1)),
       new Spec("set_canvas","设置成品画布",object(properties("width_mm",number(10,2000),"height_mm",number(10,2000),"background",COLOR),List.of(),1)),
       new Spec("set_legend","设置图例",object(properties("mode",enumeration("auto","off"),"position",enumeration("bottom-right","bottom-left","top-right","top-left")),List.of(),1)),
+      new Spec("update_artwork","移动、缩放、锁定或隐藏外部图层",object(properties("id",ID,"name",string(120),"x",number(0,2000),"y",number(0,2000),"w",number(.1,2000),"h",number(.1,2000),"locked",bool(),"hidden",bool()),List.of("id"),2)),
+      new Spec("remove_artwork","移除外部图层（保留版本历史）",object(properties("id",ID),List.of("id"),1)),
       new Spec("set_attribution","设置图标导出署名",object(properties("enabled",bool()),List.of("enabled"),1)),
       new Spec("add_annotation","添加注释",object(properties("id",ID,"kind",enumeration("panel_letter","callout","note"),"target",ID,"text",string(200)),List.of("id","kind","target","text"),4)));
   public static ObjectNode catalog(){var out=JSON.createObjectNode().put("protocol_version",1).put("schema_version",1).put("execution","preview-only");var tools=out.putArray("tools");for(var s:SPECS){var t=tools.addObject().put("name",s.name()).put("label",s.label());t.set("input_schema",s.schema().deepCopy());}return out;}
@@ -69,6 +71,8 @@ public final class DiagramOperations {
         case "set_style"->{var style=(ObjectNode)doc.path("style");if(args.has("palette")){style.set("palette",args.get("palette").deepCopy());style.remove("role_colors");}if(args.has("role_colors")){if(args.get("role_colors").isNull())style.remove("role_colors");else style.set("role_colors",args.get("role_colors").deepCopy());}if(args.has("preset"))style.set("preset",args.get("preset").deepCopy());if(args.has("overrides")){if(args.get("overrides").isNull())style.putObject("overrides");else ((ObjectNode)style.path("overrides")).setAll(copy(args.get("overrides")));}}
         case "set_canvas"->patch((ObjectNode)doc.path("canvas"),args);
         case "set_legend"->patch((ObjectNode)doc.path("legend"),args);
+        case "update_artwork"->{var layer=(ObjectNode)find(doc.path("artworks"),id);if(layer.path("locked").asBoolean()&&(!args.has("locked")||args.path("locked").asBoolean()))for(String key:List.of("x","y","w","h"))require(!args.has(key),"请先解锁外部图层");patch(layer,args);}
+        case "remove_artwork"->{var layer=find(doc.path("artworks"),id);require(!layer.path("locked").asBoolean(),"请先解锁外部图层");remove((ArrayNode)doc.path("artworks"),id);}
         case "set_attribution"->((ObjectNode)doc.path("meta")).put("include_icon_attribution",args.path("enabled").asBoolean());
         case "add_annotation"->((ArrayNode)doc.path("annotations")).add(copy(args));
         default->throw new IllegalStateException("目录与实现不一致");

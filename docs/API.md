@@ -409,3 +409,13 @@ D3复用ColorVision，只检查图中实际使用的语义角色轮廓，不比�
 轮询原runs/{id}，awaiting_render时取得proposal.doc，在浏览器排版后向原`POST .../runs/{id}/review`发送`{doc,render_facts,target?}`。文档只能改变x/y，不允许替换标签、结构或其他属性。完成后proposal包含doc/config、差异、操作和确定性review。
 
 原`POST .../runs/{id}/decision`接受`{outcome:"accepted",proposal_hash,review_hash,accepted_fixes:[id...]}`，返回已选修复后的doc，但不保存机制图。拒绝沿用outcome/reason/proposal_hash。原cancel/resume/audit接口复用；旧revision、不同修复集合及历史应用返回409。图表模式原协议不变。
+
+
+### 机制图素材与外部绘制（19-C）
+
+- `GET /api/diagram-icons/{id}.svg`：内置净化矢量，ID来自catalog，不接受路径。
+- `GET/POST /api/projects/{p}/diagram-style-templates`：查询/保存仅参数的 `kind:diagram` 风格模板；`POST .../preview` 接受 `{doc,profile}`，只读返回文档和审稿。
+- `GET /api/projects/{p}/diagrams/{id}/brief`：`{json,markdown}`，含revision、用户事实、语义规格、风格及物理尺寸。
+- `POST /api/projects/{p}/diagrams/{id}/import-svg`：`{base_revision,svg,name?}`，净化后追加artworks并保存新版本。项目归属、Host/Origin、revision保护沿用原接口；过期409。artworks可选，文档总量2MB，最多30层；直接保存与备份恢复也必须通过SVG规范校验。
+
+无新增迁移或依赖；style_templates沿用现有表，SVG使用JDK安全XML解析器。

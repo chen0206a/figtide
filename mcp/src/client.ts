@@ -39,8 +39,8 @@ export class FigTideClient {
     return { data: (await this.body(response)) as T, endpoint };
   }
 
-  editorUrl(endpoint: FigTideEndpoint, project: number, chart: number): string {
-    return new URL(`projects/${project}/figures/${chart}`, endpoint.baseUrl).toString();
+  editorUrl(endpoint: FigTideEndpoint, project: number, chart: number, kind:"figures"|"diagrams"="figures"): string {
+    return new URL(`projects/${project}/${kind}/${chart}`, endpoint.baseUrl).toString();
   }
 
   private async verify(endpoint: FigTideEndpoint): Promise<void> {
