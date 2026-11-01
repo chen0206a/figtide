@@ -1,0 +1,669 @@
+{
+  "recording": "hand-authored synthetic protocol; not model samples",
+  "fixtures": [
+    {
+      "case_id": "bio-mechanism-01",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_zone",
+          "arguments": {
+            "id": "z1",
+            "kind": "compartment",
+            "label": "Cytosol"
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "EGF",
+            "role": "process",
+            "zone": "z1"
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "EGFR",
+            "role": "process",
+            "zone": "z1"
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "ERK",
+            "role": "process",
+            "zone": "z1"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "activate"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "activate"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "bio-mechanism-02",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_zone",
+          "arguments": {
+            "id": "z1",
+            "kind": "compartment",
+            "label": "Cytosol"
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Gefitinib",
+            "role": "process",
+            "zone": "z1"
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "EGFR",
+            "role": "process",
+            "zone": "z1"
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "ERK",
+            "role": "process",
+            "zone": "z1"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "inhibit"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "activate"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "ml-framework-01",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Image",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "Encoder",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Embedding",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "flow"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "flow"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "ml-framework-02",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Text",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "Tokenizer",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Tokens",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "flow"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "flow"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "workflow-01",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Sample",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "Dissociation",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Library",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "flow"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "flow"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "workflow-02",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Tissue",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "RNA",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Reads",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "flow"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "flow"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "chem-materials-01",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Substrate",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "Catalyst",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Product",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "bind"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "flow"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "chem-materials-02",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Donor",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "Interface",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Acceptor",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "transport"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "transport"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "physics-device-01",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Laser",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "Lens",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Detector",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "flow"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "flow"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "physics-device-02",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Laser",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "Splitter",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Sample",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "flow"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "flow"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "concept-abstract-01",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Stress",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "Adaptation",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Resilience",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "flow"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "flow"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "concept-abstract-02",
+      "recording": "hand-authored synthetic protocol; not model samples",
+      "operations": [
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n1",
+            "kind": "box",
+            "label": "Observation",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n2",
+            "kind": "box",
+            "label": "Hypothesis",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_node",
+          "arguments": {
+            "id": "n3",
+            "kind": "box",
+            "label": "Experiment",
+            "role": "process",
+            "zone": null
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e1",
+            "from": "n1",
+            "to": "n2",
+            "kind": "flow"
+          }
+        },
+        {
+          "tool": "add_edge",
+          "arguments": {
+            "id": "e2",
+            "from": "n2",
+            "to": "n3",
+            "kind": "flow"
+          }
+        }
+      ]
+    }
+  ]
+}
