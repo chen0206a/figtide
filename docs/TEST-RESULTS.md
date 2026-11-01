@@ -1,3 +1,11 @@
+## 2026-11-01 · 19-15 draw.io导出
+
+- 前端导出专项4/4：合法XML、原生元素数量、父子关系、特殊字符/换行、边类型、内嵌SVG及artwork状态；build通过。
+- 桌面 `./scripts/test-agent.ps1 -Desktop -Specs diagram-assets.spec.ts -FixturePort 18770` 4/4，真实JVM审计重启通过；包括真实.drawio下载与解析，导出不保存版本。
+- 本机draw.io.exe `--export --format png --scale 2` 实际解析jak-stat.drawio并成功输出jak-stat-drawio.png，已查看渲染图；主人手工修改标签/拖动节点清单未执行，见desktop/SMOKE-14-5.md。
+- 证据docs/test-evidence/diagram-19-C/：drawio-export.png、exports/jak-stat.drawio、exports/editor-mechanism.drawio、exports/jak-stat-drawio.png及8张实际操作帧组装的assets-operations.gif。
+- 后端/MySQL本节未单独执行：没有后端改动，随后C总验收覆盖。无新依赖/迁移/接口、无共享图表方法修改。
+
 ## 2026-11-01 · 19-14 外部agent通道
 
 - H2：`mvn -B -f backend/pom.xml -Dtest=DiagramExternalIntegrationTest,DiagramOperationsTest,SvgSanitizerTest test` 26/26。
