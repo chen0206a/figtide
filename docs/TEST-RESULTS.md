@@ -1,3 +1,7 @@
+## 2026-11-01 · 19-B总验收
+
+前端637/637及构建；H2 456通过+2真实模式跳过；MySQL 461通过+2跳过；MCP单测16/16、真实stdio集成3/3；完整桌面102通过、0失败、3原迁移夹具条件跳过、0 flaky，真实JVM审计恢复通过。240模板真实几何0 error。原任务18/suite回放未改判据，随双库原样通过。报告与截图见test-evidence/diagram-19-B/README.md；自己的模型评测成绩/输出/费用仅留.runtime。此前失败和复跑原因在报告中保留。按主人授权不停在B，继续19-C；B/C仅本地提交。
+
 ## 2026-11-01 · 19-10：合成描述、人工协议回放与真实模式入口
 
 新增36条synthetic描述、每skill两条共12条人工协议夹具。DiagramEvaluationTest在隔离H2中运行完整AgentRunService流程，12条回放通过；真实模式测试按显式开关跳过1项，没有收费调用。生成成绩/费用报告仅在.runtime/diagram-eval，不提交或上传；AGENT-EVALUATION只写方法、缺失值和D4/D5跳过局限。复用EvaluationSpendBudget调用前检查/审计结算与TeamBootstrap，不修改任务18题集或判据。
