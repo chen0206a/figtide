@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-01",
+  "source_commit": "a59b303b93bbed7f55a1cc6cb9e37808fb0881b5",
+  "frontend": {
+    "passed": 649,
+    "files": 75,
+    "failed": 0,
+    "build": "passed"
+  },
+  "h2": {
+    "total": 469,
+    "passed": 467,
+    "skipped": 2,
+    "failed": 0
+  },
+  "mysql": {
+    "total": 474,
+    "passed": 472,
+    "skipped": 2,
+    "failed": 0
+  },
+  "mcp": {
+    "typecheck": "passed",
+    "build": "passed",
+    "unit_passed": 18,
+    "stdio_passed": 4
+  },
+  "desktop": {
+    "total": 109,
+    "passed": 106,
+    "skipped": 3,
+    "failed": 0,
+    "flaky": 0,
+    "mode": "desktop production JAR, isolated H2",
+    "audit_restart": "passed"
+  },
+  "geometry": {
+    "total": 240,
+    "errors": 0
+  },
+  "svg_complex_rgba_comparison": "exact equality at 200x120, browser E2E",
+  "icons": {
+    "total": 150,
+    "CC0-1.0": 131,
+    "CC-BY-4.0": 19,
+    "upstream": "duerrsimon/bioicons",
+    "commit": "d29e766ea7580b8063c4f47b29e872db40a4d979"
+  },
+  "drawio_cli_render": "passed",
+  "owner_drawio_edit_smoke": "pending owner; not counted as automated pass",
+  "real_model_calls": 0,
+  "evaluation_reports": "local only, excluded",
+  "raw_logs": "local only, hashes of LF-normalized UTF-8 files",
+  "log_sha256": {
+    ".runtime/19-C-h2-final.log": "8b644a63df9661c3f948ead859bdbca171a076e9fe009da0a19c303fdb8663a2",
+    ".runtime/19-C-mysql-final.log": "e2bcdc0fc566b5b770069eafb81e567e4da48c096b8c0043bffdbd3017e3bd7d",
+    ".runtime/19-C-front-final.log": "b2aa7de92c4470e9baf14e279cc34441c3b81ab6f62763fff059622b5b2fa812",
+    ".runtime/19-C-mcp-final.log": "28c07fcfd4c328d46d905ac17497c139deff8af8fd486eaf550e978c70262ebd",
+    ".runtime/19-C-desktop-final.log": "fcbffd610f6efbc811e790c96a0dff713c3b5a3f68dd3b56ff454923dfe69e05",
+    ".runtime/19-C15-build.log": "c6681402b96fe22b297170b1bfb2aeb94677946cf58f049419607df367765c45"
+  }
+}

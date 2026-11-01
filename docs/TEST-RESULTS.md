@@ -1,3 +1,26 @@
+## 2026-11-01 · 19-C最终自动验收（连同19-B回归）
+
+产品代码a59b303，后续只补文档与测试证据。没有收费模型调用，自己的模型评测报告/输出/费用仍仅本地。
+
+| 实际执行 | 结果 |
+| --- | --- |
+| `LABFLOW_TEST_DB=h2; mvn -B -f backend/pom.xml test` | 469总，467通过、2跳过、0失败 |
+| `LABFLOW_TEST_DB=mysql; mvn -B -f backend/pom.xml test` | 474总，472通过、2跳过、0失败；只用33316/task19-mysql/labflow_test |
+| `npm --prefix frontend test -- --run --maxWorkers=2` | 649/649，75文件；旧图表快照未刷新 |
+| `npm --prefix frontend run build` | 通过；已知SVG图标chunk体积提示 |
+| MCP check/test/build/test:integration | 类型/构建通过；18单测、4实际stdio集成通过 |
+| `scripts/test-agent.ps1 -Desktop -All -FixturePort 18770` | 109总，106通过、3跳过、0失败/0 flaky；生产JAR+隔离H2 |
+| 真实JVM审计重启 | 通过；测试夹具清理 |
+| 20模板×6风格×2语言实际几何 | 240组0 error；D3警告保留 |
+| SVG攻击与正常复杂SVG | 攻击断言通过；渐变/clip/use/CSS/文字净化前后RGBA逐像素一致 |
+| draw.io.exe实际CLI打开和渲染 | 通过；主人交互编辑确认未执行，见SMOKE-14-5.md |
+
+后端跳过：现有ServerEvaluationTest显式服务评测、新增DiagramEvaluationTest显式真实模型模式；桌面跳过：migration.spec.ts三项需要另行预置迁移夹具及LABFLOW_MIGRATION_E2E=1。均未计通过。系统托盘/SmartScreen人工项未重跑。
+
+证据docs/test-evidence/diagram-19-C/README.md、acceptance.json、1440截图、operations.gif、review-repair.gif、assets-operations.gif和.drawio样例；测试原始日志保留.runtime，规范化SHA256在acceptance.json。测试创建的临时项目和服务已清理，专用MySQL验证datadir/PID后关闭。
+
+变更、共享方法、API、V11双库迁移、许可来源和人工清单见DIAGRAMS.md、API.md、MCP.md与两个B/C验收README。19-C没有新增迁移/依赖。19-A已PR/CI合并；B/C仅本地逐节提交，不推送。
+
 ## 2026-11-01 · 19-15 draw.io导出
 
 - 前端导出专项4/4：合法XML、原生元素数量、父子关系、特殊字符/换行、边类型、内嵌SVG及artwork状态；build通过。
