@@ -47,15 +47,21 @@ public class AgentAuditService {
     String session = initial.path("session_id").asText(UUID.randomUUID().toString());
     Long chart =
         snapshot.path("chart_id").isIntegralNumber() ? snapshot.path("chart_id").asLong() : null;
-    long dataset = snapshot.at("/config/datasetVersionId").asLong();
-    if (initial.path("new_session").asBoolean() || !initial.hasNonNull("session_id"))
+    boolean diagram="diagram".equals(initial.path("mode").asText());
+    Long diagramId=diagram?snapshot.path("diagram_id").asLong():null;
+    Long dataset=diagram?null:snapshot.at("/config/datasetVersionId").asLong();
+    if(diagram&&(diagramId==null||db.diagramRevision(project,diagramId)!=snapshot.path("base_revision").asInt()))throw new ApiException(409,"机制图保存版本已变化");
+    if (initial.path("new_session").asBoolean() || !initial.hasNonNull("session_id")){
       db.createSession(
           project, session, chart, dataset, initial.path("session_budget").asInt(180000));
+      if(diagram)db.bindDiagramSession(project,session,diagramId);
+    }
     var budget = db.lockSession(project, session);
     if (!Objects.equals(
             chart,
             budget.get("chart_id") == null ? null : ((Number) budget.get("chart_id")).longValue())
-        || dataset != ((Number) budget.get("dataset_version_id")).longValue())
+        || !Objects.equals(dataset,budget.get("dataset_version_id")==null?null:((Number)budget.get("dataset_version_id")).longValue())
+        || !Objects.equals(diagramId,budget.get("diagram_id")==null?null:((Number)budget.get("diagram_id")).longValue()))
       throw new ApiException(409, "会话绑定的图表或数据版本已变化，请开始新对话");
     if (db.sessionRuns(project, session).stream()
         .anyMatch(row -> Set.of("queued", "running").contains(row.get("status"))))
@@ -73,7 +79,7 @@ public class AgentAuditService {
         INSTANCE,
         snapshot.path("chart_id").isIntegralNumber() ? snapshot.path("chart_id").asLong() : null,
         snapshot.path("base_revision").asInt(0),
-        snapshot.path("config").path("datasetVersionId").asLong(),
+        dataset,
         source.path("sha256").asText(),
         AuditSanitizer.hash(snapshot.path("config")),
         modelName(info.model()),
@@ -89,7 +95,8 @@ public class AgentAuditService {
         initial.path("request_hash").asText(null),
         reserved,
         ((Number) budget.get("turn_count")).intValue() + 1);
-    if(Set.of("team","review").contains(initial.path("mode").asText()))db.mode(project,initial.path("run_id").asText(),initial.path("mode").asText());
+    if(diagram)db.bindDiagramRun(project,initial.path("run_id").asText(),diagramId,initial.path("skill_id").asText(),initial.path("skill_version").asText());
+    if(Set.of("team","review","diagram").contains(initial.path("mode").asText()))db.mode(project,initial.path("run_id").asText(),initial.path("mode").asText());
     return reserved;
   }
 
@@ -170,6 +177,7 @@ public class AgentAuditService {
             out.path("max_budget").asLong()
                 - out.path("used_budget").asLong()
                 - out.path("reserved_budget").asLong()));
+    if(row.get("diagram_id")!=null)out.set("diagram_id",json.valueToTree(row.get("diagram_id")));
     return out;
   }
 
@@ -252,6 +260,7 @@ public class AgentAuditService {
     } catch (Exception e) {
       throw new IllegalStateException("审计记录格式无效");
     }
+    if("diagram".equals(row.get("mode"))){result.put("mode","diagram");for(String field:List.of("diagram_id","skill_id","skill_version"))result.set(field,json.valueToTree(row.get(field)));}
     result.put("persisted", true).put("historical", true).put("text", "");
     var review=dev.labflow.review.ReviewJson.read(json,row.get("review_json"));
     if(review.has("result"))result.set("review",review.path("result"));
@@ -342,6 +351,7 @@ public class AgentAuditService {
         && db.chartRevision(project, chart.longValue())
             != ((Number) row.get("base_revision")).intValue())
       throw new ApiException(409, "源图表已更新，请重新生成提案");
+    if(decision.equals("accepted")&&row.get("diagram_id") instanceof Number diagram&&db.diagramRevision(project,diagram.longValue())!=((Number)row.get("base_revision")).intValue())throw new ApiException(409,"源机制图已更新，请重新生成提案");
     if (db.decide(project, id, decision, note, Timestamp.from(Instant.now())) != 1)
       throw new ApiException(409, "决策已变化，请重新读取运行记录");
     return render(db.find(project, id));
