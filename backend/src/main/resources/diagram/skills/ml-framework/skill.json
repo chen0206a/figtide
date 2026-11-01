@@ -11,7 +11,8 @@
   "templates": [
     "framework",
     "pipeline",
-    "teaser"
+    "teaser",
+    "multimodal-fusion"
   ],
   "recommended_styles": [
     "conference-framework"

@@ -1,0 +1,223 @@
+{
+  "id": "feedback-control",
+  "name": "负反馈调节",
+  "pattern": "conceptual",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "Negative feedback",
+          "x": 4,
+          "y": 10,
+          "w": 172,
+          "h": 88,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "ligand",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Stimulus",
+          "x": 10,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "actor",
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "cell",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Response",
+          "x": 67,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "process",
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Regulator",
+          "x": 124,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "output",
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "activate",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "inhibit",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "concept-abstract",
+        "skill_version": "1.0.0",
+        "template": "feedback-control",
+        "brief": "",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "负反馈",
+          "x": 4,
+          "y": 10,
+          "w": 172,
+          "h": 88,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "ligand",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "刺激",
+          "x": 10,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "actor",
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "cell",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "响应",
+          "x": 67,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "process",
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "调节因子",
+          "x": 124,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "output",
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "activate",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "inhibit",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "concept-abstract",
+        "skill_version": "1.0.0",
+        "template": "feedback-control",
+        "brief": "",
+        "facts": []
+      }
+    }
+  }
+}

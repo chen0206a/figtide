@@ -4,11 +4,12 @@
   "name": "物理装置 / 光路",
   "description": "先核对元件顺序、方向、路径与分支，不猜测器件参数。",
   "patterns": [
-    "conceptual",
-    "architecture"
+    "architecture",
+    "conceptual"
   ],
   "templates": [
-    "architecture"
+    "architecture",
+    "interferometer"
   ],
   "recommended_styles": [
     "line-minimal"

@@ -1,0 +1,223 @@
+{
+  "id": "material-interface",
+  "name": "材料界面示意",
+  "pattern": "comparison",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "Interface transfer",
+          "x": 4,
+          "y": 10,
+          "w": 172,
+          "h": 88,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "layers",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Donor",
+          "x": 10,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "actor",
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "layers",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Interface",
+          "x": 67,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "process",
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "layers",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Acceptor",
+          "x": 124,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "output",
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "transport",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "transport",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "chem-materials",
+        "skill_version": "1.0.0",
+        "template": "material-interface",
+        "brief": "",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "界面传递",
+          "x": 4,
+          "y": 10,
+          "w": 172,
+          "h": 88,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "layers",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "给体",
+          "x": 10,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "actor",
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "layers",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "界面",
+          "x": 67,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "process",
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "layers",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "受体",
+          "x": 124,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "output",
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "transport",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "transport",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "chem-materials",
+        "skill_version": "1.0.0",
+        "template": "material-interface",
+        "brief": "",
+        "facts": []
+      }
+    }
+  }
+}

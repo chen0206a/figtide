@@ -37,8 +37,8 @@ class DiagramCatalogTest {
     ((ArrayNode)scoped.path("nodes")).removeAll();assertTrue(json.valueToTree(catalog.paletteAudit(scoped)).path("safe").asBoolean());
     var doc=DiagramValidatorTest.doc();DiagramValidator.validate(doc);((ObjectNode)doc.path("style")).put("palette","npg");DiagramValidator.validate(doc);((ObjectNode)doc.path("style")).put("palette","invalid");assertThrows(RuntimeException.class,()->DiagramValidator.validate(doc));
   }
-  @Test void allTwelveTemplatesUseRequestedPatternsAndValidateBothLanguages() {
-    assertEquals(12,catalog.templates().size());var patterns=new java.util.HashSet<String>();
+  @Test void allTwentyTemplatesUseRequestedPatternsAndValidateBothLanguages() {
+    assertEquals(20,catalog.templates().size());var patterns=new java.util.HashSet<String>();
     for(var template:catalog.templates()){patterns.add(template.path("pattern").asText());for(String language:java.util.List.of("en","zh")){var doc=template.at("/documents/"+language);DiagramValidator.validate(doc);assertEquals(language,doc.path("label_language").asText());}}
     assertEquals("conceptual",catalog.templates().stream().filter(t->t.path("id").asText().equals("architecture")).findFirst().orElseThrow().path("pattern").asText());
     assertEquals(java.util.Set.of("conceptual","framework","pipeline","taxonomy","teaser","mechanism","workflow","comparison"),patterns);

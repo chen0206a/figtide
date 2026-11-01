@@ -36,5 +36,6 @@ export type DiagramDoc = {
 export type DiagramRecord = {id: number; project_id: number; name: string; revision: number; version_count: number; archived: boolean; doc: DiagramDoc};
 export type DiagramTemplate = {id: string; name: string; pattern: string; documents: {en: DiagramDoc; zh: DiagramDoc}};
 export type PaletteAudit = {id:string;preset:string;safe:boolean;threshold:number;outlines:Record<string,string>;failing_pairs:{roles:string[];colors:string[];minimum_delta_e:number;delta_e:number[]}[]};
-export type DiagramCatalog = {schema_version: 1; palette_audits?:PaletteAudit[]; styles: DiagramStyle[]; templates: DiagramTemplate[]; skills: unknown[]; icons: unknown[]; glyphs:{id:string;name:string;category:string}[]; journals: {id: string; name: string; single_column_mm: number | null; double_column_mm: number | null}[]};
+export type DiagramSkill = {id:string;version:string;name:string;description:string;patterns:string[];templates:string[];recommended_styles:string[];allowed_nodes:string[];allowed_edges:string[];icon_tags:string[];checks:Record<string,boolean>};
+export type DiagramCatalog = {schema_version: 1; palette_audits?:PaletteAudit[]; styles: DiagramStyle[]; templates: DiagramTemplate[]; skills: DiagramSkill[]; icons: unknown[]; glyphs:{id:string;name:string;category:string}[]; journals: {id: string; name: string; single_column_mm: number | null; double_column_mm: number | null}[]};
 export const effectiveStyle = (doc: DiagramDoc, style: DiagramStyle): DiagramStyle => ({...style, ...doc.style.overrides});

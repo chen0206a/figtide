@@ -5,7 +5,7 @@ import {resolve} from 'node:path';
 import {writeFileSync} from 'node:fs';
 const bundle=buildSync({entryPoints:[resolve('../scripts/diagram-evidence-entry.ts')],bundle:true,write:false,format:'iife',globalName:'DiagramEvidence',platform:'browser'}).outputFiles[0].text;
 
-test('all 12 templates × six styles × two languages pass actual geometry review with zero errors',async({page,request},info)=>{
+test('all 20 templates × six styles × two languages pass actual geometry review with zero errors',async({page,request},info)=>{
   const catalog=await(await request.get('/api/diagram-catalog')).json();
   const project=await(await request.post('/api/projects',{data:{name:'All template geometry',description:'Synthetic SVG measurements only'}})).json();expect(project.id).toBeTruthy();
   await page.goto(`/projects/${project.id}/diagrams`);await page.addScriptTag({content:bundle});
@@ -19,7 +19,7 @@ test('all 12 templates × six styles × two languages pass actual geometry revie
   // Persist every failure before asserting, so layout fixes use measured evidence rather than snapshots.
   writeFileSync(artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||'diagram-19-5'}/template-review.json`),JSON.stringify(results,null,2));
   const failures=results.filter(r=>r.status!==200||r.issues.some((i:{severity:string})=>i.severity==='error'));
-  expect(failures).toEqual([]);expect(results).toHaveLength(144);
+  expect(failures).toEqual([]);expect(results).toHaveLength(240);
   const doc=structuredClone(catalog.templates.find((t:{id:string})=>t.id==='mechanism').documents.en);doc.nodes[0].label='PRIVATE_LABEL';doc.nodes[0].id='PRIVATE_NODE';for(const edge of doc.edges){if(edge.from==='n1')edge.from='PRIVATE_NODE';if(edge.to==='n1')edge.to='PRIVATE_NODE';}
   const facts=await page.evaluate(async({doc,style})=>(window as any).DiagramEvidence.collectDiagramFacts(doc,style),{doc,style:catalog.styles[0]});expect(JSON.stringify(facts)).not.toMatch(/PRIVATE_LABEL|PRIVATE_NODE|Cytokine|Receptor/);
   expect(await page.locator('body > div[style*="-20000px"]').count()).toBe(0);

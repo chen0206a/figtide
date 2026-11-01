@@ -4,13 +4,14 @@
   "name": "生物医学机制图",
   "description": "区分激活、抑制与跨膜转运；只使用已确认的分子和通路。",
   "patterns": [
-    "mechanism",
-    "comparison"
+    "comparison",
+    "mechanism"
   ],
   "templates": [
     "mechanism",
     "signal-cascade",
-    "comparison"
+    "comparison",
+    "immune-response"
   ],
   "recommended_styles": [
     "nature-flat"

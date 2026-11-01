@@ -4,11 +4,15 @@
   "name": "化学 / 材料机理",
   "description": "仅使用用户给出的物质、反应方向、能级和数值。",
   "patterns": [
+    "comparison",
     "conceptual",
-    "comparison"
+    "pipeline"
   ],
   "templates": [
-    "concept-abstract"
+    "concept-abstract",
+    "reaction-path",
+    "energy-transfer",
+    "material-interface"
   ],
   "recommended_styles": [
     "nature-flat"

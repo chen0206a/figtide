@@ -11,7 +11,8 @@
   "templates": [
     "conceptual",
     "taxonomy",
-    "teaser"
+    "teaser",
+    "feedback-control"
   ],
   "recommended_styles": [
     "soft-illustration"

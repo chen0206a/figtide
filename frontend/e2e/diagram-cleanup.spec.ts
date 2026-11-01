@@ -3,7 +3,7 @@ import {artifactPath} from './artifacts';
 import {writeFileSync} from 'node:fs';
 test('19-A-7 scientific examples, outline warnings and unobstructed creation bar',async({page,request},info)=>{
   const catalog=await(await request.get('/api/diagram-catalog')).json();
-  expect(catalog.templates).toHaveLength(12);
+  expect(catalog.templates).toHaveLength(20);
   for(const t of catalog.templates)for(const lang of ['en','zh'])for(const n of t.documents[lang].nodes)expect(n.label).not.toMatch(/^(Input|Output|Stage [AB]|Part \d|Concept|Branch [AB])$/);
   const project=await(await request.post('/api/projects',{data:{name:'19A7 synthetic',description:'Isolated scientific examples'}})).json();
   expect(project.id).toBeTruthy();
