@@ -85,4 +85,3 @@ test('SVG, 300/600dpi PNG and embedded-Chinese PDF preserve finished dimensions 
   }
 
 });
-
