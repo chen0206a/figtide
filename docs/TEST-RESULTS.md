@@ -1,3 +1,7 @@
+## 2026-11-01 · 19-11：150图标、配色显示与署名
+
+150个净化后SVG入库（131 CC0、19 CC BY 4.0），固定Bioicons提交d29e766ea7580b8063c4f47b29e872db40a4d979；逐项来源/作者/许可/修改/哈希和许可全文完整。前端与验证器ID由相同资源生成；内置图标渲染无远程请求。左栏支持中英文搜索、按skill标签推荐和点击/拖拽；D9可预览set_attribution修复，导出默认附署名TXT或要求复制图注。相关后端30/30；更新skill可用节点版本1.0.1后的兼容专项7/7；前端129/129及构建通过。桌面真实E2E1/1（插图→D9→修复→SVG+署名TXT两项下载），JVM审计重启通过。截图docs/test-evidence/diagram-19-C/icon-library.png、icon-export-attribution.png。继续C其它部分和全量验收；无新增依赖/迁移。原始候选中SVG包装的位图、重复ID等8项被拒绝，已换用其它合规矢量，不放宽净化器。
+
 ## 2026-11-01 · 19-12：统一SVG净化边界（先于图标入库的依赖）
 
 新增SvgSanitizer，仅使用JDK XML，不新增依赖。实际运行SvgSanitizerTest 4/4，覆盖XXE/DOCTYPE/实体、2MB/20000元素/64层限制、脚本/foreignObject/iframe/image、事件属性、外部和javascript链接、CSS外链/@import、递归use、重复ID，以及正常渐变/clip/use/文字和幂等。安全CSS展平成元素属性，防止选择器影响宿主界面。图标入库与SVG导入将复用本类；复杂SVG视觉前后对照E2E尚未执行，留待19-C接线后验收，不以字符串测试代替视觉检查。19-12作为19-11的入库前置依赖先单独提交。

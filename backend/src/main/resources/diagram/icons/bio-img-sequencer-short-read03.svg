@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="Layer_2" viewBox="0 0 95.10981 73.68404">
+  <defs>
+    
+    <linearGradient gradientUnits="userSpaceOnUse" id="linear-gradient" x1="0" x2="13.38108" y1="6.69675" y2="6.69675">
+      <stop offset="0" stop-color="#40a9dd"/>
+      <stop offset="1" stop-color="#00b8c4"/>
+    </linearGradient>
+  </defs>
+  <g id="_01">
+    <g id="icn_emb_onso">
+      <g>
+        <g>
+          <rect height="15.71535" style="stroke-width:0px;fill:#313541" width="78.11821" x="13.1019" y="25.99155"/>
+          <g>
+            <rect height="36.60497" style="stroke-width:0px;fill:#676f7f" width="49.46737" x="9.0796" y="37.07907"/>
+            <line style="stroke:#9ba7ba;stroke-linejoin:round;stroke-width:3.15281px;fill:none" x1="21.98413" x2="45.64244" y1="43.18156" y2="43.18156"/>
+            <rect height="36.60497" style="fill:#494f59;stroke-width:0px" width="36.56284" x="58.54697" y="37.07907"/>
+          </g>
+          <g>
+            <rect height="21.53233" style="stroke-width:0px;fill:#676f7f" width="30.11057" x="9.0796" y="9.08704"/>
+            <rect height="21.53233" style="fill:#494f59;stroke-width:0px" width="55.91963" x="39.19017" y="9.08704"/>
+            <line style="stroke:#9ba7ba;stroke-linejoin:round;stroke-width:3.15281px;fill:none" x1="55.32084" x2="78.97914" y1="32.4705" y2="32.4705"/>
+          </g>
+        </g>
+        <polyline points="2.62734 13.39351 2.62734 2.62734 13.38108 2.62734" style="fill:none;stroke:url(#linear-gradient);stroke-miterlimit:10;stroke-width:5.25468px"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -30,7 +30,7 @@ class DiagramReviewTest {
   }
   @Test void paletteChecksOnlyUsedOutlinesAndRetainsDefaultOwnerDecision(){
     var d=(ObjectNode)catalog.template("mechanism","en");var r=review(d,null);assertFalse(issues(r,"D3").isEmpty());for(var i:issues(r,"D3")){assertFalse(i.path("fixable").asBoolean());assertTrue(i.path("detail").asText().contains("20"));assertTrue(i.path("detail").asText().contains("#"));}
-    for(var n:d.path("nodes"))((ObjectNode)n).put("role","actor");assertTrue(issues(review(d,null),"D3").isEmpty());assertFalse(r.path("passed").toString().contains("D4"));assertEquals(4,r.path("skipped").size());
+    for(var n:d.path("nodes"))((ObjectNode)n).put("role","actor");assertTrue(issues(review(d,null),"D3").isEmpty());assertFalse(r.path("passed").toString().contains("D4"));assertEquals(3,r.path("skipped").size());assertTrue(r.path("passed").toString().contains("D9"));
   }
   @Test void overflowAndOverlappingTextTriggerAndSafeTextPasses(){
     var d=doc();var f=facts(d);assertTrue(issues(review(d,f),"D4").isEmpty());

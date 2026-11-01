@@ -1,7 +1,7 @@
 import {useState} from "react";
 import type { DiagramDoc } from "./model";
 type Props={doc:DiagramDoc;selected:Set<string>;journals?:{id:string;name:string;single_column_mm:number|null;double_column_mm:number|null}[];edit:(fn:(d:DiagramDoc)=>DiagramDoc)=>void};
-const nodeKinds={box:"矩形",pill:"胶囊",ellipse:"椭圆",glyph:"科学图元",text:"文字"};
+const nodeKinds={icon:"科研图标",box:"矩形",pill:"胶囊",ellipse:"椭圆",glyph:"科学图元",text:"文字"};
 const roles={actor:"参与者",process:"过程",data:"数据",model:"模型",output:"输出",note:"说明"};
 export const zoneKinds={compartment:"分区",membrane:"膜",nucleus:"细胞核",panel:"面板",zoom:"放大框"};
 export const edgeKinds={flow:"普通流程 →",activate:"激活 →",inhibit:"抑制 ⊣",transport:"转运",bind:"结合",indirect:"间接作用 ⇢"};
@@ -17,7 +17,7 @@ export function DiagramProperties({doc,selected,edit,journals=[]}:Props) {
     {element&&<p className="lf-mono">{element.id}</p>}
     {(node||zone)&&<>
       <label>{node?"节点文字":"分区文字"}<textarea aria-label={node?"节点文字":"分区文字"} maxLength={200} value={(node||zone)!.label} onChange={e=>change("label",e.target.value)}/></label>
-      <label>类型<select aria-label={node?"节点类型":"分区类型"} value={(node||zone)!.kind} onChange={e=>edit(d=>{const item=d[type].find(n=>n.id===id)!;Object.assign(item,{kind:e.target.value});if(type==="nodes"){const n=item as DiagramDoc["nodes"][number];if(n.kind==="glyph")n.glyph=n.glyph||"protein";else delete n.glyph;}return d;})}>{options(node?nodeKinds:zoneKinds)}</select></label>
+      <label>类型<select aria-label={node?"节点类型":"分区类型"} value={(node||zone)!.kind} onChange={e=>edit(d=>{const item=d[type].find(n=>n.id===id)!;Object.assign(item,{kind:e.target.value});if(type==="nodes"){const n=item as DiagramDoc["nodes"][number];if(n.kind==="glyph")n.glyph=n.glyph||"protein";else delete n.glyph;if(n.kind!=="icon")n.icon=null;}return d;})}>{options(node?node.kind==="icon"?nodeKinds:Object.fromEntries(Object.entries(nodeKinds).filter(([key])=>key!=="icon")):zoneKinds)}</select></label>
       <div className="diagram-number-fields">{(["x","y","w","h"] as const).map(key=><label key={key}>{({x:"X",y:"Y",w:"宽",h:"高"})[key]}（mm）<input type="number" step="1" aria-label={`${({x:"X",y:"Y",w:"宽",h:"高"})[key]}（mm）`} value={(node||zone)![key]} onChange={e=>change(key,Number(e.target.value))}/></label>)}</div>
     </>}
     {node&&<><label>语义角色<select aria-label="语义角色" value={node.role} onChange={e=>change("role",e.target.value)}>{options(roles)}</select></label>
@@ -44,6 +44,7 @@ export function DiagramProperties({doc,selected,edit,journals=[]}:Props) {
       <p className="tiny-note">语言设置不会自动翻译现有文字。</p>
       <p className="tiny-note">所有位置和字号以成品物理尺寸计算。选择元素后编辑属性。</p>
     </>}
+    <label><input type="checkbox" checked={doc.meta.include_icon_attribution!==false} onChange={e=>edit(d=>{d.meta.include_icon_attribution=e.target.checked;return d;})}/>导出时附图标署名</label>
     <label><input type="checkbox" checked={doc.legend.mode==="auto"} onChange={e=>edit(d=>{d.legend.mode=e.target.checked?"auto":"off";return d;})}/>自动图例（两种以上连线时显示）</label>
 
   </aside>;

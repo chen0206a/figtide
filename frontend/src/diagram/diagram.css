@@ -181,3 +181,10 @@
 .diagram-agent-panel {height:calc(100dvh - 222px);min-height:480px;}
 .diagram-agent-markers .proposal-marker-box {fill:color-mix(in srgb,var(--lf-link) 5%,transparent);stroke:var(--lf-link);stroke-width:1.5;stroke-dasharray:5 4;}
 .diagram-agent-markers text {fill:var(--lf-text-on-inverse);font:600 var(--lf-text-xs) var(--lf-font-mono);}
+.diagram-asset-tabs {display:flex;gap:var(--lf-space-2);margin-bottom:var(--lf-space-3);}
+.diagram-asset-tabs [aria-pressed="true"] {color:var(--lf-link);background:var(--lf-selected);}
+.diagram-tools .diagram-icon-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+.diagram-icon-grid small {color:var(--lf-text-3);font-size:var(--lf-text-2xs);}
+.diagram-tools .diagram-icon-grid svg {height:calc(var(--lf-space-8) + var(--lf-space-4));}
+
+.diagram-tools .diagram-icon-grid button span {white-space:normal;letter-spacing:normal;}

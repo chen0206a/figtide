@@ -1,6 +1,6 @@
 {
   "id": "ml-framework",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "方法框架图",
   "description": "先明确输入、模块边界和输出，再连接数据流。",
   "patterns": [
@@ -22,7 +22,8 @@
     "pill",
     "ellipse",
     "glyph",
-    "text"
+    "text",
+    "icon"
   ],
   "allowed_edges": [
     "flow",

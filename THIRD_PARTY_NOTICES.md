@@ -257,3 +257,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+## 19-C：Bioicons 科研SVG素材
+
+来源仓库：https://github.com/duerrsimon/bioicons/tree/d29e766ea7580b8063c4f47b29e872db40a4d979 ，固定提交d29e766ea7580b8063c4f47b29e872db40a4d979。150个独立核实的图标：131个CC0-1.0、19个CC-BY-4.0。具体原作者、文件链接、许可、修改说明及原始/净化SHA256均保留在backend/src/main/resources/diagram/icons/manifest.json；许可证全文位于同目录licenses/，来源核查方法见SOURCES.md。
+
+图标经共享SVG净化器规范化，显示时可按语义配色改色，modified=true。CC BY 4.0图标的作者/来源/许可/修改说明随导出以图注或TXT提供，D9检查关闭署名的情形。前端builtinIcons.ts与验证器BuiltinIconIds.java由scripts/sync-diagram-icons.cjs从同一批SVG生成，不构成新素材来源。图标许可不适用于FigTide自身代码；代码仍遵循本仓库MIT。

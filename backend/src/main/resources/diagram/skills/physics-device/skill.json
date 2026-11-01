@@ -1,6 +1,6 @@
 {
   "id": "physics-device",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "物理装置 / 光路",
   "description": "先核对元件顺序、方向、路径与分支，不猜测器件参数。",
   "patterns": [
@@ -19,7 +19,8 @@
     "pill",
     "ellipse",
     "glyph",
-    "text"
+    "text",
+    "icon"
   ],
   "allowed_edges": [
     "flow",

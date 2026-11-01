@@ -85,7 +85,7 @@ public final class DiagramValidator {
       if(n.has("boxed"))require(n.get("boxed").isBoolean(),"boxed必须是布尔值");
       if(n.has("badges")){array(n.get("badges"),8);Set<String> seen=new HashSet<>();for(var b:n.path("badges")){String badge=text(b,16);require(seen.add(badge)&&(Set.of("phospho","frozen","trainable").contains(badge)||badge.matches("number:([1-9]|[1-9][0-9])")),"图元标记无效或重复");}}
       if(!n.path("zone").isNull()) { require(zones.contains(id(n.get("zone"))),"分区引用无效");var z=find(d.path("zones"),n.path("zone").asText()); require(n.path("x").asDouble()>=z.path("x").asDouble() && n.path("y").asDouble()>=z.path("y").asDouble() && n.path("x").asDouble()+n.path("w").asDouble()<=z.path("x").asDouble()+z.path("w").asDouble()+1e-8 && n.path("y").asDouble()+n.path("h").asDouble()<=z.path("y").asDouble()+z.path("h").asDouble()+1e-8,"节点超出所属分区"); }
-      require(n.path("icon").isNull()&&!kind.equals("icon"),"19-A尚未开放图标");
+      if(kind.equals("icon"))choice(n.get("icon"),BuiltinIconIds.IDS);else require(n.path("icon").isNull(),"图标ID只能用于图标节点");
       if(!n.path("style_ref").isNull())choice(n.get("style_ref"),ROLES);
     }
     for(var e:d.path("edges")) {
@@ -96,8 +96,9 @@ public final class DiagramValidator {
       fields(a,"id kind target text","id kind target text");choice(a.get("kind"),Set.of("panel_letter","callout","note"));require(nodes.contains(id(a.get("target")))||zones.contains(a.path("target").asText()),"注释目标不存在");text(a.get("text"),200);
     }
     var legend=d.path("legend");fields(legend,"mode position","mode position");choice(legend.get("mode"),Set.of("auto","off"));choice(legend.get("position"),Set.of("bottom-right","bottom-left","top-right","top-left"));
-    var meta=d.path("meta");fields(meta,"skill skill_version template brief facts source_text fact_sources ai_labels","skill skill_version template brief facts");
+    var meta=d.path("meta");fields(meta,"skill skill_version template brief facts source_text fact_sources ai_labels include_icon_attribution","skill skill_version template brief facts");
     for(String k:List.of("skill","skill_version","template"))nullableText(meta.get(k),120);text(meta.get("brief"),10000);array(meta.get("facts"),200);for(var f:meta.path("facts"))text(f,1000);
+    if(meta.has("include_icon_attribution"))require(meta.get("include_icon_attribution").isBoolean(),"图标署名开关无效");
     if(meta.has("source_text"))text(meta.get("source_text"),10000);
     if(meta.has("fact_sources")){array(meta.get("fact_sources"),40);require(meta.path("fact_sources").size()==meta.path("facts").size(),"事实出处数量不一致");int index=0;for(var f:meta.path("fact_sources")){fields(f,"text quote","text quote");String quote=text(f.get("quote"),1000);require(!quote.isBlank()&&meta.path("source_text").asText().contains(quote)&&f.path("text").equals(meta.path("facts").get(index++)),"事实出处必须来自用户原文");}}
     if(meta.has("ai_labels")){array(meta.get("ai_labels"),120);Set<String> seen=new HashSet<>();for(var label:meta.path("ai_labels")){fields(label,"id label","id label");require(nodes.contains(id(label.get("id")))&&seen.add(label.path("id").asText()),"AI标签引用无效或重复");text(label.get("label"),200);}}

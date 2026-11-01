@@ -1,3 +1,4 @@
+import {iconMarkup} from "../assets";
 import {roleColor,paletteOf} from "../palettes";
 import { effectiveStyle, type DiagramDoc, type DiagramStyle, type DiagramRect } from "../model";
 import { edgePoints, nodeLayout, ptToMm, wrapLabel } from "./geometry";
@@ -78,7 +79,8 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
     const stroke=color,rx=n.kind==="pill"?body.h/2:Math.min(style.radius_mm,body.w/4,body.h/4);
     const palette={...style,body_fill:bodyFill,line_color:stroke,accent_colors:[color,...style.accent_colors.filter(c=>c!==color)]};
     let shape="",frame="";
-    if(n.kind==="glyph") {
+    if(n.kind==="icon"&&n.icon){shape=`<g data-scientific-icon="${esc(n.icon)}" transform="translate(${body.x} ${body.y})">${iconMarkup(n.icon,body.w,body.h,color,prefix+"-"+n.id)}</g>`;}
+    else if(n.kind==="glyph") {
       shape=`<g data-scientific-glyph="${esc(n.glyph)}" transform="translate(${body.x} ${body.y})"><title>Schematic vector glyph</title>${glyphMarkup(n.glyph as GlyphKind,body.w,body.h,palette,n.id)}</g>`;
       if(n.boxed)frame=`<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="${style.radius_mm}" fill="${esc(bodyFill)}" stroke="${esc(color)}" stroke-width="${line}"/>`;
       if(n.boxed&&style.iso){const d=2.2;frame=`<path d="M${n.x} ${n.y} H${n.x+n.w} L${n.x+n.w+d} ${n.y-d} H${n.x+d} Z" fill="${tintColor(bodyFill,"#FFFFFF",.35)}" stroke="${stroke}" stroke-width="${line}"/><path d="M${n.x+n.w} ${n.y} L${n.x+n.w+d} ${n.y-d} V${n.y+n.h-d} L${n.x+n.w} ${n.y+n.h} Z" fill="${tintColor(bodyFill,stroke,.35)}" stroke="${stroke}" stroke-width="${line}"/>`+frame;}

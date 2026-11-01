@@ -1,6 +1,6 @@
 {
   "id": "workflow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "实验流程图",
   "description": "表达操作顺序；未经提供不添加时间、剂量、仪器和条件。",
   "patterns": [
@@ -19,7 +19,8 @@
     "pill",
     "ellipse",
     "glyph",
-    "text"
+    "text",
+    "icon"
   ],
   "allowed_edges": [
     "flow",

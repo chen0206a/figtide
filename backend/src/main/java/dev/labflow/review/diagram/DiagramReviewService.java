@@ -82,7 +82,7 @@ public class DiagramReviewService {
       }
       if(clean)passed.add("D8");
     }else skipped.addObject().put("rule","D8").put("status","skipped").put("reason","仅检查具有AI来源标记的标签");
-    skipped.addObject().put("rule","D9").put("status","skipped").put("reason","外部图标署名在19-C启用");
+    if(!catalog.icons().attribution(doc).isBlank()&&!doc.at("/meta/include_icon_attribution").asBoolean(true))checked.add(issue("D9","attribution","warning","需要附上图标署名","图中使用CC BY 4.0图标，请在导出时附作者、来源链接、许可和修改说明。",op("set_attribution","enabled",true),"canvas",0));else passed.add("D9");
 
     var result=json.createObjectNode().put("protocol_version",1).put("rules_version","diagram-review-v1").put("journal",journal);result.set("issues",json.valueToTree(checked));result.set("passed",passed);result.set("skipped",skipped);return result;
   }

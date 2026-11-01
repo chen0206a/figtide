@@ -37,10 +37,12 @@ public class DiagramAgentEngine {
   public ArrayNode definitions(JsonNode request){
     var out=json.createArrayNode();if(request.path("diagram_stage").asText().equals("brief"))return out;
     for(var entry:DiagramOperations.catalog().path("tools")){
-      String name=entry.path("name").asText();if(name.equals("set_canvas"))continue;
+      String name=entry.path("name").asText();if(Set.of("set_canvas","set_attribution").contains(name))continue;
       var schema=(ObjectNode)entry.path("input_schema").deepCopy();
       if(Set.of("add_node","update_node","add_zone","update_zone").contains(name)){
-        var props=(ObjectNode)schema.path("properties");props.remove(List.of("x","y","w","h"));var required=schema.putArray("required");required.add("id");if(name.startsWith("add")){required.add("kind").add("label");if(name.equals("add_node"))required.add("role");}schema.put("minProperties",name.startsWith("add")?3:2);
+        var props=(ObjectNode)schema.path("properties");props.remove(List.of("x","y","w","h"));
+        if(props.has("kind")&&name.endsWith("node"))((ObjectNode)props.path("kind")).set("enum",skill(request).path("allowed_nodes"));
+        if(props.has("icon")){var compact=json.createObjectNode().put("maxLength",64);compact.putArray("type").add("string").add("null");props.set("icon",compact);}var required=schema.putArray("required");required.add("id");if(name.startsWith("add")){required.add("kind").add("label");if(name.equals("add_node"))required.add("role");}schema.put("minProperties",name.startsWith("add")?3:2);
       }
       var fn=out.addObject().put("type","function").putObject("function");fn.put("name",name).put("description",entry.path("label").asText()+"。只提出语义，不提供坐标或尺寸；不会保存。");fn.set("parameters",schema);
     }

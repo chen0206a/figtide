@@ -14,13 +14,14 @@ import static dev.labflow.diagram.DiagramValidator.*;
 public class DiagramCatalog {
   private final List<JsonNode> styles;
   private final DiagramSkills skills;
+  private final DiagramIcons icons;
   private final List<JsonNode> templates;
   private final List<JsonNode> glyphs;
   private final JournalRules journals;
   private final List<JsonNode> palettes;
   public DiagramCatalog(ObjectMapper json,JournalRules journals) {
     try(var in=getClass().getResourceAsStream("/diagram/palettes.json")){palettes=new ArrayList<>();for(var p:json.readTree(in))palettes.add(p);}catch(java.io.IOException e){throw new IllegalStateException(e);}
-    this.journals=journals;this.skills=new DiagramSkills(json);var order=List.of("nature-flat","soft-illustration","line-minimal","conference-framework","isometric","sketch");styles=load(json,"styles").stream().sorted(Comparator.comparingInt(s->order.indexOf(s.path("id").asText()))).toList();templates=load(json,"templates");
+    this.journals=journals;this.skills=new DiagramSkills(json);this.icons=new DiagramIcons(json);var order=List.of("nature-flat","soft-illustration","line-minimal","conference-framework","isometric","sketch");styles=load(json,"styles").stream().sorted(Comparator.comparingInt(s->order.indexOf(s.path("id").asText()))).toList();templates=load(json,"templates");
     try(var in=getClass().getResourceAsStream("/diagram/glyphs.json")){var entries=json.readTree(in);require(entries.isArray(),"图元目录无效");var list=new ArrayList<JsonNode>();Set<String> glyphIds=new HashSet<>();for(var glyph:entries){fields(glyph,"id name category","id name category");require(glyphIds.add(choice(glyph.get("id"),GLYPHS)),"图元ID重复");text(glyph.get("name"),120);choice(glyph.get("category"),Set.of("biology","ml","experiment","markers"));list.add(glyph);}require(glyphIds.equals(GLYPHS),"图元目录不完整");glyphs=List.copyOf(list);}catch(java.io.IOException e){throw new IllegalStateException("图元目录不可读",e);}
     var ids=new HashSet<String>();
     for(var s:styles) {
@@ -36,6 +37,7 @@ public class DiagramCatalog {
     }
     skills.validateReferences(this);
   }
+  public DiagramIcons icons(){return icons;}
   public DiagramSkills skills(){return skills;}
   private List<JsonNode> load(ObjectMapper json,String folder) {
     try {var resources=new PathMatchingResourcePatternResolver().getResources("classpath*:diagram/"+folder+"/*.json");Arrays.sort(resources,Comparator.comparing(r->Objects.requireNonNull(r.getFilename())));var result=new ArrayList<JsonNode>();for(var r:resources)try(var in=r.getInputStream()){result.add(json.readTree(in));}return List.copyOf(result);}
@@ -49,5 +51,5 @@ public class DiagramCatalog {
   public Map<String,Object> paletteAudit(JsonNode doc){return DiagramPaletteAudit.audit(palettes.stream().filter(p->p.path("id").asText().equals(doc.at("/style/palette").asText("okabe-ito"))).findFirst().orElse(palettes.getFirst()),doc.at("/style/preset").asText(),DiagramPaletteAudit.usedRoles(doc));}
   public List<JsonNode> palettes(){return palettes.stream().<JsonNode>map(JsonNode::deepCopy).toList();}
   public List<Map<String,Object>> paletteAudits(){var result=new ArrayList<Map<String,Object>>();for(var p:palettes)for(var s:styles)result.add(DiagramPaletteAudit.audit(p,s.path("id").asText(),new HashSet<>(DiagramPaletteAudit.ROLES)));return result;}
-  public Map<String,Object> all() { return Map.of("schema_version",1,"palette_audits",paletteAudits(),"palettes",palettes.stream().<JsonNode>map(JsonNode::deepCopy).toList(),"styles",styles(),"templates",templates(),"skills",skills.all(),"icons",List.of(),"journals",journals.all(),"glyphs",glyphs.stream().<JsonNode>map(JsonNode::deepCopy).toList()); }
+  public Map<String,Object> all() { return Map.of("schema_version",1,"palette_audits",paletteAudits(),"palettes",palettes.stream().<JsonNode>map(JsonNode::deepCopy).toList(),"styles",styles(),"templates",templates(),"skills",skills.all(),"icons",icons.all(),"journals",journals.all(),"glyphs",glyphs.stream().<JsonNode>map(JsonNode::deepCopy).toList()); }
 }

@@ -20,6 +20,6 @@ class DiagramSkillsTest {
       for(int i=0;i+40<=plan.length();i++)assertFalse(excerpts.contains(plan.substring(i,i+40)),"连续40字符重复："+id);
       assertTrue(skills.checks(id).path("max_nodes").asInt()<=120);
     }
-    var copy=skills.get("workflow");((com.fasterxml.jackson.databind.node.ObjectNode)copy).put("version","99.0.0");assertEquals("1.0.0",skills.get("workflow").path("version").asText());
+    var copy=skills.get("workflow");((com.fasterxml.jackson.databind.node.ObjectNode)copy).put("version","99.0.0");assertEquals("1.0.1",skills.get("workflow").path("version").asText());
   }
 }

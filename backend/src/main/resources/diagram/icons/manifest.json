@@ -1,0 +1,2551 @@
+[ {
+  "id" : "bio-1000-ml-erlenmeyer-flask",
+  "name" : {
+    "en" : "1000 ml Erlenmeyer flask",
+    "zh" : "锥形瓶"
+  },
+  "tags" : [ "lab apparatus", "锥形瓶", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Xavax",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/1000_ml_Erlenmeyer_flask.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "8eacaacc0d7f3c59733d57e309d02f979b981f3b708fc09e07bc191ac979041f",
+  "upstream_sha256" : "d2a72acdae666fb2564c1b3ab223284d86d7391878bb87ef8b6aec7f30f59755",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-beakers",
+  "name" : {
+    "en" : "Beakers",
+    "zh" : "烧杯"
+  },
+  "tags" : [ "lab apparatus", "烧杯", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Xavax",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/Beakers.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "91681647e83e1f1c80d095f2c8a8fe02efbbb301ccc7f050eebe7a6678142708",
+  "upstream_sha256" : "2bd67b8dc6fd6a7958cc1b9eb3e2ff24573f44e83b45381d6688db0ce2099a84",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-fernbach-flask",
+  "name" : {
+    "en" : "Fernbach Flask",
+    "zh" : "费氏摇瓶"
+  },
+  "tags" : [ "lab apparatus", "费氏摇瓶", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Xavax",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/Fernbach_Flask.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "d67e4b329178e6e2ef964ab5813442d3b826ec057e34e3fa64942fa1f8d7a099",
+  "upstream_sha256" : "56f70d0133ccc222dbc32401dbb58c012fa5c2a21a94a0ed9c44ab0a0d24ca15",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-graduated-cylinder-low-form-250ml",
+  "name" : {
+    "en" : "Graduated Cylinder low form 250ml",
+    "zh" : "矮型量筒"
+  },
+  "tags" : [ "lab apparatus", "矮型量筒", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Xavax",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/Graduated_Cylinder_low_form_250ml.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "5699883ce17639af882041511f073126e5f0f32fb887dc0b8420cf529cb9dcb7",
+  "upstream_sha256" : "2288c1d87bb511653dc8a7c6240ab327b98e68e73f9c55b76642dadc93eb63c8",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-graduated-cylinder-tall-form-250ml",
+  "name" : {
+    "en" : "Graduated Cylinder tall form 250ml",
+    "zh" : "高型量筒"
+  },
+  "tags" : [ "lab apparatus", "高型量筒", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Xavax",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/Graduated_Cylinder_tall_form_250ml.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a2f869eb2183745d1a2134bb6b60de8061b14a3f4147e81b7f5d999de58faff1",
+  "upstream_sha256" : "afb8d0126bc06eaaae848f3062cabb6812266dd3d32d75eb9e43d7743c34f00a",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-bomb-caloriemeter",
+  "name" : {
+    "en" : "bomb-caloriemeter",
+    "zh" : "弹式量热计"
+  },
+  "tags" : [ "lab apparatus", "弹式量热计", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Luis-Vollmers",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Luis-Vollmers/bomb-caloriemeter.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "0b4c149a81c9ec4b82a387f21a69d8b5c604b4c14c21c0233a0e12d48e70d5c2",
+  "upstream_sha256" : "b35c4c4e4a5062439844fef10c3db37d894a575e4342afbe07f3609d5e6e1602",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-clamp-2d-closed",
+  "name" : {
+    "en" : "clamp-2d-closed",
+    "zh" : "闭合夹具"
+  },
+  "tags" : [ "lab apparatus", "闭合夹具", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/clamp-2d-closed.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "3d916dcad9014ad9bf9862bd7fcb63e86e1c43ca9dc43a9d08d839443f0c4704",
+  "upstream_sha256" : "b7080d2eef4a4d67d118f5c87fe0c35c1360c0a8eda81edd3a0c85b1f8dc0273",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-clamp-2d-open",
+  "name" : {
+    "en" : "clamp-2d-open",
+    "zh" : "张开夹具"
+  },
+  "tags" : [ "lab apparatus", "张开夹具", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/clamp-2d-open.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a82582793e63a9b264db827fcca9b5a44ba66b1f80ec711a35468753a9b8f988",
+  "upstream_sha256" : "0fea3cf0ccbf5c24c8a22d81ded20d3ab923d4453202de7d90e19c2daf17b655",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-clamp-2d-side",
+  "name" : {
+    "en" : "clamp-2d-side",
+    "zh" : "侧视夹具"
+  },
+  "tags" : [ "lab apparatus", "侧视夹具", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/clamp-2d-side.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "eb0a7f196d33aaf0423f5bf1ddad47eab5706d7cff16bce8ac0d258ca482aed1",
+  "upstream_sha256" : "26d70d209dce48196e681af9df03bc31a21a59c7619cfc8c6c319182083c9ea5",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-1cell-pn4-zygote",
+  "name" : {
+    "en" : "1cell pn4 zygote",
+    "zh" : "单细胞受精卵"
+  },
+  "tags" : [ "cell types", "单细胞受精卵", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "Xi-Chen",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/1cell_pn4_zygote.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "fde4a26f2d9d9fb93b206acdf54cee2743a7701413ce943deb5ea7488e1945df",
+  "upstream_sha256" : "172525262689d5f1cfeac3e8743278c38822c66255897da2915033f9c8957f0e",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-2c-embryo",
+  "name" : {
+    "en" : "2c embryo",
+    "zh" : "二细胞胚胎"
+  },
+  "tags" : [ "cell types", "二细胞胚胎", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "Xi-Chen",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/2c_embryo.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "abd8d8554549fb7b57fae45c99672cdff2afe478575343266b0c5a24c6e9ca2e",
+  "upstream_sha256" : "99d81acab08399edcca5bb4cd1e800383c93cf6eefb633e00d072adca6128110",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-4c-embryo-style1",
+  "name" : {
+    "en" : "4c embryo style1",
+    "zh" : "四细胞胚胎一型"
+  },
+  "tags" : [ "cell types", "四细胞胚胎一型", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "Xi-Chen",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/4c_embryo_style1.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "5c81a44f1de40a1cade609d8755645ec706b6a4c8aa4856651eda18a9bba2796",
+  "upstream_sha256" : "c6fb4265d15dc4764bf11cd557a0e422e9800f478225983b8efc95eeeb3bd496",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-4c-embryo-style2",
+  "name" : {
+    "en" : "4c embryo style2",
+    "zh" : "四细胞胚胎二型"
+  },
+  "tags" : [ "cell types", "四细胞胚胎二型", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "Xi-Chen",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/4c_embryo_style2.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "e60a014c7fea77db320d9186ecf893d0d0fc57b28a3e49e909bf9d4e6ecbc143",
+  "upstream_sha256" : "4d13aa472e9335b2d8bcbbcb5d0e21ed2b2efc2ce48ee5aaf7fc88a23731bc3f",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-8c-embryo",
+  "name" : {
+    "en" : "8c embryo",
+    "zh" : "八细胞胚胎"
+  },
+  "tags" : [ "cell types", "八细胞胚胎", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "Xi-Chen",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/8c_embryo.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "f231a85359fc8feac6e91c1e9f26dabef91160617107161f6757a6402a7a65d5",
+  "upstream_sha256" : "e2f908061f271c68b71ab60f9f3dd9a919d03f9001865b5082245073043bc4ea",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-mii-oocyte",
+  "name" : {
+    "en" : "MII Oocyte",
+    "zh" : "第二次减数分裂卵母细胞"
+  },
+  "tags" : [ "cell types", "第二次减数分裂卵母细胞", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "Xi-Chen",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/MII_Oocyte.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "3ecfe8f73695a4dbc4efd862da6526307a42a34f3197887a6920aaa6a16e0ce4",
+  "upstream_sha256" : "1632ac808122fa9a4003817d60e120ccee3d6903918a5832ea34298a9c6fbd0b",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-cell-balance",
+  "name" : {
+    "en" : "cell balance",
+    "zh" : "细胞平衡"
+  },
+  "tags" : [ "cell types", "细胞平衡", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "ASE",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/ASE/cell_balance.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "2d125405678a9ef97e17fec26aa6562c67c5cc00f0c8e914973e3d3365a423a0",
+  "upstream_sha256" : "aef5f3b97ce76493dd3afc75923343372070c5fe83d8b90a9cf8978d8ca03ecb",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-cell-group",
+  "name" : {
+    "en" : "cell group",
+    "zh" : "细胞群"
+  },
+  "tags" : [ "cell types", "细胞群", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "JhonnyXC",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/JhonnyXC/cell_group.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "0422589eb301d017085ecacd0de6ccdd316494da59f77afca3a22814a945694c",
+  "upstream_sha256" : "7509375dfdd8fad6e32e0d3021fe8ef819da00d785c1c1ef0b5d8ab764d02952",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-cell-imbalance",
+  "name" : {
+    "en" : "cell imbalance",
+    "zh" : "细胞失衡"
+  },
+  "tags" : [ "cell types", "细胞失衡", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "ASE",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/ASE/cell_imbalance.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "0ef0828df9f0bcaf70bd8acd6fbf0281378bdb09f43688054ae908620cd4685f",
+  "upstream_sha256" : "09d9cf9316219ad04f2b466ea9fc899f2cf01f1a4403917855b77d4b00bc47c6",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-endoplasmic-reticulum",
+  "name" : {
+    "en" : "Endoplasmic Reticulum",
+    "zh" : "内质网"
+  },
+  "tags" : [ "intracellular components", "内质网", "biology", "cell" ],
+  "category" : "Intracellular_components",
+  "source" : "Bioicons",
+  "author" : "jaiganesh",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/Endoplasmic_Reticulum.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "6578fca60550e386e7aa2759b03543f0f59a50adb88d8163de957985ce118f15",
+  "upstream_sha256" : "6df87901340447075e1785ada85fb309b54e81fa4cf1efc60716ffcbbd161a3c",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-mitochondria",
+  "name" : {
+    "en" : "mitochondria",
+    "zh" : "线粒体"
+  },
+  "tags" : [ "intracellular components", "线粒体", "biology", "cell" ],
+  "category" : "Intracellular_components",
+  "source" : "Bioicons",
+  "author" : "jaiganesh",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/mitochondria.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "7bcf86424af7036c8e424a36bd36007bf13bded161644698e5aca35f61e5ff59",
+  "upstream_sha256" : "b6c2b31a6db8baa3952c0ebf9efce6cee0dc78e887064f227fa2bf3ee7d5cc0f",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-proteasome",
+  "name" : {
+    "en" : "proteasome",
+    "zh" : "蛋白酶体"
+  },
+  "tags" : [ "intracellular components", "蛋白酶体", "biology", "cell" ],
+  "category" : "Intracellular_components",
+  "source" : "Bioicons",
+  "author" : "jaiganesh",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/proteasome.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "552e7ec5f2cc6e3ab4b5027f9a00d5b999f39c56f042bb51cf48eebe4b225028",
+  "upstream_sha256" : "bb361400b119534c7c6446a0dd58bdc9874dfac33c39fb4c6797c9914143f7ea",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-ribosome",
+  "name" : {
+    "en" : "ribosome",
+    "zh" : "核糖体"
+  },
+  "tags" : [ "intracellular components", "核糖体", "biology", "cell" ],
+  "category" : "Intracellular_components",
+  "source" : "Bioicons",
+  "author" : "jaiganesh",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/ribosome.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a285dc6432aa32a48ed5d64bcb095048c363d500a075e774ba71c3619245c4c5",
+  "upstream_sha256" : "0a1d58901bf40efd3d937203d63531bf295b06ce1fcceb53b08cc7e1463ca80f",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-f-actin",
+  "name" : {
+    "en" : "F-actin",
+    "zh" : "纤维状肌动蛋白"
+  },
+  "tags" : [ "intracellular components", "纤维状肌动蛋白", "biology", "cell" ],
+  "category" : "Intracellular_components",
+  "source" : "Bioicons",
+  "author" : "Hugo-Wioland",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Hugo-Wioland/F-actin.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "850d5e2a877366e0789631ae18181e8acdb61e2eac831f030cd96708b515fb96",
+  "upstream_sha256" : "a9da43aedfbe88f8c1b611510f9a3ac198817699d9aa097faf8674ec969e8cd6",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-protein-colored",
+  "name" : {
+    "en" : "Protein colored",
+    "zh" : "蛋白质彩色示意"
+  },
+  "tags" : [ "intracellular components", "蛋白质彩色示意", "biology", "cell" ],
+  "category" : "Intracellular_components",
+  "source" : "Bioicons",
+  "author" : "DBCLS",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/DBCLS/Protein_colored.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "45561458ef64e7e1d8b16ed39f6694e4774cebefda3eef622d7eb2d095f4c997",
+  "upstream_sha256" : "46091fdfab2f2b511843d5c158b467dcf6bcc3197c67bed9e23eff6b83196701",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-protein-monochrome",
+  "name" : {
+    "en" : "Protein monochrome",
+    "zh" : "蛋白质单色示意"
+  },
+  "tags" : [ "intracellular components", "蛋白质单色示意", "biology", "cell" ],
+  "category" : "Intracellular_components",
+  "source" : "Bioicons",
+  "author" : "DBCLS",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/DBCLS/Protein_monochrome.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "603cc333b93f4634c8e09d41d1df575703505a40dca5fb44da5fff1d80821e0e",
+  "upstream_sha256" : "5bfef5aaac64ec89d27f76d321ef159ce0851fc1c19a907b979c54e3f9b74d26",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-phospholipid",
+  "name" : {
+    "en" : "Phospholipid",
+    "zh" : "磷脂"
+  },
+  "tags" : [ "cell membrane", "磷脂", "biology", "cell" ],
+  "category" : "Cell_membrane",
+  "source" : "Bioicons",
+  "author" : "Cl茅ber-Gomes",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_membrane/Cl%C3%A9ber-Gomes/Phospholipid.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "41107923390729cbfc081fa5361e38bf184a2cdee8075038b69bb2ada0c1d2a8",
+  "upstream_sha256" : "c634a7c477737c1f70736a303203a17847a31c9320fddcfcb622c3dd1442e848",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-crispr-cas9-vector",
+  "name" : {
+    "en" : "CRISPR Cas9 vector",
+    "zh" : "CRISPR载体"
+  },
+  "tags" : [ "nucleic acids", "CRISPR载体", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/umasstr/CRISPR_Cas9_vector.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "d274be00facb304cd36ed3c70416821622c2f2a611b70d7885748d080b95b042",
+  "upstream_sha256" : "c29aba600e8bdfe0bb06f887968a0f5d0d9d52a3355835eafec382b66b28d443",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-cas9-expression-vector",
+  "name" : {
+    "en" : "Cas9 expression vector",
+    "zh" : "Cas9表达载体"
+  },
+  "tags" : [ "nucleic acids", "Cas9表达载体", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/umasstr/Cas9_expression_vector.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "682b8c420ed5926a14514a65cd0f94f353de6102aac0ed7b8f665de6a9be097d",
+  "upstream_sha256" : "a661f4110a3002fd1caae7a6bd0cf502fc76e1cd1ee0432e03f18d848bb047e0",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-transposase-tn5-atac-chromatin",
+  "name" : {
+    "en" : "Transposase Tn5 ATAC chromatin",
+    "zh" : "Tn5转座酶与染色质"
+  },
+  "tags" : [ "nucleic acids", "Tn5转座酶与染色质", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/umasstr/Transposase_Tn5_ATAC_chromatin.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "54a9cbe0eedaa16ee459a4e932d9a4172c844f1ac76641dcacfdd648099f81b7",
+  "upstream_sha256" : "026a1d7679fbc2998068f92db465aa658be3b8dfd82192328d597b845fd68d27",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-lentivirus-library",
+  "name" : {
+    "en" : "lentivirus library",
+    "zh" : "慢病毒文库"
+  },
+  "tags" : [ "nucleic acids", "慢病毒文库", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/umasstr/lentivirus_library.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "db6e42fe862b5767558f2dbd37e528683aa238b1853aca91fbf4a5df5fac992d",
+  "upstream_sha256" : "50bcc3756ef56c1ab35838379c65f713662f70796bdcebcb7c3cf443e2a50951",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-plasmid-3",
+  "name" : {
+    "en" : "plasmid-3",
+    "zh" : "质粒三型"
+  },
+  "tags" : [ "nucleic acids", "质粒三型", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "EmilyADaniel",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/EmilyADaniel/plasmid-3.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "3564b5bdb57dc439ef7f182aaf4957cfac6c89120f392ff9bd9fa36fcf8a6785",
+  "upstream_sha256" : "06d594f94ad092d3d737aaa9c670207488efec28b653740084fb05d65a4c1c35",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-plasmid-4",
+  "name" : {
+    "en" : "plasmid-4",
+    "zh" : "质粒四型"
+  },
+  "tags" : [ "nucleic acids", "质粒四型", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "EmilyADaniel",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/EmilyADaniel/plasmid-4.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "41e716f85e16cefcdf7bd8fee16383979014f00799fe769c381defbf971c2623",
+  "upstream_sha256" : "3b66d3f7eb0b6e952434eafb29c79528776a807a28132fda2a51e62a082c3a0a",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-ssdna-single-stranded",
+  "name" : {
+    "en" : "ssDNA-single-stranded",
+    "zh" : "单链DNA"
+  },
+  "tags" : [ "nucleic acids", "单链DNA", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "Samuel-Nestor-Meckoni",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Samuel-Nestor-Meckoni/ssDNA-single-stranded.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "e651215df4cd06b3b48c761f4bec2d96dcc131117773b03f0f780c629f9f4bd0",
+  "upstream_sha256" : "3cbc3942a939bf31bea1077ef834e0d2dd1b47fec34045d3b286cea16d2a382a",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-trna-secondary-structure",
+  "name" : {
+    "en" : "tRNA secondary structure",
+    "zh" : "转运RNA二级结构"
+  },
+  "tags" : [ "nucleic acids", "转运RNA二级结构", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "James-Lloyd",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/James-Lloyd/tRNA_secondary_structure.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "8cb126f496ebbc7a994e32c6bcbfaa2517da480cc066d245708730c4daac0320",
+  "upstream_sha256" : "70d5046dfcaa50265db23487b6077f6359be40ac0b35d798a63f3bbb8e5ba0fc",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-a-dna",
+  "name" : {
+    "en" : "A-DNA",
+    "zh" : "A型DNA"
+  },
+  "tags" : [ "nucleic acids", "A型DNA", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "DBCLS",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/A-DNA.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "69fe24e44433b11fabda583dc0cdc792defc322eb1a5afdb84e26a5993754423",
+  "upstream_sha256" : "68d4559c5908366c80cffaca392c0c66a3cd8c7ca362354fe3b5ed1762e7c2c3",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-b-dna",
+  "name" : {
+    "en" : "B-DNA",
+    "zh" : "B型DNA"
+  },
+  "tags" : [ "nucleic acids", "B型DNA", "biology", "cell" ],
+  "category" : "Nucleic_acids",
+  "source" : "Bioicons",
+  "author" : "DBCLS",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/B-DNA.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "f9e49879b1c1470880c89f84e6b7c21abf5e6151d7849dce6db9f9a03077101f",
+  "upstream_sha256" : "85c86556b2dc197d63bc0440b25a82bffd67e699a5700be0738d8ff8d6268fdb",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-biosynthetic-gene-cluster",
+  "name" : {
+    "en" : "Biosynthetic gene cluster",
+    "zh" : "生物合成基因簇"
+  },
+  "tags" : [ "genomics", "生物合成基因簇", "biology", "cell" ],
+  "category" : "Genomics",
+  "source" : "Bioicons",
+  "author" : "ChenxinLi",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genomics/ChenxinLi/Biosynthetic_gene_cluster.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "545706e881721f727cb022b9619dc1d71a31a2f7c3a7c0a21d13be0d8b8a4408",
+  "upstream_sha256" : "e14e7878b510166f27407125d53a2496ebd6d9efff618d337c715c2d02814ee1",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-illumina-sequencing-colorcalling",
+  "name" : {
+    "en" : "Illumina sequencing colorcalling",
+    "zh" : "测序颜色判读"
+  },
+  "tags" : [ "genomics", "测序颜色判读", "biology", "cell" ],
+  "category" : "Genomics",
+  "source" : "Bioicons",
+  "author" : "Bjoern-Usadel",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genomics/Bjoern-Usadel/Illumina_sequencing_colorcalling.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "0e126783b356f3997ee69e2969eea285ef8cd42767afc525dc6a991e6253af1d",
+  "upstream_sha256" : "e0bd555d5fc50347868efcaf49fd4867ac2b766bca7fd859a555a682b94556ca",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-tn5-chromatin-atac",
+  "name" : {
+    "en" : "Tn5 chromatin ATAC",
+    "zh" : "开放染色质测序"
+  },
+  "tags" : [ "genomics", "开放染色质测序", "biology", "cell" ],
+  "category" : "Genomics",
+  "source" : "Bioicons",
+  "author" : "ChenxinLi",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genomics/ChenxinLi/Tn5_chromatin_ATAC.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "e1d41d3f442f13432adfa11ac0bcf46d5b540fcc309d4953225da347fe9f9ae8",
+  "upstream_sha256" : "31fe64b6a0cdc877dd6c69649a7183154a6d5680d58917dffbceceb7aebae106",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-ont-sequencing",
+  "name" : {
+    "en" : "ont sequencing",
+    "zh" : "纳米孔测序"
+  },
+  "tags" : [ "genomics", "纳米孔测序", "biology", "cell" ],
+  "category" : "Genomics",
+  "source" : "Bioicons",
+  "author" : "Geert-van-Geest",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genomics/Geert-van-Geest/ont_sequencing.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "2f5b0ad62278a31400e378cbf9f74eb686a370ac395562d56cf51612e67349a1",
+  "upstream_sha256" : "5245ead9f72782afa3fbc73d68c69134e648d49b800951678209240ff5429faf",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-6-well-plate-cell-culture",
+  "name" : {
+    "en" : "6-well plate cell culture",
+    "zh" : "六孔板细胞培养"
+  },
+  "tags" : [ "genetics", "六孔板细胞培养", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/6-well_plate_cell_culture.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "58b44f891b8f3b79d60b92d5a631362e79629e5ae3a15e29501528d2ad8b2145",
+  "upstream_sha256" : "93aec25a8796c9348d5736fe32737b7fb431b50e8e8f96702fdeec3ab766cbcd",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-aav-adenovirus",
+  "name" : {
+    "en" : "AAV adenovirus",
+    "zh" : "病毒载体"
+  },
+  "tags" : [ "genetics", "病毒载体", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/AAV_adenovirus.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "7ba797224742e00fba65829d0e8deed5b0de7dca00ad5d971d8c6bf41dc2aa5f",
+  "upstream_sha256" : "f6aca3170d28fc5ffdaee91ccb5af9ece25486d7c08ed4fa42d06a23e160627b",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-budding-yeast",
+  "name" : {
+    "en" : "Budding yeast",
+    "zh" : "出芽酵母"
+  },
+  "tags" : [ "genetics", "出芽酵母", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/Budding_yeast.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "74fe13e016678579b9e525d82bafcf6b87da58a659e58fe966aad2b547572fa1",
+  "upstream_sha256" : "caa2cfbe06807218f1b6bf90f203e66af84662e02a55a5da24632539b4e2ecfc",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-crispr-cas9-expression-vector",
+  "name" : {
+    "en" : "CRISPR Cas9 expression vector",
+    "zh" : "CRISPR表达载体"
+  },
+  "tags" : [ "genetics", "CRISPR表达载体", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/CRISPR_Cas9_expression_vector.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "296e11c591d4a9affd2f7f07c6f67362b52782b17f6b187cdaa8d0f12bd7471c",
+  "upstream_sha256" : "671869458da71d5ee6a3f0c8ae1093697cc844f33cdbcea84ee68cc9b8fee85a",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-crispr-cas9-expression-vector-cloning",
+  "name" : {
+    "en" : "CRISPR Cas9 expression vector cloning",
+    "zh" : "CRISPR表达载体克隆"
+  },
+  "tags" : [ "genetics", "CRISPR表达载体克隆", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/CRISPR_Cas9_expression_vector_cloning.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a5af2a98142b95b371f867a1d380ed834cf4e32ea12b7cd3f12e9460be53c0a1",
+  "upstream_sha256" : "75ce0fcb41c49bb96a91684e7c8ded360d9addc837adc3ce7ddb199df7ba0347",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-illumina-sequencing-reads",
+  "name" : {
+    "en" : "Illumina sequencing reads",
+    "zh" : "短读长测序读段"
+  },
+  "tags" : [ "genetics", "短读长测序读段", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/Illumina_sequencing_reads.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "9694efb7f2ccbc6ddd765752ba3f0320a199c731df055eb627848ad1116d9825",
+  "upstream_sha256" : "a88d19f1e94d83b8fb402055b888a6e926a7cc7a955368ef6d32b20dea76ab45",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-img-sequencer-long-read01",
+  "name" : {
+    "en" : "img sequencer long read01",
+    "zh" : "长读长测序仪一型"
+  },
+  "tags" : [ "genetics", "长读长测序仪一型", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "PacBio",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_long_read01.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a1fb7b3be875eaaafc52c6a42a2890354d0e2502788a684ffcf1908a56a04066",
+  "upstream_sha256" : "1b64f8fdda28a4fe2e45a2a60a9586207ee5de412d5d4fb51783a1c42d9f943f",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-img-sequencer-long-read02",
+  "name" : {
+    "en" : "img sequencer long read02",
+    "zh" : "长读长测序仪二型"
+  },
+  "tags" : [ "genetics", "长读长测序仪二型", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "PacBio",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_long_read02.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "322d1bc9091bc9e8fe6ea3fb8e90ab12842552f2705bc03132b053f098a90a6d",
+  "upstream_sha256" : "233deb591a96c718b6ab93b95803b117703b9cfe922b7677da2d22e350de7235",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-img-sequencer-long-read03",
+  "name" : {
+    "en" : "img sequencer long read03",
+    "zh" : "长读长测序仪三型"
+  },
+  "tags" : [ "genetics", "长读长测序仪三型", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "PacBio",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_long_read03.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "e89ba4a2fe1482c7818296e832fc921a22c2cfe3200b3347f27461744ef2b029",
+  "upstream_sha256" : "f87aa9731352a7bf5a6e4a9d95b301660f237a5e13bc8a6cc27a22bde190fc95",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-ai-bulb",
+  "name" : {
+    "en" : "ai-bulb",
+    "zh" : "人工智能概念灯泡"
+  },
+  "tags" : [ "machine learning", "人工智能概念灯泡", "ml", "concept" ],
+  "category" : "Machine_Learning",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Machine_Learning/OpenClipart/ai-bulb.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "8e6010d0db6b1e5924563332ed56570f4a3d365d184186a6a9fa356280bfe21a",
+  "upstream_sha256" : "ad9085fd0b4e27f22f6797f0231bf887017f410e761587f9123c13a31dd249e3",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-ai-cognition",
+  "name" : {
+    "en" : "ai-cognition",
+    "zh" : "人工智能认知"
+  },
+  "tags" : [ "machine learning", "人工智能认知", "ml", "concept" ],
+  "category" : "Machine_Learning",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Machine_Learning/OpenClipart/ai-cognition.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "e6da4285d611567e70a1e4bd43715925eb070ca87ca6e1d8dde8fddd412c7888",
+  "upstream_sha256" : "e6da4285d611567e70a1e4bd43715925eb070ca87ca6e1d8dde8fddd412c7888",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-ai-head",
+  "name" : {
+    "en" : "ai-head",
+    "zh" : "人工智能头像"
+  },
+  "tags" : [ "machine learning", "人工智能头像", "ml", "concept" ],
+  "category" : "Machine_Learning",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Machine_Learning/OpenClipart/ai-head.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "7257beba1946da14e09526cb3f69038b3368ee0256f6881e34d035deed8ff5f2",
+  "upstream_sha256" : "7257beba1946da14e09526cb3f69038b3368ee0256f6881e34d035deed8ff5f2",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-cytoflex",
+  "name" : {
+    "en" : "Cytoflex",
+    "zh" : "流式细胞分析仪"
+  },
+  "tags" : [ "computer hardware", "流式细胞分析仪", "ml", "concept" ],
+  "category" : "Computer_hardware",
+  "source" : "Bioicons",
+  "author" : "El-Jayawant",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Computer_hardware/El-Jayawant/Cytoflex.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "bf10158a23eb70e26b35badfa9ae6aee24a024f7a15c8beec6b913596c246797",
+  "upstream_sha256" : "d553581a32a93642adf79ec7357bda86a893f01467034f85a97a06e6b8e83f78",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-serverroom",
+  "name" : {
+    "en" : "serverroom",
+    "zh" : "服务器机房"
+  },
+  "tags" : [ "computer hardware", "服务器机房", "ml", "concept" ],
+  "category" : "Computer_hardware",
+  "source" : "Bioicons",
+  "author" : "DBCLS",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Computer_hardware/DBCLS/serverroom.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a556f7c4853b486dab236ba7e9cb5f3fe441151b4e8bced46a239af0ac4f0126",
+  "upstream_sha256" : "e1ab9fec0d6938ecf641eac7ced8610462908be6302372347ad9eacc68f2a351",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-beaker-water",
+  "name" : {
+    "en" : "Beaker water",
+    "zh" : "装水烧杯"
+  },
+  "tags" : [ "chemistry", "装水烧杯", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "nUll",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/nUll/Beaker_water.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "ba8ba8d1acddb0b85465acd7b6172e348ca1a4aafed71d48a6bebcd2e738114c",
+  "upstream_sha256" : "da67fca890b750bebf07a2a51fab41f0f0ce3401847c4f4dd73438106d653f88",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-alloy",
+  "name" : {
+    "en" : "alloy",
+    "zh" : "合金"
+  },
+  "tags" : [ "chemistry", "合金", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/alloy.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "518d77a4361c01b2c131874c485f631304d654e579fcb8ce1398288e702a3338",
+  "upstream_sha256" : "636206615cacaf3e883836036adea0f073b21ffff26d7a5c871d2f4079cccffd",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-alloy-gas",
+  "name" : {
+    "en" : "alloy-gas",
+    "zh" : "合金与气体"
+  },
+  "tags" : [ "chemistry", "合金与气体", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/alloy-gas.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "71eefbd0a86be803e5be852d87866669196ed742bc80fd8f6fa42f6f9e85a83e",
+  "upstream_sha256" : "bf173458c784145e07b3cbf10fdc0e6a7a9be4992f3140e6955cd4e5005fe7cf",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-bottle-brown-protected",
+  "name" : {
+    "en" : "bottle-brown-protected",
+    "zh" : "棕色试剂瓶"
+  },
+  "tags" : [ "chemistry", "棕色试剂瓶", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/bottle-brown-protected.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "bb7b953c82bb52b8819f33a077788dec5058b1d7f04ef4b83c5696f747d4dd19",
+  "upstream_sha256" : "6db02a6e118c00ac87ab99e6ac5cd67b786f784994051f055199f1d761a86fcc",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-bottle-transparent-protected-2d",
+  "name" : {
+    "en" : "bottle-transparent-protected-2d",
+    "zh" : "透明试剂瓶"
+  },
+  "tags" : [ "chemistry", "透明试剂瓶", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/bottle-transparent-protected-2d.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "64768d19b5b582675dff4446de4fe5e4b1d7449d1b52fcee2ba94cd120d3c4c0",
+  "upstream_sha256" : "558bfb0cd1c65eac10553afb29c1eef5e5c6d63bbe043d0574ee8a3755390c83",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-bottles-translucent-2d",
+  "name" : {
+    "en" : "bottles-translucent-2d",
+    "zh" : "半透明试剂瓶组"
+  },
+  "tags" : [ "chemistry", "半透明试剂瓶组", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/bottles-translucent-2d.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "40b4e667d2797d4dde019d8d7be5caf4adda5e9e3ecd0c1652711f46e001e09c",
+  "upstream_sha256" : "8cc801b3686bc67d1790b39819818d829cc3139814b547643d381b9298d3366c",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-brown-bottles-2d",
+  "name" : {
+    "en" : "brown-bottles-2d",
+    "zh" : "棕色瓶组"
+  },
+  "tags" : [ "chemistry", "棕色瓶组", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/brown-bottles-2d.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "e808130796fae236ebb283e59dcb57d982e37c14a43fa44d1886d0a2ff387092",
+  "upstream_sha256" : "6cc02a326ae83ee91a56151c78d1c1cc4cd655e2710829cf28aba241acbb03a7",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-emulsion",
+  "name" : {
+    "en" : "emulsion",
+    "zh" : "乳液"
+  },
+  "tags" : [ "chemistry", "乳液", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/emulsion.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "f8c77b8b118132d8407a0bd37a5b133a21df218e05c483ff4ca6ff64f08321b0",
+  "upstream_sha256" : "876bb6ddadabb9ecf7be87e5856a0b82fdc7de4e4b11abef1c6bcba9e875595e",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-particles-bubble",
+  "name" : {
+    "en" : "particles-bubble",
+    "zh" : "气泡颗粒"
+  },
+  "tags" : [ "chemistry", "气泡颗粒", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/particles-bubble.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "118defda9a2f2e3cbac6a724f23eb37ebe6fcd7f0b3b1c1c31b201097012ffc7",
+  "upstream_sha256" : "a0be5daadd0d04c514040d8585358841be698fd57b1e00b08964800a6906308b",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-particles-foam",
+  "name" : {
+    "en" : "particles-foam",
+    "zh" : "泡沫颗粒"
+  },
+  "tags" : [ "chemistry", "泡沫颗粒", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/particles-foam.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "bc4ddddd6fda3cf3f005aa9c774b1bcd465fa42237a4c7c0a607eea441f5648b",
+  "upstream_sha256" : "cbe7cb8ba19342f170fe288b9a341fc14a22e51ebce74a608f63f81b2a44f54b",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-database",
+  "name" : {
+    "en" : "database",
+    "zh" : "数据库"
+  },
+  "tags" : [ "molecular modelling", "数据库", "chemistry", "materials", "physics" ],
+  "category" : "Molecular_modelling",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Molecular_modelling/OpenClipart/database.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "c5fb1bd690c6aceb1e64df5799b99ae15d45ab8cd937dd5e45d8b59c119f4cbd",
+  "upstream_sha256" : "dd9249ddabdfec1ba6bfb52f7f3e29fc9e3a1487e067b60b08831113a736bdb0",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-database-colored",
+  "name" : {
+    "en" : "database-colored",
+    "zh" : "彩色数据库"
+  },
+  "tags" : [ "molecular modelling", "彩色数据库", "chemistry", "materials", "physics" ],
+  "category" : "Molecular_modelling",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Molecular_modelling/OpenClipart/database-colored.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a2e4fe246bd437777d6d203005a5c47902a660372f3b7589bc86a1b0841893bf",
+  "upstream_sha256" : "89d6d731946d681ad1521c2d65284459d7e281ccb55da442c23cf1bdc37c0640",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-fluoresent-bead-blue",
+  "name" : {
+    "en" : "Fluoresent bead blue",
+    "zh" : "荧光微球"
+  },
+  "tags" : [ "imaging", "荧光微球", "biology", "cell" ],
+  "category" : "Imaging",
+  "source" : "Bioicons",
+  "author" : "B-Gideon-Bergheim",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Imaging/B-Gideon-Bergheim/Fluoresent_bead_blue.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "7d7af584abceca6f3e37793dc7d8586ac77b45996b0fc19a325e25f7b8db6708",
+  "upstream_sha256" : "05ced53b59b77986b7e177b198a9e8018ce0888265649ac43ac45e4a00e4e1f4",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-outlier",
+  "name" : {
+    "en" : "Outlier",
+    "zh" : "离群值示意"
+  },
+  "tags" : [ "scientific graphs", "离群值示意", "ml", "concept" ],
+  "category" : "Scientific_graphs",
+  "source" : "Bioicons",
+  "author" : "Marius-Mathies",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Scientific_graphs/Marius-Mathies/Outlier.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "973309973528539b13765a58431907ecb12cc781ad44c9127b35fcd1f959951a",
+  "upstream_sha256" : "50b6763a8f0ebc585fe7fa8ed1c48fab411c5533bbea24c0a4ecc7ab274d3f4a",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-dimensionality-reduction",
+  "name" : {
+    "en" : "Dimensionality reduction",
+    "zh" : "降维示意"
+  },
+  "tags" : [ "scientific graphs", "降维示意", "ml", "concept" ],
+  "category" : "Scientific_graphs",
+  "source" : "Bioicons",
+  "author" : "ChenxinLi",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Scientific_graphs/ChenxinLi/Dimensionality_reduction.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "6421b14d25455d63e3f62fcf867a23b40e7b6dcf3507c9b1e053e9a191de8cb2",
+  "upstream_sha256" : "e8dd8343cebfe15a6dc678b05dfb0353f5a74b1bc8911b04caf447bfc3fe66fc",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-heatmap",
+  "name" : {
+    "en" : "heatmap",
+    "zh" : "热图示意"
+  },
+  "tags" : [ "scientific graphs", "热图示意", "ml", "concept" ],
+  "category" : "Scientific_graphs",
+  "source" : "Bioicons",
+  "author" : "ChenxinLi",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Scientific_graphs/ChenxinLi/heatmap.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "6c244343f28a3932cb5999de1506349a6a54cc4abc1811b91ca4c4826bd9ff35",
+  "upstream_sha256" : "efd146475d246a65363d5832f7e2bbf60644aea5fb754f7cfca9002663aa61a4",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-heatmap-symmetrical",
+  "name" : {
+    "en" : "heatmap symmetrical",
+    "zh" : "对称热图示意"
+  },
+  "tags" : [ "scientific graphs", "对称热图示意", "ml", "concept" ],
+  "category" : "Scientific_graphs",
+  "source" : "Bioicons",
+  "author" : "ChenxinLi",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Scientific_graphs/ChenxinLi/heatmap_symmetrical.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "daca0c524b7181edc373b850ab81997803adacd1f3477540e1d0ad94585187a7",
+  "upstream_sha256" : "feaf48731fc3109975da0313a83ca2b37b500d471cb2c29d750500ae78bb0844",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-calculator",
+  "name" : {
+    "en" : "calculator",
+    "zh" : "计算器"
+  },
+  "tags" : [ "general items", "计算器", "experiment", "lab", "workflow" ],
+  "category" : "General_items",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/General_items/OpenClipart/calculator.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "636ad708c90eded36d58cd6dd48228eba1c0d098a61e511dae39fe53b9f45dce",
+  "upstream_sha256" : "a07bca56908cced8094205add75cec8c2015300d773baffe83fb0763dafd936b",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-nitrile-gloves",
+  "name" : {
+    "en" : "nitrile-gloves",
+    "zh" : "丁腈手套"
+  },
+  "tags" : [ "general items", "丁腈手套", "experiment", "lab", "workflow" ],
+  "category" : "General_items",
+  "source" : "Bioicons",
+  "author" : "Riccardo-Iacovelli",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/General_items/Riccardo-Iacovelli/nitrile-gloves.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "2972285c69547a52035bb2204eb93cc89b694618475ed76bae20ae0f6c25a7e3",
+  "upstream_sha256" : "05b2da6be4981760ba62b6918569bd8f1e7cb2bb69e032d3dd7ddd902d00b3d9",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-smartphone",
+  "name" : {
+    "en" : "smartphone",
+    "zh" : "智能手机"
+  },
+  "tags" : [ "general items", "智能手机", "experiment", "lab", "workflow" ],
+  "category" : "General_items",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/General_items/OpenClipart/smartphone.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a7cba8cc1da9b2deaa92df832d8887023abbf7f4705a0805b6119f977b8a5014",
+  "upstream_sha256" : "6f7300aac76ce6f02f4b2ac74975d1d26e995a0c328f328dbe6f65c223db3f23",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-terminal",
+  "name" : {
+    "en" : "terminal",
+    "zh" : "终端"
+  },
+  "tags" : [ "general items", "终端", "experiment", "lab", "workflow" ],
+  "category" : "General_items",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/General_items/OpenClipart/terminal.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a68b29fe2404fdf03085179b3b4de52a1972bc71c66358a7919750e7e619eb4a",
+  "upstream_sha256" : "8ef555b33f50f0fb07c244915e89455132234c3cbe1e486bf884ca1b4ad6cf6a",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-thermometer",
+  "name" : {
+    "en" : "thermometer",
+    "zh" : "温度计"
+  },
+  "tags" : [ "general items", "温度计", "experiment", "lab", "workflow" ],
+  "category" : "General_items",
+  "source" : "Bioicons",
+  "author" : "kehan",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/General_items/kehan/thermometer.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "81463d692ff5c40cce9fd2683e5f9e187e882511b55eda179440e8b5b9cfd02e",
+  "upstream_sha256" : "a2c48bf21dfb0a05b07e1f13c359921b1c8c6b85465b8bf083ad9608d80b9273",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-6-well-plate",
+  "name" : {
+    "en" : "6 well plate",
+    "zh" : "六孔板"
+  },
+  "tags" : [ "cell culture", "六孔板", "biology", "cell" ],
+  "category" : "Cell_culture",
+  "source" : "Bioicons",
+  "author" : "KeHan",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_culture/KeHan/6_well_plate.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "f80daaa8a3d8219143c48e4ff7056f9375d3e8459ab919e3a6da631479b3668f",
+  "upstream_sha256" : "f64e2d97338a0d286dac31b24b259edcc50df3ecdba71e13612bfdece7da1c4c",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-bacteria-colonies",
+  "name" : {
+    "en" : "Bacteria colonies",
+    "zh" : "细菌菌落"
+  },
+  "tags" : [ "cell culture", "细菌菌落", "biology", "cell" ],
+  "category" : "Cell_culture",
+  "source" : "Bioicons",
+  "author" : "B--Gideon-Bergheim",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_culture/B--Gideon-Bergheim/Bacteria_colonies.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "86f46ba5e54042b60c7f28e45d0349ce4851edc7487115be7032a2aba445aceb",
+  "upstream_sha256" : "a96cdaf7fea8bbc0bbffccc908c35a7cdcbe62a2af284cab5791a2b554bfe1cf",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-bacteria-culture-loop",
+  "name" : {
+    "en" : "bacteria culture loop",
+    "zh" : "接种环"
+  },
+  "tags" : [ "cell culture", "接种环", "biology", "cell" ],
+  "category" : "Cell_culture",
+  "source" : "Bioicons",
+  "author" : "B--Gideon-Bergheim",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_culture/B--Gideon-Bergheim/bacteria_culture_loop.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "cb0ea17b0bba4c49be191704a66182c9731bc691841f2f83aa24631921d6dd61",
+  "upstream_sha256" : "e5108a17e3263fa8d24d8b4209fb15aa429e5601bf03394a602ff86667a6a350",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-simple-e-coli",
+  "name" : {
+    "en" : "simple e coli",
+    "zh" : "大肠杆菌"
+  },
+  "tags" : [ "cell culture", "大肠杆菌", "biology", "cell" ],
+  "category" : "Cell_culture",
+  "source" : "Bioicons",
+  "author" : "B--Gideon-Bergheim",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_culture/B--Gideon-Bergheim/simple_e_coli.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "0363f53f1cbb2d270e29c96336dc54a907c68e86dfa6f4c0ab1b8e358331e605",
+  "upstream_sha256" : "649f16bca16ce4de4c61f43ea6e56a7b6319800d99a80206aef92c8444ab4ce8",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-neuron",
+  "name" : {
+    "en" : "neuron",
+    "zh" : "神经元"
+  },
+  "tags" : [ "cell culture", "神经元", "biology", "cell" ],
+  "category" : "Cell_culture",
+  "source" : "Bioicons",
+  "author" : "DBCLS",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_culture/DBCLS/neuron.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "2d9330664988a3e86c12d5e41a53f6dedac7a83383fa21dfc48624011cba4b7b",
+  "upstream_sha256" : "d37209d5e49102950270cc81a9dd0e3dbbbefa730b6fbc2b40c7788546990926",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-nlrp3-complex",
+  "name" : {
+    "en" : "NLRP3 Complex",
+    "zh" : "炎症小体复合物"
+  },
+  "tags" : [ "blood immunology", "炎症小体复合物", "biology", "cell" ],
+  "category" : "Blood_Immunology",
+  "source" : "Bioicons",
+  "author" : "Qara",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Blood_Immunology/Qara/NLRP3_Complex.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "0be97ba87e03786ce17c9445d81d0f428505ae2e3bfe99e05a1986c07af46af4",
+  "upstream_sha256" : "61fc3d51ebc42eec8e4d01ba7e89d49d5cdbd5a6b78389657138939d7b96f2f5",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-antibody-heavy-chain-vdj-recombination",
+  "name" : {
+    "en" : "antibody heavy chain vdj recombination",
+    "zh" : "抗体重链重排"
+  },
+  "tags" : [ "blood immunology", "抗体重链重排", "biology", "cell" ],
+  "category" : "Blood_Immunology",
+  "source" : "Bioicons",
+  "author" : "Derek-Croote",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Blood_Immunology/Derek-Croote/antibody_heavy_chain_vdj_recombination.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "5118779508c2ea34c4a0ada4bbd2bfdb45d5d3fa4cb39114da972c0072b1b628",
+  "upstream_sha256" : "cdd3c234d1ce3faa23001c24c77b8f9493bb6577ef77699361727901bf3b382a",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-antibody-c1q",
+  "name" : {
+    "en" : "Antibody c1q",
+    "zh" : "抗体与补体"
+  },
+  "tags" : [ "blood immunology", "抗体与补体", "biology", "cell" ],
+  "category" : "Blood_Immunology",
+  "source" : "Bioicons",
+  "author" : "Sebastian-Reinig",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/Antibody_c1q.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "ef5f17c160b165b518e040f108c2d004d0d250e24a5ca26db5832fe149e11634",
+  "upstream_sha256" : "482a76a77f18ed8e04f07426c4ddb92be3f423da1d9009768135d1c4d9c9e80b",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-cancer-cell",
+  "name" : {
+    "en" : "cancer cell",
+    "zh" : "癌细胞"
+  },
+  "tags" : [ "blood immunology", "癌细胞", "biology", "cell" ],
+  "category" : "Blood_Immunology",
+  "source" : "Bioicons",
+  "author" : "El-Jayawant",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/El-Jayawant/cancer_cell.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "b4cbeea2a726a461d5c23b431a7a18db1ec38f788179fb6e83c725b1f2ded176",
+  "upstream_sha256" : "abe6d8b893da6c502ec34158d5d9e0d907431437a9cd0030e320496f706d4f60",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-nanofluid",
+  "name" : {
+    "en" : "nanofluid",
+    "zh" : "纳米流体"
+  },
+  "tags" : [ "nanotechnology", "纳米流体", "chemistry", "materials", "physics" ],
+  "category" : "Nanotechnology",
+  "source" : "Bioicons",
+  "author" : "Glauco-Nobrega",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nanotechnology/Glauco-Nobrega/nanofluid.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a7f424bf69d32ca62a3da29e8c3e40df236daa874479f9f71cd1e407fa3410e3",
+  "upstream_sha256" : "98cf759b2b529098ab18d2fbf5bed4c5f03e594ba0eec835349db2b02ee789ee",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-96-well-plate-2d",
+  "name" : {
+    "en" : "96-well-plate-2d",
+    "zh" : "九十六孔板"
+  },
+  "tags" : [ "microbiology", "九十六孔板", "biology", "cell" ],
+  "category" : "Microbiology",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/OpenClipart/96-well-plate-2d.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "3818f7f1371ddd870228052eb419a18dae151a2f2f20a54265e347fe4cf77775",
+  "upstream_sha256" : "5bc2f00029ffc35957abeedad41bff95091b4f6dd5d345614b591a11d6512e6d",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-bacteria-swimming",
+  "name" : {
+    "en" : "Bacteria Swimming",
+    "zh" : "游动细菌"
+  },
+  "tags" : [ "microbiology", "游动细菌", "biology", "cell" ],
+  "category" : "Microbiology",
+  "source" : "Bioicons",
+  "author" : "James-Lloyd",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/James-Lloyd/Bacteria_Swimming.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "59206134bfe4c20774e602e7103e740baeed90951e852a9ffdae6f21156629a1",
+  "upstream_sha256" : "95ba3769114d677da2ee90c5da99a3e33c4f03d5a68d0413b66d0cb5fabfbe8a",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-phage",
+  "name" : {
+    "en" : "Phage",
+    "zh" : "噬菌体"
+  },
+  "tags" : [ "microbiology", "噬菌体", "biology", "cell" ],
+  "category" : "Microbiology",
+  "source" : "Bioicons",
+  "author" : "James-Lloyd",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/James-Lloyd/Phage.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "9efa77ba88e93293a386d23fb5749187ec1ba4287b7f65068c9afc37935f89ec",
+  "upstream_sha256" : "4b810ca6cd57ed251141a4f701ff98bcbe7e905e0cb982d96304c218ba8cf57e",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-yeast",
+  "name" : {
+    "en" : "Yeast",
+    "zh" : "酵母"
+  },
+  "tags" : [ "microbiology", "酵母", "biology", "cell" ],
+  "category" : "Microbiology",
+  "source" : "Bioicons",
+  "author" : "Ewa-Oz",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/Ewa-Oz/Yeast.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "aa9e5e4b41b02b1916131f8dc43384bd875f9be6bccabc1dd41c7753bda53db7",
+  "upstream_sha256" : "7f7fcb5c616103d8bdbb84d40ef5912c7c785b6e88ca2aa0fa6084bddacdc2a6",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-agarose-gel",
+  "name" : {
+    "en" : "agarose-gel",
+    "zh" : "琼脂糖凝胶"
+  },
+  "tags" : [ "microbiology", "琼脂糖凝胶", "biology", "cell" ],
+  "category" : "Microbiology",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/OpenClipart/agarose-gel.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "96a5bac0a8dac7527a7fa1e1f7e1f607c7dc7413673ea9a6fa3e59ab9277acda",
+  "upstream_sha256" : "710424a0a1ceed7b15d6ed70cd30a0827e2f9107b1f16978220e740e7aac174c",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-inverted-microscope",
+  "name" : {
+    "en" : "inverted microscope",
+    "zh" : "倒置显微镜"
+  },
+  "tags" : [ "microbiology", "倒置显微镜", "biology", "cell" ],
+  "category" : "Microbiology",
+  "source" : "Bioicons",
+  "author" : "Divakar-Badal",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/Divakar-Badal/inverted_microscope.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "c4bba83f7d4d9250c74db3c7b2c6c745f77c949067466809be7438be17270084",
+  "upstream_sha256" : "e3975507e03f288d004f1665037d0b0e498bc1c45a79da2cb8c558c7ac7d29f3",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-flow-cytometer-cell-sorter",
+  "name" : {
+    "en" : "flow-cytometer-cell-sorter",
+    "zh" : "流式细胞分选仪"
+  },
+  "tags" : [ "lab apparatus", "流式细胞分选仪", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Derek-Croote",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/flow-cytometer-cell-sorter.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a55d3a7b43314257045671220ad89590d250b9558ea5dd60bf0d32803813f0d4",
+  "upstream_sha256" : "43936e2266c829c09315089546050fcc017c9f0b2c2f9fc63997142bec4eff63",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-microscope-cartoon",
+  "name" : {
+    "en" : "microscope-cartoon",
+    "zh" : "显微镜"
+  },
+  "tags" : [ "lab apparatus", "显微镜", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Derek-Croote",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/microscope-cartoon.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "9854603d9599a1003b6bd956a1ce8f2722818cc9c1f8e0dbbdb53e1610e7cd95",
+  "upstream_sha256" : "3e08df9594346d745d8380f0b68f257308cad5cb94252a0d5fa93d3ea1ac6412",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-round-bottomed-flask-cartoon",
+  "name" : {
+    "en" : "round-bottomed-flask-cartoon",
+    "zh" : "圆底烧瓶（cartoon）"
+  },
+  "tags" : [ "lab apparatus", "圆底烧瓶（cartoon）", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Derek-Croote",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/round-bottomed-flask-cartoon.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "23187c63f39f43dacbfcf148d9314f21003cb89bee4862eecd5bc9f0a4ceb0f6",
+  "upstream_sha256" : "ab3497866edec68f0354b87736dc339808759fe0167b21abb1fad5bce17d92e2",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-simple-syringe-cartoon",
+  "name" : {
+    "en" : "simple-syringe-cartoon",
+    "zh" : "注射器"
+  },
+  "tags" : [ "lab apparatus", "注射器", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Derek-Croote",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/simple-syringe-cartoon.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "17ca4751c901db06dc3c8eb7f689dbccc013b5fa961d727114b83ba8af6565b7",
+  "upstream_sha256" : "c2013b3a3c7e6f9a909536299ad20abd23d8161e997c5c5333d703457bfd2f4d",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-erlenmeyer-filled",
+  "name" : {
+    "en" : "erlenmeyer filled",
+    "zh" : "装液锥形瓶"
+  },
+  "tags" : [ "lab apparatus", "装液锥形瓶", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "KeHan",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/erlenmeyer_filled.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "f3fd3f5aef1575016fd808c76ae2c9b5273f7fec65461c11200165435741a19f",
+  "upstream_sha256" : "49433d0a3e60d5c5db462a4cd493a2efe9befa481af5b9648f955a8463a2f0fe",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-incubator",
+  "name" : {
+    "en" : "incubator",
+    "zh" : "培养箱"
+  },
+  "tags" : [ "lab apparatus", "培养箱", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "KeHan",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/incubator.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "4cc393c445837da3fd7bd84ea4f45ea02a0da546f5f5b7fc7a36787aa61d6bd3",
+  "upstream_sha256" : "c05a124d270193d7720b6684f23d8ed310a3b23b1d6b4a4d63d6c2ddbb2f8888",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-ln2-tank",
+  "name" : {
+    "en" : "ln2 tank",
+    "zh" : "液氮罐"
+  },
+  "tags" : [ "lab apparatus", "液氮罐", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "KeHan",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/ln2_tank.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "64f07df5dbb9b4f55b3ad0ea0f6b82f2abe9051fa70fca0d111de38359b4f0a1",
+  "upstream_sha256" : "386dfc33d871ca4927bc95381d5be6eb6cf62a81a1b14debae311cd208d31259",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-qpcr-machine",
+  "name" : {
+    "en" : "qpcr machine",
+    "zh" : "定量PCR仪"
+  },
+  "tags" : [ "lab apparatus", "定量PCR仪", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "KeHan",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/qpcr_machine.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "63b81e2ba6b6cc89e0a29a35314fec98ad81875c15efd88834cf5bfd56b527a9",
+  "upstream_sha256" : "e79c69dffc68dd9e37887b69178b2128fd335292f3b3613b87c79764e20fe614",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-sonicator",
+  "name" : {
+    "en" : "sonicator",
+    "zh" : "超声处理仪"
+  },
+  "tags" : [ "lab apparatus", "超声处理仪", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "KeHan",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/sonicator.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "8ca5596b4fda89da51730af560fa2c3b8b2e5d62585270b558418560f42e009c",
+  "upstream_sha256" : "6a5d38fc19754d7c21b400d0643d61029e9435d50f89947911e340b7eae90335",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-vortex-mixer",
+  "name" : {
+    "en" : "vortex mixer",
+    "zh" : "涡旋混合器"
+  },
+  "tags" : [ "lab apparatus", "涡旋混合器", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "KeHan",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/vortex_mixer.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "279d3a973aeb5b1c8756da3b19ad93985c36b2479821b42d84091c1d64b96b38",
+  "upstream_sha256" : "eb1e16d3d3ab5cc095c9788a633d29e4892f88807a832b01a10f67514b85c007",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-water-bath",
+  "name" : {
+    "en" : "water bath",
+    "zh" : "水浴槽"
+  },
+  "tags" : [ "lab apparatus", "水浴槽", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "KeHan",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/water_bath.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "863be73bd8f8fe87c7373f314423538095f6b357f48f09380cd32d95914948fa",
+  "upstream_sha256" : "cebd4a555c5ec9e79d98c066ef1537f01a77ee856004e49eaad7e2ccdeef6c0c",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-dewar-big",
+  "name" : {
+    "en" : "dewar-big",
+    "zh" : "杜瓦瓶"
+  },
+  "tags" : [ "lab apparatus", "杜瓦瓶", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/dewar-big.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "4811eb4872f8ef6930fea725467e86bee749e01edc296c6fb1228576003a39fc",
+  "upstream_sha256" : "3b502dd2b44ba66e0f3b4659002061f0ec01596302e0135c3d90f351b19ae0f2",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-dropper-bottles",
+  "name" : {
+    "en" : "dropper-bottles",
+    "zh" : "滴瓶组"
+  },
+  "tags" : [ "lab apparatus", "滴瓶组", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/dropper-bottles.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "1a4395cecf6bec327cc72e7c9ce25d1f169c566e9723654a5640a20de30ef622",
+  "upstream_sha256" : "4a1d8e89c0b647c28bb4cf01dfd18c57b37725626808b2f77bd1fd055bc41838",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-dropper-glas",
+  "name" : {
+    "en" : "dropper-glas",
+    "zh" : "玻璃滴管"
+  },
+  "tags" : [ "lab apparatus", "玻璃滴管", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/dropper-glas.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "ea89aa62d4bf066021de47e9ab50ad31459c084f8ab5e77a840340506f325feb",
+  "upstream_sha256" : "33d3822167394ea23041e19a702540494fb6d6b47489af9870c5350d70a64e22",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-dropper-plastic",
+  "name" : {
+    "en" : "dropper-plastic",
+    "zh" : "塑料滴管"
+  },
+  "tags" : [ "lab apparatus", "塑料滴管", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/dropper-plastic.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "830fe5806fc9a187f794dabca27da2364584cd6c6d0cfbc05e20877e36fa0990",
+  "upstream_sha256" : "68414e222cc3f807d240b95f3c6732a209eaec4ee8cde2ba7a7829038c4cb264",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-dropper",
+  "name" : {
+    "en" : "dropper",
+    "zh" : "滴管"
+  },
+  "tags" : [ "lab apparatus", "滴管", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/dropper.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "c922ea7e263566abad84564282625f2e6cde1338a92b6acfac9a300fd42068bc",
+  "upstream_sha256" : "7c6a51281875ec60822db36ec31ae23b8be9760c602ccdc449340d4f1c30a7af",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-fractional-distillation",
+  "name" : {
+    "en" : "fractional-distillation",
+    "zh" : "分馏装置"
+  },
+  "tags" : [ "lab apparatus", "分馏装置", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/fractional-distillation.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "1883a3f9190de171ae239d1a77d7ead8c5e0ca1d1c34c926176d3d42a9a4daf6",
+  "upstream_sha256" : "ef287a3ac0af88d72bb584d25eb754b41947937e9015457e263754be6072bec9",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-glass-rod",
+  "name" : {
+    "en" : "glass-rod",
+    "zh" : "玻璃棒"
+  },
+  "tags" : [ "lab apparatus", "玻璃棒", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/glass-rod.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "079335a301d67376f8b204146912a0bc7a1d55f0aa53d7115c4d7eb7d1e02bda",
+  "upstream_sha256" : "8b3864389de7ac1e58367ffa5aca9cbf1c98a97455b647da3be179e7c2cab118",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-lab-tong",
+  "name" : {
+    "en" : "lab-tong",
+    "zh" : "实验室夹钳"
+  },
+  "tags" : [ "lab apparatus", "实验室夹钳", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/lab-tong.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "c82f279baa07c00ce6539bfeacb58978d6bc14996b41eb8d3e32c577f9b0cb5d",
+  "upstream_sha256" : "9bb027817ebe23ac181e76e623616bd56f3e80b143642f9052be8ef6573ebafa",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-laboratory-scissor-jack",
+  "name" : {
+    "en" : "laboratory-scissor-jack",
+    "zh" : "实验升降台"
+  },
+  "tags" : [ "lab apparatus", "实验升降台", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/laboratory-scissor-jack.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "abc314181cddf2d2aee50bf7c8ea6216a3c2711b7d446eb78a7a15c8576478f8",
+  "upstream_sha256" : "5b5f8f77bc56034cd7bd109743ffb9d08587b0fa7c61c91f1fb3abc92bea59b6",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-laboratory-stands",
+  "name" : {
+    "en" : "laboratory-stands",
+    "zh" : "实验铁架台"
+  },
+  "tags" : [ "lab apparatus", "实验铁架台", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/laboratory-stands.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "2583f08472df2454e09de79a8cbf2ea72154dff9ee60b69ed34da3bd97693827",
+  "upstream_sha256" : "3c4ed4e73c941390fbb064cfb1ee202efc0e912bd92d6306f288fa3343d7a662",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-spatula-side",
+  "name" : {
+    "en" : "spatula-side",
+    "zh" : "侧视药匙"
+  },
+  "tags" : [ "lab apparatus", "侧视药匙", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/spatula-side.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "110453d7ed0d86c8a2a80800429138a54c621a68a68c918fc96e1d0c4b119649",
+  "upstream_sha256" : "cfd347ce02a401dd12a4a9848c78100dc56b7c90270261ef3f3980e7f8d63fb7",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-spatula-top",
+  "name" : {
+    "en" : "spatula-top",
+    "zh" : "俯视药匙"
+  },
+  "tags" : [ "lab apparatus", "俯视药匙", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/spatula-top.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "6f4b056c334983023f309d3a059839f99674df6be0809d22dba859c3c21f1914",
+  "upstream_sha256" : "99ef7754f5e8f795345f9bfb07e4a3a6048c5cd99a37c1ded1595fa54a9c3100",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-spoon-spatula-side",
+  "name" : {
+    "en" : "spoon-spatula-side",
+    "zh" : "匙形药铲"
+  },
+  "tags" : [ "lab apparatus", "匙形药铲", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/spoon-spatula-side.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "38be50717bc81b5fba5467e8a85659d42b731e2790fd6054f0880b8a8e3a4cce",
+  "upstream_sha256" : "b8fe88a73dee48b073aec00b8f16a821402357bcccc7a87a02e5eebae2d2e5dc",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-redbloodcell",
+  "name" : {
+    "en" : "redbloodcell",
+    "zh" : "红细胞"
+  },
+  "tags" : [ "cell types", "红细胞", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "EwaOz",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/EwaOz/redbloodcell.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "cc5d66b7f5c6781cd50485d286c7d2f446f678a865a5d31ec0305fe9cd8e51fc",
+  "upstream_sha256" : "cf4967ea3ada79e0adf2990b9062b7b6cc2cbb324061a17ddf097b69d6f3ee58",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-simple-cardiomyocyte",
+  "name" : {
+    "en" : "simple cardiomyocyte",
+    "zh" : "心肌细胞"
+  },
+  "tags" : [ "cell types", "心肌细胞", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "Marnie-Maddock",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Marnie-Maddock/simple_cardiomyocyte.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "11d646f3c7ab279e60c2c2fd40ee8ea18c4b305187949848e94c3808617b055a",
+  "upstream_sha256" : "c37037b444d7688d25c43e77627599e43b9df831abbb63c943de20c6f8d412cc",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-simple-cell1",
+  "name" : {
+    "en" : "simple cell1",
+    "zh" : "细胞示意"
+  },
+  "tags" : [ "cell types", "细胞示意", "biology", "cell" ],
+  "category" : "Cell_types",
+  "source" : "Bioicons",
+  "author" : "Marnie-Maddock",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Marnie-Maddock/simple_cell1.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "5ceb2771ea6cf61dcf53d191b35befd80a7c74c0f6415e5b1f6395d61ef42af5",
+  "upstream_sha256" : "5021b71fdd602fbca6f488d0e59f49fece197937d05f3ec56745a3dd457f74ed",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-particles-salt-solution",
+  "name" : {
+    "en" : "particles-salt-solution",
+    "zh" : "盐溶液颗粒"
+  },
+  "tags" : [ "chemistry", "盐溶液颗粒", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/particles-salt-solution.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "becfef9c20b009520f50df3fec97aea2469f516b1839d53f59b8da6dbc5f92b5",
+  "upstream_sha256" : "9f98733706578d5df7fbed4e004197d3f31ccd3dfa565053c505f6b0b78ee858",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-particles-smoke",
+  "name" : {
+    "en" : "particles-smoke",
+    "zh" : "烟雾颗粒"
+  },
+  "tags" : [ "chemistry", "烟雾颗粒", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/particles-smoke.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "fadd139436d27e9940ea55569b2bb9cb006668765213d6a3048a97099ec8dbb9",
+  "upstream_sha256" : "6e3267c62b5244408d6225bae599bb3fe46e3ca183c3cbe7080dbdb791583be0",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-particles-solids",
+  "name" : {
+    "en" : "particles-solids",
+    "zh" : "固体颗粒"
+  },
+  "tags" : [ "chemistry", "固体颗粒", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/particles-solids.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "925532a2764e1c9e19df63921b6ae20af62d1299aacbf6c8b8f860660e46a73b",
+  "upstream_sha256" : "83844937f89dd5c06940fd67721a44ad369f2452fb47ab28e8b887b468107fa1",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-particles-solution-gasbubbles",
+  "name" : {
+    "en" : "particles-solution-gasbubbles",
+    "zh" : "溶液与气泡"
+  },
+  "tags" : [ "chemistry", "溶液与气泡", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/particles-solution-gasbubbles.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "bea60595a3734c0cc6fcf37e662868a237c9c04454bb105d53bb572491470afc",
+  "upstream_sha256" : "608ad2bd5a85739e230241a5ddd8ae08e9f3ad1479c2ba4ff3182c0113d89dd4",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-particles-solution",
+  "name" : {
+    "en" : "particles-solution",
+    "zh" : "溶液颗粒"
+  },
+  "tags" : [ "chemistry", "溶液颗粒", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/particles-solution.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "d18508a61f1bb41e8e1149fead3e7518cc811c83c0d1f5780021bf014f57fbb8",
+  "upstream_sha256" : "965912aefee610f42f072bfa288204890bebd5381a998f1607ee70fdb7cc384d",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-particles-suspension",
+  "name" : {
+    "en" : "particles-suspension",
+    "zh" : "悬浮颗粒"
+  },
+  "tags" : [ "chemistry", "悬浮颗粒", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/particles-suspension.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "222a5686e7dc83d619728a5081443cf0be1391ba011d1f090fc8c451659b64ee",
+  "upstream_sha256" : "cacd1545b1f55dcbbbc676cccc572aa63f7d0916902295907c6eb96cbf3cc8e7",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-round-bottomed-flask-1-1000ml",
+  "name" : {
+    "en" : "round-bottomed-flask-1-1000ml",
+    "zh" : "圆底烧瓶（1000ml）"
+  },
+  "tags" : [ "chemistry", "圆底烧瓶（1000ml）", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/round-bottomed-flask-1-1000ml.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "c5140a2c7075468f9e14deac8f5543d3cb83c1581dabc2b2dbf466fc51f40627",
+  "upstream_sha256" : "5c08dc97d5cf910e427f3d1502023552ff99e64f1f511be7a82fc09a0f293626",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-u-tube",
+  "name" : {
+    "en" : "u-tube",
+    "zh" : "U形管"
+  },
+  "tags" : [ "chemistry", "U形管", "chemistry", "materials", "physics" ],
+  "category" : "Chemistry",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemistry/OpenClipart/u-tube.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "8a191315a896589362203b4cec07d9ee9fc5709d075c6597110e34bcb4d18bee",
+  "upstream_sha256" : "98efc658615c9a3979abcdfc0c6c22f817ef3e5571209183a57661aec4eefbe8",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-metromap-style-pipeline-workflow-components",
+  "name" : {
+    "en" : "metromap style pipeline workflow components",
+    "zh" : "方法流程组件"
+  },
+  "tags" : [ "chemo- and bioinformatics", "方法流程组件", "biology", "cell" ],
+  "category" : "Chemo-_and_Bioinformatics",
+  "source" : "Bioicons",
+  "author" : "James-A--Fellows-Yates",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemo-_and_Bioinformatics/James-A--Fellows-Yates/metromap_style_pipeline_workflow_components.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a7ae989f016fa530ea82f0dc7b554de15337454df17a65ac0386eed0086b6435",
+  "upstream_sha256" : "e6de2b46c190ca743a4f7b6ff78caa0dcddf179087702fda17a56635a16795c7",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-single-nucleosome",
+  "name" : {
+    "en" : "single nucleosome",
+    "zh" : "单个核小体"
+  },
+  "tags" : [ "epigenetics", "单个核小体", "biology", "cell" ],
+  "category" : "Epigenetics",
+  "source" : "Bioicons",
+  "author" : "Xi-Chen",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Epigenetics/Xi-Chen/single_nucleosome.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "196591460573deba7b875105faf7c6c79c6dde6f6e44952cd3b2093b123c25c1",
+  "upstream_sha256" : "238102406fd47a1f68e5e14826bd9606d9174378507738bcfd44752ec9c5d235",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-transcription-machinery",
+  "name" : {
+    "en" : "transcription machinery",
+    "zh" : "转录复合体"
+  },
+  "tags" : [ "epigenetics", "转录复合体", "biology", "cell" ],
+  "category" : "Epigenetics",
+  "source" : "Bioicons",
+  "author" : "Xi-Chen",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Epigenetics/Xi-Chen/transcription_machinery.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "b63c98957043dc63fd2807438f2c934f1dacf9a4b6c2ff8a92911929c57263c7",
+  "upstream_sha256" : "994e96349cfab626a13580c4e728f3e759f80f28907afde535561f85a27207cf",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-img-sequencer-long-read05",
+  "name" : {
+    "en" : "img sequencer long read05",
+    "zh" : "长读长测序仪五型"
+  },
+  "tags" : [ "genetics", "长读长测序仪五型", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "PacBio",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_long_read05.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "d090e3f0ff4594b3fd8d17b6e1f83e0f48ecbec1362322d7d1ae5baadb419cec",
+  "upstream_sha256" : "60be45316c17d981be896a83cae68b484d2a135cd0b05cc9187e37f63f07fc59",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-img-sequencer-shor-read06",
+  "name" : {
+    "en" : "img sequencer shor read06",
+    "zh" : "短读长测序仪六型"
+  },
+  "tags" : [ "genetics", "短读长测序仪六型", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "PacBio",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_shor_read06.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "ec425988381dd8d7a315b06052a4cbebfb9a06b3a773da843e1f646f40ca1431",
+  "upstream_sha256" : "51cb74341e734867e8a9717825b5e9a3447abdd189c627fa9faf8a784e8e3f52",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-img-sequencer-short-read01",
+  "name" : {
+    "en" : "img sequencer short read01",
+    "zh" : "短读长测序仪一型"
+  },
+  "tags" : [ "genetics", "短读长测序仪一型", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "PacBio",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_short_read01.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "182487d6c8631db7a07ffc05d07158998ac3ccdf8ddc8c98056078e8441f522e",
+  "upstream_sha256" : "a769949ed12aa00f8fdc428ec66c74c5038e11bc530ec1db30d31cc8d1176024",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-img-sequencer-short-read03",
+  "name" : {
+    "en" : "img sequencer short read03",
+    "zh" : "短读长测序仪三型"
+  },
+  "tags" : [ "genetics", "短读长测序仪三型", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "PacBio",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_short_read03.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "7f58cc66ff9717bb78069c302a82cc38e3296c4cea942e9664881eed9ce3cd31",
+  "upstream_sha256" : "37661849e9908fa02354e0e84c310ba1987ff6d64e48dc490c7420dd54dbca0e",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-img-sequencers01",
+  "name" : {
+    "en" : "img sequencers01",
+    "zh" : "测序设备"
+  },
+  "tags" : [ "genetics", "测序设备", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "PacBio",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencers01.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "cb9ca07ac0e85ef26574cd81ae98f581da6c77993f4d86125e64c34c0cf790d8",
+  "upstream_sha256" : "4ff83f71ba68d984a5cccdffdd0fede0c602d4d61ce15b91c8ba2b7048f7e7b4",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-plasmid-library",
+  "name" : {
+    "en" : "plasmid library",
+    "zh" : "质粒文库"
+  },
+  "tags" : [ "genetics", "质粒文库", "biology", "cell" ],
+  "category" : "Genetics",
+  "source" : "Bioicons",
+  "author" : "umasstr",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/plasmid_library.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "6ba3e5cf08a1901c337cb86fdc2b9147c26d911239b27f4d02f3c6ace8432601",
+  "upstream_sha256" : "7642d58e5790553140a975a7c194bf12d57091861315d30c60b2408986878d62",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-pyramidal-neuron",
+  "name" : {
+    "en" : "Pyramidal Neuron",
+    "zh" : "锥体神经元"
+  },
+  "tags" : [ "human physiology", "锥体神经元", "biology", "cell" ],
+  "category" : "Human_physiology",
+  "source" : "Bioicons",
+  "author" : "Fabian-Mikulasch",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Fabian-Mikulasch/Pyramidal_Neuron.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "44804791bc5254f5add2038f36c1b6c6bbbbedea484daace9045a503fa3de61d",
+  "upstream_sha256" : "128551d2aa862550a5a099aafa41496fe3de6fd0089303318c4e87daceb265c3",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-fibrotic-liver",
+  "name" : {
+    "en" : "fibrotic liver",
+    "zh" : "纤维化肝脏"
+  },
+  "tags" : [ "human physiology", "纤维化肝脏", "biology", "cell" ],
+  "category" : "Human_physiology",
+  "source" : "Bioicons",
+  "author" : "Jan-Clusmann",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Jan-Clusmann/fibrotic_liver.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "5d87496f890d7b9ea95b15c1aeb06381365faa085576c86129829add7bf5c90a",
+  "upstream_sha256" : "54ed279777304643a2ef7d6ebe4ef6c2ce14c26a221dff62e595c58f494c6c5b",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-healthy-liver",
+  "name" : {
+    "en" : "healthy liver",
+    "zh" : "健康肝脏"
+  },
+  "tags" : [ "human physiology", "健康肝脏", "biology", "cell" ],
+  "category" : "Human_physiology",
+  "source" : "Bioicons",
+  "author" : "Jan-Clusmann",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Jan-Clusmann/healthy_liver.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "7c66e1508969afcb76abe144bfb7d65f8efd543a64d13436fc20beb566ce82e5",
+  "upstream_sha256" : "ef460961abd03b4cbb72d82299736d0d2696c571f990b2be2b3b1db3a7e9012b",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-syringe-with-blood",
+  "name" : {
+    "en" : "syringe with blood",
+    "zh" : "采血注射器"
+  },
+  "tags" : [ "human physiology", "采血注射器", "biology", "cell" ],
+  "category" : "Human_physiology",
+  "source" : "Bioicons",
+  "author" : "va",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/va/syringe_with_blood.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "1dc0c3ccfa8d3cb3fd67af0bc82dd91a26a82cd3ce3e6e02c6a0d3c5e971c5f1",
+  "upstream_sha256" : "5f5106ae4e1fe29fe70d02ba4a3719f81fe9e87d79f09b6ab5eec9c6b88e939e",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-spoon-spatula-top",
+  "name" : {
+    "en" : "spoon-spatula-top",
+    "zh" : "俯视匙形药铲"
+  },
+  "tags" : [ "lab apparatus", "俯视匙形药铲", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "OpenClipart",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/spoon-spatula-top.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "a6017bbfaee8b4c23044d06ec10999f996945afac1647ed3916d0a75d90e1c00",
+  "upstream_sha256" : "9c7e210d87777c63b7d7aaea3a82fbd283bf1ce643580f1f2e3f6a4f9ecbc16d",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-weck-jar-with-media",
+  "name" : {
+    "en" : "weck-jar-with-media",
+    "zh" : "培养基容器"
+  },
+  "tags" : [ "lab apparatus", "培养基容器", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Samuel-Nestor-Meckoni",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Samuel-Nestor-Meckoni/weck-jar-with-media.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "004ba7e4798819d2c6f9d8ea76dcb5db09ed5240a69b74559ad880f359aa475f",
+  "upstream_sha256" : "41c24bca1285ebac567c906ba51570abbb8a429bccf0f24fc0d913e0d170bc72",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-singlecell-droplet-overloading",
+  "name" : {
+    "en" : "singlecell droplet overloading",
+    "zh" : "单细胞液滴负载"
+  },
+  "tags" : [ "lab apparatus", "单细胞液滴负载", "experiment", "lab", "workflow" ],
+  "category" : "Lab_apparatus",
+  "source" : "Bioicons",
+  "author" : "Xi-Chen",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xi-Chen/singlecell_droplet_overloading.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "ff3fb93c6c075f59a577c93d3c4d5c74262a7b58592e9b243f130ef7e36c5073",
+  "upstream_sha256" : "07a01899b8ed037921b5b44ec8d790931ebed29205293500bc11873f656d44eb",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-c-terminal-signal-peptide-scheme",
+  "name" : {
+    "en" : "C-terminal signal peptide scheme",
+    "zh" : "羧基端信号肽"
+  },
+  "tags" : [ "peptides", "羧基端信号肽", "biology", "cell" ],
+  "category" : "Peptides",
+  "source" : "Bioicons",
+  "author" : "Samuel-Nestor-Meckoni",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Peptides/Samuel-Nestor-Meckoni/C-terminal_signal_peptide_scheme.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "5afc858edff730eada93fc17aa34f122ecd3b6d12cf063fa705cbf3edb235ddc",
+  "upstream_sha256" : "6915c7966567ee4cda402e14062d2b428c0f8846bbd2a77a4cd70d435b33ee6c",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-n-terminal-signal-peptide-scheme",
+  "name" : {
+    "en" : "N-terminal signal peptide scheme",
+    "zh" : "氨基端信号肽"
+  },
+  "tags" : [ "peptides", "氨基端信号肽", "biology", "cell" ],
+  "category" : "Peptides",
+  "source" : "Bioicons",
+  "author" : "Samuel-Nestor-Meckoni",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Peptides/Samuel-Nestor-Meckoni/N-terminal_signal_peptide_scheme.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "e9d65d14645f3f03d4f981d2f49ae161c8c110daaa152709494d9ea5a546d730",
+  "upstream_sha256" : "57cdcfed9d74d93f16b134828506642c6c9301001d32dc52255e235cd94197bd",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-rat-optogenetic-implant",
+  "name" : {
+    "en" : "rat optogenetic implant",
+    "zh" : "光遗传植入示意"
+  },
+  "tags" : [ "neuroscience", "光遗传植入示意", "biology", "cell" ],
+  "category" : "Neuroscience",
+  "source" : "Bioicons",
+  "author" : "Eric-R-Cole",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Neuroscience/Eric-R-Cole/rat_optogenetic_implant.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "190a24da6ac29f11a8b517f2d55d19b9ae5e94f47d4e4c1ad71c14ee9dd48c8b",
+  "upstream_sha256" : "fad49cfc5a97d2441613d04c0fc4cff2f149e5a7aa9b77212e4c2a028065760f",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-mousekidney-cystic-sagittal",
+  "name" : {
+    "en" : "mousekidney cystic sagittal",
+    "zh" : "囊性肾脏矢状面"
+  },
+  "tags" : [ "tissues", "囊性肾脏矢状面", "biology", "cell" ],
+  "category" : "Tissues",
+  "source" : "Bioicons",
+  "author" : "EmilyADaniel",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Tissues/EmilyADaniel/mousekidney_cystic_sagittal.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "fe4712a85fc3191170293813d4a78327ee20d62f719e2a4b76719ba21dcb95d2",
+  "upstream_sha256" : "e96f3d90051056df24e87ba264c96ee98f9620a4b96a1e6a270d0b6e2887025e",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-nephron-2d",
+  "name" : {
+    "en" : "nephron 2d",
+    "zh" : "肾单位"
+  },
+  "tags" : [ "tissues", "肾单位", "biology", "cell" ],
+  "category" : "Tissues",
+  "source" : "Bioicons",
+  "author" : "EmilyADaniel",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Tissues/EmilyADaniel/nephron_2d.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "78634219f48b271a8212aaf477d4e4736a652094e2fc1f28b52f8ab55fb8ce58",
+  "upstream_sha256" : "6f3cea5de7e212b1d7e92a78603e5f4ddc20c38e8222a9b80a4d1191b19e533c",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-internal-signal-peptide-scheme",
+  "name" : {
+    "en" : "internal signal peptide scheme",
+    "zh" : "内部信号肽"
+  },
+  "tags" : [ "peptides", "内部信号肽", "biology", "cell" ],
+  "category" : "Peptides",
+  "source" : "Bioicons",
+  "author" : "Samuel-Nestor-Meckoni",
+  "license" : "CC0-1.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Peptides/Samuel-Nestor-Meckoni/internal_signal_peptide_scheme.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "2cd01bae0f42a5ad16042c3b57fc35b8fc393db4fe8040c9f31564cc31b58cce",
+  "upstream_sha256" : "067122971e864c75d3ca960a50c1422b4081dff29408f3c2aa9e4cf5b53937db",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+}, {
+  "id" : "bio-protein-purification-colored",
+  "name" : {
+    "en" : "Protein purification colored",
+    "zh" : "蛋白质纯化"
+  },
+  "tags" : [ "procedures", "蛋白质纯化", "experiment", "lab", "workflow" ],
+  "category" : "Procedures",
+  "source" : "Bioicons",
+  "author" : "DBCLS",
+  "license" : "CC-BY-4.0",
+  "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Procedures/DBCLS/Protein_purification_colored.svg",
+  "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "modified" : true,
+  "sha256" : "6d35806479fbd1a23214ea6cba62b6424d677c201332b22969c7226307c09c34",
+  "upstream_sha256" : "b48608d98400c7d13a473a9e150dc312089fd718aad27b7d491fd7da263cfda8",
+  "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
+} ]

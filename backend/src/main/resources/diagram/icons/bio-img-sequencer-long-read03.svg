@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="Layer_2" viewBox="0 0 99.46731 163.11218">
+  <defs>
+    
+    <linearGradient gradientUnits="userSpaceOnUse" id="linear-gradient" x1="42.06518" x2="42.06518" y1="163.11218" y2="14.38542">
+      <stop offset="0" stop-color="#313541"/>
+      <stop offset=".26326" stop-color="#343844"/>
+      <stop offset=".51125" stop-color="#3e4350"/>
+      <stop offset=".75311" stop-color="#4e5463"/>
+      <stop offset=".98989" stop-color="#656d7d"/>
+      <stop offset="1" stop-color="#676f7f"/>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" id="linear-gradient-2" x1="42.06516" x2="42.06516" y1="156.74752" y2="20.75011">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" id="linear-gradient-3" x1="82.84786" x2="101.6903" y1="-2.87315" y2="15.96929">
+      <stop offset="0" stop-color="#40a9dd"/>
+      <stop offset="1" stop-color="#00b8c4"/>
+    </linearGradient>
+  </defs>
+  <g id="_01">
+    <g>
+      <g id="icn_revio_alt">
+        <rect height="148.72675" style="stroke-width:0px;fill:url(#linear-gradient)" width="84.13036" y="14.38542"/>
+        <rect height="27.04907" style="stroke-width:0px;fill:#313541" width="84.01123" x=".05956" y="136.06311"/>
+        <polygon points="7.00066 156.74752 7.00066 20.75011 77.12966 20.75011 7.00066 156.74752" style="fill:url(#linear-gradient-2);opacity:.2;stroke-width:0px"/>
+        <polyline points="79.97471 4 95.46731 4 95.46731 18.19228" style="fill:none;stroke:url(#linear-gradient-3);stroke-miterlimit:10;stroke-width:8px"/>
+      </g>
+      <g id="icn_revio_alt-2">
+        <rect height="148.72675" style="stroke-width:0px;fill:url(#linear-gradient)" width="84.13036" y="14.38542"/>
+        <rect height="27.04907" style="stroke-width:0px;fill:#313541" width="84.01123" x=".05956" y="136.06311"/>
+        <polygon points="7.00066 156.74752 7.00066 20.75011 77.12966 20.75011 7.00066 156.74752" style="fill:url(#linear-gradient-2);opacity:.2;stroke-width:0px"/>
+        <polyline points="79.97471 4 95.46731 4 95.46731 18.19228" style="fill:none;stroke:url(#linear-gradient-3);stroke-miterlimit:10;stroke-width:8px"/>
+      </g>
+    </g>
+  </g>
+</svg>

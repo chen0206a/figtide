@@ -1,6 +1,6 @@
 {
   "id": "chem-materials",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "化学 / 材料机理",
   "description": "仅使用用户给出的物质、反应方向、能级和数值。",
   "patterns": [
@@ -22,7 +22,8 @@
     "pill",
     "ellipse",
     "glyph",
-    "text"
+    "text",
+    "icon"
   ],
   "allowed_edges": [
     "flow",
