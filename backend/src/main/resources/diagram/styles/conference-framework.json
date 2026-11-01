@@ -1,0 +1,24 @@
+{
+  "id": "conference-framework",
+  "name": "会议框架风",
+  "zone_colors": [
+    "#FFFFFF",
+    "#94C2E8"
+  ],
+  "accent_colors": [
+    "#0072B2",
+    "#45C5A1",
+    "#D55E00"
+  ],
+  "text_color": "#0E1116",
+  "line_color": "#3D4652",
+  "font_family": "Inter, Arial, sans-serif",
+  "font_size_pt": 7,
+  "line_width_pt": 1,
+  "radius_mm": 1.8,
+  "arrow": "filled",
+  "fill": "flat",
+  "shadow": false,
+  "sketch": false,
+  "iso": false
+}

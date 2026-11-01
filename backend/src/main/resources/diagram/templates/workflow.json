@@ -1,0 +1,251 @@
+{
+  "id": "workflow",
+  "name": "实验步骤",
+  "pattern": "workflow",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 4,
+          "y": 33,
+          "w": 38,
+          "h": 44,
+          "label": "Tissue sample",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "tube",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 49,
+          "y": 33,
+          "w": 38,
+          "h": 44,
+          "label": "Dissociation",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "cell-cluster",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 94,
+          "y": 33,
+          "w": 38,
+          "h": 44,
+          "label": "Library prep",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "flask",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 139,
+          "y": 33,
+          "w": 38,
+          "h": 44,
+          "label": "Sequencing",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "workflow",
+        "brief": "Illustrative scientific design; glyph bars and heatmaps are symbols, not experimental results.",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 4,
+          "y": 33,
+          "w": 38,
+          "h": 44,
+          "label": "组织取样",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "tube",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 49,
+          "y": 33,
+          "w": 38,
+          "h": 44,
+          "label": "细胞解离",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "cell-cluster",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 94,
+          "y": 33,
+          "w": 38,
+          "h": 44,
+          "label": "文库构建",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "flask",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 139,
+          "y": 33,
+          "w": 38,
+          "h": 44,
+          "label": "测序",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "workflow",
+        "brief": "Illustrative scientific design; glyph bars and heatmaps are symbols, not experimental results.",
+        "facts": []
+      }
+    }
+  }
+}

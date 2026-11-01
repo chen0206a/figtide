@@ -1,0 +1,357 @@
+{
+  "id": "zoom-workflow",
+  "name": "步骤与放大框",
+  "pattern": "workflow",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "zoom",
+          "kind": "zoom",
+          "label": "Library molecule structure",
+          "x": 20,
+          "y": 60,
+          "w": 157,
+          "h": 46,
+          "zoom_of": "n2"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "cell-cluster",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Isolated cells",
+          "x": 4,
+          "y": 10,
+          "w": 34,
+          "h": 29,
+          "role": "actor",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "flask",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "Library preparation",
+          "x": 58,
+          "y": 12,
+          "w": 62,
+          "h": 21,
+          "role": "process",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "dna",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Sequencing",
+          "x": 143,
+          "y": 10,
+          "w": 33,
+          "h": 29,
+          "role": "output",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "Cell barcode",
+          "x": 26,
+          "y": 77,
+          "w": 45,
+          "h": 17,
+          "role": "actor",
+          "zone": "zoom",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "UMI",
+          "x": 78,
+          "y": 77,
+          "w": 37,
+          "h": 17,
+          "role": "model",
+          "zone": "zoom",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "glyph": "dna",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "Transcript",
+          "x": 123,
+          "y": 77,
+          "w": 49,
+          "h": 17,
+          "role": "process",
+          "zone": "zoom",
+          "icon": null,
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e3",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e4",
+          "from": "n5",
+          "to": "n6",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "workflow",
+        "skill_version": null,
+        "template": "zoom-workflow",
+        "brief": "Illustrative experimental/method design, not measured outcomes.",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "zoom",
+          "kind": "zoom",
+          "label": "文库分子结构",
+          "x": 20,
+          "y": 60,
+          "w": 157,
+          "h": 46,
+          "zoom_of": "n2"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "cell-cluster",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "分离细胞",
+          "x": 4,
+          "y": 10,
+          "w": 34,
+          "h": 29,
+          "role": "actor",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "flask",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "文库构建",
+          "x": 58,
+          "y": 12,
+          "w": 62,
+          "h": 21,
+          "role": "process",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "dna",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "测序",
+          "x": 143,
+          "y": 10,
+          "w": 33,
+          "h": 29,
+          "role": "output",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "细胞条码",
+          "x": 26,
+          "y": 77,
+          "w": 45,
+          "h": 17,
+          "role": "actor",
+          "zone": "zoom",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "UMI",
+          "x": 78,
+          "y": 77,
+          "w": 37,
+          "h": 17,
+          "role": "model",
+          "zone": "zoom",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "glyph": "dna",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "转录序列",
+          "x": 123,
+          "y": 77,
+          "w": 49,
+          "h": 17,
+          "role": "process",
+          "zone": "zoom",
+          "icon": null,
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e3",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e4",
+          "from": "n5",
+          "to": "n6",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "workflow",
+        "skill_version": null,
+        "template": "zoom-workflow",
+        "brief": "Illustrative experimental/method design, not measured outcomes.",
+        "facts": []
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "sketch",
+  "name": "手绘草图",
+  "zone_colors": [
+    "#FFFFFF",
+    "#94C2E8"
+  ],
+  "accent_colors": [
+    "#0072B2"
+  ],
+  "text_color": "#262626",
+  "line_color": "#262626",
+  "font_family": "Inter, Arial, sans-serif",
+  "font_size_pt": 7,
+  "line_width_pt": 1,
+  "radius_mm": 1.4,
+  "arrow": "open",
+  "fill": "flat",
+  "shadow": false,
+  "sketch": true,
+  "iso": false
+}

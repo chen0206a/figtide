@@ -1,0 +1,8 @@
+{
+  "variants": 144,
+  "errors": 0,
+  "warnings_by_rule": {
+    "D3": 562
+  },
+  "all_non_color_rules_pass": true
+}

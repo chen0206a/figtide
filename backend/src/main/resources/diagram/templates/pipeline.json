@@ -1,0 +1,393 @@
+{
+  "id": "pipeline",
+  "name": "输入输出管线",
+  "pattern": "pipeline",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "Video representation",
+          "x": 42,
+          "y": 15,
+          "w": 56,
+          "h": 75,
+          "zoom_of": null
+        },
+        {
+          "id": "z2",
+          "kind": "panel",
+          "label": "Action recognition",
+          "x": 106,
+          "y": 15,
+          "w": 45,
+          "h": 75,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 5,
+          "y": 30,
+          "w": 28,
+          "h": 26,
+          "label": "Video frames",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "input-frames",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 47,
+          "y": 28,
+          "w": 46,
+          "h": 14,
+          "label": "Patch tokens",
+          "zone": "z1",
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 48,
+          "y": 58,
+          "w": 44,
+          "h": 23,
+          "label": "Transformer layers",
+          "zone": "z1",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "layers",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 112,
+          "y": 30,
+          "w": 39,
+          "h": 23,
+          "label": "Visual encoder",
+          "zone": "z2",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "encoder",
+          "label_pos": "right",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "x": 112,
+          "y": 65,
+          "w": 33,
+          "h": 14,
+          "label": "Classifier",
+          "zone": "z2",
+          "icon": null,
+          "role": "process",
+          "style_ref": "note",
+          "glyph": "text-input",
+          "boxed": true,
+          "label_pos": "center",
+          "badges": []
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "x": 158,
+          "y": 65,
+          "w": 20,
+          "h": 18,
+          "label": "Actions",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "input-frames",
+          "boxed": false,
+          "label_pos": "below",
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e4",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e5",
+          "from": "n5",
+          "to": "n6",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "pipeline",
+        "brief": "Illustrative scientific design; glyph bars and heatmaps are symbols, not experimental results.",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "视频表征",
+          "x": 42,
+          "y": 15,
+          "w": 56,
+          "h": 75,
+          "zoom_of": null
+        },
+        {
+          "id": "z2",
+          "kind": "panel",
+          "label": "动作识别",
+          "x": 106,
+          "y": 15,
+          "w": 45,
+          "h": 75,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 5,
+          "y": 30,
+          "w": 28,
+          "h": 26,
+          "label": "视频帧",
+          "zone": null,
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "input-frames",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 47,
+          "y": 28,
+          "w": 46,
+          "h": 14,
+          "label": "图像块序列",
+          "zone": "z1",
+          "icon": null,
+          "role": "data",
+          "style_ref": null,
+          "glyph": "tokens",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 48,
+          "y": 58,
+          "w": 44,
+          "h": 23,
+          "label": "Transformer层",
+          "zone": "z1",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "layers",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 112,
+          "y": 30,
+          "w": 39,
+          "h": 23,
+          "label": "视觉编码器",
+          "zone": "z2",
+          "icon": null,
+          "role": "model",
+          "style_ref": null,
+          "glyph": "encoder",
+          "label_pos": "right",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "x": 112,
+          "y": 65,
+          "w": 33,
+          "h": 14,
+          "label": "分类头",
+          "zone": "z2",
+          "icon": null,
+          "role": "process",
+          "style_ref": "note",
+          "glyph": "text-input",
+          "boxed": true,
+          "label_pos": "center",
+          "badges": []
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "x": 158,
+          "y": 65,
+          "w": 20,
+          "h": 18,
+          "label": "动作类别",
+          "zone": null,
+          "icon": null,
+          "role": "output",
+          "style_ref": null,
+          "glyph": "input-frames",
+          "boxed": false,
+          "label_pos": "below",
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e4",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e5",
+          "from": "n5",
+          "to": "n6",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "pipeline",
+        "brief": "Illustrative scientific design; glyph bars and heatmaps are symbols, not experimental results.",
+        "facts": []
+      }
+    }
+  }
+}

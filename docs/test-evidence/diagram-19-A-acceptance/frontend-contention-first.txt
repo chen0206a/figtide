@@ -1,0 +1,72 @@
+
+> labflow-ui@0.2.0 test
+> vitest run --run -u
+
+
+ RUN  v5.0.5 D:/RAG-agent项目/LabFlow/frontend
+
+ ❯ src/App.processing-selection.test.tsx (1 test | 1 failed) 5066ms
+   × keeps the committed derived dataset selected while the dataset-list refresh is pending 5057ms
+ ❯ src/editor/styles-library.test.tsx (5 tests | 1 failed) 11616ms
+   ❯ style library (5)
+     × renames through the API and requires a second action for deletion 5091ms
+ ❯ src/editor/AgentAssistant.test.tsx (27 tests | 1 failed) 19650ms
+   × keeps the previous proposal after a cancelled refinement 399ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/App.processing-selection.test.tsx > keeps the committed derived dataset selected while the dataset-list refresh is pending
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/App.processing-selection.test.tsx:33:1
+     31| afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); localSt…
+     32|
+     33| it("keeps the committed derived dataset selected while the dataset-lis…
+       | ^
+     34|   localStorage.setItem("labflow-intro-seen", "1");
+     35|   vi.stubGlobal("scrollTo", vi.fn());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/editor/AgentAssistant.test.tsx > keeps the previous proposal after a cancelled refinement
+Error: expect(element).toBeEnabled()
+
+Received element is not enabled:
+  <button
+  aria-label="应用这组调整"
+  class="btn btn-primary agent-apply"
+  disabled=""
+/>
+ ❯ src/editor/AgentAssistant.test.tsx:496:60
+    494|     fireEvent.click(screen.getByRole("button", { name: "继续修改提案" }));
+    495|     await screen.findByText("本轮没有生成新提案");
+    496|     expect(screen.getByRole("button", { name: "应用这组调整" })).toBeEnabled…
+       |                                                            ^
+    497|     expect(screen.getByLabelText("修改明细")).toHaveTextContent("18");
+    498|     fireEvent.click(screen.getByRole("button", { name: "应用这组调整" }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/editor/styles-library.test.tsx > style library > renames through the API and requires a second action for deletion
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/editor/styles-library.test.tsx:129:3
+    127|     expect(apply.mock.calls[0][0].style.fontSize).toBe(16);
+    128|   });
+    129|   it("renames through the API and requires a second action for deletio…
+       |   ^
+    130|     const { fetcher } = setup();
+    131|     await screen.findByRole("button", { name: "重命名 Template 1" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+  Snapshots  8 updated
+ Test Files  3 failed | 67 passed (70)
+      Tests  3 failed | 582 passed (585)
+   Start at  12:52:29
+   Duration  33.24s (environment 41%, setup 26%, tests 21%, import 9%, transform 3%)
+
+Environment  jsdom was created 70 times · 268.45s total, 41% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments

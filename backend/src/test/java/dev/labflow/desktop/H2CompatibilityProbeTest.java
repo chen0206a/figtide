@@ -61,6 +61,8 @@ class H2CompatibilityProbeTest {
     EXPECTED_MYSQL_SCRIPT.put("V9#1", true);   // agent_runs ADD mode DEFAULT single（18-A 实测）
     EXPECTED_MYSQL_SCRIPT.put("V9#2", true);   // JSON DDL；H2 产品迁移仍使用 CLOB
     EXPECTED_MYSQL_SCRIPT.put("V9#3", true);   // accepted_fixes JSON DDL
+    EXPECTED_MYSQL_SCRIPT.put("V10#1", true);  // diagrams, explicit UTC timestamps and project FK
+    EXPECTED_MYSQL_SCRIPT.put("V10#2", true);  // diagram_versions, JSON DDL (product H2 uses CLOB)
 
     // U 探针（编号沿用盘点报告附录 U1–U7）。实测推翻了盘点报告里 ON UPDATE、
     // LONGBLOB、内联 INDEX、TIMESTAMPDIFF(MICROSECOND)、REPEATABLE_READ 的判断。
@@ -169,7 +171,7 @@ class H2CompatibilityProbeTest {
         }
       }
     }
-    statements.sort((a, b) -> a[0].compareTo(b[0]));
+    statements.sort(java.util.Comparator.comparingInt(a -> Integer.parseInt(a[0].substring(1))));
     return statements;
   }
 

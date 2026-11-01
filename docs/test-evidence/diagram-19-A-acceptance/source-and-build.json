@@ -1,0 +1,8 @@
+{
+  "branch": "feature/diagrams",
+  "source_commit": "8b1884711b2f0a68c446c302d6c659fb63da6db8",
+  "cleanup_commit": "e1195c1",
+  "jar_sha256": "d9f927c2f12afd6547ecf0d1eafd40969deb0ebfe4e68983b9e6a0054ca056b0",
+  "frontend_lock_sha256": "4b15b4fbb344c9b83dba007c35a846f846ac023f66d1c152bd8b9ff0ac91b731",
+  "source_hash_normalization": "Git LF"
+}

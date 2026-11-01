@@ -1,0 +1,387 @@
+{
+  "id": "concept-abstract",
+  "name": "反应能级路径",
+  "pattern": "conceptual",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "yl",
+          "kind": "text",
+          "label": "Free energy",
+          "x": 6,
+          "y": 2,
+          "w": 30,
+          "h": 7,
+          "role": "data",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "xl",
+          "kind": "text",
+          "label": "Reaction coordinate",
+          "x": 118,
+          "y": 101,
+          "w": 58,
+          "h": 7,
+          "role": "data",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "r",
+          "kind": "glyph",
+          "label": "A + B",
+          "x": 12,
+          "y": 70,
+          "w": 28,
+          "h": 8,
+          "role": "data",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "t1",
+          "kind": "glyph",
+          "label": "Binding barrier",
+          "x": 46,
+          "y": 20,
+          "w": 20,
+          "h": 8,
+          "role": "note",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "i",
+          "kind": "glyph",
+          "label": "A–B complex",
+          "x": 74,
+          "y": 50,
+          "w": 32,
+          "h": 8,
+          "role": "actor",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "t2",
+          "kind": "glyph",
+          "label": "Conversion barrier",
+          "x": 112,
+          "y": 32,
+          "w": 20,
+          "h": 8,
+          "role": "note",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "p",
+          "kind": "glyph",
+          "label": "AB",
+          "x": 142,
+          "y": 82,
+          "w": 32,
+          "h": 8,
+          "role": "process",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "molecule",
+          "kind": "glyph",
+          "glyph": "small-molecule",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "A scaffold",
+          "x": 14,
+          "y": 83,
+          "w": 24,
+          "h": 15,
+          "role": "note",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "k1",
+          "from": "r",
+          "to": "t1",
+          "kind": "flow",
+          "route": "curved",
+          "label": ""
+        },
+        {
+          "id": "k2",
+          "from": "t1",
+          "to": "i",
+          "kind": "flow",
+          "route": "curved",
+          "label": ""
+        },
+        {
+          "id": "k3",
+          "from": "i",
+          "to": "t2",
+          "kind": "flow",
+          "route": "curved",
+          "label": ""
+        },
+        {
+          "id": "k4",
+          "from": "t2",
+          "to": "p",
+          "kind": "flow",
+          "route": "curved",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "off",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "chem-materials",
+        "skill_version": null,
+        "template": "concept-abstract",
+        "brief": "Scientific example schematic; no measured values are encoded.",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "yl",
+          "kind": "text",
+          "label": "自由能",
+          "x": 6,
+          "y": 2,
+          "w": 30,
+          "h": 7,
+          "role": "data",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "xl",
+          "kind": "text",
+          "label": "反应坐标",
+          "x": 118,
+          "y": 101,
+          "w": 58,
+          "h": 7,
+          "role": "data",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "r",
+          "kind": "glyph",
+          "label": "A + B",
+          "x": 12,
+          "y": 70,
+          "w": 28,
+          "h": 8,
+          "role": "data",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "t1",
+          "kind": "glyph",
+          "label": "结合势垒",
+          "x": 46,
+          "y": 20,
+          "w": 20,
+          "h": 8,
+          "role": "note",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "i",
+          "kind": "glyph",
+          "label": "A–B复合物",
+          "x": 74,
+          "y": 50,
+          "w": 32,
+          "h": 8,
+          "role": "actor",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "t2",
+          "kind": "glyph",
+          "label": "转化势垒",
+          "x": 112,
+          "y": 32,
+          "w": 20,
+          "h": 8,
+          "role": "note",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "p",
+          "kind": "glyph",
+          "label": "AB",
+          "x": 142,
+          "y": 82,
+          "w": 32,
+          "h": 8,
+          "role": "process",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "energy-levels",
+          "label_pos": "above",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "molecule",
+          "kind": "glyph",
+          "glyph": "small-molecule",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "A骨架",
+          "x": 14,
+          "y": 83,
+          "w": 24,
+          "h": 15,
+          "role": "note",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "k1",
+          "from": "r",
+          "to": "t1",
+          "kind": "flow",
+          "route": "curved",
+          "label": ""
+        },
+        {
+          "id": "k2",
+          "from": "t1",
+          "to": "i",
+          "kind": "flow",
+          "route": "curved",
+          "label": ""
+        },
+        {
+          "id": "k3",
+          "from": "i",
+          "to": "t2",
+          "kind": "flow",
+          "route": "curved",
+          "label": ""
+        },
+        {
+          "id": "k4",
+          "from": "t2",
+          "to": "p",
+          "kind": "flow",
+          "route": "curved",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "off",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "chem-materials",
+        "skill_version": null,
+        "template": "concept-abstract",
+        "brief": "Scientific example schematic; no measured values are encoded.",
+        "facts": []
+      }
+    }
+  }
+}

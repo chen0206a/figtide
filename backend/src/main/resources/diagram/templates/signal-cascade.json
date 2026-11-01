@@ -1,0 +1,413 @@
+{
+  "id": "signal-cascade",
+  "name": "信号级联",
+  "pattern": "mechanism",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "ex",
+          "kind": "compartment",
+          "label": "Extracellular",
+          "x": 0,
+          "y": 0,
+          "w": 180,
+          "h": 30,
+          "zoom_of": null
+        },
+        {
+          "id": "mem",
+          "kind": "membrane",
+          "label": "Plasma membrane",
+          "x": 0,
+          "y": 30,
+          "w": 180,
+          "h": 8,
+          "zoom_of": null
+        },
+        {
+          "id": "cyt",
+          "kind": "compartment",
+          "label": "Cytoplasm",
+          "x": 0,
+          "y": 38,
+          "w": 180,
+          "h": 72,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "ligand",
+          "label_pos": "right",
+          "boxed": false,
+          "badges": [],
+          "label": "EGF",
+          "x": 5,
+          "y": 4,
+          "w": 25,
+          "h": 10,
+          "role": "model",
+          "zone": "ex",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "receptor",
+          "label_pos": "left",
+          "boxed": false,
+          "badges": [],
+          "label": "EGFR",
+          "x": 5,
+          "y": 17,
+          "w": 30,
+          "h": 30,
+          "role": "actor",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [],
+          "label": "RAS",
+          "x": 45,
+          "y": 50,
+          "w": 23,
+          "h": 13,
+          "role": "process",
+          "zone": "cyt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [],
+          "label": "RAF",
+          "x": 78,
+          "y": 65,
+          "w": 23,
+          "h": 13,
+          "role": "process",
+          "zone": "cyt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [],
+          "label": "MEK",
+          "x": 111,
+          "y": 80,
+          "w": 23,
+          "h": 13,
+          "role": "process",
+          "zone": "cyt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [],
+          "label": "ERK",
+          "x": 144,
+          "y": 95,
+          "w": 23,
+          "h": 13,
+          "role": "process",
+          "zone": "cyt",
+          "icon": null,
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "bind",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e4",
+          "from": "n4",
+          "to": "n5",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e5",
+          "from": "n5",
+          "to": "n6",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "top-right"
+      },
+      "meta": {
+        "skill": "bio-mechanism",
+        "skill_version": null,
+        "template": "signal-cascade",
+        "brief": "Illustrative experimental/method design, not measured outcomes.",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "ex",
+          "kind": "compartment",
+          "label": "胞外",
+          "x": 0,
+          "y": 0,
+          "w": 180,
+          "h": 30,
+          "zoom_of": null
+        },
+        {
+          "id": "mem",
+          "kind": "membrane",
+          "label": "细胞膜",
+          "x": 0,
+          "y": 30,
+          "w": 180,
+          "h": 8,
+          "zoom_of": null
+        },
+        {
+          "id": "cyt",
+          "kind": "compartment",
+          "label": "胞质",
+          "x": 0,
+          "y": 38,
+          "w": 180,
+          "h": 72,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "ligand",
+          "label_pos": "right",
+          "boxed": false,
+          "badges": [],
+          "label": "EGF",
+          "x": 5,
+          "y": 4,
+          "w": 25,
+          "h": 10,
+          "role": "model",
+          "zone": "ex",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "receptor",
+          "label_pos": "left",
+          "boxed": false,
+          "badges": [],
+          "label": "EGFR",
+          "x": 5,
+          "y": 17,
+          "w": 30,
+          "h": 30,
+          "role": "actor",
+          "zone": null,
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [],
+          "label": "RAS",
+          "x": 45,
+          "y": 50,
+          "w": 23,
+          "h": 13,
+          "role": "process",
+          "zone": "cyt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [],
+          "label": "RAF",
+          "x": 78,
+          "y": 65,
+          "w": 23,
+          "h": 13,
+          "role": "process",
+          "zone": "cyt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [],
+          "label": "MEK",
+          "x": 111,
+          "y": 80,
+          "w": 23,
+          "h": 13,
+          "role": "process",
+          "zone": "cyt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": [],
+          "label": "ERK",
+          "x": 144,
+          "y": 95,
+          "w": 23,
+          "h": 13,
+          "role": "process",
+          "zone": "cyt",
+          "icon": null,
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "bind",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e4",
+          "from": "n4",
+          "to": "n5",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e5",
+          "from": "n5",
+          "to": "n6",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "top-right"
+      },
+      "meta": {
+        "skill": "bio-mechanism",
+        "skill_version": null,
+        "template": "signal-cascade",
+        "brief": "Illustrative experimental/method design, not measured outcomes.",
+        "facts": []
+      }
+    }
+  }
+}

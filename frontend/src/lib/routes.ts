@@ -5,6 +5,8 @@ export type WorkspaceRoute = {
   chart: number | null;
   dataset: number;
   valid: boolean;
+  diagramMode?: boolean;
+  diagram?: number | null;
 };
 const positiveId = (value: string | null | undefined) => {
   if (!value || !/^[1-9]\d*$/.test(value)) return 0;
@@ -23,6 +25,11 @@ export function readWorkspaceRoute(
     valid: true,
   };
   if (pathname === "/") return base;
+  const diagram = pathname.match(/^\/projects\/([1-9]\d*)\/diagrams(?:\/(new|[1-9]\d*))?\/?$/);
+  if (diagram) {
+    const project=positiveId(diagram[1]),id=diagram[2]&&diagram[2]!=="new"?positiveId(diagram[2]):null;
+    return project && (id!==0) ? {...base,page:"editor",project,diagramMode:true,diagram:id} : {...base,valid:false};
+  }
   if (pathname === "/welcome" || pathname === "/welcome/") return { ...base, page: "welcome" };
   const workspace = pathname.match(
     /^\/workspace\/(experiments|data|figures\/new)\/?$/,

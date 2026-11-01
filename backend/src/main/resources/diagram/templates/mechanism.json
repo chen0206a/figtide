@@ -1,0 +1,485 @@
+{
+  "id": "mechanism",
+  "name": "分区机制",
+  "pattern": "mechanism",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {},
+        "palette": "okabe-ito"
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "compartment",
+          "label": "Extracellular",
+          "x": 0,
+          "y": 0,
+          "w": 180,
+          "h": 24,
+          "zoom_of": null
+        },
+        {
+          "id": "z2",
+          "kind": "membrane",
+          "label": "Plasma membrane",
+          "x": 0,
+          "y": 24,
+          "w": 180,
+          "h": 8,
+          "zoom_of": null
+        },
+        {
+          "id": "z3",
+          "kind": "compartment",
+          "label": "Cytoplasm",
+          "x": 0,
+          "y": 32,
+          "w": 180,
+          "h": 78,
+          "zoom_of": null
+        },
+        {
+          "id": "z4",
+          "kind": "nucleus",
+          "label": "Nucleus",
+          "x": 96,
+          "y": 58,
+          "w": 80,
+          "h": 48,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "label": "Cytokine",
+          "x": 24,
+          "y": 4,
+          "w": 30,
+          "h": 9,
+          "role": "model",
+          "zone": "z1",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "ligand",
+          "label_pos": "right",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "label": "Receptor",
+          "x": 4,
+          "y": 12,
+          "w": 38,
+          "h": 30,
+          "role": "actor",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "receptor",
+          "label_pos": "left",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "label": "JAK",
+          "x": 25,
+          "y": 47,
+          "w": 18,
+          "h": 10,
+          "role": "actor",
+          "zone": "z3",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "label": "STAT3",
+          "x": 68,
+          "y": 47,
+          "w": 21,
+          "h": 10,
+          "role": "process",
+          "zone": "z3",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "label": "p-STAT3 dimer",
+          "x": 59,
+          "y": 66,
+          "w": 32,
+          "h": 19,
+          "role": "process",
+          "zone": "z3",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "dimer",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "label": "Target genes",
+          "x": 112,
+          "y": 80,
+          "w": 54,
+          "h": 17,
+          "role": "process",
+          "zone": "z4",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n7",
+          "kind": "glyph",
+          "label": "JAK inhibitor",
+          "x": 2,
+          "y": 72,
+          "w": 18,
+          "h": 17,
+          "role": "note",
+          "zone": "z3",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "small-molecule",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "bind",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e4",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e5",
+          "from": "n5",
+          "to": "n6",
+          "kind": "transport",
+          "route": "orthogonal",
+          "label": ""
+        },
+        {
+          "id": "e6",
+          "from": "n7",
+          "to": "n3",
+          "kind": "inhibit",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "top-right"
+      },
+      "meta": {
+        "skill": "bio-mechanism",
+        "skill_version": null,
+        "template": "mechanism",
+        "brief": "",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {},
+        "palette": "okabe-ito"
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "compartment",
+          "label": "胞外",
+          "x": 0,
+          "y": 0,
+          "w": 180,
+          "h": 24,
+          "zoom_of": null
+        },
+        {
+          "id": "z2",
+          "kind": "membrane",
+          "label": "细胞膜",
+          "x": 0,
+          "y": 24,
+          "w": 180,
+          "h": 8,
+          "zoom_of": null
+        },
+        {
+          "id": "z3",
+          "kind": "compartment",
+          "label": "胞质",
+          "x": 0,
+          "y": 32,
+          "w": 180,
+          "h": 78,
+          "zoom_of": null
+        },
+        {
+          "id": "z4",
+          "kind": "nucleus",
+          "label": "细胞核",
+          "x": 96,
+          "y": 58,
+          "w": 80,
+          "h": 48,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "label": "细胞因子",
+          "x": 24,
+          "y": 4,
+          "w": 30,
+          "h": 9,
+          "role": "model",
+          "zone": "z1",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "ligand",
+          "label_pos": "right",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "label": "受体",
+          "x": 4,
+          "y": 12,
+          "w": 38,
+          "h": 30,
+          "role": "actor",
+          "zone": null,
+          "icon": null,
+          "style_ref": null,
+          "glyph": "receptor",
+          "label_pos": "left",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "label": "JAK",
+          "x": 25,
+          "y": 47,
+          "w": 18,
+          "h": 10,
+          "role": "actor",
+          "zone": "z3",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "label": "STAT3",
+          "x": 68,
+          "y": 47,
+          "w": 21,
+          "h": 10,
+          "role": "process",
+          "zone": "z3",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "label": "p-STAT3二聚体",
+          "x": 59,
+          "y": 66,
+          "w": 32,
+          "h": 19,
+          "role": "process",
+          "zone": "z3",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "dimer",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "label": "靶基因",
+          "x": 112,
+          "y": 80,
+          "w": 54,
+          "h": 17,
+          "role": "process",
+          "zone": "z4",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "n7",
+          "kind": "glyph",
+          "label": "JAK抑制剂",
+          "x": 2,
+          "y": 72,
+          "w": 18,
+          "h": 17,
+          "role": "note",
+          "zone": "z3",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "small-molecule",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "bind",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e3",
+          "from": "n3",
+          "to": "n4",
+          "kind": "activate",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e4",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e5",
+          "from": "n5",
+          "to": "n6",
+          "kind": "transport",
+          "route": "orthogonal",
+          "label": ""
+        },
+        {
+          "id": "e6",
+          "from": "n7",
+          "to": "n3",
+          "kind": "inhibit",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "top-right"
+      },
+      "meta": {
+        "skill": "bio-mechanism",
+        "skill_version": null,
+        "template": "mechanism",
+        "brief": "",
+        "facts": []
+      }
+    }
+  }
+}

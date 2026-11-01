@@ -1,0 +1,87 @@
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------< dev.labflow:labflow >-------------------------
+[INFO] Building labflow 0.2.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ labflow ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 44 resources from src\main\resources to target\classes
+[INFO]
+[INFO] --- compiler:3.14.1:compile (default-compile) @ labflow ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ labflow ---
+[INFO] Copying 8 resources from src\test\resources to target\test-classes
+[INFO]
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ labflow ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 69 source files with javac [debug parameters release 21] to target\test-classes
+[INFO]
+[INFO] --- surefire:3.5.4:test (default-test) @ labflow ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running dev.labflow.diagram.DiagramCatalogTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.578 s -- in dev.labflow.diagram.DiagramCatalogTest
+[INFO] Running dev.labflow.diagram.DiagramIntegrationTest
+07:22:31.359 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [dev.labflow.diagram.DiagramIntegrationTest]: DiagramIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+07:22:31.544 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration dev.labflow.LabFlowApplication for test class dev.labflow.diagram.DiagramIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-10-31T07:22:32.027Z  INFO 36220 --- [           main] d.l.diagram.DiagramIntegrationTest       : Starting DiagramIntegrationTest using Java 21.0.12.1 with PID 36220 (started by 17299 in D:\RAG-agent��Ŀ\LabFlow\backend)
+2026-10-31T07:22:32.028Z  INFO 36220 --- [           main] d.l.diagram.DiagramIntegrationTest       : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T07:22:33.856Z  INFO 36220 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-31T07:22:34.267Z  INFO 36220 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:labflow_test user=SA
+2026-10-31T07:22:34.271Z  INFO 36220 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-31T07:22:34.358Z  INFO 36220 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:h2:mem:labflow_test (H2 2.3)
+2026-10-31T07:22:34.443Z  INFO 36220 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-10-31T07:22:34.451Z  INFO 36220 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.053s)
+2026-10-31T07:22:34.463Z  INFO 36220 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-10-31T07:22:34.526Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-10-31T07:22:34.547Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - workspace"
+2026-10-31T07:22:34.613Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - import rules and archive"
+2026-10-31T07:22:34.643Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - experiment comparisons"
+2026-10-31T07:22:34.681Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - style templates"
+2026-10-31T07:22:34.699Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "5 - agent audit"
+2026-10-31T07:22:34.716Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "6 - agent refinements"
+2026-10-31T07:22:34.743Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "7 - agent session budgets"
+2026-10-31T07:22:34.793Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "8 - agent session order"
+2026-10-31T07:22:34.812Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "9 - agent team"
+2026-10-31T07:22:34.837Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "10 - diagrams"
+2026-10-31T07:22:34.854Z  INFO 36220 --- [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 10 migrations to schema "public", now at version v10 (execution time 00:00.198s)
+2026-10-31T07:22:36.786Z  INFO 36220 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-10-31T07:22:36.786Z  INFO 36220 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-10-31T07:22:36.789Z  INFO 36220 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-10-31T07:22:36.826Z  INFO 36220 --- [           main] d.l.diagram.DiagramIntegrationTest       : Started DiagramIntegrationTest in 5.131 seconds (process running for 7.221)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (D:\1.IDEA\apache-maven-3.9.2\resp\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.215 s -- in dev.labflow.diagram.DiagramIntegrationTest
+[INFO] Running dev.labflow.review.diagram.DiagramReviewTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.380 s -- in dev.labflow.review.diagram.DiagramReviewTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  30.148 s
+[INFO] Finished at: 2026-10-31T16:22:39+09:00
+[INFO] ------------------------------------------------------------------------

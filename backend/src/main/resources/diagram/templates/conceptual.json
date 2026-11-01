@@ -1,0 +1,301 @@
+{
+  "id": "conceptual",
+  "name": "中心概念",
+  "pattern": "conceptual",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 72,
+          "y": 44,
+          "w": 34,
+          "h": 16,
+          "label": "Single-cell atlas",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": "note",
+          "glyph": "dataset",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 12,
+          "y": 12,
+          "w": 34,
+          "h": 16,
+          "label": "Cell identity",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "cell-cluster",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 132,
+          "y": 12,
+          "w": 34,
+          "h": 16,
+          "label": "Gene expression",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 12,
+          "y": 78,
+          "w": 34,
+          "h": 16,
+          "label": "Tissue context",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "cell",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "x": 132,
+          "y": 78,
+          "w": 34,
+          "h": 16,
+          "label": "Perturbation",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "flask",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n1",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n1",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e4",
+          "from": "n1",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "conceptual",
+        "brief": "Illustrative scientific design; glyph bars and heatmaps are symbols, not experimental results.",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "x": 72,
+          "y": 44,
+          "w": 34,
+          "h": 16,
+          "label": "单细胞图谱",
+          "zone": null,
+          "icon": null,
+          "role": "model",
+          "style_ref": "note",
+          "glyph": "dataset",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "x": 12,
+          "y": 12,
+          "w": 34,
+          "h": 16,
+          "label": "细胞身份",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "cell-cluster",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "x": 132,
+          "y": 12,
+          "w": 34,
+          "h": 16,
+          "label": "基因表达",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "dna",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "x": 12,
+          "y": 78,
+          "w": 34,
+          "h": 16,
+          "label": "组织环境",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "cell",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "x": 132,
+          "y": 78,
+          "w": 34,
+          "h": 16,
+          "label": "扰动实验",
+          "zone": null,
+          "icon": null,
+          "role": "process",
+          "style_ref": null,
+          "glyph": "flask",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n1",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e3",
+          "from": "n1",
+          "to": "n4",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e4",
+          "from": "n1",
+          "to": "n5",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": null,
+        "skill_version": null,
+        "template": "conceptual",
+        "brief": "Illustrative scientific design; glyph bars and heatmaps are symbols, not experimental results.",
+        "facts": []
+      }
+    }
+  }
+}

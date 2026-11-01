@@ -1,5 +1,21 @@
 # API v1
 
+## 机制图存储（19-A，未发布）
+
+机制图独立使用 `DiagramDoc schema_version:1`，坐标/尺寸单位mm；现有图表接口不变。
+
+| 接口 | 请求与行为 |
+| --- | --- |
+| GET `/api/projects/{p}/diagrams` | 列表，包括archived、revision和version_count |
+| POST `/api/projects/{p}/diagrams` | `{name,doc}`，首版revision=1；模板创建将在目录接入时提供 |
+| GET `/api/projects/{p}/diagrams/{id}` | 当前doc、revision、名称与归档状态 |
+| PUT `/api/projects/{p}/diagrams/{id}` | `{base_revision,doc}`，创建新版本；冲突409 |
+| GET `/api/projects/{p}/diagrams/{id}/versions` | 倒序历史，每项含version、schema_version、doc和created_at |
+| POST `/api/projects/{p}/diagrams/{id}/restore` | `{base_revision,version}`，恢复也生成新版本 |
+| PUT `/api/projects/{p}/diagrams/{id}/archive` | `{base_revision,archived}`，元信息变更同样创建文档版本并提升revision |
+
+所有写入拒绝未知字段，检查项目归属、文档与revision；沿用全局Host/Origin保护，不提供删除接口。归档不删除历史。备份追加diagrams/diagram_versions并重映射ID；旧v1备份缺少这两张表时按空表恢复，只缺其中一张或引用损坏则拒绝并回滚。
+
 ## 18-B 协作与深度审稿（未发布）
 
 `POST /api/projects/{p}/agent/runs` 兼容扩展 mode：省略为 single，支持 single/team/review；既有 edit（单助手别名）、recommend 不变。team 默认 max_steps=8、max_tokens=60000；review 只运行审稿专家，允许附 render_facts?/target?，仍须 share_metadata=true。原 request_id、session_id、parent_run_id、会话预算、取消及恢复接口继续适用。
@@ -352,3 +368,34 @@ source_meta 仅在 `GET /projects/{p}/data/{versionId}` 详情中返回，普通
 `POST /api/projects/{p}/agent/runs/{id}/decision` 新增可选 accepted_fixes（问题 ID 数组）与 review_hash。仅接受时可选修复；重新 lint 并复用原决定事务，报告/版本变化 409。新版接受响应可附最终 config、accepted_fixes、final_config_hash，仍不保存图表。未传 accepted_fixes 保持原行为。
 
 `POST /api/projects/{p}/figure-tools/review`（只读）：请求 `{protocol_version:1,config,render_facts?,target?:{width_mm?,journal?},chart_id?}`；返回 `{protocol_version:1,rules_version:"review-v1",journal,issues,passed,skipped}`。可选 chart_id 用于排除自身并校验项目归属。未知键或渲染事实超限 400、跨项目资源 404。规则、操作和几何上限详见 [FIGURE-TOOLS.md](FIGURE-TOOLS.md)、[REVIEW.md](REVIEW.md)。
+
+
+## 机制图操作（19-6，未发布）
+
+`GET /api/diagram-tools/catalog` 返回protocol_version=1、schema_version=1、execution=preview-only及12项tools（name、中文label、拒绝额外属性的input_schema）。操作为add_zone/update_zone/add_node/update_node/remove_node/add_edge/update_edge/remove_edge/set_style/set_canvas/set_legend/add_annotation。
+
+`POST /api/projects/{p}/diagram-tools/preview`：`{protocol_version:1,doc,operations:[{tool,arguments}],diagram_id?,base_revision?}`；存在diagram_id时检查归属，base_revision需要diagram_id并检查409。返回`{protocol_version:1,doc,changes:[{path,before,after}]}`。path为JSON Pointer，差异数字按数值比较。请求拒绝未知字段，操作≤400、操作JSON≤2MiB；文档仍经过同一DiagramValidator。预览只读，无新版本。
+
+update_zone移动坐标时平移该分区中的节点；改变尺寸不擅自缩放节点。remove_node清除其关联边与注释。set_style保留未指定字段；overrides按字段合并，null明确清空；set_canvas/set_legend按指定属性更新。新增节点默认zone/icon/style_ref=null，新增边默认空标签和直线。所有参数结构以目录为准；未通过校验的批次不返回半成品，也不改变输入。
+
+
+### 机制图视觉返工兼容扩展（19-A，2026-10-30）
+
+DiagramDoc.style新增可选palette，取okabe-ito/npg/aaas/nejm/lancet/jama，省略为okabe-ito，schema_version仍为1。保存仍走已有revision乐观锁。旧文档不用迁移；palette不在overrides中。
+
+GET /api/diagram-catalog兼容增加palettes（原始a/b/c/d/n色值及非官方来源说明）、palette_audits。每项审查含id、safe、threshold=20及failing_pairs（roles、minimum_delta_e）；计算三种色觉缺陷下最小ΔE00，不达标如实提示，不调整色值或阈值。
+
+已有zoom_of可引用同一文档节点或分区；旧分区引用继续有效。已有glyph枚举增加result-bars-low，对应规范低值柱图；旧30项继续有效。确定性set_style操作增加可选palette参数，仍由同一文档校验器检查。无新迁移。
+
+### 机制图确定性审稿（19-5）
+
+`POST /api/projects/{p}/diagram-tools/review`，只读、不调用模型、不创建版本。
+输入：`{protocol_version:1,doc,diagram_id?,base_revision?,render_facts?,target?:{journal?,width_mm?}}`。diagram_id与base_revision须成对；验证项目归属和当前revision（冲突409），文档必须通过DiagramValidator。所有对象拒绝未知字段。
+
+渲染事实：`{kind:"diagram",version:1,canvas:{width,height},nodes:[{index,box:{x,y,w,h}}],texts:[{owner_kind,owner_index,box,container,font_pt,color}],edges:[{index,points:[[x,y],...],arrow:{x,y}}]}`。所有几何单位mm，字号pt。owner_kind只允许node/zone/edge/annotation/legend；index引用文档数组序号，不发送元素ID或标签。完整校验文字（含二聚体P、独立P/编号、数字/磷酸化徽标）、节点、连线数量，无缺失或重复；有限数值和大小/数量限制防止隐藏载荷。固定枚举与十六进制颜色之外不允许字符串载荷。
+
+输出沿用ReviewResult：protocol_version、rules_version=diagram-review-v1、journal、issues、passed、skipped。规则D1–D7；无render_facts时D4/D5必须skipped。D8/D9分别等待19-B/19-C。每个issue包含稳定id、rule、severity、title/detail、fixable、fix操作、anchor（kind、ref数组序号）。
+
+D3复用ColorVision，只检查图中实际使用的语义角色轮廓，不比较浅填充。色对返回角色名、轮廓色和最小ΔE；阈值20保留。默认Okabe–Ito失败仅给意见，等待主人决定；其他配色仅在存在所有当前角色色对均达标的目录配色时提供可选set_style.palette修复，不改任何原色值。
+
+修复使用现有`GET /api/diagram-tools/catalog`目录和只读`POST /api/projects/{p}/diagram-tools/preview`；DiagramOperations→DiagramValidator同一校验链。返回候选doc和逐项changes；只有用户确认后才加入本机撤销栈，另行手动保存。

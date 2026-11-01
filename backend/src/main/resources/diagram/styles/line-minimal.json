@@ -1,0 +1,22 @@
+{
+  "id": "line-minimal",
+  "name": "线稿极简",
+  "zone_colors": [
+    "#FFFFFF",
+    "#94C2E8"
+  ],
+  "accent_colors": [
+    "#0072B2"
+  ],
+  "text_color": "#0E1116",
+  "line_color": "#0E1116",
+  "font_family": "Inter, Arial, sans-serif",
+  "font_size_pt": 7,
+  "line_width_pt": 1,
+  "radius_mm": 0.4,
+  "arrow": "open",
+  "fill": "outline",
+  "shadow": false,
+  "sketch": false,
+  "iso": false
+}

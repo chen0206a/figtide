@@ -1,3 +1,197 @@
+# 2026-10-31 · 19-A-7补验后的完整19-A回归
+
+# 19-A-7补充与19-A最终回归 · 2026-10-31
+
+任务：19-A-7本轮四项补充完成，19-5确认式修复链路复验通过，19-A本地自动总验收完成。模板部分已由主人通过；本轮新图供主人复核，不代替人工视觉验收。应用功能提交cd1be48，仅feature/diagrams本地提交，不推送/不开PR，19-B不开始。
+
+改动文件：DiagramWizard、PaletteSelect、diagram.css；architecture/signal-cascade/workflow/pipeline模板；Catalog与前端几何/配色测试；视口E2E；六风格标记与Java色觉证据脚本。compose-diagram-comparisons追加三个模板的大图输出。无业务API、迁移、原始数据、模型或预算改动。
+
+## 本轮要求落实
+
+1. 1440×960右栏一屏完整：预览260px；同一受体+膜局部的6个风格缩略图一行；6套配色色块芯片一行；单栏/双栏/自定义和高度一行，自定义时宽度同排；名称与创建按钮完整可见，底部操作区独占空间。真实视口测试逐项检查控件均在屏内、两行芯片各6项同高、右栏无滚动/溢出、按钮不遮挡字段。默认和自定义截图均为**fullPage:false，1440×960**。
+2. 光路模板pattern=conceptual，模板id仍为architecture以兼容引用；科学图元和光路语义保留。
+3. 信号级联斜向排到胞质下方，图例移到右上；实验步骤图元从30×27增为38×44mm；Visual encoder标签置于右侧，输出线在标签下方离开，补几何断言并通过真实浏览器审稿。
+4. OKABE-ITO-CHECK.md列出四个实际角色的全部六个色对及protan/deutan/tritan和最小ΔE；默认仍常显五组不达标提示。原颜色、映射和ΔE≥20均未更改。markers-six-styles.png及6组PNG/SVG为生产渲染器的独立P/编号样张，附二聚体P对照，7.5px/mm、实心圆底+粗体字。
+
+## 验证（实际执行）
+
+| 项目 | 结果 | 命令 / 证据 |
+| --- | --- | --- |
+| 前端全量 | 589/589，71文件 | npm --prefix frontend test -- --run --maxWorkers=2；frontend.txt |
+| H2后端全量 | 449通过、0失败、1跳过（450总数） | LABFLOW_TEST_DB=h2；mvn -B -f backend/pom.xml test；backend-h2.txt |
+| MySQL后端全量 | 454通过、0失败、1跳过（455总数） | LABFLOW_TEST_DB=mysql；同上；backend-mysql.txt；33316为核验datadir的隔离实例 |
+| 桌面构建 | 通过 | 精确源码副本npm ci→tsc/vite→desktop JAR；desktop.txt |
+| 完整桌面E2E | 101通过、0失败、3跳过 | scripts/test-agent.ps1 -All -Desktop -FixturePort 18770；desktop-summary.json |
+| JVM重启 | 通过 | 完整测试后新JVM验证审计持久与未完成运行恢复 |
+| 模板真实几何 | 144/144均0 error | 12模板×6风格×2语言；template-review.json；保留D3意见 |
+| 19-5修复 | 通过 | 审稿→忽略/恢复→只读候选→取消/确认→一次撤销→复查→手动保存；预览和确认前revision不变 |
+| 导出 | 通过 | SVG、300/600dpi PNG、中英文PDF；实际180×110mm、0位图、中文嵌字/可提取，另经Poppler渲染；pdf-verification.json |
+
+明确未执行：后端各1项ServerEvaluationTest.evaluateExistingConfiguredServer（未提供labflow.eval.server，不连接收费模型）；3项migration.spec.ts需专用已迁移夹具和LABFLOW_MIGRATION_E2E，普通-All按原条件跳过，未算通过；托盘/SmartScreen人工项本轮未执行。未删减原数据图测试或修改布局基线。
+
+完整桌面捕获设置LABFLOW_CAPTURE=1、LABFLOW_DIAGRAM_CAPTURE_PHASE=diagram-19-A7-final、LABFLOW_CAPTURE_PREFIX为本目录，历史A–C及前轮验收图不覆盖。原始日志保留在.runtime；本目录文本副本统一LF并去除行尾空白，以便Git和校验清单复现。
+
+
+证据：docs/test-evidence/diagram-19-A7-final/。仅本地提交，19-B未开始。
+
+# 2026-10-31 · 19-A-7 单屏与模板补验
+
+# 19-A-7 补充收尾 · 2026-10-31
+
+任务19-A-7：按主人“模板部分通过”后的四项要求补充。
+
+改动文件：DiagramWizard.tsx/PaletteSelect.tsx/diagram.css；architecture、signal-cascade、workflow、pipeline四模板；DiagramCatalogTest、PaletteSelect/渲染器测试、diagram-cleanup/visual-rework E2E；独立P/编号及色觉证据脚本。
+
+实现：右栏260px预览、6个相同局部风格缩略图一行、6套色块芯片一行、尺寸/高度同一行、自定义宽度同排、底部固定操作区。1440×960无需滚动右栏，名称、全部风格、配色、尺寸、创建按钮均在视口内；测试同时检查控件位置、无内部溢出和自定义规格。截图均为fullPage:false。
+
+光路模板的pattern改为conceptual，id和科学图元/光路语义不改。信号级联斜向布满胞质区域，图例移到右上；实验步骤节点由30×27增为38×44mm；Visual encoder标签放在右侧，输出连线从图元底部离开，不经过标签区。旧文档兼容及固定配色值不变。
+
+验证：前端全量589/589（71文件）；构建通过；H2机制图相关19/19、H2全量449通过/1个真实服务评测条件跳过；相关桌面E2E10/10，最终视口专项1/1，两个运行均通过独立JVM重启。MySQL及完整桌面总验收尚在本轮后续执行，未在此预写通过。
+
+与任务书的偏差：按主人最新要求把光路模式设为conceptual，因此内置模板保留12个、覆盖8种当前模式，旧architecture枚举仍兼容；原9模式覆盖测试等价更新为8模式，并显式断言光路=conceptual。其余按最新要求执行。
+
+需要人决定：默认Okabe–Ito仍提示5组实际角色轮廓色对低于20；原值/阈值保持不变，详见OKABE-ITO-CHECK.md，未自行决定改色。
+
+对应原VISUAL-REVIEW：02–04 #2/#3三栏与完整右栏、#1模板；05 #5标记及“线宽与配色”；本轮四项均已实现，无未实现项。19-5已在前轮本地实现，本次收尾后继续其回归及19-A完整验收，不重写、不推送。
+
+
+实际命令：npm --prefix frontend test -- --run --maxWorkers=2；LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test；scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs diagram-cleanup.spec.ts,diagram-review.spec.ts,diagram.spec.ts,diagram-visual-rework.spec.ts；视口专项-Specs diagram-cleanup.spec.ts。证据：docs/test-evidence/diagram-19-A7-followup/。
+
+# 2026-10-31 · 19-5与19-A总验收
+
+任务19-5：确定性审稿、画布编号与显式确认修复完成；任务19-A总验收完成，仅本地提交。
+改动文件：机制图审稿/几何/渲染/导出与测试、App类型入口、兼容共享审稿组件、API/DIAGRAMS/进度/证据。
+验证：`LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test` 450总数=449通过/1跳过；mysql同命令455总数=454通过/1跳过；`npm test -- --run --maxWorkers=2` 587/587（71文件）；精确源码桌面构建通过；`scripts/test-agent.ps1 -All -Desktop -FixturePort 18770` 101通过/3专用迁移跳过，真实JVM重启审计通过。144模板风格语言组合实际几何均0 error；31图元事实完整/隐私通过；SVG/PNG/PDF与实际PDF渲染复核通过。
+未执行：两个数据库各1项真实服务ServerEvaluationTest（未提供labflow.eval.server）；3项migration.spec.ts（需专用已迁移夹具）；系统托盘/SmartScreen人工项本轮未执行。未将跳过写成通过。
+偏差：D3按最新用户要求只检查实际角色轮廓，默认Okabe–Ito失败待主人决定；旧数据图布局基线原样保留，入口移至顶栏。
+需要人决定：分区机制默认Okabe–Ito五组色对不达标，详见[报告](test-evidence/diagram-19-A-acceptance/README.md)。失败尝试、实际命令、截图/GIF/PDF和SHA清单均在该目录。未推送、未开PR；19-B未启动。
+
+# 2026-10-31 · 19-A-7
+
+# 19-A-7 收尾（2026-10-31）
+
+任务19-A-7：真实科研示例与创建页收尾。
+
+改动文件：10个模板JSON；DiagramWizard/diagram.css；geometry.wrapLabel；glyphs；DiagramPaletteAudit/DiagramCatalog；PaletteSelect/model；相关单测、E2E和证据。后端改动属于任务19配色目录/确定性审稿授权；无迁移、保存或预算语义改变。
+
+验证：前端全量 `npm test -- --run` 582/582（69文件）；精确源副本 `npm run build` 通过；H2 `mvn -B -f backend/pom.xml test -Dtest=DiagramCatalogTest,DiagramValidatorTest,DiagramOperationsTest,DiagramIntegrationTest` 67/67；桌面 `scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs diagram-cleanup.spec.ts,diagram-capture.spec.ts,diagram.spec.ts` 6/6、真实JVM重启审计通过。MySQL全量未执行：留待19-5完成后统一执行总验收。本节没有宣称19-A总验收通过。
+
+首次新增E2E夹具漏传项目description，导致项目创建失败、导航undefined、1失败/1通过；已补齐必填字段并断言ID，第二轮6/6。右栏高度改为扣除完整导航和页头，按钮在1440×960首屏内，滚动内容与操作栏无交叠。
+
+与任务文件的偏差：按主人最新收尾要求替换原占位文字；12模板保留。双组对比为平行实验组；概览对比为共享输入的两条方法分支；步骤放大为顶层流程+文库细节展开。示例无虚构测量数值，化学图明确示意。
+
+对应原视觉问题：05/08图元标记与文字、05模板示例、19-1新建页布局/缩略图/配色；本轮新增1–6项均已实现。原A–C主体验收按主人本轮反馈记为通过；19-5及19-A总验收仍待完成。
+
+
+证据：`docs/test-evidence/diagram-19-A-7/`。
+
+## 2026-10-30 — 19-A / 01卡片预选复核
+
+打包前补齐空列表卡片绑定：点击“从分区机制/分组框架/实验步骤开始”预选对应模板，普通新建清除预选；仍须点击创建才保存。同步按metadata选择初始图元分类，光路模板显示实验/装置而非ML图元，光学平台带动子节点，并加实际页面与撤销断言。相关E2E沿用同一用例增加明确预选断言。最终前端580/580、相关浏览器8/8及build通过；末次模板zone关联由H2相关67/67复核。没有后端Java/SQL/API改动，沿用前一条MySQL/H2全量结果；末次纯模板关联后MySQL未再复跑（已有全量结果、同一校验/存储逻辑由H2确认）。C截图/manifest/验收包随新提交更新。
+
+## 2026-10-30 — 19-A视觉返工A–C交付（待主人视觉验收）
+
+范围：VISUAL-REVIEW-19A.md的05 #1–#15、08 #1–#6、02–04 #1–#4，以及01/06/07的本轮要求；09保留恢复语义。六步分别本地提交；19-5在41ab753封存后未再修改。主人已授权连续从A到C，未启动19-A总验收或收费调用。
+
+最终证据：docs/test-evidence/diagram-checkpoint-c/README.md；含6风格31图元样张（7.5px/mm）、6原值配色机制图、1440×960两编辑器左右对照、12模板总览、新建/属性/导出/历史完整截图、21张真实操作帧合成GIF、实际中英文矢量PDF及Poppler预览。A/B阶段截图保留历史，C为最终版本。截图/快照不代表主人视觉已通过。
+
+实际运行命令及结果：
+
+- frontend：npm test -- --run src/diagram -u：286/286；npm test -- --run：67文件580/580。更新快照对应明确规范变更，并增加规范几何、参数、图元可见性、旧文档默认palette及物理箭头回归；未降低ΔE≥20。
+- backend：LABFLOW_TEST_DB=h2 mvn -B -f backend/pom.xml test：441项，440通过、1跳过、0失败/错误；mysql同命令：446项，445通过、1跳过、0失败/错误。跳过均为既有ServerEvaluationTest（未设置labflow.eval.server），没有发起真实模型评测。
+- $env:LABFLOW_CAPTURE='1'; $env:LABFLOW_DIAGRAM_CAPTURE_PHASE='diagram-checkpoint-c'; .\scripts\test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('diagram-visual-rework.spec.ts','diagram.spec.ts','diagram-capture.spec.ts')：frontend tsc/vite及desktop JAR构建通过，相关E2E8/8；独立JVM审计重启/中断恢复探针通过。
+- node scripts/capture-diagram-evidence.cjs、node scripts/compose-diagram-comparisons.cjs、python scripts/assemble-diagram-operation-gif.py：完成。pypdf检查实际PDF180×110mm、0位图、中文嵌入及可提取，Poppler190.5dpi渲染后查看。
+
+首轮问题及复跑保留：夹具description遗漏、配体跨原分区边界、折叠控件定位/旧图元数量、旧快照、纯填充图元在outline中不可见；PDF斜体被拒、marker箭头缩小、500/600权重导致中文字体回退。均修复后跑最终上述命令；失败日志不覆盖最终证明，留在.runtime/logs/task19-rework-*。最后一个新增资源尺寸回归确保小分子节点不宽于JAK。
+
+偏差/共享范围：zoom_of兼容节点来源、glyph兼容增加原型chartlow低值柱图；唯一新文档字段是可选style.palette，无新迁移。图层数按新规范，蛋白单层不加内部装饰；outline允许none/白色遮挡并新增可见性断言。PDF修正限机制图导出，不改数据图PDF。原型标题白字可读性不足时用深色，原配色色值与阈值不变。
+
+未执行：完整19-A总验收（等待主人视觉验收后恢复19-5）；全产品Playwright/MCP全套（本轮为相关机制图回归，MCP无改动）；系统默认浏览器打开图库的人工项。不得将这些写为通过。未推送GitHub、未重写历史、未操作真实工作区。
+
+## 2026-10-30 — 19-A视觉返工步骤5
+
+05 #13–#15、06属性折叠：四列图元面板支持点击添加到中心及HTML拖拽，结构/连接控制移到右栏折叠区；未选中显示画布尺寸/期刊参考/字号/语言，图层默认折叠。标记与编号折叠。证据暂见diagram-checkpoint-b新版编辑器，C将另附最终完整截图与交互GIF。
+实际build通过；联合E2E4通过/2失败：旧测试未展开迁移后的风格控件、SVG仍期望旧模板4个图元（现6个）。已按明确界面/模板要求修正等价断言，未删断言，C阶段复跑。后端本步骤未执行：无后端修改；前端全量和相关E2E待C阶段合并验证。
+
+## 2026-10-30 — 19-A视觉返工步骤4 / 检查点B
+
+对应05 #12、08 #5/#6、02–04 #1。两旗舰模板按原型坐标移植JAK–STAT和视频问答示例，中英文同步；其余10模板加入至少两类科学图元；缩略图采用非缩放描边，下限1px。证据：docs/test-evidence/diagram-checkpoint-b/compare-mechanism.png、compare-framework.png、templates-overview.png（后续C终版会另存完整页面）。
+实际验证：机制图前端276/276、build通过、H2相关67/67；diagram-visual-rework.spec.ts 2/2通过，包含1440×960实际页面及1440/1920适应宽度。MySQL本步骤未执行：安排C结束统一复跑。修复长英文标签时保留单词整体换行，最终截图及快照将随C终版再验证。
+
+## 2026-10-30 — 19-A视觉返工步骤3
+
+修复05 #7–#11、08 #4/#6：胞外去框、浅胞质、膜右端带底色标签、浅色双核膜、排除Flow且固定图例排序、转运虚线、规范图元包围盒端点及直角线路。zoom_of兼容接受已有节点ID，以表达原型中的模块放大，无新增文档字段；原分区引用继续有效。节点删除清理放大引用。
+验证：npm test -- --run src/diagram -u 276/276；npm run build通过；H2相关测试67/67。MySQL本步骤未执行（前一步67/67，本轮结束会复跑）；本步骤相关E2E未执行（与旗舰模板一起验证最终几何）。视觉证据docs/test-evidence/diagram-step3/，不据此代替主人验收。
+
+## 2026-10-30 — 19-A视觉返工步骤2 / 检查点A
+
+范围：05 #2–#6、08 #2–#3、线宽和六套配色。证据：docs/test-evidence/diagram-checkpoint-a/；逐项规范几何对比与快照不代替主人视觉验收。
+实际命令：npm test -- --run src/diagram -u：276/276；npm run build通过。LABFLOW_TEST_DB=mysql/h2 mvn -B -f backend/pom.xml test -Dtest=DiagramValidatorTest,DiagramCatalogTest,DiagramIntegrationTest,DiagramOperationsTest：均67/67。
+联合E2E diagram-visual-rework.spec.ts+diagram.spec.ts：4通过/1失败（框选期望4项实际3项），后续新版交互回归继续修复，不宣称总通过。首次夹具description及配体分区边界失败已经修复，原失败日志保留.runtime/logs/task19-rework-*。前端全量未执行：安排A-C结束统一回归。19-5保持暂停。
+
+## 2026-10-30 — 19-A视觉返工步骤1（05 #1/#15，08 #1）
+
+默认纸宽=画布区×0.9且≥4px/mm；保留一个真实缩放值与适应宽度按钮。截图：docs/test-evidence/diagram-step1/fit-1440.png、fit-1920.png。
+实际验证：npm run build通过；diagram-visual-rework.spec.ts 1/1通过（1440/1920、手动缩放、重新适应、单一百分比）。联合diagram.spec.ts 4通过/1失败：框选/拖动用例仍需随新版几何复核，未宣称全部通过。前端机制图单测276/276，后端机制图MySQL/H2均67/67通过；这些相关检查包含开发中的步骤2。前端全量未执行：待本轮A-C完成统一回归。
+
+## 2026-10-30 · 任务19-6：机制图白名单操作与只读预览
+
+- 作为19-5自动修复的前置依赖先完成。新增纯Java DiagramOperations：12操作、拒绝额外属性/错误类型/未知值、400项与2MiB限制、完整文档再校验、输入不可变、分区移动联动节点、删除节点清理引用、覆盖项合并/显式null清空、稳定JSON Pointer差异（数值等价不算差异）。目录下发全部schema；客户端仅按目录生成操作。
+- 新接口GET /api/diagram-tools/catalog与POST /api/projects/{p}/diagram-tools/preview；后者只读，检查项目/可选图ID归属与revision冲突。旧接口/迁移/图表业务未改。
+- `LABFLOW_TEST_DB=h2/mysql mvn -B -f backend/pom.xml test -Dtest=DiagramOperationsTest,DiagramIntegrationTest,DiagramCatalogTest,DiagramValidatorTest` 各66/66；首次测试var复合声明编译错误已改为独立声明，未减少断言。最后修正nullable enum目录一致性后DiagramOperationsTest 19/19。前端目录构造器2/2；UI端到端在19-5修复面板接入后运行，不把未运行的修复E2E算通过。无新增依赖/迁移，无收费调用，不推送。
+
+## 2026-10-30 · 任务19-4：SVG/PNG/PDF导出
+
+- 导出从同一渲染器读取当前草稿，SVG保留mm/风格字体，PNG300/600按物理尺寸换算且写pHYs密度，PDF中非ASCII标签嵌入已有Noto子集、ASCII用Helvetica。最小字号/成品尺寸及审稿error提示不阻断导出；PNG有明确像素内存保护。不保存版本、不发模型请求。
+- 共享editor/pdf.ts仅导出原字体/定位函数，定位新增可选参数，原图表默认Noto逻辑不变。`npm test`65文件566/566（配色修订前全量）；最新配色下机制图272/272、构建通过。导出专门3项单测覆盖mm到dpi、pHYs替换/像素保留、错误格式、对话框error不阻断及打开时0fetch。
+- `scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('diagram.spec.ts')`最终4/4（11.6秒），含实际SVG/300dpi/600dpi/CJK PDF/英文PDF下载。PNG2126×1299、4252×2598及密度11811/23622验证；PDF页510.23622×311.811024pt、CJK FontFile2/ToUnicode、英文Helvetica无FontFile2验证；导出后revision仍1。真JVM审计重启/中断恢复通过，清理4合成项目。该轮下载在视觉配色修订前，最终总验收会覆盖新版配色。
+- 按PDF skill用pypdf提取文字、PyMuPDF校验实际字体及Poppler(pdftoppm)渲染，中文可提取、实际6.5pt、0位图、单页180×110mm，目视无裁切/乱码。证据位于.runtime/task19-4-export-check；保留字体缓存与像素控存限制。不新增依赖、API或迁移。
+
+## 2026-10-30 · 任务19视觉修订：撤掉棕灰实心配色
+
+- 按主人反馈重新匹配设计稿：六预设移除棕/灰大块底色，白底与蓝/绿轮廓/浅填充，橙色限强调/抑制；核内留白、双膜边界，面板留白/窄标题带；新增独立配色选择。模板强调与受体标签位置相应修正。没有改结构语义或数据图配色。
+- ColorVision实际检查：白/浅蓝最小ΔE00 20.1059，蓝/绿/橙任意两色最小≥22.1060；阈值20及原断言保持不变。双库机制图测试中的H2定向47/47；`npm test -- --run src/diagram --update`272/272，264个明确受视觉修改影响的快照更新。产品同一渲染器经esbuild生成预览并用Chrome截图目视复核，.runtime/task19-palette/mechanism.png；此处是颜色预览，不冒充完整桌面截图。完整桌面回归与导出复核会在总验收包含。
+
+## 2026-10-30 · 任务19-3：新版机制图编辑器与模板
+
+- 独立列表/路由、三列新建流程及实时预览、12自制模板×中英文、30图元分类面板、标签方位/boxed/标记、统一SVG渲染器、图元本体吸附、双膜、六风格切换、属性/连接点拖线/框选/拖动/分区联动、确定性分区排版、快捷键与草稿/冲突/历史接入。实际截图复核后修正DNA实心填充与属性面板选项切换后的滚动位置。
+- `LABFLOW_TEST_DB=h2/mysql mvn -B -f backend/pom.xml test -Dtest=DiagramCatalogTest,DiagramValidatorTest,DiagramIntegrationTest,DiagramGalleryControllerTest` 各47/47；目录固定12模板覆盖全部9模式、模板双语合法、模板/文档请求互斥和Origin拦截均验证。新增desktop固定Gallery入口仅在用户点击调用现有系统浏览器方法，无自定义URL，测试用Consumer隔离，未打开外部网站。
+- `npm test -- --run src/diagram --update`269/269，覆盖6风格×12模板和6风格×30图元及膜快照、标签/连接点、编辑/撤销/排版/草稿。`npm test`最终63文件563/563；此前与build并发时4个旧UI测试5秒超时，未修改断言，单独重跑通过。`npm run build`和隔离桌面重建通过。
+- `scripts/test-agent.ps1 -Desktop -FixturePort 18770 -Specs @('diagram.spec.ts')`最终3/3（7.8秒）：新建→科学图元/连线编辑→风格撤销→保存→409→恢复；草稿/键盘/复制；分区拖动/连接点/框选/可撤销排版。真JVM重启审计与中断恢复通过，清理3个合成项目。截图用LABFLOW_CAPTURE=1实际生成，未改用户桌面数据。
+- 依赖@dagrejs/dagre 1.1.5及graphlib 2.2.4均MIT，声明齐全；既有图表源码业务未改，共享仅新路由及类型切换接线、已有DesktopUi调用。任务19仍不推送、不发起收费请求；导出及审稿将在后续节完成。
+
+## 2026-10-30 · 任务19-2b：新版参数化科学图元
+
+- 新增30种自制、至少主体/细节两层的参数化矢量图元及磷脂双层/双核膜；纯函数输出，毫米坐标，pt线宽，固定seed手绘。原型仅供视觉参考，未复制其实现或执行。服务端图元清单与前端实现一致性测试；label_pos/boxed/badges严格校验，未知图元、标记和重复标记拒绝。旧方框文档无新字段仍可读。
+- 双库 `mvn -B -f backend/pom.xml test -Dtest=DiagramCatalogTest,DiagramValidatorTest,DiagramIntegrationTest` 各44/44；`npm test -- --run src/diagram --update`214/214（其中图元矩阵180项+6项膜/核膜+1项目录/尺寸，192个图元/分区快照）；`npm test`当前工作树63文件508/508；`npm run build`通过（既有大块警告）。全量数包含正在开发的19-3测试，不表示19-3已验收。图元标签/端点、画布及完整模板矩阵将在19-3集成验证。
+- 修正TypeScript对rough路径可选fill/stroke的类型检查。无新增依赖、接口或迁移；diagram-catalog增加glyphs字段。所有新增素材为项目自制，无第三方图片、收费请求或推送。
+
+## 2026-10-30 · 任务19新版任务书切换
+
+- 主人提供task19 (1).zip，覆盖任务书并新增7张设计截图和只读参考原型。新版保留19-A/B/C阶段、main前置和不推送约束；新增19-2b参数化科学图元、glyph/label_pos/boxed/badges字段，以及6风格×全部模板/全部图元快照。
+- 已完成19-1、19-2保留历史；正在开发的19-3按新设计调整，新增19-2b单独提交，旧kind=cell/molecule替换为kind=glyph。未执行原型脚本、未将其直接复制进产品。19-3初轮后端38/38；前端仍在开发，渲染测试资源路径受Vite URL转换影响，待修复后重新验证，不计作通过。
+
+## 2026-10-30 · 任务19-2：六种风格与确定性手绘
+
+- 六个后端JSON为预设参数唯一来源，GET /api/diagram-catalog下发副本及期刊表；纯Java验证目录完整性、overrides边界。沿用ColorVision，分区/强调色对在三种缺陷下均ΔE00≥20。纯rough generator按元素ID固定seed，无随机/时钟依赖。模板/完整渲染器在19-3接入。
+- `LABFLOW_TEST_DB=h2/mysql mvn -B -f backend/pom.xml test -Dtest=DiagramCatalogTest,DiagramValidatorTest,DiagramIntegrationTest` 各38/38；首次Java泛型推断和未建模板目录的扫描错误已修正为显式类型及classpath*扫描，最终双库通过。`npm test`60文件295/295；`npm run build`通过（既有大块警告）。完整渲染器快照/切换撤销/E2E留19-3及总验收，未宣称本节已跑。
+- 新直接依赖roughjs 4.6.6，传递hachure-fill 0.5.2、path-data-parser 0.1.0、points-on-curve 0.2.0、points-on-path 0.2.1均MIT，锁文件固定，THIRD_PARTY_NOTICES保留许可全文。未调用收费模型。
+- 三个19-A方法上游实际提交/许可与参考位置见DIAGRAMS.md，均MIT。Gallery许可仅覆盖代码，未引入图片或代码。无新迁移；无修改共享图表业务。
+
+## 2026-10-30 · 任务19-1：机制图文档、存储与备份迁移
+
+- 新增纯Java严格校验器、独立schema v1 TypeScript类型、配对V10（MySQL JSON/H2 CLOB）、列表/新建/读取/保存/历史/恢复/归档API。项目归属、未知字段、全局ID及引用、数值/尺寸/数量/字节上限校验；所有修改包括归档走revision并新增版本。原数据图业务和旧迁移未改。模板/目录按依赖在19-2/19-3接入。
+- BackupService扩展表、CLOB编码、ID映射、完整历史校验与旧备份兼容；迁移工具规范化/计数覆盖同名重复图。全新隔离.runtime/task19-mysql，仅创建labflow_test；未连接真实labflow库。
+- 双库定向 `mvn -B -f backend/pom.xml test -Dtest=DiagramValidatorTest,DiagramIntegrationTest,MigrationParityTest,BackupLimitsIntegrationTest` 各40/40。全量H2首次409项中1失败（既有兼容性探针缺V10期望），补探针V10记录及两处数字排序，V1–V9断言原样。最终 `LABFLOW_TEST_DB=h2/mysql mvn -B -f backend/pom.xml test`：409/414总计，各0失败/错误、1既有ServerEvaluationTest opt-in跳过。
+- `node --test scripts/migration/*.test.cjs`43/43；`npm test`59文件294/294；`npm run build`通过（既有大块警告）。E2E：本节仅类型和后端，无机制图界面，diagram.spec.ts将在19-3至总验收执行，未宣称通过；无收费请求。
+- 后端授权类别：任务19明确要求的新文档/API/配对迁移/备份兼容及测试。新增依赖：无。
+
+## 2026-10-30 · 任务19-0：前置集成与开发基线
+
+- 任务18功能PR #5全部检查通过后普通合并，main=c90ec1d650bbe8dfcb635026ed116e3b5b392a9b；从该main新建feature/diagrams。真实评测归档未上传，原feature/agent-team及.runtime/task18-evaluation-archive-local.zip保留本地。
+- PR检查：MySQL、H2、前端、Linux/Windows MCP与Windows打包全通过；Windows完整EXE浏览器90通过、3既有migration opt-in跳过，stdio集成3/3。实际工作流41020688876、41020688900；任务19尚未改产品代码。
+- 读取AGENTS、重构计划、任务19及REVIEW/AGENT-TEAM/FIGURE-TOOLS/MCP/API与README隐私说明。范围为19-A，分节本地提交，禁止任务19推送和收费模型调用。上游许可与版本资料保存在.runtime/task19-upstream；Gallery许可仅覆盖代码，图片不引入。
+
 ## 2026-10-30 · 任务18功能集成（不含本地评测归档）
 
 - 从 main 单独整理审稿/协作功能及离线测试，未合入 feature/agent-team 历史；真实模型评测报告、原始结果及原本地分支保留在本地。移除对未发布验收JSON的链接。

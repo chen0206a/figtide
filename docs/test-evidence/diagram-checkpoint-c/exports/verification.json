@@ -1,0 +1,24 @@
+{
+  "en": {
+    "dimensions_mm": [
+      180.0,
+      110.00000000000001
+    ],
+    "raster_images": 0,
+    "embedded_ttf": false,
+    "text": "Extracellular\nPlasma membrane\nCytoplasm\nNucleus\nCytokine\nReceptor\nJAK STAT3\nP P\np-STAT3 dimer\nTarget genes\nJAK inhibitor\nActivation\nInhibition\nTranslocation\nBinding",
+    "sha256": "6bdca310befd2013609df4a8d069965eb7188561c3d3458d6f774b77051ee820",
+    "poppler_dpi": 190.5
+  },
+  "zh": {
+    "dimensions_mm": [
+      180.0,
+      110.00000000000001
+    ],
+    "raster_images": 0,
+    "embedded_ttf": true,
+    "text": "胞外\n细胞膜\n胞质\n细胞核\n细胞因子\n受体\nJAK STAT3\nP P\np-STAT3二聚体\n靶基因\nJAK抑制剂\nActivation\nInhibition\nTranslocation\nBinding",
+    "sha256": "126f54ae9d0cfd9c527949448f9a8bc6c559e5385f876878981feba99449a2e4",
+    "poppler_dpi": 190.5
+  }
+}

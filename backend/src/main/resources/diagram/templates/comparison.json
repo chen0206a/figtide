@@ -1,0 +1,377 @@
+{
+  "id": "comparison",
+  "name": "双组对比",
+  "pattern": "comparison",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "wt",
+          "kind": "panel",
+          "label": "Wild type",
+          "x": 3,
+          "y": 6,
+          "w": 83,
+          "h": 96,
+          "zoom_of": null
+        },
+        {
+          "id": "ko",
+          "kind": "panel",
+          "label": "EGFR knockout",
+          "x": 94,
+          "y": 6,
+          "w": 83,
+          "h": 96,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "cell-cluster",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "WT cells",
+          "x": 12,
+          "y": 20,
+          "w": 64,
+          "h": 19,
+          "role": "actor",
+          "zone": "wt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "ligand",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "EGF exposure",
+          "x": 12,
+          "y": 46,
+          "w": 64,
+          "h": 19,
+          "role": "actor",
+          "zone": "wt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "Phospho-ERK assay",
+          "x": 12,
+          "y": 72,
+          "w": 64,
+          "h": 19,
+          "role": "actor",
+          "zone": "wt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "glyph": "cell-cluster",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "EGFR KO cells",
+          "x": 103,
+          "y": 20,
+          "w": 64,
+          "h": 19,
+          "role": "process",
+          "zone": "ko",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "glyph": "ligand",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "EGF exposure",
+          "x": 103,
+          "y": 46,
+          "w": 64,
+          "h": 19,
+          "role": "process",
+          "zone": "ko",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "Phospho-ERK assay",
+          "x": 103,
+          "y": 72,
+          "w": 64,
+          "h": 19,
+          "role": "process",
+          "zone": "ko",
+          "icon": null,
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e3",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e4",
+          "from": "n5",
+          "to": "n6",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "bio-mechanism",
+        "skill_version": null,
+        "template": "comparison",
+        "brief": "Illustrative experimental/method design, not measured outcomes.",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "wt",
+          "kind": "panel",
+          "label": "野生型",
+          "x": 3,
+          "y": 6,
+          "w": 83,
+          "h": 96,
+          "zoom_of": null
+        },
+        {
+          "id": "ko",
+          "kind": "panel",
+          "label": "EGFR敲除",
+          "x": 94,
+          "y": 6,
+          "w": 83,
+          "h": 96,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "cell-cluster",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "野生型细胞",
+          "x": 12,
+          "y": 20,
+          "w": 64,
+          "h": 19,
+          "role": "actor",
+          "zone": "wt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "ligand",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "EGF刺激",
+          "x": 12,
+          "y": 46,
+          "w": 64,
+          "h": 19,
+          "role": "actor",
+          "zone": "wt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "磷酸化ERK检测",
+          "x": 12,
+          "y": 72,
+          "w": 64,
+          "h": 19,
+          "role": "actor",
+          "zone": "wt",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n4",
+          "kind": "glyph",
+          "glyph": "cell-cluster",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "EGFR敲除细胞",
+          "x": 103,
+          "y": 20,
+          "w": 64,
+          "h": 19,
+          "role": "process",
+          "zone": "ko",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n5",
+          "kind": "glyph",
+          "glyph": "ligand",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "EGF刺激",
+          "x": 103,
+          "y": 46,
+          "w": 64,
+          "h": 19,
+          "role": "process",
+          "zone": "ko",
+          "icon": null,
+          "style_ref": null
+        },
+        {
+          "id": "n6",
+          "kind": "glyph",
+          "glyph": "protein",
+          "label_pos": "center",
+          "boxed": true,
+          "badges": [],
+          "label": "磷酸化ERK检测",
+          "x": 103,
+          "y": 72,
+          "w": 64,
+          "h": 19,
+          "role": "process",
+          "zone": "ko",
+          "icon": null,
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e3",
+          "from": "n4",
+          "to": "n5",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "e4",
+          "from": "n5",
+          "to": "n6",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "bio-mechanism",
+        "skill_version": null,
+        "template": "comparison",
+        "brief": "Illustrative experimental/method design, not measured outcomes.",
+        "facts": []
+      }
+    }
+  }
+}

@@ -81,7 +81,7 @@ export async function vectorPdf(url: string, c: Config): Promise<Blob> {
 /** Freeze browser-resolved glyph run origins before conversion. svg2pdf's hidden
  * text measurer can retain a stale size under modal/inert styling in Chrome.
  * Explicit run positions also preserve multiline labels, superscripts and rotation. */
-function positionText(svg: SVGSVGElement) {
+function positionText(svg: SVGSVGElement, expectedFont = FONT) {
   const host = document.createElement("div");
   host.style.cssText =
     "position:fixed;left:-20000px;top:0;visibility:hidden;pointer-events:none";
@@ -111,7 +111,7 @@ function positionText(svg: SVGSVGElement) {
         const text = node.textContent || "";
         if (!text) continue;
         const style = getComputedStyle(node.parentElement!);
-        if (!style.fontFamily.includes(FONT))
+        if (!style.fontFamily.includes(expectedFont))
           throw new Error(
             "PDF 富文本需使用内置 Noto Sans SC 字体，请统一字体后重试或导出 SVG",
           );
@@ -128,7 +128,7 @@ function positionText(svg: SVGSVGElement) {
         run.setAttribute("y", String(pos.y));
         run.setAttribute("xml:space", "preserve");
         run.setAttribute("text-anchor", "start");
-        run.style.fontFamily = FONT;
+        run.style.fontFamily = expectedFont;
         run.style.fontSize = style.fontSize;
         run.style.fontWeight = style.fontWeight;
         run.style.fill = style.fill;
@@ -145,3 +145,5 @@ function positionText(svg: SVGSVGElement) {
     host.remove();
   }
 }
+/** Shared local font subset and glyph-origin freezer; existing chart defaults are unchanged. */
+export {loadFonts as loadPdfFontSubset, positionText as positionPdfText};

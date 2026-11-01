@@ -1,0 +1,373 @@
+{
+  "id": "architecture",
+  "name": "光路装置架构",
+  "pattern": "conceptual",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "tb",
+          "kind": "panel",
+          "label": "Optical table",
+          "x": 2,
+          "y": 28,
+          "w": 176,
+          "h": 76,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "las",
+          "kind": "glyph",
+          "label": "Laser",
+          "x": 6,
+          "y": 44,
+          "w": 28,
+          "h": 18,
+          "role": "data",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "laser",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "len",
+          "kind": "glyph",
+          "label": "Lens",
+          "x": 44,
+          "y": 39,
+          "w": 12,
+          "h": 28,
+          "role": "actor",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "lens",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "bs",
+          "kind": "glyph",
+          "label": "Beam splitter",
+          "x": 68,
+          "y": 43.5,
+          "w": 22,
+          "h": 19,
+          "role": "model",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "beam-splitter",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "smp",
+          "kind": "glyph",
+          "label": "Fluorescent sample",
+          "x": 106,
+          "y": 43.5,
+          "w": 26,
+          "h": 19,
+          "role": "process",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "sample-stage",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "det",
+          "kind": "glyph",
+          "label": "Detector",
+          "x": 146,
+          "y": 43,
+          "w": 28,
+          "h": 20,
+          "role": "note",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "detector",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "cam",
+          "kind": "glyph",
+          "label": "Imaging camera",
+          "x": 68,
+          "y": 80,
+          "w": 22,
+          "h": 18,
+          "role": "note",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "detector",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "b1",
+          "from": "las",
+          "to": "len",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "b2",
+          "from": "len",
+          "to": "bs",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "b3",
+          "from": "bs",
+          "to": "smp",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "b4",
+          "from": "smp",
+          "to": "det",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "b5",
+          "from": "bs",
+          "to": "cam",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "off",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "physics-device",
+        "skill_version": null,
+        "template": "architecture",
+        "brief": "Scientific example schematic; no measured values are encoded.",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "tb",
+          "kind": "panel",
+          "label": "光学平台",
+          "x": 2,
+          "y": 28,
+          "w": 176,
+          "h": 76,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "las",
+          "kind": "glyph",
+          "label": "激光器",
+          "x": 6,
+          "y": 44,
+          "w": 28,
+          "h": 18,
+          "role": "data",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "laser",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "len",
+          "kind": "glyph",
+          "label": "透镜",
+          "x": 44,
+          "y": 39,
+          "w": 12,
+          "h": 28,
+          "role": "actor",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "lens",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "bs",
+          "kind": "glyph",
+          "label": "分束器",
+          "x": 68,
+          "y": 43.5,
+          "w": 22,
+          "h": 19,
+          "role": "model",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "beam-splitter",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "smp",
+          "kind": "glyph",
+          "label": "荧光样品",
+          "x": 106,
+          "y": 43.5,
+          "w": 26,
+          "h": 19,
+          "role": "process",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "sample-stage",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "det",
+          "kind": "glyph",
+          "label": "探测器",
+          "x": 146,
+          "y": 43,
+          "w": 28,
+          "h": 20,
+          "role": "note",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "detector",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        },
+        {
+          "id": "cam",
+          "kind": "glyph",
+          "label": "成像相机",
+          "x": 68,
+          "y": 80,
+          "w": 22,
+          "h": 18,
+          "role": "note",
+          "zone": "tb",
+          "icon": null,
+          "style_ref": null,
+          "glyph": "detector",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "b1",
+          "from": "las",
+          "to": "len",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "b2",
+          "from": "len",
+          "to": "bs",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "b3",
+          "from": "bs",
+          "to": "smp",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "b4",
+          "from": "smp",
+          "to": "det",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        },
+        {
+          "id": "b5",
+          "from": "bs",
+          "to": "cam",
+          "kind": "flow",
+          "route": "straight",
+          "label": ""
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "off",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "physics-device",
+        "skill_version": null,
+        "template": "architecture",
+        "brief": "Scientific example schematic; no measured values are encoded.",
+        "facts": []
+      }
+    }
+  }
+}

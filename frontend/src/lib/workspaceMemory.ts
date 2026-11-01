@@ -12,7 +12,7 @@ export function rememberWorkspace(
   if (!r.valid || !r.project || r.page === "home") return memory;
   // 数据集属于具体项目，只通过 rememberDataset 记录。地址里的 ?dataset= 可能
   // 是别的项目的（例如从别处复制来的链接），不能原样写进这个项目的记忆。
-  const url = workspaceUrl(
+  const url = r.diagramMode ? `/projects/${r.project}/diagrams${r.diagram ? `/${r.diagram}` : ""}` : workspaceUrl(
     r.page,
     r.project,
     r.chart,

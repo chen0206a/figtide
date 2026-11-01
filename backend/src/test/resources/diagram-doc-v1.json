@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "canvas": {
+    "width_mm": 180,
+    "height_mm": 110,
+    "background": "#FFFFFF"
+  },
+  "style": {
+    "preset": "nature-flat",
+    "overrides": {}
+  },
+  "label_language": "en",
+  "zones": [
+    {
+      "id": "z1",
+      "kind": "panel",
+      "label": "Synthetic panel",
+      "x": 5,
+      "y": 5,
+      "w": 170,
+      "h": 95,
+      "zoom_of": null
+    }
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "kind": "box",
+      "x": 15,
+      "y": 35,
+      "w": 35,
+      "h": 15,
+      "label": "Input",
+      "zone": "z1",
+      "icon": null,
+      "role": "data",
+      "style_ref": null
+    },
+    {
+      "id": "n2",
+      "kind": "box",
+      "x": 70,
+      "y": 35,
+      "w": 35,
+      "h": 15,
+      "label": "Process",
+      "zone": "z1",
+      "icon": null,
+      "role": "process",
+      "style_ref": null
+    },
+    {
+      "id": "n3",
+      "kind": "box",
+      "x": 125,
+      "y": 35,
+      "w": 35,
+      "h": 15,
+      "label": "Output",
+      "zone": "z1",
+      "icon": null,
+      "role": "output",
+      "style_ref": null
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "n1",
+      "to": "n2",
+      "kind": "flow",
+      "label": "",
+      "route": "straight"
+    },
+    {
+      "id": "e2",
+      "from": "n2",
+      "to": "n3",
+      "kind": "flow",
+      "label": "",
+      "route": "straight"
+    }
+  ],
+  "annotations": [],
+  "legend": {
+    "mode": "auto",
+    "position": "bottom-right"
+  },
+  "meta": {
+    "skill": null,
+    "skill_version": null,
+    "template": "pipeline",
+    "brief": "",
+    "facts": []
+  }
+}

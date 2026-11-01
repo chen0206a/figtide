@@ -1,0 +1,595 @@
+{
+  "captured_at": "2026-10-30T23:36:33.786852+09:00",
+  "timezone": "Asia/Tokyo",
+  "branch": "feature/diagrams",
+  "visual_acceptance": "pending_owner_review",
+  "viewport": [
+    1440,
+    960
+  ],
+  "glyph_sheet_px_per_mm": 7.5,
+  "build": {
+    "frontend_stage": "D:\\RAG-agent项目\\LabFlow\\.runtime\\desktop-ui-eb5ff124d300413b9d116949b20466ea\\frontend",
+    "jar_sha256": "481f87fc13db10abe51848f3c6ad830d46c806c17526b81826cfec8542aacbd6",
+    "created_at": "2026-10-30T14:31:36.8799301Z",
+    "frontend_lock_sha256": "4b15b4fbb344c9b83dba007c35a846f846ac023f66d1c152bd8b9ff0ac91b731"
+  },
+  "files": [
+    {
+      "path": "01-diagram-list.png",
+      "bytes": 95743,
+      "sha256": "a4cdab2d8a4237ac291f531f58fa91aa241d7d34f2c8998aa5366ad81bca778a",
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "path": "02-new-templates.png",
+      "bytes": 329809,
+      "sha256": "f1cff460d3a6be8ce4dbe1b0fcb69d498843e30fc14ce559744f764b2cc8e502",
+      "pixels": [
+        1920,
+        2819
+      ]
+    },
+    {
+      "path": "03-new-mechanism-preview.png",
+      "bytes": 379777,
+      "sha256": "cbdea3e4dfbed9bfd132da543ec955ae7f892a32df2a75760d281ea6acfeb3a2",
+      "pixels": [
+        1920,
+        2819
+      ]
+    },
+    {
+      "path": "04-new-size.png",
+      "bytes": 381674,
+      "sha256": "69b9a756621e5e11968f5c0f9a94d5d12b3401b0c7f1360c053907734eb035cf",
+      "pixels": [
+        1920,
+        2819
+      ]
+    },
+    {
+      "path": "05-mechanism-editor.png",
+      "bytes": 188276,
+      "sha256": "18974cd6c99ca49c855eb1ba976bd03fd2c0a68e12fce03819d0d9fd7e1fe647",
+      "pixels": [
+        1920,
+        1144
+      ]
+    },
+    {
+      "path": "06-node-properties.png",
+      "bytes": 175346,
+      "sha256": "4a9588e5745a53c0bfc2b7f2cf1a4153fe08d5cd1fa0b2ce318d4895b0386c1b",
+      "pixels": [
+        1920,
+        1144
+      ]
+    },
+    {
+      "path": "07-export-dialog.png",
+      "bytes": 231024,
+      "sha256": "f407222f238fdc315d3b377377570fa2d2c36de0b5cac3f1630a201efa6e2f26",
+      "pixels": [
+        1920,
+        1144
+      ]
+    },
+    {
+      "path": "08-framework-editor.png",
+      "bytes": 168569,
+      "sha256": "6c04ab00b22908838e0931c3adeb64dc7357df28d9d6fc4c7ff24c4b27626d16",
+      "pixels": [
+        1920,
+        1144
+      ]
+    },
+    {
+      "path": "09-version-history.png",
+      "bytes": 187873,
+      "sha256": "decf340f327df99d6e48dac562bca918a31b280a10ebda9a551ccda3df44c934",
+      "pixels": [
+        1920,
+        1144
+      ]
+    },
+    {
+      "path": "10-optics-editor.png",
+      "bytes": 106729,
+      "sha256": "49bfbdfefee9e8061abbcf3b63201b28f3522d05a3cd49f64557961a45fbb966",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "compare-framework.png",
+      "bytes": 338469,
+      "sha256": "73327e1348f86aa37e4632268796a547fff8fa9bfbad6be26a589f83ec1d0166",
+      "pixels": [
+        2880,
+        1000
+      ]
+    },
+    {
+      "path": "compare-mechanism.png",
+      "bytes": 388562,
+      "sha256": "54dadc14e4bf37d4d642a85d382cbb2c2c608678b01369c6fb02f629109f0003",
+      "pixels": [
+        2880,
+        1000
+      ]
+    },
+    {
+      "path": "export-dialog.png",
+      "bytes": 198389,
+      "sha256": "fedc3f12f9d62463a4b0c6ad282512e5b37ea60ddcac45c84bb43badd3c02bfd",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "exports/mechanism-en-render.png",
+      "bytes": 92223,
+      "sha256": "bed252bd2fb33718dd1a91e9ad1ccbdc32481b28facf886c44df98179885bdf1",
+      "pixels": [
+        1350,
+        826
+      ]
+    },
+    {
+      "path": "exports/mechanism-en.pdf",
+      "bytes": 23273,
+      "sha256": "6bdca310befd2013609df4a8d069965eb7188561c3d3458d6f774b77051ee820"
+    },
+    {
+      "path": "exports/mechanism-zh-render.png",
+      "bytes": 88498,
+      "sha256": "6aa941ac4b3485e7e66454ad7132676506b03282ab4dd711fabca824740f84aa",
+      "pixels": [
+        1350,
+        826
+      ]
+    },
+    {
+      "path": "exports/mechanism-zh.pdf",
+      "bytes": 67273,
+      "sha256": "126f54ae9d0cfd9c527949448f9a8bc6c559e5385f876878981feba99449a2e4"
+    },
+    {
+      "path": "exports/verification.json",
+      "bytes": 883,
+      "sha256": "d20fb014d2c70ac058b386f44d3815b573cbe507a7738c9128bd2f617bcc9aea"
+    },
+    {
+      "path": "framework-1440.png",
+      "bytes": 139915,
+      "sha256": "218ebc1ce64d0088fcf19e0ea404db4de3fe45327edb4981779bbad4969b8e83",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/000.png",
+      "bytes": 169153,
+      "sha256": "74ec61837c006c91260798229176b8286e0fedd893b4e4ec9113288a3c29ca06",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/001.png",
+      "bytes": 153051,
+      "sha256": "e4b6512684e398b239dc41d2dc21719d53a5a371a8fdfe7ccda8297a96c86c48",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/002.png",
+      "bytes": 153051,
+      "sha256": "e4b6512684e398b239dc41d2dc21719d53a5a371a8fdfe7ccda8297a96c86c48",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/003.png",
+      "bytes": 153147,
+      "sha256": "aea8a2561bff0d31501e3c516ea1a1eea85fac4327e8795c6fc6ef8b45cfdefb",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/004.png",
+      "bytes": 153150,
+      "sha256": "c1d766f03f2a9e1a17b0e2f908be5294fc72c35ab76b192012a3bf8cc6637c23",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/005.png",
+      "bytes": 153150,
+      "sha256": "c1d766f03f2a9e1a17b0e2f908be5294fc72c35ab76b192012a3bf8cc6637c23",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/006.png",
+      "bytes": 153255,
+      "sha256": "08017009760fa55dab149404d149a495b312eca1c45dc0c81e4dc144077c8645",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/007.png",
+      "bytes": 153823,
+      "sha256": "2c366a3d222cb29e4c728ae2359eaec4d36f694d89d4823d6ae0a2ca5941f3e4",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/008.png",
+      "bytes": 154075,
+      "sha256": "69a177a7733f8c986aca4f9bf10ddd430e3bf04dded60d653a6b323dd5de1b3d",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/009.png",
+      "bytes": 154430,
+      "sha256": "d5434eb095235381c7e1105733ec7aa49d971c9238ed6f59dfcc474cf4462991",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/010.png",
+      "bytes": 154627,
+      "sha256": "34f5a20920060fbe1e4a766a0ace9c6d3ccbfcde37c4e0d5b37ebe2b5e1e1c33",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/011.png",
+      "bytes": 154811,
+      "sha256": "84e155e3a730e7f874f3536d2faad3571d95309130e3e568cb55756fe884f8dd",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/012.png",
+      "bytes": 155200,
+      "sha256": "240693643878c9e7cbd969c8d596c8b82bbdb19ddb64e6b8614acae026978fc3",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/013.png",
+      "bytes": 154945,
+      "sha256": "69593eaa0297b32ae5c3e95b086d8b9df22ce0035e9687c964c009dfe9441d18",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/014.png",
+      "bytes": 165518,
+      "sha256": "ff7de5301dbcfc4514bf06d06abcda1d2e262b1ae4056e6235fd1d4c27a90e9d",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/015.png",
+      "bytes": 165518,
+      "sha256": "ff7de5301dbcfc4514bf06d06abcda1d2e262b1ae4056e6235fd1d4c27a90e9d",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/016.png",
+      "bytes": 165807,
+      "sha256": "ce2020453d2af0039b0fee0d92ed81e9e82c1a3c41a455174d4d64bee9f0d52e",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/017.png",
+      "bytes": 165807,
+      "sha256": "ce2020453d2af0039b0fee0d92ed81e9e82c1a3c41a455174d4d64bee9f0d52e",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/018.png",
+      "bytes": 165980,
+      "sha256": "9069eb58bbe806ac9e6a10214aeed0caa778f79e79adfaae38a48653a390f19e",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/019.png",
+      "bytes": 165890,
+      "sha256": "cc713087a3a3b9c65be05feb9d7a3b096605774949e707a5b607c6c092c15e00",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "gif-frames/020.png",
+      "bytes": 165890,
+      "sha256": "cc713087a3a3b9c65be05feb9d7a3b096605774949e707a5b607c6c092c15e00",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "glyph-sheet-conference-framework.png",
+      "bytes": 131099,
+      "sha256": "518a656cab9e14624393333e1dce3a5032a7fdeabb43efe3440c329278a27e21",
+      "pixels": [
+        1403,
+        1185
+      ]
+    },
+    {
+      "path": "glyph-sheet-conference-framework.svg",
+      "bytes": 49628,
+      "sha256": "86dc008672b34545265c9b16af5667201a15cc5cba5bd66e9de101f9c89b7067"
+    },
+    {
+      "path": "glyph-sheet-isometric.png",
+      "bytes": 128554,
+      "sha256": "47cbb5bdf051a0e6c930a234791204a2d675b4a2aaf57e119f3311d641f6c651",
+      "pixels": [
+        1403,
+        1185
+      ]
+    },
+    {
+      "path": "glyph-sheet-isometric.svg",
+      "bytes": 49617,
+      "sha256": "657cab8d7b1e1137582e0f711211b44a7c44c02622e51c58e45b65c0b71b1291"
+    },
+    {
+      "path": "glyph-sheet-line-minimal.png",
+      "bytes": 118648,
+      "sha256": "0b5ef2c45719008c282e019fa5cd63f3136bcb301d2d9ca0ac26ce7727cd4e9c",
+      "pixels": [
+        1403,
+        1185
+      ]
+    },
+    {
+      "path": "glyph-sheet-line-minimal.svg",
+      "bytes": 49654,
+      "sha256": "e4bf1173a9967a81990ac8e2a963183a9c12b0dfaf3b3e327e6ca380ff319535"
+    },
+    {
+      "path": "glyph-sheet-nature-flat.png",
+      "bytes": 129270,
+      "sha256": "f14491e96b687b3ea97c37b77ef701bc99d25ab5df07f79c8b371343d002c7ff",
+      "pixels": [
+        1403,
+        1185
+      ]
+    },
+    {
+      "path": "glyph-sheet-nature-flat.svg",
+      "bytes": 49619,
+      "sha256": "bb23cbd1a9f8ce068e2b585ef952258be306407d95a31efa84810f916d3f5d47"
+    },
+    {
+      "path": "glyph-sheet-overview.png",
+      "bytes": 1208844,
+      "sha256": "f28ded9d03805c6cd27fc2d80863483444efe0bfad31902361d57c6f06665bc9",
+      "pixels": [
+        1416,
+        3635
+      ]
+    },
+    {
+      "path": "glyph-sheet-sketch.png",
+      "bytes": 192784,
+      "sha256": "f330a46ce5fb43ef5d06a3e8a47ca2f3849ad86ffc778f620c29135f601703d6",
+      "pixels": [
+        1403,
+        1185
+      ]
+    },
+    {
+      "path": "glyph-sheet-sketch.svg",
+      "bytes": 166891,
+      "sha256": "769698086068cedf0d8743cd3e1b5ed95eb2c4ecb3a4ee7a8ce7e5e14b9df176"
+    },
+    {
+      "path": "glyph-sheet-soft-illustration.png",
+      "bytes": 131291,
+      "sha256": "81dba643281b1d8cf2452f90acf55470fbdfce8a98e279b2b4af8369220cb403",
+      "pixels": [
+        1403,
+        1185
+      ]
+    },
+    {
+      "path": "glyph-sheet-soft-illustration.svg",
+      "bytes": 49625,
+      "sha256": "e37e2899533ded92e4f46f3c661297d348a0be272c3718ce35148dbebcbbe0e4"
+    },
+    {
+      "path": "mechanism-1440.png",
+      "bytes": 169412,
+      "sha256": "96e473d235f1dd69824f104bcf83650450f6d67b40c4693bda6a93f887e8d9bc",
+      "pixels": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "mechanism-aaas.png",
+      "bytes": 93615,
+      "sha256": "0627a693b3e248fd705c507edd03b528d125a430fa9d4a667539b63e4dba954e",
+      "pixels": [
+        1350,
+        825
+      ]
+    },
+    {
+      "path": "mechanism-aaas.svg",
+      "bytes": 36034,
+      "sha256": "ff64726b22ed186f4842a4e705c5412c33da21320a380d53ec99e8a7d513b434"
+    },
+    {
+      "path": "mechanism-jama.png",
+      "bytes": 92443,
+      "sha256": "ad48aced362cb6d8f87c3dae1d1cb12a599524dd4f9b90e15c18356f0603b4ce",
+      "pixels": [
+        1350,
+        825
+      ]
+    },
+    {
+      "path": "mechanism-jama.svg",
+      "bytes": 36034,
+      "sha256": "e87fab98f4d838c09f41ab055c1866a9b1ba79266b0bbc42e2c1f04a75b50f44"
+    },
+    {
+      "path": "mechanism-lancet.png",
+      "bytes": 92340,
+      "sha256": "bdfebb2a5e05cb06490fc1bbabc20aedbfb86ad8229f43293de70152af7a1378",
+      "pixels": [
+        1350,
+        825
+      ]
+    },
+    {
+      "path": "mechanism-lancet.svg",
+      "bytes": 36034,
+      "sha256": "667c652429a6a0ae748a3a53a56a141a05718ba5b75c7b4e9567babd0c1898f6"
+    },
+    {
+      "path": "mechanism-nejm.png",
+      "bytes": 92499,
+      "sha256": "cc02526aa1ba6de5a0475086f0a06ed83441387f996882376fc1465f10927ea4",
+      "pixels": [
+        1350,
+        825
+      ]
+    },
+    {
+      "path": "mechanism-nejm.svg",
+      "bytes": 36034,
+      "sha256": "148acbbe5fb976c5806f98e3e5fe509b8d01118f54062472b8e3d1c5d572fc63"
+    },
+    {
+      "path": "mechanism-npg.png",
+      "bytes": 92466,
+      "sha256": "31f3080935392a39df1ed3c3d22323e0e9a1b27495dc38e78c9a699d8ba6fd1f",
+      "pixels": [
+        1350,
+        825
+      ]
+    },
+    {
+      "path": "mechanism-npg.svg",
+      "bytes": 36034,
+      "sha256": "d669643f02f28e371556f314b3539ab553ae2f2c419938ddeab84b3854a533ac"
+    },
+    {
+      "path": "mechanism-okabe-ito.png",
+      "bytes": 92283,
+      "sha256": "c3ee25455524cc4a5089c143fe58dc771038bbaa8026b3285ee10c0611c19cf4",
+      "pixels": [
+        1350,
+        825
+      ]
+    },
+    {
+      "path": "mechanism-okabe-ito.svg",
+      "bytes": 36034,
+      "sha256": "9fbd71b998350200931a54e40f3b01064ee23ea4d266a93ea76584545c47e3f7"
+    },
+    {
+      "path": "mechanism-overview.png",
+      "bytes": 976983,
+      "sha256": "1b509256ccd416a014724e2245df8f4f7332f5625264485194e6fb5d4d79e105",
+      "pixels": [
+        1416,
+        2853
+      ]
+    },
+    {
+      "path": "new-page.png",
+      "bytes": 281448,
+      "sha256": "2b65eff91d9c1cc6e0be911797b1ef89b7458efd5d150eb16a00ce7072f55f5c",
+      "pixels": [
+        1440,
+        1939
+      ]
+    },
+    {
+      "path": "operations.gif",
+      "bytes": 1482625,
+      "sha256": "26bebd763d9974100cd5995d9fc14d83b51a5607d6216d7f11a4dad8f17c7f10",
+      "pixels": [
+        1440,
+        960
+      ],
+      "gif_frames": 16
+    },
+    {
+      "path": "README.md",
+      "bytes": 8960,
+      "sha256": "9d476d1b8850929a80e756c03fcbdf339df94289cfbd0212585fc794351e0892"
+    },
+    {
+      "path": "templates-overview.png",
+      "bytes": 148265,
+      "sha256": "0658263e98e44933aaa710a6b866e7ec55c58085d544ba56ec90e751c977895f",
+      "pixels": [
+        1200,
+        1310
+      ]
+    }
+  ]
+}
