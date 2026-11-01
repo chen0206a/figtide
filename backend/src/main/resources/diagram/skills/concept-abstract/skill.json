@@ -1,0 +1,43 @@
+{
+  "id": "concept-abstract",
+  "version": "1.0.0",
+  "name": "概念图 / 图形摘要",
+  "description": "围绕一个中心论点，区分分类、比较和因果含义。",
+  "patterns": [
+    "conceptual",
+    "taxonomy",
+    "teaser"
+  ],
+  "templates": [
+    "conceptual",
+    "taxonomy",
+    "teaser"
+  ],
+  "recommended_styles": [
+    "soft-illustration"
+  ],
+  "allowed_nodes": [
+    "box",
+    "pill",
+    "ellipse",
+    "glyph",
+    "text"
+  ],
+  "allowed_edges": [
+    "flow",
+    "activate",
+    "inhibit",
+    "transport",
+    "bind",
+    "indirect"
+  ],
+  "icon_tags": [
+    "concept",
+    "graph"
+  ],
+  "checks": {
+    "provenance": true,
+    "zones": false,
+    "depth": true
+  }
+}

@@ -1,3 +1,7 @@
+## 2026-11-01 · 19-7：版本化skill方案包
+
+新增六个skill的格式、独立中文规划、检查参数和固定提交来源；目录经diagram-catalog下发。H2环境执行 `mvn -B -f backend/pom.xml -Dtest=DiagramSkillsTest,DiagramCatalogTest test`：5/5，无失败；类型引用、来源、版本、40连续字符独立编写检查通过。本节无UI变更，前端和E2E未执行（后续19-B总验收统一运行）；无迁移和新依赖。
+
 ## 2026-11-01 · 19-A集成 / 19-B0审计
 
 PR #6的Test LabFlow（41278919309）和Windows desktop package（41278919185）均成功，包含双库、前端、跨平台MCP、真实EXE探针、窗口探针和完整打包E2E；按主人授权普通合并main。19-B0为只读审计，未新增运行测试；选择方案A，完整代码假定位置及验证计划见development/19-B0-AUDIT.md。真实模型评测结果和旧评测分支历史未推送。
