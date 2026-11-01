@@ -399,3 +399,13 @@ GET /api/diagram-catalog兼容增加palettes（原始a/b/c/d/n色值及非官方
 D3复用ColorVision，只检查图中实际使用的语义角色轮廓，不比较浅填充。色对返回角色名、轮廓色和最小ΔE；阈值20保留。默认Okabe–Ito失败仅给意见，等待主人决定；其他配色仅在存在所有当前角色色对均达标的目录配色时提供可选set_style.palette修复，不改任何原色值。
 
 修复使用现有`GET /api/diagram-tools/catalog`目录和只读`POST /api/projects/{p}/diagram-tools/preview`；DiagramOperations→DiagramValidator同一校验链。返回候选doc和逐项changes；只有用户确认后才加入本机撤销栈，另行手动保存。
+
+### 机制图AI提案（19-B）
+
+复用`POST /api/projects/{p}/agent/runs`：`protocol_version:1, mode:"diagram", diagram_id, base_revision, doc, skill_id, diagram_stage:"brief", prompt, share_metadata:true`。可带既有request_id、max_steps/max_tokens/timeout_seconds和新会话session_budget，或既有session_id。机制图不能混入chart_id/config/parent_run_id。
+
+简报返回`diagram:{kind:"brief",brief,facts:[{text,quote}],question?}`，阶段awaiting_facts。用户确认后以同一session_id提交`diagram_stage:"structure",facts_confirmed:true,brief,facts,source_prompt`；每个quote须来自source_prompt。模型输出仅语义操作，用户改写事实属于明确确认。
+
+轮询原runs/{id}，awaiting_render时取得proposal.doc，在浏览器排版后向原`POST .../runs/{id}/review`发送`{doc,render_facts,target?}`。文档只能改变x/y，不允许替换标签、结构或其他属性。完成后proposal包含doc/config、差异、操作和确定性review。
+
+原`POST .../runs/{id}/decision`接受`{outcome:"accepted",proposal_hash,review_hash,accepted_fixes:[id...]}`，返回已选修复后的doc，但不保存机制图。拒绝沿用outcome/reason/proposal_hash。原cancel/resume/audit接口复用；旧revision、不同修复集合及历史应用返回409。图表模式原协议不变。

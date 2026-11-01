@@ -69,7 +69,21 @@ public class DiagramReviewService {
     if(flow)for(int i=0;i<doc.path("nodes").size();i++){var node=doc.path("nodes").get(i);if(node.path("role").asText().equals("note")||node.path("kind").asText().equals("text")||Set.of("phospho","number","frozen","trainable").contains(node.path("glyph").asText()))continue;boolean linked=false;for(var e:doc.path("edges"))linked|=e.path("from").equals(node.path("id"))||e.path("to").equals(node.path("id"));if(!linked)issues.add(issue("D7","isolated-"+i,"warning","流程中有孤立节点","请确认该节点应连接到哪一步；审稿不会猜测或添加关系。",List.of(),"node",i));}
     List<ReviewIssue> checked=new ArrayList<>();for(var issue:issues){if(issue.fixable())try{if(DiagramOperations.changes(doc,DiagramOperations.apply(doc,json.valueToTree(issue.fix()))).isEmpty())issue=issue.advice(" 当前修复没有变化，请手动检查。");}catch(dev.labflow.api.ApiException e){issue=issue.advice(" 当前区域无法安全放大或调整，请手动修改。");}checked.add(issue);}
     checked.sort(Comparator.comparingInt((ReviewIssue i)->i.severity().equals("error")?0:1).thenComparingInt(i->Integer.parseInt(i.rule().substring(1))).thenComparing(ReviewIssue::id));var passed=json.createArrayNode();for(int i=1;i<=7;i++){String id="D"+i;if(facts==null&&(i==4||i==5))continue;if(checked.stream().noneMatch(issue->issue.rule().equals(id)))passed.add(id);}
-    for(String id:List.of("D8","D9"))skipped.addObject().put("rule",id).put("status","skipped").put("reason",id.equals("D8")?"AI来源追溯在19-B启用":"外部图标署名在19-C启用");
+    if(doc.path("meta").has("ai_labels")){
+      String source=doc.at("/meta/source_text").asText();for(var f:doc.at("/meta/facts"))source+="\n"+f.asText();
+      boolean clean=true;
+      for(var label:doc.at("/meta/ai_labels"))for(int i=0;i<doc.path("nodes").size();i++){
+        var node=doc.path("nodes").get(i);String value=node.path("label").asText();
+        if(!node.path("id").equals(label.path("id"))||!node.path("label").equals(label.path("label"))||value.isBlank())continue;
+        String quoted=java.util.regex.Pattern.quote(value);boolean latin=value.matches("[A-Za-z0-9][A-Za-z0-9 ._+()/-]*");
+        if(!java.util.regex.Pattern.compile(latin?"(?<![\\p{L}\\p{N}_])"+quoted+"(?![\\p{L}\\p{N}_])":quoted,java.util.regex.Pattern.CASE_INSENSITIVE|java.util.regex.Pattern.UNICODE_CASE).matcher(source).find()){
+          checked.add(issue("D8","source-"+i,"warning","请确认这项内容有依据","此AI标签未在用户描述或已确认事实中找到明确出处，请核对科学依据。",List.of(),"node",i));clean=false;
+        }
+      }
+      if(clean)passed.add("D8");
+    }else skipped.addObject().put("rule","D8").put("status","skipped").put("reason","仅检查具有AI来源标记的标签");
+    skipped.addObject().put("rule","D9").put("status","skipped").put("reason","外部图标署名在19-C启用");
+
     var result=json.createObjectNode().put("protocol_version",1).put("rules_version","diagram-review-v1").put("journal",journal);result.set("issues",json.valueToTree(checked));result.set("passed",passed);result.set("skipped",skipped);return result;
   }
 }

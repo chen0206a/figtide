@@ -58,7 +58,15 @@ const server = http.createServer(async (req, res) => {
   const recommending = payload.tools?.some(
     (t) => t.function?.name === "recommend_charts",
   );
-  const message = teamRole ? teamMessage() : recommending
+  const diagramBrief=system.includes('本阶段只返回JSON对象');
+  const diagramStructure=names.has('get_current_diagram');
+  const diagramMessage=()=>{
+    if(diagramBrief)return {role:'assistant',content:JSON.stringify({brief:'RNA workflow',facts:[{text:prompt,quote:prompt},{text:'RNA',quote:prompt}]})};
+    if(afterTools)return {role:'assistant',content:'结构已提出，请检查预览和审稿修复后明确应用。'};
+    const context=JSON.parse(prompt),id=context.current_doc.nodes[0].id,label=context.request.includes('Library')?'Library':'RNA';
+    return {role:'assistant',content:null,tool_calls:[tool('diagram-label','update_node',{id,label}),tool('diagram-font','set_style',{overrides:{font_size_pt:3,line_width_pt:.2}})]};
+  };
+  const message = diagramBrief||diagramStructure?diagramMessage():teamRole ? teamMessage() : recommending
     ? afterTools
       ? {
           role: "assistant",
@@ -148,7 +156,7 @@ const server = http.createServer(async (req, res) => {
           {
             message,
             finish_reason:
-              teamRole ? (message.tool_calls?'tool_calls':'stop') : afterTools || question || connectionChat ? "stop" : "tool_calls",
+              (teamRole||diagramBrief||diagramStructure) ? (message.tool_calls?'tool_calls':'stop') : afterTools || question || connectionChat ? "stop" : "tool_calls",
           },
         ],
         usage: { prompt_tokens: 200, completion_tokens: 50 },

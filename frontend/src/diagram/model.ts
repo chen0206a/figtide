@@ -31,7 +31,7 @@ export type DiagramDoc = {
   zones: DiagramZone[]; nodes: DiagramNode[]; edges: DiagramEdge[];
   annotations: {id: string; kind: "panel_letter" | "callout" | "note"; target: string; text: string}[];
   legend: {mode: "auto" | "off"; position: "bottom-right" | "bottom-left" | "top-right" | "top-left"};
-  meta: {skill: string | null; skill_version: string | null; template: string | null; brief: string; facts: string[]};
+  meta: {skill: string | null; skill_version: string | null; template: string | null; brief: string; facts: string[]; source_text?:string; fact_sources?:{text:string;quote:string}[]; ai_labels?:{id:string;label:string}[]};
 };
 export type DiagramRecord = {id: number; project_id: number; name: string; revision: number; version_count: number; archived: boolean; doc: DiagramDoc};
 export type DiagramTemplate = {id: string; name: string; pattern: string; documents: {en: DiagramDoc; zh: DiagramDoc}};

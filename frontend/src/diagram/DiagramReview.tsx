@@ -40,7 +40,7 @@ export function useDiagramReview(doc:DiagramDoc,record:DiagramRecord,revision:nu
     <div className="diagram-review-scroll">{report&&<ReviewIssues report={report} selected={selected} ignored={ignored} onSelect={id=>toggle(setSelected,id)} onIgnore={id=>toggle(setIgnored,id)} describeOperation={op=>labels[op.tool]?.replace(/[（(].*$/,'')||"调整机制图"}/>}</div>
     {report&&<footer>{candidate?<div className="diagram-repair-confirm"><strong>修复预览 · {candidate.changes.length} 项变化</strong><p className="tiny-note">画布显示候选结果，尚未应用或保存。</p><ul>{candidate.changes.map(change=><li key={change.path}>{changeDescription(change)}</li>)}</ul><Button onClick={()=>{if(current.current===candidate.base){edit(candidate.doc);setCandidate(null);setReport(null);}}}>应用修复</Button><Button variant="outline" onClick={()=>setCandidate(null)}>取消预览</Button></div>:<Button disabled={busy||!selectedOperations(report,selected,ignored).length} onClick={()=>void preview()}>预览选中修复</Button>}</footer>}
   </section>:null;
-  return {open:()=>setOpen(true),panel,candidate:candidate?.doc||null,report,ignored,reviewErrors:report?report.issues.filter(i=>i.severity==='error').length:undefined};
+  return {open:()=>setOpen(true),close,panel,candidate:candidate?.doc||null,report,ignored,reviewErrors:report?report.issues.filter(i=>i.severity==='error').length:undefined};
 }
 
 /** NumberMarker is shared with chart review; the scale converts its pixel vocabulary to mm. */

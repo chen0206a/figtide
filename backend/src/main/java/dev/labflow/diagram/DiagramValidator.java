@@ -96,8 +96,11 @@ public final class DiagramValidator {
       fields(a,"id kind target text","id kind target text");choice(a.get("kind"),Set.of("panel_letter","callout","note"));require(nodes.contains(id(a.get("target")))||zones.contains(a.path("target").asText()),"注释目标不存在");text(a.get("text"),200);
     }
     var legend=d.path("legend");fields(legend,"mode position","mode position");choice(legend.get("mode"),Set.of("auto","off"));choice(legend.get("position"),Set.of("bottom-right","bottom-left","top-right","top-left"));
-    var meta=d.path("meta");fields(meta,"skill skill_version template brief facts","skill skill_version template brief facts");
+    var meta=d.path("meta");fields(meta,"skill skill_version template brief facts source_text fact_sources ai_labels","skill skill_version template brief facts");
     for(String k:List.of("skill","skill_version","template"))nullableText(meta.get(k),120);text(meta.get("brief"),10000);array(meta.get("facts"),200);for(var f:meta.path("facts"))text(f,1000);
+    if(meta.has("source_text"))text(meta.get("source_text"),10000);
+    if(meta.has("fact_sources")){array(meta.get("fact_sources"),40);require(meta.path("fact_sources").size()==meta.path("facts").size(),"事实出处数量不一致");int index=0;for(var f:meta.path("fact_sources")){fields(f,"text quote","text quote");String quote=text(f.get("quote"),1000);require(!quote.isBlank()&&meta.path("source_text").asText().contains(quote)&&f.path("text").equals(meta.path("facts").get(index++)),"事实出处必须来自用户原文");}}
+    if(meta.has("ai_labels")){array(meta.get("ai_labels"),120);Set<String> seen=new HashSet<>();for(var label:meta.path("ai_labels")){fields(label,"id label","id label");require(nodes.contains(id(label.get("id")))&&seen.add(label.path("id").asText()),"AI标签引用无效或重复");text(label.get("label"),200);}}
   }
   public static JsonNode find(JsonNode list,String id) { for(var n:list)if(n.path("id").asText().equals(id))return n;throw ApiException.bad("机制图：元素不存在"); }
 }

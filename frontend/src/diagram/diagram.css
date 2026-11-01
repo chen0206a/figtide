@@ -165,3 +165,19 @@
 .diagram-new-page .diagram-create-actions {align-items:center;justify-content:space-between;padding-top:var(--lf-space-2);}
 .diagram-new-page .diagram-create-actions button {height:32px;min-height:32px;}
 @media(max-width:1000px){.diagram-new-page .diagram-wizard-preview{position:static;height:auto;min-height:660px;}.diagram-wizard-preview-scroll{flex:none;}.diagram-new-page .diagram-create-actions{margin-top:var(--lf-space-3);}}
+
+.diagram-agent-panel {display:flex;flex-direction:column;gap:var(--lf-space-3);min-height:0;height:100%;}
+.diagram-agent-panel>header {display:flex;justify-content:space-between;align-items:center;gap:var(--lf-space-2);}
+.diagram-agent-scroll {overflow:auto;min-height:0;flex:1;display:flex;flex-direction:column;gap:var(--lf-space-3);}
+.diagram-agent-panel textarea {width:100%;resize:vertical;min-height:var(--lf-space-8);border:1px solid var(--lf-border);border-radius:var(--lf-radius-sm);padding:var(--lf-space-2);background:var(--lf-surface);color:var(--lf-text);font:inherit;}
+.diagram-agent-panel footer {flex-shrink:0;display:flex;flex-direction:column;gap:var(--lf-space-2);border-top:1px solid var(--lf-border);padding-top:var(--lf-space-2);}
+.diagram-agent-panel .diagram-agent-consent {display:flex;align-items:flex-start;gap:var(--lf-space-2);}
+.diagram-agent-consent input {width:auto;}
+.diagram-agent-fact {border:1px solid var(--lf-border);border-radius:var(--lf-radius-sm);padding:var(--lf-space-2);}
+.diagram-agent-fact small {display:block;color:var(--lf-text-3);overflow-wrap:anywhere;}
+.diagram-agent-markers .proposal-marker-number {fill:var(--lf-link);}
+
+.diagram-inspector:has(.diagram-agent-panel) {overflow:hidden;}
+.diagram-agent-panel {height:calc(100dvh - 222px);min-height:480px;}
+.diagram-agent-markers .proposal-marker-box {fill:color-mix(in srgb,var(--lf-link) 5%,transparent);stroke:var(--lf-link);stroke-width:1.5;stroke-dasharray:5 4;}
+.diagram-agent-markers text {fill:var(--lf-text-on-inverse);font:600 var(--lf-text-xs) var(--lf-font-mono);}
