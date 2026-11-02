@@ -1,5 +1,3 @@
-## 2026-11-02 · 19-B/C视觉收尾1–3最终验收
-
 ## 2026-11-02 · 19-B/C第二轮视觉返工
 
 - `npm.cmd --prefix frontend test -- --run --maxWorkers=2`：656/656，78文件；生产构建由原`build-desktop.ps1`完成，tsc/Vite通过。
@@ -11,6 +9,8 @@
 - 证据：`docs/test-evidence/diagram-19-C-review2/VISUAL-PACKAGE.md`、`acceptance.json`。所有交付截图/GIF1440×960非full-page；截图逐张自检，主人视觉确认待进行。
 - 未执行：draw.io人工交互编辑/保存重开（CLI渲染既往通过不能替代人工）；真实模型评测/收费调用；真实工作区/托盘/SmartScreen重验。自己的真实模型报告/输出/费用未上传。
 
+
+## 2026-11-02 · 19-B/C视觉收尾1–3最终验收
 
 产品代码98e3047，后续只整理报告/证据；本轮无收费模型调用。所有结果为实际执行，不将人工待确认计为通过。
 
