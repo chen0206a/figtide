@@ -1,16 +1,29 @@
 {
+  "outlines": {
+    "actor": "#0069A4",
+    "process": "#00916A",
+    "data": "#616161",
+    "model": "#BC6F9A",
+    "output": "#00916A",
+    "note": "#C45600"
+  },
   "safe": false,
+  "info_threshold": 20,
+  "preset": "nature-flat",
+  "threshold": 10,
+  "id": "okabe-ito",
   "failing_pairs": [
     {
       "colors": [
         "#0069A4",
         "#00916A"
       ],
+      "minimum_delta_e": 11.802929479926393,
       "roles": [
         "actor",
         "process"
       ],
-      "minimum_delta_e": 11.802929479926393,
+      "severity": "info",
       "delta_e": [
         36.660111482595106,
         32.66979278818927,
@@ -22,11 +35,12 @@
         "#0069A4",
         "#BC6F9A"
       ],
+      "minimum_delta_e": 11.72481721271584,
       "roles": [
         "actor",
         "model"
       ],
-      "minimum_delta_e": 11.72481721271584,
+      "severity": "info",
       "delta_e": [
         11.72481721271584,
         24.333468074436304,
@@ -38,11 +52,12 @@
         "#00916A",
         "#BC6F9A"
       ],
+      "minimum_delta_e": 15.103759646541059,
       "roles": [
         "process",
         "model"
       ],
-      "minimum_delta_e": 15.103759646541059,
+      "severity": "info",
       "delta_e": [
         26.468016112168506,
         15.103759646541059,
@@ -54,11 +69,12 @@
         "#00916A",
         "#C45600"
       ],
+      "minimum_delta_e": 17.863662225794837,
       "roles": [
         "process",
         "note"
       ],
-      "minimum_delta_e": 17.863662225794837,
+      "severity": "info",
       "delta_e": [
         17.863662225794837,
         20.223497716395624,
@@ -70,11 +86,12 @@
         "#BC6F9A",
         "#C45600"
       ],
+      "minimum_delta_e": 13.643553588182037,
       "roles": [
         "model",
         "note"
       ],
-      "minimum_delta_e": 13.643553588182037,
+      "severity": "info",
       "delta_e": [
         39.609739313887964,
         33.1262535842298,
@@ -82,17 +99,6 @@
       ]
     }
   ],
-  "id": "okabe-ito",
-  "preset": "nature-flat",
-  "outlines": {
-    "actor": "#0069A4",
-    "process": "#00916A",
-    "data": "#616161",
-    "model": "#BC6F9A",
-    "output": "#00916A",
-    "note": "#C45600"
-  },
-  "threshold": 20,
   "used_roles": [
     "model",
     "actor",

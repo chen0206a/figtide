@@ -1,21 +1,22 @@
 {
-  "date": "2026-11-01",
-  "source_commit": "a59b303b93bbed7f55a1cc6cb9e37808fb0881b5",
+  "date": "2026-11-02",
+  "scope": "19-B/C visual review follow-up 1–3; automated acceptance only",
+  "source_commit": "98e3047d5296c7b6b52106186d78938399715a49",
   "frontend": {
-    "passed": 649,
-    "files": 75,
+    "passed": 652,
+    "files": 76,
     "failed": 0,
-    "build": "passed"
+    "build": "passed, staged desktop production build"
   },
   "h2": {
-    "total": 469,
-    "passed": 467,
+    "total": 470,
+    "passed": 468,
     "skipped": 2,
     "failed": 0
   },
   "mysql": {
-    "total": 474,
-    "passed": 472,
+    "total": 475,
+    "passed": 473,
     "skipped": 2,
     "failed": 0
   },
@@ -26,37 +27,77 @@
     "stdio_passed": 4
   },
   "desktop": {
-    "total": 109,
-    "passed": 106,
+    "total": 110,
+    "passed": 107,
     "skipped": 3,
     "failed": 0,
     "flaky": 0,
     "mode": "desktop production JAR, isolated H2",
     "audit_restart": "passed"
   },
+  "skip_reasons": {
+    "backend": [
+      "ServerEvaluationTest requires explicit service evaluation mode",
+      "DiagramEvaluationTest requires explicit real-model opt-in"
+    ],
+    "desktop": [
+      "3 migration.spec.ts cases require a separate seeded migration fixture and LABFLOW_MIGRATION_E2E=1"
+    ]
+  },
   "geometry": {
     "total": 240,
     "errors": 0
   },
-  "svg_complex_rgba_comparison": "exact equality at 200x120, browser E2E",
+  "d3": {
+    "rules_version": "diagram-review-v2",
+    "warning_below": 10,
+    "info_below": 20,
+    "chart_R3_threshold_unchanged": 20,
+    "default_template": "mechanism / nature-flat / okabe-ito",
+    "minimum_delta_e": 11.72481721271584,
+    "minimum_roles": [
+      "actor",
+      "model"
+    ],
+    "minimum_colors": [
+      "#0069A4",
+      "#BC6F9A"
+    ],
+    "warning_pairs": 0,
+    "info_pairs": 5,
+    "palette_values_unchanged": true,
+    "all_pairs_file": "okabe-ito-all-pairs.json"
+  },
   "icons": {
     "total": 150,
-    "CC0-1.0": 131,
-    "CC-BY-4.0": 19,
-    "upstream": "duerrsimon/bioicons",
-    "commit": "d29e766ea7580b8063c4f47b29e872db40a4d979"
+    "loading": "visible thumbnails and used document icons only; cached and in-flight deduplicated",
+    "export": "all used SVG awaited and inlined; load failures abort export",
+    "network_e2e": "passed",
+    "benchmark_file": "icon-loading-benchmark.json",
+    "raw_bytes_before": 2709712,
+    "raw_bytes_after": 206946,
+    "gzip_bytes_before": 606989,
+    "gzip_bytes_after": 74503
   },
-  "drawio_cli_render": "passed",
+  "svg_complex_rgba_comparison": "exact 200x120 equality passed again",
+  "owner_visual_review": "pending; screenshots/GIFs are evidence, not owner approval",
   "owner_drawio_edit_smoke": "pending owner; not counted as automated pass",
+  "screenshot_viewport": {
+    "width": 1440,
+    "height": 960,
+    "full_page": false
+  },
   "real_model_calls": 0,
-  "evaluation_reports": "local only, excluded",
-  "raw_logs": "local only, hashes of LF-normalized UTF-8 files",
+  "evaluation_reports": "local only, excluded from Git changes and review package",
+  "pushed": false,
+  "raw_logs": "local only; SHA256 of LF-normalized UTF-8 logs",
   "log_sha256": {
-    ".runtime/19-C-h2-final.log": "8b644a63df9661c3f948ead859bdbca171a076e9fe009da0a19c303fdb8663a2",
-    ".runtime/19-C-mysql-final.log": "e2bcdc0fc566b5b770069eafb81e567e4da48c096b8c0043bffdbd3017e3bd7d",
-    ".runtime/19-C-front-final.log": "b2aa7de92c4470e9baf14e279cc34441c3b81ab6f62763fff059622b5b2fa812",
-    ".runtime/19-C-mcp-final.log": "28c07fcfd4c328d46d905ac17497c139deff8af8fd486eaf550e978c70262ebd",
-    ".runtime/19-C-desktop-final.log": "fcbffd610f6efbc811e790c96a0dff713c3b5a3f68dd3b56ff454923dfe69e05",
-    ".runtime/19-C15-build.log": "c6681402b96fe22b297170b1bfb2aeb94677946cf58f049419607df367765c45"
+    ".runtime/19-C-followup-h2-final.log": "7c58ec9c89b6051dc3eb5fbc5b5e6685fac7fa0a50bd1832f26f7d5041477211",
+    ".runtime/19-C-followup-mysql-final.log": "0ea095e683460a1d5a96a364d2e24cf6b26dbf31e39ea65874ad41ee95e545c2",
+    ".runtime/19-C-followup-front-final-green.log": "245bee5673d5459d54676913824cfa3eeacfa04e4063b23619ab717fd35f3ea2",
+    ".runtime/19-C-followup-mcp-final.log": "484ca8dac0df85404c61a759c3c1cc550209dad4eea34d478500b6e32a1e42b0",
+    ".runtime/19-C-followup-desktop-final.log": "cbec22b6e0cd8735136bd1cf57f7f751dbd46c3ba9c8e60233f6e2c8b916d4ea",
+    ".runtime/19-C-followup-minimum-test.log": "1c8037dc55f8bdebc6cd4d1cd09750eedb64ae179d0a6967ebbdfc9489c43563",
+    ".runtime/19-C-followup-icon-parity.log": "8609e7dda0d7a47835ecb642faf3d8eab97bd84b60ae5ddc817e9fb86a5dada5"
   }
 }
