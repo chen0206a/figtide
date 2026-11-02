@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DiagramIconsTest {
   final ObjectMapper json=new ObjectMapper();final DiagramCatalog catalog=new DiagramCatalog(json,new JournalRules(json));
-  @Test void all150LicensedFilesMatchTheirManifestAndTheSingleSecurityBoundary()throws Exception{
-    var icons=catalog.icons();assertEquals(150,icons.all().size());assertEquals(150,new PathMatchingResourcePatternResolver().getResources("classpath*:diagram/icons/*.svg").length);Set<String> ids=new HashSet<>();int attributed=0;
+  @Test void all151LicensedFilesMatchTheirManifestAndTheSingleSecurityBoundary()throws Exception{
+    var icons=catalog.icons();assertEquals(151,icons.all().size());assertEquals(151,new PathMatchingResourcePatternResolver().getResources("classpath*:diagram/icons/*.svg").length);Set<String> ids=new HashSet<>();int attributed=0;
     for(var item:icons.all()){
       String id=item.path("id").asText();assertTrue(ids.add(id));assertTrue(Set.of("CC0-1.0","CC-BY-4.0").contains(item.path("license").asText()));if(item.path("license").asText().equals("CC-BY-4.0"))attributed++;
       assertFalse(item.at("/name/en").asText().isBlank());assertTrue(item.at("/name/zh").asText().codePoints().anyMatch(c->Character.UnicodeScript.of(c)==Character.UnicodeScript.HAN));assertFalse(item.path("author").asText().isBlank());assertTrue(item.path("source_url").asText().contains("/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/"));assertTrue(item.path("modified").asBoolean());

@@ -12,5 +12,5 @@ export function iconMarkup(id:string,width:number,height:number,ink:string,prefi
   return svg.replace(/<svg\b([^>]*)>/,(_,attrs)=>`<svg${attrs.replace(/\s(?:width|height|x|y)="[^"]*"/g,'')} x="0" y="0" width="${width}" height="${height}" color="${ink}" preserveAspectRatio="xMidYMid meet">`);
 }
 export function iconAttribution(doc:DiagramDoc,icons:DiagramIcon[]):string{
-  const used=new Set(doc.nodes.map(n=>n.icon).filter(Boolean));return icons.filter(i=>used.has(i.id)&&i.license==='CC-BY-4.0').map(i=>`${i.name.en} — ${i.author}; via Bioicons; CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); ${i.source_url}; modified: SVG sanitized and palette recoloured.`).join('\n');
+  const used=new Set(doc.nodes.map(n=>n.icon).filter(Boolean));return icons.filter(i=>used.has(i.id)&&i.license==='CC-BY-4.0').map(i=>`${i.name.en} — ${i.author}; via Bioicons; CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); ${i.source_url}; modified: SVG sanitized, viewBox fitted, and palette recoloured.`).join('\n');
 }

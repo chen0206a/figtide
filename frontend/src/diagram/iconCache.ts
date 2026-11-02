@@ -1,3 +1,4 @@
+import {fitIconContent} from './fitIcon';
 import {builtinIconIds} from './builtinIconIds';
 import {safeArtwork} from './artwork';
 import type {DiagramDoc} from './model';
@@ -22,7 +23,7 @@ export function loadIcon(id:string,retry=false):Promise<string>{
       const response=await fetch(`/api/diagram-icons/${encodeURIComponent(id)}.svg`,{credentials:'same-origin'});
       if(!response.ok)throw new Error(`科研图标载入失败（${response.status}）`);
       const svg=await response.text();if(!safeArtwork(svg))throw new Error('科研图标SVG未通过安全检查');
-      snapshot=Object.freeze({...snapshot,[id]:svg});return svg;
+      const fitted=fitIconContent(svg);snapshot=Object.freeze({...snapshot,[id]:fitted});return fitted;
     }catch(e){const error=e instanceof Error?e:new Error('科研图标载入失败');errors.set(id,error);snapshot=Object.freeze({...snapshot});throw error;}
     finally{pending.delete(id);emit();}
   })();pending.set(id,request);return request;

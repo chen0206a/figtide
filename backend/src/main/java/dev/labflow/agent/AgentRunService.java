@@ -161,12 +161,12 @@ public class AgentRunService {
             "session_budget",
             "request_id",
             "user_message",
-            "mode", "render_facts", "target", "role_budget_percentages", "doc", "diagram_id", "skill_id", "diagram_stage", "facts_confirmed", "source_prompt", "facts", "brief"));
+            "mode", "render_facts", "target", "role_budget_percentages", "doc", "diagram_id", "skill_id", "diagram_stage", "facts_confirmed", "source_prompt", "facts", "brief", "selected_facts", "cannot_imply", "allow_below_style_defaults"));
     String mode = request.path("mode").asText("single");
     if (!Set.of("single", "edit", "recommend", "team", "review", "diagram").contains(mode)
         || (request.has("mode") && !request.path("mode").isTextual()))
       throw ApiException.bad("不支持的运行模式");
-    if(!mode.equals("diagram"))for(String field:List.of("doc","diagram_id","skill_id","diagram_stage","facts_confirmed","source_prompt","facts","brief"))if(request.has(field))throw ApiException.bad("机制图字段只适用于机制图助手");
+    if(!mode.equals("diagram"))for(String field:List.of("doc","diagram_id","skill_id","diagram_stage","facts_confirmed","source_prompt","facts","brief","selected_facts","cannot_imply","allow_below_style_defaults"))if(request.has(field))throw ApiException.bad("机制图字段只适用于机制图助手");
     if(mode.equals("diagram")&&(request.has("chart_id")||request.has("config")||request.has("parent_run_id")))throw ApiException.bad("机制图不绑定数据图；请先应用或结束当前提案，再按画布追改");
     if((request.has("render_facts")||request.has("target"))&&!mode.equals("review"))throw ApiException.bad("只有独立深度审稿可以附初始渲染事实");
     if(request.has("role_budget_percentages")&&!mode.equals("team"))throw ApiException.bad("角色配额只适用于协作模式");

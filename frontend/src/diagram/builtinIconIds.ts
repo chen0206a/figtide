@@ -149,5 +149,6 @@ export const builtinIconIds:ReadonlySet<string>=new Set([
   "bio-mousekidney-cystic-sagittal",
   "bio-nephron-2d",
   "bio-internal-signal-peptide-scheme",
-  "bio-protein-purification-colored"
+  "bio-protein-purification-colored",
+  "bio-mouse-ben-murrell"
 ]);

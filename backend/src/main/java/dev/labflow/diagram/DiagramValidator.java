@@ -98,9 +98,10 @@ public final class DiagramValidator {
     }
     for(var layer:d.path("artworks")){fields(layer,"id name x y w h locked hidden svg","id name x y w h locked hidden svg");text(layer.get("name"),120);rect(layer,width,height);require(layer.path("locked").isBoolean()&&layer.path("hidden").isBoolean(),"图层开关必须为布尔值");String svg=text(layer.get("svg"),MAX_BYTES);require(svg.equals(SvgSanitizer.sanitize(svg)),"外部SVG须先通过导入接口净化");}
     var legend=d.path("legend");fields(legend,"mode position","mode position");choice(legend.get("mode"),Set.of("auto","off"));choice(legend.get("position"),Set.of("bottom-right","bottom-left","top-right","top-left"));
-    var meta=d.path("meta");fields(meta,"skill skill_version template brief facts source_text fact_sources ai_labels include_icon_attribution","skill skill_version template brief facts");
+    var meta=d.path("meta");fields(meta,"skill skill_version template brief facts source_text fact_sources ai_labels include_icon_attribution cannot_imply","skill skill_version template brief facts");
     for(String k:List.of("skill","skill_version","template"))nullableText(meta.get(k),120);text(meta.get("brief"),10000);array(meta.get("facts"),200);for(var f:meta.path("facts"))text(f,1000);
     if(meta.has("include_icon_attribution"))require(meta.get("include_icon_attribution").isBoolean(),"图标署名开关无效");
+    if(meta.has("cannot_imply"))text(meta.get("cannot_imply"),500);
     if(meta.has("source_text"))text(meta.get("source_text"),10000);
     if(meta.has("fact_sources")){array(meta.get("fact_sources"),40);require(meta.path("fact_sources").size()==meta.path("facts").size(),"事实出处数量不一致");int index=0;for(var f:meta.path("fact_sources")){fields(f,"text quote","text quote");String quote=text(f.get("quote"),1000);require(!quote.isBlank()&&meta.path("source_text").asText().contains(quote)&&f.path("text").equals(meta.path("facts").get(index++)),"事实出处必须来自用户原文");}}
     if(meta.has("ai_labels")){array(meta.get("ai_labels"),120);Set<String> seen=new HashSet<>();for(var label:meta.path("ai_labels")){fields(label,"id label","id label");require(nodes.contains(id(label.get("id")))&&seen.add(label.path("id").asText()),"AI标签引用无效或重复");text(label.get("label"),200);}}

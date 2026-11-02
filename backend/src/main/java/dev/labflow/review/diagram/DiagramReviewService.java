@@ -31,10 +31,10 @@ public class DiagramReviewService {
     double minFont=rule.path("min_font_pt").isNumber()?rule.path("min_font_pt").asDouble():6,minLine=rule.path("min_line_pt").isNumber()?rule.path("min_line_pt").asDouble():.5;
     double nativeFont=style.path("font_size_pt").asDouble();
     List<ReviewIssue> issues=new ArrayList<>();var skipped=json.createArrayNode();double font=style.path("font_size_pt").asDouble();if(!doc.path("zones").isEmpty()||doc.path("nodes").findValuesAsText("glyph").contains("dimer"))font=Math.min(font,nativeFont*6/7);if(facts!=null)for(var text:facts.path("texts"))font=Math.min(font,text.path("font_pt").asDouble());
-    if(font*scale<minFont-1e-3)issues.add(issue("D1","font","error","成品文字字号太小","成品最小字号为 "+String.format(Locale.ROOT,"%.2f",font*scale)+" pt，要求至少 "+minFont+" pt。",nativeFont*minFont/(font*scale)<=72?op("set_style","overrides",Map.of("font_size_pt",nativeFont*minFont/(font*scale))):List.of(),"canvas",0));
+    if(font*scale<minFont-1e-3)issues.add(issue("D1","font","error","成品文字字号太小","成品最小字号为 "+String.format(Locale.ROOT,"%.2f",font*scale)+" pt，要求至少 "+minFont+" pt。",Math.max(catalog.style(doc.at("/style/preset").asText()).path("font_size_pt").asDouble(),nativeFont*minFont/(font*scale))<=72?op("set_style","overrides",Map.of("font_size_pt",Math.max(catalog.style(doc.at("/style/preset").asText()).path("font_size_pt").asDouble(),nativeFont*minFont/(font*scale)))):List.of(),"canvas",0));
     boolean fine=doc.path("zones").findValuesAsText("kind").contains("membrane")||doc.path("nodes").findValuesAsText("glyph").stream().anyMatch(g->Set.of("dimer","phospho","number").contains(g));for(var node:doc.path("nodes"))for(var badge:node.path("badges"))fine|=badge.asText().equals("phospho");
     double line=style.path("line_width_pt").asDouble(),detailRatio=fine?.5:doc.path("zones").findValuesAsText("kind").contains("zoom")?.6:doc.path("zones").isEmpty()?1:.75;
-    if(line*detailRatio*scale<minLine-1e-6)issues.add(issue("D2","line","error","成品线宽太细","成品线宽要求至少 "+minLine+" pt。",minLine/(detailRatio*scale)<=12?op("set_style","overrides",Map.of("line_width_pt",minLine/(detailRatio*scale))):List.of(),"canvas",0));
+    if(line*detailRatio*scale<minLine-1e-6)issues.add(issue("D2","line","error","成品线宽太细","成品线宽要求至少 "+minLine+" pt。",Math.max(catalog.style(doc.at("/style/preset").asText()).path("line_width_pt").asDouble(),minLine/(detailRatio*scale))<=12?op("set_style","overrides",Map.of("line_width_pt",Math.max(catalog.style(doc.at("/style/preset").asText()).path("line_width_pt").asDouble(),minLine/(detailRatio*scale)))):List.of(),"canvas",0));
     var audit=json.valueToTree(catalog.paletteAudit(doc));
     for(var pair:audit.path("failing_pairs")){
       String a=pair.path("roles").get(0).asText(),b=pair.path("roles").get(1).asText();var names=Map.of("actor","参与者","process","过程","data","数据","model","模型","output","输出","note","注释");
@@ -44,7 +44,7 @@ public class DiagramReviewService {
         var candidate=doc.deepCopy();((ObjectNode)candidate.path("style")).put("palette",p.path("id").asText());
         if(json.valueToTree(catalog.paletteAudit(candidate)).path("safe").asBoolean()){fix=op("set_style","palette",p.path("id").asText());break;}
       }
-      issues.add(issue("D3",a+"-"+b,pair.path("severity").asText(),names.get(a)+" / "+names.get(b)+(pair.path("severity").asText().equals("info")?" 轮廓色接近（参考）":" 轮廓色区分不足"),"实际轮廓 "+pair.path("colors")+"；三种色觉模拟最小 ΔE "+String.format(Locale.ROOT,"%.6f",pair.path("minimum_delta_e").asDouble())+"。< 10 提示风险；10–20 仅审稿 info。保留原色值，用标签与形状辅助；是否换配色由你决定。",fix,"canvas",0));
+      issues.add(issue("D3",a+"-"+b,pair.path("severity").asText(),pair.path("colors").get(0).asText().equalsIgnoreCase(pair.path("colors").get(1).asText())?names.get(a)+"和"+names.get(b)+"用了相同颜色":names.get(a)+" / "+names.get(b)+(pair.path("severity").asText().equals("info")?" 轮廓色接近（参考）":" 轮廓色区分不足"),"实际轮廓 "+pair.path("colors")+"；三种色觉模拟最小 ΔE "+String.format(Locale.ROOT,"%.6f",pair.path("minimum_delta_e").asDouble())+"。< 10 提示风险；10–20 仅审稿 info。保留原色值，用标签与形状辅助；是否换配色由你决定。",fix,"canvas",0));
     }
     if(facts==null){for(String id:List.of("D4","D5"))skipped.addObject().put("rule",id).put("status","skipped").put("reason","需要同一渲染器采集的完整几何信息");}
     else {
@@ -84,6 +84,6 @@ public class DiagramReviewService {
     }else skipped.addObject().put("rule","D8").put("status","skipped").put("reason","仅检查具有AI来源标记的标签");
     if(!catalog.icons().attribution(doc).isBlank()&&!doc.at("/meta/include_icon_attribution").asBoolean(true))checked.add(issue("D9","attribution","warning","需要附上图标署名","图中使用CC BY 4.0图标，请在导出时附作者、来源链接、许可和修改说明。",op("set_attribution","enabled",true),"canvas",0));else passed.add("D9");
 
-    var result=json.createObjectNode().put("protocol_version",1).put("rules_version","diagram-review-v2").put("journal",journal);result.set("issues",json.valueToTree(checked));result.set("passed",passed);result.set("skipped",skipped);return result;
+    var result=json.createObjectNode().put("protocol_version",1).put("rules_version","diagram-review-v3").put("journal",journal);result.set("issues",json.valueToTree(checked));result.set("passed",passed);result.set("skipped",skipped);return result;
   }
 }

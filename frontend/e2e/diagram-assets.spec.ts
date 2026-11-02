@@ -5,7 +5,7 @@ import {artifactPath} from './artifacts';
 import {readFileSync} from 'node:fs';
 
 test('search a licensed vector → insert → D9 → preview repair → export SVG with attribution TXT',async({page,request},info)=>{
-  const catalog=await(await request.get('/api/diagram-catalog')).json();expect(catalog.icons).toHaveLength(150);
+  const catalog=await(await request.get('/api/diagram-catalog')).json();expect(catalog.icons).toHaveLength(151);
   const icon=catalog.icons.find((i:{license:string})=>i.license==='CC-BY-4.0');
   const doc=structuredClone(catalog.templates.find((t:{id:string})=>t.id==='workflow').documents.en);doc.nodes=[];doc.edges=[];doc.zones=[];doc.annotations=[];
   const project=await(await request.post('/api/projects',{data:{name:'Scientific assets synthetic',description:'Licensed vector attribution fixture'}})).json();
@@ -83,8 +83,27 @@ test('icon SVG is lazy, viewport loaded, cached across styles, and inlined into 
   const icon=catalog.icons.find((i:{license:string})=>i.license==='CC0-1.0'),project=await(await request.post('/api/projects',{data:{name:'Lazy icon synthetic',description:'Network request and standalone export checks'}})).json();const created=await(await request.post(`/api/projects/${project.id}/diagrams`,{data:{name:'Lazy assets',doc}})).json();
   const requests:string[]=[];page.on('request',r=>{const match=r.url().match(/\/api\/diagram-icons\/([^/]+)\.svg$/);if(match)requests.push(match[1]);});
   await page.setViewportSize({width:1440,height:960});await page.goto(`/projects/${project.id}/diagrams/${created.id}`);await expect(page.getByTestId('diagram-canvas')).toBeVisible();expect(requests).toEqual([]);
-  await page.getByRole('button',{name:'图标库',exact:true}).click();await expect(page.locator('[data-icon-thumbnail][data-icon-ready="true"]').first()).toBeVisible();expect(requests.length).toBeGreaterThan(0);expect(requests.length).toBeLessThan(150);
+  await page.getByRole('button',{name:'图标库',exact:true}).click();await expect(page.locator('[data-icon-thumbnail][data-icon-ready="true"]').first()).toBeVisible();expect(requests.length).toBeGreaterThan(0);expect(requests.length).toBeLessThan(151);
   await page.getByRole('textbox',{name:'搜索科研图标'}).fill(icon.name.zh);await expect(page.locator(`[data-icon-thumbnail="${icon.id}"][data-icon-ready="true"]`)).toBeVisible();
   await page.getByRole('button',{name:`插入图标 ${icon.name.zh}`,exact:true}).click();await expect(page.locator(`[data-scientific-icon="${icon.id}"][data-icon-ready="true"]`)).toBeVisible();await page.getByRole('button',{name:'选择风格 柔和插画',exact:true}).click();await page.getByRole('button',{name:'撤销',exact:true}).click();expect(requests.filter(id=>id===icon.id)).toHaveLength(1);
   await page.getByRole('button',{name:'导出机制图',exact:true}).click();const pending=page.waitForEvent('download');await page.getByRole('dialog',{name:'导出机制图',exact:true}).getByRole('button',{name:'下载文件',exact:true}).click();const file=artifactPath(info,'../docs/test-evidence/diagram-19-C/exports/lazy-icon.svg');await(await pending).saveAs(file);const svg=readFileSync(file,'utf8');expect(svg).toContain('data-icon-ready="true"');expect(svg).toContain('<path');expect(svg).not.toContain('/api/diagram-icons/');expect(svg).not.toContain('图标载入中');expect(requests.filter(id=>id===icon.id)).toHaveLength(1);
+});
+
+
+test('unsearched category grids and recognizable antibody/mitochondria/mouse insertion',async({page,request},info)=>{
+ const catalog=await(await request.get('/api/diagram-catalog')).json(),doc=structuredClone(catalog.templates.find((t:{id:string})=>t.id==='workflow').documents.en);doc.nodes=[];doc.edges=[];doc.zones=[];doc.annotations=[];
+ const project=await(await request.post('/api/projects',{data:{name:'Unsearched icon visual review',description:'Synthetic asset sheet, no measured data'}})).json(),record=await(await request.post(`/api/projects/${project.id}/diagrams`,{data:{name:'科研图标 · 抗体 / 线粒体 / 小鼠',doc}})).json();
+ await page.setViewportSize({width:1440,height:960});await page.goto(`/projects/${project.id}/diagrams/${record.id}`);await page.getByRole('button',{name:'图标库',exact:true}).click();
+ const category=page.getByRole('combobox',{name:'科研图标分类',exact:true}),search=page.getByRole('textbox',{name:'搜索科研图标',exact:true});
+ const shot=async(name:string)=>{if(process.env.LABFLOW_CAPTURE==='1')await page.screenshot({path:artifactPath(info,`../docs/test-evidence/diagram-19-C-review2/${name}.png`),fullPage:false});};
+ for(const [i,value] of ['Lab_apparatus','Genetics','Cell_types'].entries()){await category.selectOption(value);await expect(search).toHaveValue('');await expect(page.locator('[data-icon-thumbnail][data-icon-ready="true"]').first()).toBeVisible();await page.locator('.diagram-tools').evaluate(el=>el.scrollTop=0);await shot(`icons-grid-${i+1}-${value}`);}
+ for(const [i,id] of ['bio-antibody-c1q','bio-mitochondria','bio-mouse-ben-murrell'].entries()){
+   const icon=catalog.icons.find((a:{id:string})=>a.id===id);expect(icon).toBeTruthy();await category.selectOption(icon.category);await expect(search).toHaveValue('');await expect(page.locator(`[data-icon-thumbnail="${id}"][data-icon-ready="true"]`)).toBeVisible();await page.getByRole('button',{name:`插入图标 ${icon.name.zh}`,exact:true}).click();await expect(page.locator(`[data-scientific-icon="${id}"][data-icon-ready="true"]`)).toBeVisible();
+   await page.getByRole('spinbutton',{name:'宽（mm）',exact:true}).fill('40');await page.getByRole('spinbutton',{name:'高（mm）',exact:true}).fill('35');await page.getByRole('spinbutton',{name:'X（mm）',exact:true}).fill(String(15+i*55));await page.getByRole('spinbutton',{name:'Y（mm）',exact:true}).fill('38');await page.getByRole('combobox',{name:'标签位置',exact:true}).selectOption('below');
+ }
+ await page.getByRole('button',{name:'保存机制图',exact:true}).click();await expect(page.locator('[data-scientific-icon][data-icon-ready="true"]')).toHaveCount(3);await page.getByRole('combobox',{name:'科研图标分类'}).selectOption('all');await page.locator('.diagram-tools').evaluate(el=>el.scrollTop=0);await expect(page.locator('.diagram-toolbar [role="status"]')).toContainText('已保存');const closeToast=page.getByRole('button',{name:'关闭消息',exact:true});if(await closeToast.isVisible())await closeToast.click();await shot('icons-recognizable-inserted');
+ // Every fitted vector occupies the long side of its viewport with only the intended 2.5% pad.
+ const fit=await page.locator('[data-scientific-icon] > svg').evaluateAll(elements=>elements.map(el=>{const svg=el as SVGSVGElement,b=svg.getBBox(),v=svg.viewBox.baseVal;return {width:b.width/v.width,height:b.height/v.height,dx:Math.abs((b.x+b.width/2)-(v.x+v.width/2))/v.width,dy:Math.abs((b.y+b.height/2)-(v.y+v.height/2))/v.height};}));
+ for(const value of fit){expect(Math.max(value.width,value.height)).toBeGreaterThan(.9);expect(value.dx).toBeLessThan(.03);expect(value.dy).toBeLessThan(.03);}
+ await category.selectOption('all');await search.fill('肌动蛋白');const thin=page.locator('[data-icon-thumbnail][data-icon-ready="true"]').first();await expect(thin).toBeVisible();await shot('icons-thin-fitted');
 });

@@ -423,3 +423,11 @@ D3复用ColorVision，只检查图中实际使用的语义角色轮廓，不比�
 
 2026-11-02：机制图catalog的palette_audits与项目内paletteAudit保持原颜色/角色结构，threshold=10、info_threshold=20；failing_pairs保留所有<20的实际色对并新增severity（warning/info），safe表示没有<10的色对。diagram-review-v2报告相同分档；数据图R3及ColorVision.MIN_DELTA_E=20不变。
 图标清单不包含SVG内容，前端按需调用原GET /api/diagram-icons/{id}.svg并在内存缓存；没有新增接口、迁移或依赖。
+
+### 2026-11-02：助手事实选择与默认样式
+
+机制图运行兼容增加 `selected_facts?: number[]`（原始事实数组的唯一、有效索引，结构生成至少一条）、`cannot_imply?: string`（最多500字符）、`allow_below_style_defaults?: boolean`（默认false）。简报响应可带cannot_imply，文档meta同名可选字段保留用户约束；schema_version仍为1。
+
+diagram-assistant-v2语义工具以fact_indices记录事实归属，服务器生成私有fact_bindings（包括旧值与原位置）。结构生成只向模型提供所选事实；决定请求兼容增加 `accepted_facts?: number[]`。前端预览与服务端确认独立执行筛选：删除被取消事实独占的新元素、还原对应旧元素、清理悬空引用，保留仍被其他事实使用的共享元素。确认不能上传替代文档；事实集合与修复集合一起进入既有幂等指纹，不同集合的重复确认返回409。旧提案保持原路径，无新迁移。
+
+未明确允许更小值时，助手生成的有效字号/线宽至少为当前风格默认值（目前7pt/1pt）。排版回传仍仅允许x/y变化；JSON数字7与7.0语义等价，标签、结构及w/h变化仍拒绝。审稿规则版本为diagram-review-v3。

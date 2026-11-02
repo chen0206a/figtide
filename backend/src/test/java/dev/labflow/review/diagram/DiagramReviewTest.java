@@ -25,7 +25,7 @@ class DiagramReviewTest {
   @Test void fontsAndLinesUseFinishedScaleAndRepairsValidateWithoutSaving(){
     var d=doc();var f=facts(d);assertTrue(issues(review(d,f),"D1").isEmpty());assertTrue(issues(review(d,f),"D2").isEmpty());
     ((ObjectNode)d.at("/style/overrides")).put("font_size_pt",3).put("line_width_pt",.2);for(var t:f.path("texts"))((ObjectNode)t).put("font_pt",3);
-    var r=review(d,f);for(String rule:List.of("D1","D2")){var i=issues(r,rule).getFirst();assertTrue(i.path("fixable").asBoolean());DiagramValidator.validate(DiagramOperations.apply(d,i.path("fix")));}
+    var r=review(d,f);for(String rule:List.of("D1","D2")){var i=issues(r,rule).getFirst();assertTrue(i.path("fixable").asBoolean());var repaired=DiagramOperations.apply(d,i.path("fix"));DiagramValidator.validate(repaired);assertEquals(rule.equals("D1")?7:1,repaired.at(rule.equals("D1")?"/style/overrides/font_size_pt":"/style/overrides/line_width_pt").asDouble(),1e-6);}
     var scaled=service.review(doc(),facts(doc()),json.createObjectNode().put("width_mm",88));assertFalse(issues(scaled,"D1").isEmpty());assertFalse(issues(scaled,"D2").isEmpty());
   }
   @Test void paletteChecksOnlyUsedOutlinesAndRetainsDefaultOwnerDecision(){
@@ -70,4 +70,6 @@ class DiagramReviewTest {
     }
     assertTrue(found,"At least one nondefault palette supports a validated actor/model repair");
   }
+ @Test void identicalRoleColorsUseTheExplicitSameColorMessage(){var d=doc();for(var n:d.path("nodes"))((ObjectNode)n).put("role",n==d.path("nodes").get(0)?"process":"output");var found=issues(review(d,null),"D3");assertTrue(found.stream().anyMatch(i->i.path("title").asText().contains("用了相同颜色")));}
+
 }

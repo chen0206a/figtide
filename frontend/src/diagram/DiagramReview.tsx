@@ -1,14 +1,13 @@
+import {diagramReviewMarker} from './reviewMarkers';
 import {useEffect,useRef,useState} from 'react';
 import {api,send} from '../lib/api';
 import {Button} from '../components/ui/button';
 import {ReviewIssues} from '../editor/ReviewIssues';
 import {selectedOperations,type ReviewResult} from '../editor/review';
 import {NumberMarker} from '../editor/workbench/NumberMarker';
-import type {CanvasMarker} from '../editor/workbench/proposalMarkers';
 import type {DiagramCatalog,DiagramDoc,DiagramRecord} from './model';
 import {collectDiagramFacts} from './collectFacts';
 import {makeDiagramOperation,type DiagramOperationCatalog,type DiagramOperation} from './operations';
-import {edgePoints} from './render/geometry';
 import '../editor/review.css';
 
 type DiagramReviewResult=ReviewResult<DiagramOperation>;
@@ -46,11 +45,10 @@ export function useDiagramReview(doc:DiagramDoc,record:DiagramRecord,revision:nu
 /** NumberMarker is shared with chart review; the scale converts its pixel vocabulary to mm. */
 export function DiagramReviewMarkers({doc,report,ignored}:{doc:DiagramDoc;report:DiagramReviewResult|null;ignored:Set<string>}){
   if(!report)return null;
+  let global=0;
   return <g className="review-markers diagram-review-markers" transform="scale(.25)">{report.issues.map((issue,index)=>{
-    if(issue.severity==='info'||ignored.has(issue.id))return null;const ref=Number(issue.anchor.ref);let box={x:3+(index%8)*6,y:7,w:0,h:0};
-    if(issue.anchor.kind==='node'&&doc.nodes[ref])box=doc.nodes[ref];
-    if(issue.anchor.kind==='edge'&&doc.edges[ref]){const points=edgePoints(doc,doc.edges[ref]),p=points[Math.floor(points.length/2)];if(p)box={...p,w:0,h:0};}
-    const marker:CanvasMarker={number:index+1,kind:'title',x:box.x*4,y:box.y*4,width:box.w*4,height:box.h*4,paths:[]};
+    if(issue.severity==='info'||ignored.has(issue.id))return null;
+    const marker=diagramReviewMarker(doc,issue,index+1,global++);
     return <NumberMarker key={issue.id} marker={marker} width={doc.canvas.width_mm*4} height={doc.canvas.height_mm*4}/>;
   })}</g>;
 }

@@ -194,3 +194,59 @@
 .diagram-extracted-colors small {font-size:var(--lf-text-2xs);}
 .diagram-reference-preview svg {width:100%;height:180px;}
 .diagram-saved-styles {max-height:160px;overflow:auto;display:flex;flex-direction:column;}
+
+
+/* 19-3 assistant: compact facts and one primary action in each stage. */
+.diagram-body:has(.diagram-agent-panel) {grid-template-columns:minmax(0,1fr) 460px;}
+.diagram-body:has(.diagram-agent-panel)>.diagram-tools {display:none;}
+.diagram-agent-scroll {gap:var(--lf-space-2);padding-right:var(--lf-space-1);}
+.diagram-agent-panel h3,.diagram-agent-panel h4,.diagram-agent-panel p {margin:0;}
+.diagram-agent-panel h3 {font-size:var(--lf-text-sm);}
+.diagram-agent-panel h4 {font-size:var(--lf-text-xs);margin-bottom:var(--lf-space-2);}
+.diagram-agent-skill {margin:0;display:flex;flex-direction:row!important;align-items:center;gap:var(--lf-space-2);}
+.diagram-agent-rule {font-size:var(--lf-text-2xs);}
+.diagram-agent-input summary {font-size:var(--lf-text-xs);cursor:pointer;color:var(--lf-text-2);}
+.diagram-agent-input textarea {margin-block:var(--lf-space-2);}
+.diagram-agent-summary,.diagram-agent-facts,.diagram-agent-proposal {border:1px solid var(--lf-border);border-radius:var(--lf-radius-sm);padding:var(--lf-space-3);}
+.diagram-agent-summary {display:grid;gap:var(--lf-space-1);}
+.diagram-brief-line {display:grid;grid-template-columns:64px minmax(0,1fr);gap:var(--lf-space-1);align-items:start;font-size:var(--lf-text-xs);}
+.diagram-brief-line>span,.diagram-agent-facts header small,.diagram-agent-proposal header small {color:var(--lf-text-3);font-size:var(--lf-text-2xs);}
+.diagram-inline-edit {appearance:none;background:transparent;border:0;padding:0;color:var(--lf-text);text-align:left;font:inherit;line-height:var(--lf-leading);cursor:text;overflow-wrap:anywhere;}
+.diagram-brief-line>.diagram-inline-edit {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.diagram-inline-edit:hover {text-decoration:underline;text-decoration-color:var(--lf-border-strong);}
+.diagram-agent-facts>header,.diagram-agent-proposal>header {display:flex;align-items:center;justify-content:space-between;gap:var(--lf-space-2);margin-bottom:var(--lf-space-2);}
+.diagram-agent-fact {display:grid;grid-template-columns:16px minmax(0,1fr);gap:var(--lf-space-2);border:0;border-radius:0;padding:var(--lf-space-1) 0;font-size:var(--lf-text-xs);align-items:start;}
+.diagram-agent-fact>input {margin-top:var(--lf-space-1);}
+.diagram-agent-fact small {display:block;font-size:var(--lf-text-2xs);color:var(--lf-text-3);line-height:var(--lf-leading);}
+.diagram-agent-fact.excluded .diagram-inline-edit {text-decoration:line-through;color:var(--lf-text-3);}
+.diagram-agent-fact textarea,.diagram-brief-line textarea {min-height:48px;resize:vertical;padding:var(--lf-space-1);font-size:var(--lf-text-xs);}
+.diagram-agent-proposal>section+section {border-top:1px solid var(--lf-border);padding-top:var(--lf-space-2);margin-top:var(--lf-space-2);}
+.diagram-agent-proposal>section[aria-label="按事实生成的结构"] h4 {color:var(--lf-link);}
+.diagram-structure-list {list-style:none;padding:0;margin:0;display:grid;gap:var(--lf-space-2);font-size:var(--lf-text-xs);}
+.diagram-structure-list li {display:flex;align-items:flex-start;gap:var(--lf-space-2);}
+.diagram-item-number {display:inline-flex;align-items:center;justify-content:center;flex:none;width:18px;height:18px;border-radius:var(--lf-radius-pill);background:var(--lf-link);color:var(--lf-text-on-inverse);font:600 var(--lf-text-2xs) var(--lf-font-mono);}
+.diagram-item-number.repair,.diagram-agent-repair-marker .proposal-marker-number {background:var(--lf-warning-dot);fill:var(--lf-warning-dot);}
+.diagram-agent-fix {display:flex;align-items:flex-start;gap:var(--lf-space-2);font-size:var(--lf-text-xs);}
+.diagram-agent-fix label {display:flex!important;flex-direction:row!important;align-items:flex-start!important;gap:var(--lf-space-2);flex:1;font-size:var(--lf-text-xs);}
+.diagram-agent-fix small {display:block;font-size:var(--lf-text-2xs);color:var(--lf-text-3);}
+.diagram-agent-opinion {font-size:var(--lf-text-xs);padding-block:var(--lf-space-1);}
+.diagram-agent-opinion summary {display:flex;justify-content:space-between;gap:var(--lf-space-2);cursor:pointer;}
+.diagram-agent-opinion small {color:var(--lf-text-3);font-family:var(--lf-font-mono);}
+.diagram-text-link {border:0;background:transparent;color:var(--lf-text-2);padding:0;font:inherit;font-size:var(--lf-text-xs);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+.diagram-text-link:disabled {opacity:.5;cursor:default;}
+.diagram-agent-links {display:flex;justify-content:space-between;gap:var(--lf-space-3);}
+@media(max-width:1100px){.diagram-body:has(.diagram-agent-panel){grid-template-columns:minmax(0,1fr) 400px;}}
+
+.diagram-tools .diagram-icon-grid button {min-width:0;gap:var(--lf-space-1);}
+.diagram-tools .diagram-icon-grid svg {width:100%;height:auto;aspect-ratio:1;display:block;margin-inline:auto;}
+.diagram-tools .diagram-icon-grid small {line-height:var(--lf-leading);white-space:normal;}
+
+.diagram-agent-panel .diagram-agent-skill {margin:0;display:grid!important;grid-template-columns:56px minmax(0,1fr);white-space:nowrap;}
+.diagram-agent-summary,.diagram-agent-facts,.diagram-agent-proposal {padding:var(--lf-space-2);}
+.diagram-agent-input {border:0;margin:0;padding:0;}
+.diagram-agent-input>summary {padding:0;margin:0;}
+.diagram-agent-panel .diagram-inline-edit {min-height:0;line-height:var(--lf-leading);}
+.diagram-agent-panel .diagram-agent-fact {padding:calc(var(--lf-space-1)/2) 0;}
+.diagram-agent-fact small {font-size:var(--lf-text-2xs);line-height:var(--lf-leading);}
+.diagram-agent-facts>header,.diagram-agent-proposal>header {margin-bottom:var(--lf-space-1);}
+.diagram-structure-list {gap:var(--lf-space-1);}

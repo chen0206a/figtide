@@ -1,6 +1,6 @@
 import {render,screen} from '@testing-library/react';
 import {expect,it} from 'vitest';
-import {PaletteSelect} from './PaletteSelect';
+import {PaletteSelect,pairName} from './PaletteSelect';
 import type {DiagramDoc,PaletteAudit} from './model';
 it('warns only for present semantic outlines and names both roles',()=>{
  const audits=[{id:'okabe-ito',preset:'nature-flat',safe:false,threshold:20,outlines:{},failing_pairs:[{roles:['actor','model'],colors:['#0069A4','#BC6F9A'],minimum_delta_e:9.345,delta_e:[9.345,22,24]}]}] as PaletteAudit[];
@@ -17,3 +17,5 @@ it('offers six compact chips without warning for 10–20 info pairs',()=>{
  const onChange=()=>{};render(<PaletteSelect compact doc={doc} audits={audits} onChange={onChange}/>);
  expect(screen.getByRole('group',{name:'机制图配色'}).querySelectorAll('button')).toHaveLength(6);expect(screen.queryByRole('status')).toBeNull();expect(screen.queryByText(/色觉提示/)).toBeNull();
 });
+
+it('names identical colors explicitly',()=>{expect(pairName({roles:['process','output'],colors:['#00916A','#00916a'],minimum_delta_e:0,delta_e:[0,0,0]})).toBe('过程和输出用了相同颜色');});

@@ -61,10 +61,16 @@ const server = http.createServer(async (req, res) => {
   const diagramBrief=system.includes('本阶段只返回JSON对象');
   const diagramStructure=names.has('get_current_diagram');
   const diagramMessage=()=>{
-    if(diagramBrief)return {role:'assistant',content:JSON.stringify({brief:'RNA workflow',facts:[{text:prompt,quote:prompt},{text:'RNA',quote:prompt}]})};
-    if(afterTools)return {role:'assistant',content:'结构已提出，请检查预览和审稿修复后明确应用。'};
-    const context=JSON.parse(prompt),id=context.current_doc.nodes[0].id,label=context.request.includes('Library')?'Library':'RNA';
-    return {role:'assistant',content:null,tool_calls:[tool('diagram-label','update_node',{id,label}),tool('diagram-font','set_style',{overrides:{font_size_pt:3,line_width_pt:.2}})]};
+    if(diagramBrief){const sentences=prompt.match(/[^.!?]+[.!?]?/g)?.map(s=>s.trim()).filter(Boolean)||[prompt];return {role:'assistant',content:JSON.stringify({brief:'EGF通过EGFR激活RAS，化合物抑制RAS。',cannot_imply:'未提供的剂量、时间及额外通路',facts:sentences.map(text=>({text,quote:text}))})};}
+    if(afterTools)return {role:'assistant',content:'已按勾选事实提出结构；Ruxolitinib未在原文中出现，请确认或取消相关事实。'};
+    const context=JSON.parse(prompt);
+    if(context.current_doc.nodes.some(n=>n.id==='pEGF'))return {role:'assistant',content:null,tool_calls:[tool('refine-ligand','update_node',{id:'pEGF',label:'Ligand',fact_indices:[0]})]};
+    const selected=context.facts.map(f=>f.index),calls=[];
+    calls.push(tool('cytoplasm','add_zone',{id:'pCytoplasm',kind:'panel',label:'Pathway overview',fact_indices:selected}));
+    const add=(id,label,glyph,role,fact_indices)=>calls.push(tool(id,'add_node',{id,label,kind:'glyph',glyph,label_pos:'below',role,zone:'pCytoplasm',fact_indices}));
+    add('pEGF','EGF','ligand','model',[0]);add('pEGFR','EGFR','receptor','actor',[0,1]);add('pRAS','RAS','protein','process',[1,2]);add('pDrug','Ruxolitinib','small-molecule','note',[2]);
+    for(const [id,from,to,kind,index] of [['pBind','pEGF','pEGFR','bind',0],['pActivate','pEGFR','pRAS','activate',1],['pInhibit','pDrug','pRAS','inhibit',2]])calls.push(tool(id,'add_edge',{id,from,to,kind,fact_indices:[index]}));
+    calls.push(tool('low-style','set_style',{overrides:{font_size_pt:3,line_width_pt:.2}}),tool('no-legend','set_legend',{mode:'off'}));return {role:'assistant',content:null,tool_calls:calls};
   };
   const message = diagramBrief||diagramStructure?diagramMessage():teamRole ? teamMessage() : recommending
     ? afterTools

@@ -9,8 +9,8 @@ import type {DiagramDoc,DiagramIcon,DiagramStyle} from './model';
 const base=resolve(process.cwd(),'../backend/src/main/resources/diagram');
 const icons=JSON.parse(readFileSync(resolve(base,'icons/manifest.json'),'utf8')) as DiagramIcon[];
 const vectors=Object.fromEntries(icons.map(i=>[i.id,readFileSync(resolve(base,`icons/${i.id}.svg`),'utf8')]));
-it('uses exactly the 150 sanitized source vectors and recolours without external references',()=>{
-  expect(Array.from(builtinIconIds)).toHaveLength(150);expect(new Set(builtinIconIds)).toEqual(new Set(icons.map(i=>i.id)));
+it('uses exactly the 151 sanitized source vectors and recolours without external references',()=>{
+  expect(Array.from(builtinIconIds)).toHaveLength(151);expect(new Set(builtinIconIds)).toEqual(new Set(icons.map(i=>i.id)));
   for(const icon of icons){expect(vectors[icon.id]).toBe(readFileSync(resolve(base,`icons/${icon.id}.svg`),'utf8'));const markup=iconMarkup(icon.id,30,24,'#0072B2','one',vectors);expect(safeArtwork(vectors[icon.id]),icon.id).toBe(true);const parsed=new DOMParser().parseFromString(markup,'image/svg+xml');expect(parsed.querySelector('parsererror')).toBeNull();expect(parsed.querySelector('image,script,foreignObject,style')).toBeNull();for(const use of parsed.querySelectorAll('[href]'))expect(use.getAttribute('href')).toMatch(/^#one-/);}
 },20000);
 it('renders icons identically in exports and computes deduplicated CC BY credit',()=>{
