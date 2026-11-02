@@ -35,4 +35,8 @@ class SvgSanitizerTest {
     assertFalse(SvgSanitizer.sanitize(wrap("<use href='#missing'/>" )).contains("href"));
     assertThrows(RuntimeException.class,()->SvgSanitizer.sanitize(wrap("<g id='duplicate'/><g id='duplicate'/>")));
   }
+  @Test void canonicalSvgBytesUseLfOnEveryPlatform(){
+    String input=wrap("\r\n<g>\r\n<text x='1' y='2'>Original words</text>\r\n</g>\r\n");String clean=SvgSanitizer.sanitize(input);assertFalse(clean.contains("\r"));assertEquals(clean,SvgSanitizer.sanitize(input.replace("\r\n","\n")));assertEquals(clean,SvgSanitizer.sanitize(clean));
+  }
+
 }

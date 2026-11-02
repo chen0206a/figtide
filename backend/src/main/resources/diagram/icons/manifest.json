@@ -267,7 +267,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/ASE/cell_balance.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "2d125405678a9ef97e17fec26aa6562c67c5cc00f0c8e914973e3d3365a423a0",
+  "sha256" : "e5d7dea1f7016c41f3f9b4b44a9e86a04aa4f9f68c279466742cd6ef673939bb",
   "upstream_sha256" : "aef5f3b97ce76493dd3afc75923343372070c5fe83d8b90a9cf8978d8ca03ecb",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -284,7 +284,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/JhonnyXC/cell_group.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "0422589eb301d017085ecacd0de6ccdd316494da59f77afca3a22814a945694c",
+  "sha256" : "753fd7c4a0c119f738bf69bf552d44116ba47f82e6e344620649aa9322256ff6",
   "upstream_sha256" : "7509375dfdd8fad6e32e0d3021fe8ef819da00d785c1c1ef0b5d8ab764d02952",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -301,7 +301,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/ASE/cell_imbalance.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "0ef0828df9f0bcaf70bd8acd6fbf0281378bdb09f43688054ae908620cd4685f",
+  "sha256" : "49ef6bb3cb324fc404aacc833ed148247a9b6371d3f353185ba3f3f415626dfb",
   "upstream_sha256" : "09d9cf9316219ad04f2b466ea9fc899f2cf01f1a4403917855b77d4b00bc47c6",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -318,7 +318,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/Endoplasmic_Reticulum.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "6578fca60550e386e7aa2759b03543f0f59a50adb88d8163de957985ce118f15",
+  "sha256" : "29f16ebfd3330967d62d3d3d9d7bcd13f45b39b040385ba5125853b7c7cbcc0b",
   "upstream_sha256" : "6df87901340447075e1785ada85fb309b54e81fa4cf1efc60716ffcbbd161a3c",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -335,7 +335,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/mitochondria.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "7bcf86424af7036c8e424a36bd36007bf13bded161644698e5aca35f61e5ff59",
+  "sha256" : "1af46f7007316b6d7e160646dec942776b553c507fb1c8b63b50b717de7a89ef",
   "upstream_sha256" : "b6c2b31a6db8baa3952c0ebf9efce6cee0dc78e887064f227fa2bf3ee7d5cc0f",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -352,7 +352,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/proteasome.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "552e7ec5f2cc6e3ab4b5027f9a00d5b999f39c56f042bb51cf48eebe4b225028",
+  "sha256" : "c6d88dc7fd7c4c7b2213ce23d2bc89f4de6f9254a39e3d17cdc2b76c453c57be",
   "upstream_sha256" : "bb361400b119534c7c6446a0dd58bdc9874dfac33c39fb4c6797c9914143f7ea",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -369,7 +369,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/ribosome.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "a285dc6432aa32a48ed5d64bcb095048c363d500a075e774ba71c3619245c4c5",
+  "sha256" : "9bc7e18ff61015401f67b17417d821e15fb56eae1faeb7bac63fc266d92e4bc1",
   "upstream_sha256" : "0a1d58901bf40efd3d937203d63531bf295b06ce1fcceb53b08cc7e1463ca80f",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -386,7 +386,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Hugo-Wioland/F-actin.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "850d5e2a877366e0789631ae18181e8acdb61e2eac831f030cd96708b515fb96",
+  "sha256" : "1b1f793fb5e72c848abfe7d556d34416e0cb2bb709a63136f0f61229f482ec89",
   "upstream_sha256" : "a9da43aedfbe88f8c1b611510f9a3ac198817699d9aa097faf8674ec969e8cd6",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -454,7 +454,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/umasstr/CRISPR_Cas9_vector.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "d274be00facb304cd36ed3c70416821622c2f2a611b70d7885748d080b95b042",
+  "sha256" : "f5383919a78fa5bdd29325a63b75388de8aecbe33186e07fb1b801efd1105051",
   "upstream_sha256" : "c29aba600e8bdfe0bb06f887968a0f5d0d9d52a3355835eafec382b66b28d443",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -471,7 +471,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/umasstr/Cas9_expression_vector.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "682b8c420ed5926a14514a65cd0f94f353de6102aac0ed7b8f665de6a9be097d",
+  "sha256" : "6169838eac851f3690f4e9c9bb487fb415638d5b93c2e48355a556353123a244",
   "upstream_sha256" : "a661f4110a3002fd1caae7a6bd0cf502fc76e1cd1ee0432e03f18d848bb047e0",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -488,7 +488,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/umasstr/Transposase_Tn5_ATAC_chromatin.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "54a9cbe0eedaa16ee459a4e932d9a4172c844f1ac76641dcacfdd648099f81b7",
+  "sha256" : "d0c8ab3c72ccef80236d96a87027098d7e31ff2933904cf68c0e1c927b5784ac",
   "upstream_sha256" : "026a1d7679fbc2998068f92db465aa658be3b8dfd82192328d597b845fd68d27",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -505,7 +505,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/umasstr/lentivirus_library.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "db6e42fe862b5767558f2dbd37e528683aa238b1853aca91fbf4a5df5fac992d",
+  "sha256" : "5d6cc397fe93298556d545ecbecea5dc500ef3c7f3e70a113d81c878b257c1d9",
   "upstream_sha256" : "50bcc3756ef56c1ab35838379c65f713662f70796bdcebcb7c3cf443e2a50951",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -556,7 +556,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Samuel-Nestor-Meckoni/ssDNA-single-stranded.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "e651215df4cd06b3b48c761f4bec2d96dcc131117773b03f0f780c629f9f4bd0",
+  "sha256" : "2942ddbb6e4a8dfe489718c96dfbd3e46bd8d1d3ed0334cdbe1e687c9d9b49e5",
   "upstream_sha256" : "3cbc3942a939bf31bea1077ef834e0d2dd1b47fec34045d3b286cea16d2a382a",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -573,7 +573,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/James-Lloyd/tRNA_secondary_structure.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "8cb126f496ebbc7a994e32c6bcbfaa2517da480cc066d245708730c4daac0320",
+  "sha256" : "1b4b3a0d8cf4eec585608cdda070cd97f1380cf5634841d8f0d5d621705ee175",
   "upstream_sha256" : "70d5046dfcaa50265db23487b6077f6359be40ac0b35d798a63f3bbb8e5ba0fc",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -641,7 +641,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genomics/Bjoern-Usadel/Illumina_sequencing_colorcalling.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "0e126783b356f3997ee69e2969eea285ef8cd42767afc525dc6a991e6253af1d",
+  "sha256" : "d21e270b9da93589dbc98ed8e6688533cd9c5cb2168375c6fcde7bcbfdc9d202",
   "upstream_sha256" : "e0bd555d5fc50347868efcaf49fd4867ac2b766bca7fd859a555a682b94556ca",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -675,7 +675,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genomics/Geert-van-Geest/ont_sequencing.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "2f5b0ad62278a31400e378cbf9f74eb686a370ac395562d56cf51612e67349a1",
+  "sha256" : "1b737376e492a1aa8a2a5f888762ff0dd6cafb444465ced2b761875e43173d31",
   "upstream_sha256" : "5245ead9f72782afa3fbc73d68c69134e648d49b800951678209240ff5429faf",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -692,7 +692,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/6-well_plate_cell_culture.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "58b44f891b8f3b79d60b92d5a631362e79629e5ae3a15e29501528d2ad8b2145",
+  "sha256" : "ac6a08de8f3e90b60aa57c0e0504dd47864ef3124d26aff3defc3dfdacbbed48",
   "upstream_sha256" : "93aec25a8796c9348d5736fe32737b7fb431b50e8e8f96702fdeec3ab766cbcd",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -726,7 +726,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/Budding_yeast.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "74fe13e016678579b9e525d82bafcf6b87da58a659e58fe966aad2b547572fa1",
+  "sha256" : "83c98dce34403c2da20c1f947fedd3ec5ef31cec322e372d88b718021d4a62e9",
   "upstream_sha256" : "caa2cfbe06807218f1b6bf90f203e66af84662e02a55a5da24632539b4e2ecfc",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -743,7 +743,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/CRISPR_Cas9_expression_vector.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "296e11c591d4a9affd2f7f07c6f67362b52782b17f6b187cdaa8d0f12bd7471c",
+  "sha256" : "3df95a6c108720e4e1cfce52e21db565bf61780ebce2dffdeda926876fe9c8bf",
   "upstream_sha256" : "671869458da71d5ee6a3f0c8ae1093697cc844f33cdbcea84ee68cc9b8fee85a",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -760,7 +760,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/CRISPR_Cas9_expression_vector_cloning.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "a5af2a98142b95b371f867a1d380ed834cf4e32ea12b7cd3f12e9460be53c0a1",
+  "sha256" : "b8be176487185d264ad4ac9ecd9374aa9dd6cce8662f2f0a0b775323ab587e4d",
   "upstream_sha256" : "75ce0fcb41c49bb96a91684e7c8ded360d9addc837adc3ce7ddb199df7ba0347",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -777,7 +777,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/Illumina_sequencing_reads.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "9694efb7f2ccbc6ddd765752ba3f0320a199c731df055eb627848ad1116d9825",
+  "sha256" : "c1c43648ae48e523a9a05c963339e6c9b0f09d498264fd9a8ac9183e410877f6",
   "upstream_sha256" : "a88d19f1e94d83b8fb402055b888a6e926a7cc7a955368ef6d32b20dea76ab45",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -794,7 +794,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_long_read01.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "a1fb7b3be875eaaafc52c6a42a2890354d0e2502788a684ffcf1908a56a04066",
+  "sha256" : "5a102c5513b2c2a12091e74f937b1aabf15e6605a4478e7a7b0aa36208ce9e94",
   "upstream_sha256" : "1b64f8fdda28a4fe2e45a2a60a9586207ee5de412d5d4fb51783a1c42d9f943f",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -811,7 +811,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_long_read02.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "322d1bc9091bc9e8fe6ea3fb8e90ab12842552f2705bc03132b053f098a90a6d",
+  "sha256" : "a00d361417f84659ab11844a6db23e29a4525c145a2fe9f779f870672acbfe1d",
   "upstream_sha256" : "233deb591a96c718b6ab93b95803b117703b9cfe922b7677da2d22e350de7235",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -828,7 +828,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_long_read03.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "e89ba4a2fe1482c7818296e832fc921a22c2cfe3200b3347f27461744ef2b029",
+  "sha256" : "8d415afc0d1507116e57d904bfd4b4b8af5ec8473d83e0d3ffbfa787ea4f4bf1",
   "upstream_sha256" : "f87aa9731352a7bf5a6e4a9d95b301660f237a5e13bc8a6cc27a22bde190fc95",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -913,7 +913,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Computer_hardware/DBCLS/serverroom.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "a556f7c4853b486dab236ba7e9cb5f3fe441151b4e8bced46a239af0ac4f0126",
+  "sha256" : "5525efe159ed6adcdaafa406be1c25924215c9907064fe4d36ac32a9433e63d1",
   "upstream_sha256" : "e1ab9fec0d6938ecf641eac7ced8610462908be6302372347ad9eacc68f2a351",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1100,7 +1100,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Molecular_modelling/OpenClipart/database.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "c5fb1bd690c6aceb1e64df5799b99ae15d45ab8cd937dd5e45d8b59c119f4cbd",
+  "sha256" : "e9c3274aff485f2c989d3a4eae391ebd1f9b65989d0e1ef293dfc923e171b5c0",
   "upstream_sha256" : "dd9249ddabdfec1ba6bfb52f7f3e29fc9e3a1487e067b60b08831113a736bdb0",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1117,7 +1117,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Molecular_modelling/OpenClipart/database-colored.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "a2e4fe246bd437777d6d203005a5c47902a660372f3b7589bc86a1b0841893bf",
+  "sha256" : "694a0c39ad6f8732bd165a3f282fc2f398998b63a7990d6549823d1a9920fb36",
   "upstream_sha256" : "89d6d731946d681ad1521c2d65284459d7e281ccb55da442c23cf1bdc37c0640",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1134,7 +1134,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Imaging/B-Gideon-Bergheim/Fluoresent_bead_blue.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "7d7af584abceca6f3e37793dc7d8586ac77b45996b0fc19a325e25f7b8db6708",
+  "sha256" : "a0d6afe6628120e518f908b90f25b9cab900f4ae9f893229229497caf43cc96c",
   "upstream_sha256" : "05ced53b59b77986b7e177b198a9e8018ce0888265649ac43ac45e4a00e4e1f4",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1151,7 +1151,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Scientific_graphs/Marius-Mathies/Outlier.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "973309973528539b13765a58431907ecb12cc781ad44c9127b35fcd1f959951a",
+  "sha256" : "daf942224af90a4ba746df01baaffab33f089ff85bfcc333c46928391ec94ba5",
   "upstream_sha256" : "50b6763a8f0ebc585fe7fa8ed1c48fab411c5533bbea24c0a4ecc7ab274d3f4a",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1236,7 +1236,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/General_items/Riccardo-Iacovelli/nitrile-gloves.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "2972285c69547a52035bb2204eb93cc89b694618475ed76bae20ae0f6c25a7e3",
+  "sha256" : "8be01e31239adc187cca1bc721344411090650ebde8c795c01d07517dde5ceac",
   "upstream_sha256" : "05b2da6be4981760ba62b6918569bd8f1e7cb2bb69e032d3dd7ddd902d00b3d9",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1270,7 +1270,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/General_items/OpenClipart/terminal.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "a68b29fe2404fdf03085179b3b4de52a1972bc71c66358a7919750e7e619eb4a",
+  "sha256" : "9a992e6ec01ace5d435f93eba6147963941d8ff9aef22254d4ab9ace13308c7b",
   "upstream_sha256" : "8ef555b33f50f0fb07c244915e89455132234c3cbe1e486bf884ca1b4ad6cf6a",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1287,7 +1287,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/General_items/kehan/thermometer.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "81463d692ff5c40cce9fd2683e5f9e187e882511b55eda179440e8b5b9cfd02e",
+  "sha256" : "1317af58415d03bb8dfccdf23c9fcedc6805f9981523037a9597734ba04c730e",
   "upstream_sha256" : "a2c48bf21dfb0a05b07e1f13c359921b1c8c6b85465b8bf083ad9608d80b9273",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1304,7 +1304,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_culture/KeHan/6_well_plate.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "f80daaa8a3d8219143c48e4ff7056f9375d3e8459ab919e3a6da631479b3668f",
+  "sha256" : "2ad6cab8bbeed63ff9b2369f1747856df2f3ac4d97986cb479c47c61e96b345a",
   "upstream_sha256" : "f64e2d97338a0d286dac31b24b259edcc50df3ecdba71e13612bfdece7da1c4c",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1338,7 +1338,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_culture/B--Gideon-Bergheim/bacteria_culture_loop.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "cb0ea17b0bba4c49be191704a66182c9731bc691841f2f83aa24631921d6dd61",
+  "sha256" : "880e525ac1125d4d1fa711032d5cf2658d9be00bef92b6d3090bb6a8489cf956",
   "upstream_sha256" : "e5108a17e3263fa8d24d8b4209fb15aa429e5601bf03394a602ff86667a6a350",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1355,7 +1355,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_culture/B--Gideon-Bergheim/simple_e_coli.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "0363f53f1cbb2d270e29c96336dc54a907c68e86dfa6f4c0ab1b8e358331e605",
+  "sha256" : "ef2a6197e42b3ef61e3d9e4aad14a2f93593f28ff94490f2ea0b29e5eb554dfa",
   "upstream_sha256" : "649f16bca16ce4de4c61f43ea6e56a7b6319800d99a80206aef92c8444ab4ce8",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1389,7 +1389,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Blood_Immunology/Qara/NLRP3_Complex.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "0be97ba87e03786ce17c9445d81d0f428505ae2e3bfe99e05a1986c07af46af4",
+  "sha256" : "01656ee980408117b910c51629df34ff10ce6f1af34d6a06da7a64d5e09bda7a",
   "upstream_sha256" : "61fc3d51ebc42eec8e4d01ba7e89d49d5cdbd5a6b78389657138939d7b96f2f5",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1491,7 +1491,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/James-Lloyd/Bacteria_Swimming.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "59206134bfe4c20774e602e7103e740baeed90951e852a9ffdae6f21156629a1",
+  "sha256" : "18b16f400f88f42497a2c3257d8a8f12d7922fd6438a89bbeeecdd4494e58f2a",
   "upstream_sha256" : "95ba3769114d677da2ee90c5da99a3e33c4f03d5a68d0413b66d0cb5fabfbe8a",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1508,7 +1508,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/James-Lloyd/Phage.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "9efa77ba88e93293a386d23fb5749187ec1ba4287b7f65068c9afc37935f89ec",
+  "sha256" : "c96f4466b08e14ec8945ee3970acb8b4b34f4ff5702e2020226e23d10c77043d",
   "upstream_sha256" : "4b810ca6cd57ed251141a4f701ff98bcbe7e905e0cb982d96304c218ba8cf57e",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1525,7 +1525,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/Ewa-Oz/Yeast.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "aa9e5e4b41b02b1916131f8dc43384bd875f9be6bccabc1dd41c7753bda53db7",
+  "sha256" : "1d8726fca110a37957dad1c7944f63133042181e0b0ebb13a596cdbd37d769fb",
   "upstream_sha256" : "7f7fcb5c616103d8bdbb84d40ef5912c7c785b6e88ca2aa0fa6084bddacdc2a6",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1559,7 +1559,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/Divakar-Badal/inverted_microscope.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "c4bba83f7d4d9250c74db3c7b2c6c745f77c949067466809be7438be17270084",
+  "sha256" : "615a70cb04063215a39dd7bbff98f315bc36d0038d6a7bf175fc2412d5ee446f",
   "upstream_sha256" : "e3975507e03f288d004f1665037d0b0e498bc1c45a79da2cb8c558c7ac7d29f3",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1593,7 +1593,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/microscope-cartoon.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "9854603d9599a1003b6bd956a1ce8f2722818cc9c1f8e0dbbdb53e1610e7cd95",
+  "sha256" : "79983a96a7dfffd33d81b802711bf3b2a014b98a0389584fc29bfa77d18331f7",
   "upstream_sha256" : "3e08df9594346d745d8380f0b68f257308cad5cb94252a0d5fa93d3ea1ac6412",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1610,7 +1610,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/round-bottomed-flask-cartoon.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "23187c63f39f43dacbfcf148d9314f21003cb89bee4862eecd5bc9f0a4ceb0f6",
+  "sha256" : "1a19a2fad2350c6765213a614fda798715fd3b102b59e00c7750c932c9d69d80",
   "upstream_sha256" : "ab3497866edec68f0354b87736dc339808759fe0167b21abb1fad5bce17d92e2",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1627,7 +1627,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/simple-syringe-cartoon.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "17ca4751c901db06dc3c8eb7f689dbccc013b5fa961d727114b83ba8af6565b7",
+  "sha256" : "1bbd022935f83c4c10bbfe73d09d2fcfd4a53c60edde0f8038edd1fee3cce935",
   "upstream_sha256" : "c2013b3a3c7e6f9a909536299ad20abd23d8161e997c5c5333d703457bfd2f4d",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1644,7 +1644,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/erlenmeyer_filled.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "f3fd3f5aef1575016fd808c76ae2c9b5273f7fec65461c11200165435741a19f",
+  "sha256" : "17d78f557ce4c42d78d5e53f3e13b3d863649c5fa76f0af2abaae553959c2126",
   "upstream_sha256" : "49433d0a3e60d5c5db462a4cd493a2efe9befa481af5b9648f955a8463a2f0fe",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1661,7 +1661,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/incubator.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "4cc393c445837da3fd7bd84ea4f45ea02a0da546f5f5b7fc7a36787aa61d6bd3",
+  "sha256" : "199b194d44002d9f3896fe948ab02ae11b67326e8e47f4a40798e0c512a0476d",
   "upstream_sha256" : "c05a124d270193d7720b6684f23d8ed310a3b23b1d6b4a4d63d6c2ddbb2f8888",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1729,7 +1729,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/vortex_mixer.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "279d3a973aeb5b1c8756da3b19ad93985c36b2479821b42d84091c1d64b96b38",
+  "sha256" : "583f59fdb106e87a05ce91c541732144dd8ba71c77609c7a7c9c391312150c69",
   "upstream_sha256" : "eb1e16d3d3ab5cc095c9788a633d29e4892f88807a832b01a10f67514b85c007",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1763,7 +1763,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/dewar-big.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "4811eb4872f8ef6930fea725467e86bee749e01edc296c6fb1228576003a39fc",
+  "sha256" : "acddce89406cb31efd616d04d20b48377ad21eb53de0d4fa941fa03ddb09fc4e",
   "upstream_sha256" : "3b502dd2b44ba66e0f3b4659002061f0ec01596302e0135c3d90f351b19ae0f2",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -1984,7 +1984,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/EwaOz/redbloodcell.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "cc5d66b7f5c6781cd50485d286c7d2f446f678a865a5d31ec0305fe9cd8e51fc",
+  "sha256" : "ca78e9256ac5564852d2e05a5d235558946d9cfaa14248f158eafeadeba2c52f",
   "upstream_sha256" : "cf4967ea3ada79e0adf2990b9062b7b6cc2cbb324061a17ddf097b69d6f3ee58",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2001,7 +2001,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Marnie-Maddock/simple_cardiomyocyte.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "11d646f3c7ab279e60c2c2fd40ee8ea18c4b305187949848e94c3808617b055a",
+  "sha256" : "b0e2089ff9ae8a6b3e68de9197dc86295477af339121acf83c298744993b9925",
   "upstream_sha256" : "c37037b444d7688d25c43e77627599e43b9df831abbb63c943de20c6f8d412cc",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2018,7 +2018,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Marnie-Maddock/simple_cell1.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "5ceb2771ea6cf61dcf53d191b35befd80a7c74c0f6415e5b1f6395d61ef42af5",
+  "sha256" : "78c6261937f564a62596872761215b6b1511c1f655d52d3e6cebfd2c7146738d",
   "upstream_sha256" : "5021b71fdd602fbca6f488d0e59f49fece197937d05f3ec56745a3dd457f74ed",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2171,7 +2171,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Chemo-_and_Bioinformatics/James-A--Fellows-Yates/metromap_style_pipeline_workflow_components.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "a7ae989f016fa530ea82f0dc7b554de15337454df17a65ac0386eed0086b6435",
+  "sha256" : "618aea25fb4c38198e93daaa454e02d74add83ae89b4123e2ecb33d753eb4c14",
   "upstream_sha256" : "e6de2b46c190ca743a4f7b6ff78caa0dcddf179087702fda17a56635a16795c7",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2222,7 +2222,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_long_read05.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "d090e3f0ff4594b3fd8d17b6e1f83e0f48ecbec1362322d7d1ae5baadb419cec",
+  "sha256" : "2978a3c9601a409667e0aabafec8565aed03b2e13d64537ff4aeb0017f5f9f14",
   "upstream_sha256" : "60be45316c17d981be896a83cae68b484d2a135cd0b05cc9187e37f63f07fc59",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2239,7 +2239,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_shor_read06.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "ec425988381dd8d7a315b06052a4cbebfb9a06b3a773da843e1f646f40ca1431",
+  "sha256" : "3e84ca374b5750da8c86d1b45bef115dd3ebf58af81cd36ec09d996bccee2fd9",
   "upstream_sha256" : "51cb74341e734867e8a9717825b5e9a3447abdd189c627fa9faf8a784e8e3f52",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2256,7 +2256,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_short_read01.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "182487d6c8631db7a07ffc05d07158998ac3ccdf8ddc8c98056078e8441f522e",
+  "sha256" : "dcd7337e22154f01239bbc24e26b221426c22ec70582f5db54c5194168817bd1",
   "upstream_sha256" : "a769949ed12aa00f8fdc428ec66c74c5038e11bc530ec1db30d31cc8d1176024",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2273,7 +2273,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencer_short_read03.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "7f58cc66ff9717bb78069c302a82cc38e3296c4cea942e9664881eed9ce3cd31",
+  "sha256" : "fb8a21529c0dc08ada7ad3e3be6888fa94e84401e1aa316d63bf8316e5e4f406",
   "upstream_sha256" : "37661849e9908fa02354e0e84c310ba1987ff6d64e48dc490c7420dd54dbca0e",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2290,7 +2290,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/PacBio/img_sequencers01.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "cb9ca07ac0e85ef26574cd81ae98f581da6c77993f4d86125e64c34c0cf790d8",
+  "sha256" : "885af81b8ee507778a038b881786d93b64b3630a07245b37be548c6dc4f86393",
   "upstream_sha256" : "4ff83f71ba68d984a5cccdffdd0fede0c602d4d61ce15b91c8ba2b7048f7e7b4",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2307,7 +2307,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/umasstr/plasmid_library.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "6ba3e5cf08a1901c337cb86fdc2b9147c26d911239b27f4d02f3c6ace8432601",
+  "sha256" : "f41597d27c391dd401f81df81757de0d7e2db8873d59da3ef0c32daac4660ac9",
   "upstream_sha256" : "7642d58e5790553140a975a7c194bf12d57091861315d30c60b2408986878d62",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2324,7 +2324,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Fabian-Mikulasch/Pyramidal_Neuron.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "44804791bc5254f5add2038f36c1b6c6bbbbedea484daace9045a503fa3de61d",
+  "sha256" : "89534b206d3c605ad3589070f50e37ad995b7ca3e24fce099140f8557a08cf35",
   "upstream_sha256" : "128551d2aa862550a5a099aafa41496fe3de6fd0089303318c4e87daceb265c3",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2341,7 +2341,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Jan-Clusmann/fibrotic_liver.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "5d87496f890d7b9ea95b15c1aeb06381365faa085576c86129829add7bf5c90a",
+  "sha256" : "5b29a041b7dd05e4de6c1bf1d5f4f6a6210fee0d639ac8a4a605f7eae7ed9007",
   "upstream_sha256" : "54ed279777304643a2ef7d6ebe4ef6c2ce14c26a221dff62e595c58f494c6c5b",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2358,7 +2358,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Jan-Clusmann/healthy_liver.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "7c66e1508969afcb76abe144bfb7d65f8efd543a64d13436fc20beb566ce82e5",
+  "sha256" : "384f5f6f9c80cfb16644c315aeede9339c23a7df004c34ec831489c49cf9ae73",
   "upstream_sha256" : "ef460961abd03b4cbb72d82299736d0d2696c571f990b2be2b3b1db3a7e9012b",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2375,7 +2375,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/va/syringe_with_blood.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "1dc0c3ccfa8d3cb3fd67af0bc82dd91a26a82cd3ce3e6e02c6a0d3c5e971c5f1",
+  "sha256" : "4be010d8e6743d3a746d032dd8b1b3f1b6b9ba81940e3a328dc80dab58bdb28c",
   "upstream_sha256" : "5f5106ae4e1fe29fe70d02ba4a3719f81fe9e87d79f09b6ab5eec9c6b88e939e",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2426,7 +2426,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xi-Chen/singlecell_droplet_overloading.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "ff3fb93c6c075f59a577c93d3c4d5c74262a7b58592e9b243f130ef7e36c5073",
+  "sha256" : "979531e048f284bb6b921594a61e02defaa22d3c6f9264a3931d7cf22f2d79db",
   "upstream_sha256" : "07a01899b8ed037921b5b44ec8d790931ebed29205293500bc11873f656d44eb",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2443,7 +2443,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Peptides/Samuel-Nestor-Meckoni/C-terminal_signal_peptide_scheme.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "5afc858edff730eada93fc17aa34f122ecd3b6d12cf063fa705cbf3edb235ddc",
+  "sha256" : "33e7cebaeb264f1b17ca9de05d8f26eba1c058385fb74957ba7fc5f9d07e51dd",
   "upstream_sha256" : "6915c7966567ee4cda402e14062d2b428c0f8846bbd2a77a4cd70d435b33ee6c",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2460,7 +2460,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Peptides/Samuel-Nestor-Meckoni/N-terminal_signal_peptide_scheme.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "e9d65d14645f3f03d4f981d2f49ae161c8c110daaa152709494d9ea5a546d730",
+  "sha256" : "5bb8fc143d26795e1424d59b883d5ff30a8b0c7e558f637da5b08946ed978898",
   "upstream_sha256" : "57cdcfed9d74d93f16b134828506642c6c9301001d32dc52255e235cd94197bd",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2477,7 +2477,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Neuroscience/Eric-R-Cole/rat_optogenetic_implant.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "190a24da6ac29f11a8b517f2d55d19b9ae5e94f47d4e4c1ad71c14ee9dd48c8b",
+  "sha256" : "5708ce3e4e7468374bdd3ab6780fca5ed77685f7667c5a8e68955c462716f742",
   "upstream_sha256" : "fad49cfc5a97d2441613d04c0fc4cff2f149e5a7aa9b77212e4c2a028065760f",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2511,7 +2511,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Tissues/EmilyADaniel/nephron_2d.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "78634219f48b271a8212aaf477d4e4736a652094e2fc1f28b52f8ab55fb8ce58",
+  "sha256" : "d5a19c1ce7ab5f7fc3727ad3544473e53caa156a4f056d87ed1f50dcab815dfb",
   "upstream_sha256" : "6f3cea5de7e212b1d7e92a78603e5f4ddc20c38e8222a9b80a4d1191b19e533c",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {
@@ -2528,7 +2528,7 @@
   "source_url" : "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Peptides/Samuel-Nestor-Meckoni/internal_signal_peptide_scheme.svg",
   "upstream_commit" : "d29e766ea7580b8063c4f47b29e872db40a4d979",
   "modified" : true,
-  "sha256" : "2cd01bae0f42a5ad16042c3b57fc35b8fc393db4fe8040c9f31564cc31b58cce",
+  "sha256" : "eb050cfa848617abddbc809084a11f1941cf961429eabcd24fcd76d2997dd5a0",
   "upstream_sha256" : "067122971e864c75d3ca960a50c1422b4081dff29408f3c2aa9e4cf5b53937db",
   "modifications" : [ "SVG security normalization", "Semantic palette recolouring at render time" ]
 }, {

@@ -250,3 +250,6 @@
 .diagram-agent-fact small {font-size:var(--lf-text-2xs);line-height:var(--lf-leading);}
 .diagram-agent-facts>header,.diagram-agent-proposal>header {margin-bottom:var(--lf-space-1);}
 .diagram-structure-list {gap:var(--lf-space-1);}
+.diagram-agent-d8{padding:var(--lf-space-3) 0;border-top:1px solid var(--lf-border);}
+.diagram-agent-d8 p{margin:0 0 var(--lf-space-2);}
+.diagram-agent-d8-actions{display:flex;gap:var(--lf-space-4);flex-wrap:wrap;}

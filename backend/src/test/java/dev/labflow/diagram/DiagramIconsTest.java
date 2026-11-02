@@ -18,7 +18,7 @@ class DiagramIconsTest {
     for(var item:icons.all()){
       String id=item.path("id").asText();assertTrue(ids.add(id));assertTrue(Set.of("CC0-1.0","CC-BY-4.0").contains(item.path("license").asText()));if(item.path("license").asText().equals("CC-BY-4.0"))attributed++;
       assertFalse(item.at("/name/en").asText().isBlank());assertTrue(item.at("/name/zh").asText().codePoints().anyMatch(c->Character.UnicodeScript.of(c)==Character.UnicodeScript.HAN));assertFalse(item.path("author").asText().isBlank());assertTrue(item.path("source_url").asText().contains("/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/"));assertTrue(item.path("modified").asBoolean());
-      String svg=icons.svg(id);assertEquals(svg,SvgSanitizer.sanitize(svg),id);assertEquals(item.path("sha256").asText(),HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(svg.getBytes(StandardCharsets.UTF_8))),id);
+      String svg=icons.svg(id);assertFalse(svg.contains("\r"),id);assertEquals(svg,SvgSanitizer.sanitize(svg),id);assertEquals(item.path("sha256").asText(),HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(svg.getBytes(StandardCharsets.UTF_8))),id);
       assertFalse(svg.matches("(?s).*<(script|foreignObject|image|iframe)\\b.*"));
     }
     assertEquals(BuiltinIconIds.IDS,ids);assertTrue(attributed>0);

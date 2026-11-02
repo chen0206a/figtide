@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-02",
+  "scope": "final PR7 D8 wording/actions and proposal info filtering; CI newline blocker",
+  "source_parent_commit": "3e4a68830deaed001abb1246121b4c57315ae417",
+  "source": "commit containing this acceptance file",
+  "frontend": {
+    "passed": 658,
+    "files": 78,
+    "failed": 0,
+    "build": "passed"
+  },
+  "h2_targeted": {
+    "passed": 20,
+    "failed": 0,
+    "skipped": 0,
+    "classes": [
+      "DiagramAgentRunTest",
+      "DiagramIconsTest",
+      "SvgSanitizerTest",
+      "DiagramReviewTest"
+    ]
+  },
+  "desktop_targeted": {
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "audit_restart": "passed",
+    "mode": "original desktop production-JAR harness, isolated H2"
+  },
+  "geometry": {
+    "total": 240,
+    "errors": 0
+  },
+  "new_frontend_cases": [
+    "D3 info excluded from proposal while report retains it; D8 specific source and keep",
+    "D8 source wording validation, readonly preview and final application"
+  ],
+  "icon_manifest": "all 151 staged Git SVG byte digests match; 67 old CRLF-based hashes corrected, upstream digests unchanged",
+  "owner_visual_review": "second round passed by owner; final two PNGs self-checked",
+  "viewport": {
+    "width": 1440,
+    "height": 960,
+    "full_page": false
+  },
+  "manual_drawio_interaction": "not executed",
+  "real_model_evaluation": "not executed; private reports stay local",
+  "merge": "authorized only after latest PR CI all green; ordinary merge only",
+  "full_acceptance": "latest full dual-database/MCP/Windows EXE validation provided by PR CI before merge; not counted as a local rerun",
+  "log_sha256": {
+    ".runtime\\19-BC-final-front-full.log": "5b356332175aafbc64b64a538132f0c864cda88bd317638aea1f2a5cf906ca1d",
+    ".runtime\\19-BC-final-build2.log": "d5613e791b8943dd51b88a8e29b3e97136bb036e4ea14a97538c4ef91c23d603",
+    ".runtime\\19-BC-final-back-green.log": "16a01e97d1932604c0f7fa767556a83a4afcde49fb78e7df6a0085c0a6b03c38",
+    ".runtime\\19-BC-final-desktop.log": "df08886cba51cfa225471d1142eb01c175d6b81ea25333e794b1b002bfb78235"
+  }
+}

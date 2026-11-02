@@ -1,9 +1,21 @@
 import type {DiagramDoc} from './model';
 import type {DiagramOperation} from './operations';
-import type {ReviewResult} from '../editor/review';
+import type {ReviewResult,ReviewIssue} from '../editor/review';
 export type Fact={text:string;quote:string};
 export type FactBinding={field:'nodes'|'edges'|'zones'|'annotations';id:string;facts:number[];before:any;index:number};
 export type DiagramAgentProposal={doc:DiagramDoc;config?:DiagramDoc;facts?:Fact[];fact_bindings?:FactBinding[];selected_facts?:number[];review:ReviewResult<DiagramOperation>;changes:{path:string}[]};
+export type LabelChoice={node_id:string;action:'keep'|'source';label?:string};
+export function d8Source(proposal:DiagramAgentProposal,filtered:DiagramDoc,issue:ReviewIssue<DiagramOperation>){
+  if(issue.rule!=='D8'||issue.anchor.kind!=='node')return null;
+  const node=proposal.doc.nodes[Number(issue.anchor.ref)];if(!node||!filtered.nodes.some(n=>n.id===node.id&&n.label===node.label))return null;
+  const binding=proposal.fact_bindings?.find(b=>b.field==='nodes'&&b.id===node.id),selected=new Set(filtered.meta.fact_sources?.map(f=>f.quote));
+  const facts=binding&&proposal.facts?binding.facts.map(i=>proposal.facts![i]).filter(f=>f&&selected.has(f.quote)):filtered.meta.fact_sources||[];
+  const quotes=[...new Set(facts.map(f=>f.quote))];if(!quotes.length&&filtered.meta.source_text)quotes.push(filtered.meta.source_text);
+  return {node_id:node.id,label:node.label,quotes};
+}
+export function labelOperations(doc:DiagramDoc,choices:LabelChoice[]):DiagramOperation[]{
+  return choices.filter(c=>c.action==='source'&&doc.nodes.some(n=>n.id===c.node_id)).map(c=>({tool:'update_node',arguments:{id:c.node_id,label:c.label}}));
+}
 
 /** Mirrors the server-owned exclusion contract; the server repeats it at confirmation. */
 export function selectProposalFacts(proposal:DiagramAgentProposal,chosen:Set<number>):DiagramDoc{

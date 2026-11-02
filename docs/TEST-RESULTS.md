@@ -1,3 +1,13 @@
+## 2026-11-02 · PR #7合并前D8小修与CI换行修复
+
+- 前端 `npm.cmd --prefix frontend test -- --run --maxWorkers=2`：658/658、78文件；`npm.cmd --prefix frontend run build`（tsc/Vite）通过。新增keep/source两条前端交互测试，断言D3 info只留报告、D8显示节点/原文、禁止补造用词、两种操作在最终决定传递、一次草稿编辑。
+- 隔离H2相关后端 `mvn.cmd -B -f backend/pom.xml -Dtest=DiagramAgentRunTest,DiagramIconsTest,SvgSanitizerTest,DiagramReviewTest test`：20/20，0失败/跳过；覆盖原文归属、拒绝替换非D8节点/补造词、同选择重试、不同选择409，以及全部151图标安全/净化/实际字节哈希和LF规范化。
+- 原 `scripts/test-agent.ps1 -Desktop -Specs @('e2e/diagram-agent.spec.ts','e2e/diagram-review.spec.ts','e2e/diagram-assets.spec.ts') -FixturePort 18770`：9/9，0失败/跳过；生产JAR+独立H2，真实JVM审计重启/中断恢复通过，240模板几何0error。D8真实预览→服务端确认→一次撤销/重做→手动保存后标签确为Our compound，追改通过。
+- 上轮远端CI失败根因：67项图标清单SHA按Windows工作副本CRLF计算，而Git实际保存LF；Windows干净检出另暴露净化器使用系统换行。现在固定净化输出LF、按Git暂存的151个实际SVG字节核对清单，原安全/哈希断言不降级，另加跨换行一致性测试。
+- 本轮早期前端测试有一次预览尚未就绪的同步查询失败，改为等待预览后通过；tsc暴露测试使用ES2023 findLast，改用现有目标支持的reverse/find。首次LF修复尝试仍受系统序列化换行影响，改为显式规范LF后20项通过。
+- 两张1440×960视口截图已自检，见 `docs/test-evidence/diagram-19-BC-final/`。新版提案中没有D3 info，D8节点、关联原句、两项操作和选择状态均可见。
+- 本轮本地未重跑后端双库全量/完整桌面/MCP（范围内专项已通过，最终完整验证由PR CI执行）；draw.io人工交互、真实模型评测仍未执行，不访问真实工作区，不上传自己的真实模型结果。主人已通过第二轮视觉并明确授权最新追加提交CI全绿后普通merge；不发布、不改写历史。
+
 ## 2026-11-02 · 19-B/C第二轮视觉返工
 
 - `npm.cmd --prefix frontend test -- --run --maxWorkers=2`：656/656，78文件；生产构建由原`build-desktop.ps1`完成，tsc/Vite通过。
