@@ -1,0 +1,43 @@
+{
+  "id": "workflow",
+  "version": "1.0.1",
+  "name": "实验流程图",
+  "description": "表达操作顺序；未经提供不添加时间、剂量、仪器和条件。",
+  "patterns": [
+    "workflow"
+  ],
+  "templates": [
+    "workflow",
+    "zoom-workflow",
+    "rna-library"
+  ],
+  "recommended_styles": [
+    "line-minimal"
+  ],
+  "allowed_nodes": [
+    "box",
+    "pill",
+    "ellipse",
+    "glyph",
+    "text",
+    "icon"
+  ],
+  "allowed_edges": [
+    "flow",
+    "activate",
+    "inhibit",
+    "transport",
+    "bind",
+    "indirect"
+  ],
+  "icon_tags": [
+    "experiment",
+    "lab",
+    "tube"
+  ],
+  "checks": {
+    "provenance": true,
+    "zones": false,
+    "depth": true
+  }
+}

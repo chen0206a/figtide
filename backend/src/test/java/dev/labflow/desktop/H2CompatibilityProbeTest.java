@@ -64,6 +64,14 @@ class H2CompatibilityProbeTest {
     EXPECTED_MYSQL_SCRIPT.put("V10#1", true);  // diagrams, explicit UTC timestamps and project FK
     EXPECTED_MYSQL_SCRIPT.put("V10#2", true);  // diagram_versions, JSON DDL (product H2 uses CLOB)
 
+    EXPECTED_MYSQL_SCRIPT.put("V11#1", true); // dataset binding nullable (MODIFY)
+    EXPECTED_MYSQL_SCRIPT.put("V11#2", true); // session dataset binding nullable
+    EXPECTED_MYSQL_SCRIPT.put("V11#3", true); // diagram run binding
+    EXPECTED_MYSQL_SCRIPT.put("V11#4", true); // versioned skill id
+    EXPECTED_MYSQL_SCRIPT.put("V11#5", true); // versioned skill version
+    EXPECTED_MYSQL_SCRIPT.put("V11#6", true); // diagram session binding
+    EXPECTED_MYSQL_SCRIPT.put("V11#7", true); // diagram history index
+
     // U 探针（编号沿用盘点报告附录 U1–U7）。实测推翻了盘点报告里 ON UPDATE、
     // LONGBLOB、内联 INDEX、TIMESTAMPDIFF(MICROSECOND)、REPEATABLE_READ 的判断。
     EXPECTED_FEATURE_PROBES.put("U1_CURRENT_TIMESTAMP_3_DEFAULT", true);

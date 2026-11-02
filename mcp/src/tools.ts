@@ -111,6 +111,14 @@ export class FigTideTools {
     }))).data;
   }
 
+  async listDiagrams(projectId:number){return (await this.client.request<unknown[]>(`projects/${projectId}/diagrams`)).data;}
+  async getDiagram(projectId:number,diagramId:number){return (await this.client.request<JsonObject>(`projects/${projectId}/diagrams/${diagramId}`)).data;}
+  async getDiagramBrief(projectId:number,diagramId:number){return (await this.client.request<JsonObject>(`projects/${projectId}/diagrams/${diagramId}/brief`)).data;}
+  async reviewDiagram(projectId:number,diagramId:number){const current=await this.getDiagram(projectId,diagramId);return (await this.client.request<JsonObject>(`projects/${projectId}/diagram-tools/review`,post({protocol_version:1,diagram_id:diagramId,base_revision:current.revision,doc:current.doc}))).data;}
+  async previewDiagramChanges(projectId:number,diagramId:number,baseRevision:number,operations:Array<{tool:string;arguments:JsonObject}>){const current=await this.getDiagram(projectId,diagramId);return (await this.client.request<JsonObject>(`projects/${projectId}/diagram-tools/preview`,post({protocol_version:1,diagram_id:diagramId,base_revision:baseRevision,doc:current.doc,operations}))).data;}
+  async saveDiagramVersion(projectId:number,diagramId:number,baseRevision:number,operations:Array<{tool:string;arguments:JsonObject}>){const preview=await this.previewDiagramChanges(projectId,diagramId,baseRevision,operations);const {data,endpoint}=await this.client.request<JsonObject>(`projects/${projectId}/diagrams/${diagramId}`,put({base_revision:baseRevision,doc:preview.doc}));return {saved:true,diagram:data,editor_url:this.client.editorUrl(endpoint,projectId,diagramId,"diagrams")};}
+  async importDiagramSvg(projectId:number,diagramId:number,baseRevision:number,svg:string,name?:string){const {data,endpoint}=await this.client.request<JsonObject>(`projects/${projectId}/diagrams/${diagramId}/import-svg`,post({base_revision:baseRevision,svg,...(name?{name}:{})}));return {saved:true,diagram:data,editor_url:this.client.editorUrl(endpoint,projectId,diagramId,"diagrams")};}
+
   async listProjects() {
     return (await this.client.request<unknown[]>("projects")).data;
   }
@@ -233,6 +241,15 @@ export class FigTideTools {
 }
 
 export function registerTools(server: McpServer, tools: FigTideTools): void {
+  const diagramIdentity={project_id:positiveId,diagram_id:positiveId};
+  server.registerTool('list_diagrams',{title:'列出机制图',description:'只读列出指定项目的机制图，不读取数据集或原始数据。',inputSchema:{project_id:positiveId},annotations:readAnnotations},async({project_id})=>safe(()=>tools.listDiagrams(project_id)));
+  server.registerTool('get_diagram',{title:'读取机制图',description:'读取当前文档、revision和版本数。外部SVG只作为整体图层，内部文字不能单独编辑。',inputSchema:diagramIdentity,annotations:readAnnotations},async({project_id,diagram_id})=>safe(()=>tools.getDiagram(project_id,diagram_id)));
+  server.registerTool('get_diagram_brief',{title:'读取外部绘图简报',description:'返回简报、用户事实、节点分区连线语义、实际配色/线宽/字体和成品尺寸，提供Markdown与JSON。没有事实时先向用户确认，不自行编造。',inputSchema:diagramIdentity,annotations:readAnnotations},async({project_id,diagram_id})=>safe(()=>tools.getDiagramBrief(project_id,diagram_id)));
+  server.registerTool('review_diagram',{title:'审稿机制图',description:'只读确定性审稿，不调用模型。没有浏览器渲染事实，D4/D5明确跳过；不能将其视为通过。',inputSchema:diagramIdentity,annotations:readAnnotations},async({project_id,diagram_id})=>safe(()=>tools.reviewDiagram(project_id,diagram_id)));
+  const diagramChange={...diagramIdentity,base_revision:z.number().int().positive(),operations:z.array(operation).min(1).max(400)};
+  server.registerTool('preview_diagram_changes',{title:'预览机制图操作',description:'对当前保存版本执行已有机制图操作，返回候选和差异，不保存。请让用户先核对；旧revision会报冲突。',inputSchema:diagramChange,annotations:readAnnotations},async({project_id,diagram_id,base_revision,operations})=>safe(()=>tools.previewDiagramChanges(project_id,diagram_id,base_revision,operations)));
+  server.registerTool('save_diagram_version',{title:'保存机制图新版本',description:'用户确认后保存操作结果。先通过后端只读预览/校验，再带base_revision保存；冲突不覆盖、不重试。返回编辑器链接。',inputSchema:diagramChange,annotations:writeAnnotations},async({project_id,diagram_id,base_revision,operations})=>safe(()=>tools.saveDiagramVersion(project_id,diagram_id,base_revision,operations)));
+  server.registerTool('import_diagram_svg',{title:'导入外部SVG为新图层',description:'经共享SvgSanitizer净化后新增artwork图层和保存版本，保留原图层与历史。须用户确认并带base_revision；图层整体可移动缩放锁定隐藏，内部文字不能单独编辑。不接受位图或外部资源。',inputSchema:{...diagramIdentity,base_revision:z.number().int().positive(),svg:z.string().min(1).max(2*1024*1024),name:z.string().trim().min(1).max(120).optional()},annotations:writeAnnotations},async({project_id,diagram_id,base_revision,svg,name})=>safe(()=>tools.importDiagramSvg(project_id,diagram_id,base_revision,svg,name)));
   server.registerTool('review_chart', {
     title: '确定性审稿', description: '只读检查图表规格，不调用模型，不写入配置。没有编辑器几何信息，R7/R8 明确跳过；修复须经预览并由用户确认。',
     inputSchema: {project_id: positiveId, config: jsonObject, chart_id: positiveId.optional(),

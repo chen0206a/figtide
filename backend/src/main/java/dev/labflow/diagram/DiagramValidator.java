@@ -58,17 +58,18 @@ public final class DiagramValidator {
       }
     });
   }
+  public static void style(JsonNode style){fields(style,"preset palette overrides role_colors","preset overrides");if(style.has("palette"))choice(style.get("palette"),Set.of("okabe-ito","npg","aaas","nejm","lancet","jama"));choice(style.get("preset"),PRESETS);overrides(style.path("overrides"));if(style.has("role_colors")){fields(style.get("role_colors"),"actor process data model output note","actor process data model output note");style.get("role_colors").forEach(DiagramValidator::color);}}
   public static void validate(JsonNode d) {
-    fields(d,"schema_version canvas style label_language zones nodes edges annotations legend meta","schema_version canvas style label_language zones nodes edges annotations legend meta");
+    fields(d,"schema_version canvas style label_language zones nodes edges annotations legend meta artworks","schema_version canvas style label_language zones nodes edges annotations legend meta");
     require(d.path("schema_version").isIntegralNumber() && d.path("schema_version").canConvertToInt() && d.path("schema_version").asInt()==1,"不支持的schema_version");
     require(d.toString().getBytes(StandardCharsets.UTF_8).length <= MAX_BYTES,"文档超过2MB");
     var canvas=d.path("canvas");fields(canvas,"width_mm height_mm background","width_mm height_mm background");
     double width=number(canvas.get("width_mm"),10,2000),height=number(canvas.get("height_mm"),10,2000);color(canvas.get("background"));
-    var style=d.path("style");fields(style,"preset palette overrides","preset overrides");if(style.has("palette"))choice(style.get("palette"),Set.of("okabe-ito","npg","aaas","nejm","lancet","jama"));choice(style.get("preset"),PRESETS);overrides(style.path("overrides"));
+    style(d.path("style"));
     choice(d.get("label_language"),Set.of("en","zh"));
-    array(d.get("zones"),30);array(d.get("nodes"),120);array(d.get("edges"),200);array(d.get("annotations"),120);
+    array(d.get("zones"),30);array(d.get("nodes"),120);array(d.get("edges"),200);array(d.get("annotations"),120);if(d.has("artworks"))array(d.get("artworks"),30);
     Set<String> all=new HashSet<>(),zones=new HashSet<>(),nodes=new HashSet<>();
-    for(String key:List.of("zones","nodes","edges","annotations"))for(var n:d.path(key)) {
+    for(String key:List.of("zones","nodes","edges","annotations","artworks"))for(var n:d.path(key)) {
       require(n.isObject(),"元素必须是对象");String ident=id(n.path("id"));require(all.add(ident),"ID重复");
       if(key.equals("zones"))zones.add(ident);if(key.equals("nodes"))nodes.add(ident);
     }
@@ -85,7 +86,7 @@ public final class DiagramValidator {
       if(n.has("boxed"))require(n.get("boxed").isBoolean(),"boxed必须是布尔值");
       if(n.has("badges")){array(n.get("badges"),8);Set<String> seen=new HashSet<>();for(var b:n.path("badges")){String badge=text(b,16);require(seen.add(badge)&&(Set.of("phospho","frozen","trainable").contains(badge)||badge.matches("number:([1-9]|[1-9][0-9])")),"图元标记无效或重复");}}
       if(!n.path("zone").isNull()) { require(zones.contains(id(n.get("zone"))),"分区引用无效");var z=find(d.path("zones"),n.path("zone").asText()); require(n.path("x").asDouble()>=z.path("x").asDouble() && n.path("y").asDouble()>=z.path("y").asDouble() && n.path("x").asDouble()+n.path("w").asDouble()<=z.path("x").asDouble()+z.path("w").asDouble()+1e-8 && n.path("y").asDouble()+n.path("h").asDouble()<=z.path("y").asDouble()+z.path("h").asDouble()+1e-8,"节点超出所属分区"); }
-      require(n.path("icon").isNull()&&!kind.equals("icon"),"19-A尚未开放图标");
+      if(kind.equals("icon"))choice(n.get("icon"),BuiltinIconIds.IDS);else require(n.path("icon").isNull(),"图标ID只能用于图标节点");
       if(!n.path("style_ref").isNull())choice(n.get("style_ref"),ROLES);
     }
     for(var e:d.path("edges")) {
@@ -95,9 +96,15 @@ public final class DiagramValidator {
     for(var a:d.path("annotations")) {
       fields(a,"id kind target text","id kind target text");choice(a.get("kind"),Set.of("panel_letter","callout","note"));require(nodes.contains(id(a.get("target")))||zones.contains(a.path("target").asText()),"注释目标不存在");text(a.get("text"),200);
     }
+    for(var layer:d.path("artworks")){fields(layer,"id name x y w h locked hidden svg","id name x y w h locked hidden svg");text(layer.get("name"),120);rect(layer,width,height);require(layer.path("locked").isBoolean()&&layer.path("hidden").isBoolean(),"图层开关必须为布尔值");String svg=text(layer.get("svg"),MAX_BYTES);require(svg.equals(SvgSanitizer.sanitize(svg)),"外部SVG须先通过导入接口净化");}
     var legend=d.path("legend");fields(legend,"mode position","mode position");choice(legend.get("mode"),Set.of("auto","off"));choice(legend.get("position"),Set.of("bottom-right","bottom-left","top-right","top-left"));
-    var meta=d.path("meta");fields(meta,"skill skill_version template brief facts","skill skill_version template brief facts");
+    var meta=d.path("meta");fields(meta,"skill skill_version template brief facts source_text fact_sources ai_labels include_icon_attribution cannot_imply","skill skill_version template brief facts");
     for(String k:List.of("skill","skill_version","template"))nullableText(meta.get(k),120);text(meta.get("brief"),10000);array(meta.get("facts"),200);for(var f:meta.path("facts"))text(f,1000);
+    if(meta.has("include_icon_attribution"))require(meta.get("include_icon_attribution").isBoolean(),"图标署名开关无效");
+    if(meta.has("cannot_imply"))text(meta.get("cannot_imply"),500);
+    if(meta.has("source_text"))text(meta.get("source_text"),10000);
+    if(meta.has("fact_sources")){array(meta.get("fact_sources"),40);require(meta.path("fact_sources").size()==meta.path("facts").size(),"事实出处数量不一致");int index=0;for(var f:meta.path("fact_sources")){fields(f,"text quote","text quote");String quote=text(f.get("quote"),1000);require(!quote.isBlank()&&meta.path("source_text").asText().contains(quote)&&f.path("text").equals(meta.path("facts").get(index++)),"事实出处必须来自用户原文");}}
+    if(meta.has("ai_labels")){array(meta.get("ai_labels"),120);Set<String> seen=new HashSet<>();for(var label:meta.path("ai_labels")){fields(label,"id label","id label");require(nodes.contains(id(label.get("id")))&&seen.add(label.path("id").asText()),"AI标签引用无效或重复");text(label.get("label"),200);}}
   }
   public static JsonNode find(JsonNode list,String id) { for(var n:list)if(n.path("id").asText().equals(id))return n;throw ApiException.bad("机制图：元素不存在"); }
 }

@@ -3,7 +3,7 @@ import {artifactPath} from './artifacts';
 import {writeFileSync} from 'node:fs';
 test('19-A-7 scientific examples, outline warnings and unobstructed creation bar',async({page,request},info)=>{
   const catalog=await(await request.get('/api/diagram-catalog')).json();
-  expect(catalog.templates).toHaveLength(12);
+  expect(catalog.templates).toHaveLength(20);
   for(const t of catalog.templates)for(const lang of ['en','zh'])for(const n of t.documents[lang].nodes)expect(n.label).not.toMatch(/^(Input|Output|Stage [AB]|Part \d|Concept|Branch [AB])$/);
   const project=await(await request.post('/api/projects',{data:{name:'19A7 synthetic',description:'Isolated scientific examples'}})).json();
   expect(project.id).toBeTruthy();
@@ -21,16 +21,16 @@ test('19-A-7 scientific examples, outline warnings and unobstructed creation bar
   expect(await page.locator('.diagram-wizard-preview-scroll').evaluate(el=>el.scrollHeight<=el.clientHeight+1)).toBe(true);
   expect((await panel.boundingBox())!.y+(await panel.boundingBox())!.height).toBeLessThanOrEqual(960);
   const bar=await page.locator('.diagram-create-actions').boundingBox(),fields=await page.locator('.diagram-wizard-preview-scroll').boundingBox();expect(fields!.y+fields!.height).toBeLessThanOrEqual(bar!.y+1);
-  await expect(page.locator('.diagram-palette-audit summary')).toContainText('5 组');
+  await expect(page.locator('.diagram-palette-audit')).toHaveCount(0);await expect(wizard.getByRole('status')).toHaveCount(0);
   const doc=catalog.templates.find((t:{id:string})=>t.id==='mechanism').documents.en,roles=new Set(doc.nodes.filter((n:{kind:string;glyph:string})=>n.kind!=='text'&&!['phospho','number','frozen','trainable'].includes(n.glyph)).map((n:{style_ref:string;role:string})=>n.style_ref||n.role));
   const audit=catalog.palette_audits.find((a:{id:string;preset:string})=>a.id==='okabe-ito'&&a.preset==='nature-flat');audit.failing_pairs=audit.failing_pairs.filter((p:{roles:string[]})=>p.roles.every(r=>roles.has(r)));audit.used_roles=[...roles];audit.template='mechanism';
   if(process.env.LABFLOW_CAPTURE==='1'){
     const folder=`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||'diagram-19-A-7'}`;
     writeFileSync(artifactPath(info,`${folder}/okabe-ito-audit.json`),JSON.stringify(audit,null,2));
     await page.screenshot({path:artifactPath(info,`${folder}/new-page-1440.png`),fullPage:false});
-    await page.locator('.diagram-palette-audit summary').click();
+    
     await page.screenshot({path:artifactPath(info,`${folder}/new-page-color-audit-1440.png`),fullPage:false});
-    await page.locator('.diagram-palette-audit summary').click();
+    
     await wizard.getByRole('combobox',{name:'成品规格'}).selectOption('custom');
     await expect(wizard.getByRole('spinbutton',{name:'成品宽度'})).toBeInViewport();await expect(wizard.getByRole('spinbutton',{name:'成品高度'})).toBeInViewport();await expect(button).toBeInViewport();
     await page.screenshot({path:artifactPath(info,`${folder}/new-page-custom-1440.png`),fullPage:false});

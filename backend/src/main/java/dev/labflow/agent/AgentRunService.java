@@ -28,6 +28,8 @@ public class AgentRunService {
   private dev.labflow.review.ProposalReviewService proposalReviews;
   @org.springframework.beans.factory.annotation.Autowired private dev.labflow.agent.team.TeamDraftService teamDrafts;
   @org.springframework.beans.factory.annotation.Autowired private dev.labflow.agent.team.TeamDecisionService teamDecisions;
+  @org.springframework.beans.factory.annotation.Autowired private dev.labflow.diagram.DiagramAgentEngine diagramAgent;
+  @org.springframework.beans.factory.annotation.Autowired private dev.labflow.diagram.DiagramProposalService diagramProposals;
   private final Map<String, Run> runs = new LinkedHashMap<>();
   private final ThreadPoolExecutor workers =
       new ThreadPoolExecutor(2, 2, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(6));
@@ -67,6 +69,7 @@ public class AgentRunService {
     boolean pendingReview;
     Map<String,Object> previewData;
     ObjectNode reviewRequest;
+    JsonNode diagramRequest,diagramData;
     final CompletableFuture<JsonNode> geometry=new CompletableFuture<>();
     ArrayNode recommendations;
     int sessionBudget = 180000;
@@ -158,11 +161,13 @@ public class AgentRunService {
             "session_budget",
             "request_id",
             "user_message",
-            "mode", "render_facts", "target", "role_budget_percentages"));
+            "mode", "render_facts", "target", "role_budget_percentages", "doc", "diagram_id", "skill_id", "diagram_stage", "facts_confirmed", "source_prompt", "facts", "brief", "selected_facts", "cannot_imply", "allow_below_style_defaults"));
     String mode = request.path("mode").asText("single");
-    if (!Set.of("single", "edit", "recommend", "team", "review").contains(mode)
+    if (!Set.of("single", "edit", "recommend", "team", "review", "diagram").contains(mode)
         || (request.has("mode") && !request.path("mode").isTextual()))
       throw ApiException.bad("不支持的运行模式");
+    if(!mode.equals("diagram"))for(String field:List.of("doc","diagram_id","skill_id","diagram_stage","facts_confirmed","source_prompt","facts","brief","selected_facts","cannot_imply","allow_below_style_defaults"))if(request.has(field))throw ApiException.bad("机制图字段只适用于机制图助手");
+    if(mode.equals("diagram")&&(request.has("chart_id")||request.has("config")||request.has("parent_run_id")))throw ApiException.bad("机制图不绑定数据图；请先应用或结束当前提案，再按画布追改");
     if((request.has("render_facts")||request.has("target"))&&!mode.equals("review"))throw ApiException.bad("只有独立深度审稿可以附初始渲染事实");
     if(request.has("role_budget_percentages")&&!mode.equals("team"))throw ApiException.bad("角色配额只适用于协作模式");
     int[] rolePercentages=request.has("role_budget_percentages")?dev.labflow.agent.team.TeamBudget.percentages(request.path("role_budget_percentages")):legacyRoleBudgetLimits?new int[]{15,45,85,100}:null;
@@ -194,21 +199,22 @@ public class AgentRunService {
         || request.path("prompt").asText().isBlank()
         || request.path("prompt").asText().length() > 2000)
       throw ApiException.bad("请输入 1–2000 字的绘图需求");
-    if (request.path("config").toString().length() > 24000)
+    if (mode.equals("diagram")?request.path("doc").toString().length()>80000:request.path("config").toString().length() > 24000)
       throw ApiException.bad("当前图表过大，暂不支持模型辅助");
     ObjectNode snapshot = json.createObjectNode();
     for (String key : List.of("protocol_version", "chart_id", "base_revision", "config"))
       if (request.has(key)) snapshot.set(key, request.get(key).deepCopy());
-    var lint = figures.lint(project, snapshot);
+    if(mode.equals("diagram"))snapshot=diagramAgent.context(project,request);
+    var lint = mode.equals("diagram")?Map.<String,Object>of("ok",true,"source",Map.of("sha256",AuditSanitizer.hash(snapshot.path("config")))):figures.lint(project, snapshot);
     if (!Boolean.TRUE.equals(lint.get("ok"))) throw ApiException.bad("当前图表需要先修正校验问题");
     ModelProvider selected = provider.snapshot();
     if (selected == null)
       selected = provider; // Mockito/custom providers may not implement snapshot.
     if (!selected.info().available()) throw new ApiException(503, selected.info().reason());
     int steps = executionPolicy==AgentExecutionPolicy.EVALUATION_UNBOUNDED?Integer.MAX_VALUE:limit(request, "max_steps", mode.equals("team")?8:6, 1, 8);
-    int tokens = executionPolicy==AgentExecutionPolicy.EVALUATION_UNBOUNDED?Integer.MAX_VALUE:limit(request, "max_tokens", mode.equals("team")?60000:32000, 2000, 60000);
+    int tokens = executionPolicy==AgentExecutionPolicy.EVALUATION_UNBOUNDED?Integer.MAX_VALUE:limit(request, "max_tokens", Set.of("team","diagram").contains(mode)?60000:32000, 2000, 60000);
     int timeout = executionPolicy==AgentExecutionPolicy.EVALUATION_UNBOUNDED?0:limit(request, "timeout_seconds", 60, 1, 120);
-    var tools = mode.equals("recommend") ? recommendationDefinitions() : definitions();
+    var tools = mode.equals("diagram")?diagramAgent.definitions(request):mode.equals("recommend") ? recommendationDefinitions() : definitions();
     JsonNode catalog=tools;
     if(Set.of("team","review").contains(mode)){var combined=json.createObjectNode().put("orchestrator",dev.labflow.agent.team.TeamPrompts.VERSION);combined.set("plotting",tools);combined.set("processing",teamDrafts.processingTools());catalog=combined;}
     var run =
@@ -224,6 +230,7 @@ public class AgentRunService {
             selected);
     run.recommending = mode.equals("recommend");
     run.mode=mode;
+    if(mode.equals("diagram"))run.diagramRequest=request.deepCopy();
     run.unboundedEvaluation=executionPolicy==AgentExecutionPolicy.EVALUATION_UNBOUNDED;
     run.roleBudgetPercentages=run.unboundedEvaluation?null:rolePercentages;
     if(mode.equals("team")||run.unboundedEvaluation){
@@ -408,7 +415,8 @@ public class AgentRunService {
       var value = json.valueToTree(view(pending));
       if (!value.path("persisted").asBoolean() || !value.has("proposal")) break;
       try {
-        var lint = figures.lint(project, pending.snapshot);
+        var lint = pending.mode.equals("diagram")?Map.<String,Object>of("ok",true):figures.lint(project, pending.snapshot);
+        if(pending.mode.equals("diagram"))diagramAgent.checkContext(project,pending.snapshot);
         if (!Boolean.TRUE.equals(lint.get("ok"))) break;
         var candidate = out.putObject("candidate");
         candidate.set("run", value);
@@ -455,6 +463,13 @@ public class AgentRunService {
   }
 
   public Object decide(long project, String id, JsonNode request) {
+    var diagram=live(project,id);
+    if(diagram!=null&&diagram.mode.equals("diagram"))synchronized(diagram){
+      boolean eligible=diagram.status.equals("proposed")&&diagram.persisted&&!diagram.pendingReview&&diagram.proposal!=null;
+      if(eligible)diagramAgent.checkContext(project,diagram.snapshot);
+      var safe=request.deepCopy();if(safe.path("reason").isTextual())((ObjectNode)safe).put("reason",diagram.selectedProvider.redactSecret(safe.path("reason").asText()));
+      return diagramProposals.decide(project,id,safe,eligible,diagram.proposal==null?"":AuditSanitizer.hash(diagram.proposal.path("config")),diagram.proposal);
+    }
     var team=live(project,id);
     if(team!=null&&request.path("outcome").asText().equals("accepted"))synchronized(team){
       if(team.proposal!=null&&team.proposal.has("processing")){
@@ -500,6 +515,11 @@ public class AgentRunService {
     var run=live(project,id);
     if(run==null)throw new ApiException(409,"历史提案仅供追溯，请重新生成后审稿");
     synchronized(run){
+      if(run.mode.equals("diagram")){
+        if(!run.pendingReview||!run.phase.equals("awaiting_render"))throw new ApiException(409,"提案当前不等待排版结果");
+        dev.labflow.diagram.DiagramValidator.fields(request,"doc render_facts target","doc render_facts");
+        diagramAgent.rendered(run.proposal.path("doc"),request);run.geometry.complete(request.deepCopy());return Map.of("pending",true,"phase","reviewing");
+      }
       if(run.pendingReview){
         dev.labflow.review.RenderFacts.fields(request,Set.of("render_facts","target"),Set.of());
         var facts=dev.labflow.review.RenderFacts.validate(request.path("render_facts"));dev.labflow.review.RenderFacts.target(request.path("target"));
@@ -577,6 +597,10 @@ public class AgentRunService {
                 (r.finished == 0 ? System.currentTimeMillis() : r.finished) - r.created)
             .put("text", r.text)
             .put("reason", r.reason);
+    if(r.mode.equals("diagram")){
+      var skill=diagramAgent.skill(r.diagramRequest);result.put("prompt_version",dev.labflow.diagram.DiagramAgentEngine.PROMPT_VERSION).put("skill_id",skill.path("id").asText()).put("skill_version",skill.path("version").asText()).put("diagram_id",r.snapshot.path("diagram_id").asLong()).put("phase",r.phase);
+      if(r.diagramData!=null)result.set("diagram",r.diagramData.deepCopy());
+    }
     if (r.parentId != null) result.put("parent_run_id", r.parentId);
     result.put("refinement_depth", r.depth);
     result.put(
@@ -707,6 +731,7 @@ public class AgentRunService {
   }
 
   private void execute(Run r, String prompt, ArrayNode tools) {
+    if(r.mode.equals("diagram")){executeDiagram(r);return;}
     if(Set.of("team","review").contains(r.mode)){executeTeam(r,prompt,tools);return;}
     try {
       synchronized (r) {
@@ -1036,20 +1061,16 @@ public class AgentRunService {
     }
   }
 
-  private void executeTeam(Run r,String prompt,ArrayNode tools){
-    try{
-      synchronized(r){if(!r.active())return;r.status="running";}
-      var port=new dev.labflow.agent.team.TeamOrchestrator.Port(){
-        public ModelProvider.Reply complete(String role,ArrayNode messages,ArrayNode allowed) throws Exception {
+  /** Same bounded provider/accounting port for team and diagram orchestration. */
+  private ModelProvider.Reply completeRun(Run r,String role,ArrayNode messages,ArrayNode allowed,long ceiling)throws Exception {
           int input=cost(messages)+cost(allowed)+256,output;long started=System.currentTimeMillis();
-          long ceiling=dev.labflow.agent.team.TeamBudget.ceiling(role,r.maxTokens,r.mode.equals("review"),r.roleBudgetPercentages);
           synchronized(r){
             if(!r.active())throw new InterruptedException();
             if(!r.unboundedEvaluation&&r.steps>=r.maxSteps)throw new dev.labflow.agent.team.TeamBudget.Limit("已达到模型步数预算上限");
             long available=r.unboundedEvaluation?Long.MAX_VALUE:Math.min(ceiling,r.maxTokens)-r.charged-input;
             if(available<128)throw new dev.labflow.agent.team.TeamBudget.Limit("角色 token 预算不足，未交付半成品");
             output=r.unboundedEvaluation?0:(int)Math.min(2048,available);r.steps++;
-            r.trace.addObject().put("step",r.steps).put("event","model_request").put("role",role).put("prompt_version",dev.labflow.agent.team.TeamPrompts.version(role)).put("request_hash",AuditSanitizer.hash(messages)).put("max_output_tokens",output);
+            r.trace.addObject().put("step",r.steps).put("event","model_request").put("role",role).put("prompt_version",r.mode.equals("diagram")?dev.labflow.diagram.DiagramAgentEngine.PROMPT_VERSION:dev.labflow.agent.team.TeamPrompts.version(role)).put("request_hash",AuditSanitizer.hash(messages)).put("max_output_tokens",output);
           }
           long remaining=r.unboundedEvaluation?120000:r.created+r.timeout*1000L-started;if(remaining<=0)throw new TimeoutException();
           var reply=r.selectedProvider.complete(messages.deepCopy(),allowed.deepCopy(),output,Duration.ofMillis(remaining));
@@ -1067,6 +1088,39 @@ public class AgentRunService {
           }
           var message=reply.message().deepCopy();if(message.path("content").isTextual()){String safe=r.selectedProvider.redactSecret(message.path("content").asText());if(safe!=null)message.put("content",safe.substring(0,Math.min(4000,safe.length())));}
           return new ModelProvider.Reply(message,reply.promptTokens(),reply.completionTokens(),reply.model(),reply.finishReason());
+  }
+
+  private void executeDiagram(Run r){
+    try{
+      synchronized(r){if(!r.active())return;r.status="running";}
+      var output=diagramAgent.run(r.diagramRequest,r.snapshot,new dev.labflow.diagram.DiagramAgentEngine.Port(){
+        public ModelProvider.Reply complete(ArrayNode messages,ArrayNode tools)throws Exception{return completeRun(r,"diagram",messages,tools,r.maxTokens);}
+        public void phase(String phase){synchronized(r){if(!r.active())return;r.phase=phase;r.trace.addObject().put("event","diagram_phase").put("phase",phase).put("step",r.steps);}}
+        public JsonNode geometry(ObjectNode candidate)throws Exception{
+          synchronized(r){if(!r.active())throw new InterruptedException();r.proposal=candidate;r.pendingReview=true;r.phase="awaiting_render";}
+          JsonNode geometry;
+          try{geometry=r.geometry.get(Math.max(1,Math.min(20000,r.created+r.timeout*1000L-System.currentTimeMillis())),TimeUnit.MILLISECONDS);}
+          finally{synchronized(r){r.pendingReview=false;}}
+          synchronized(r){if(!r.active())throw new InterruptedException();r.proposal=null;}return geometry;
+        }
+      });
+      synchronized(r){if(!r.active())return;r.text=output.path("text").asText(output.path("question").asText());r.diagramData=output;
+        var proposal=output.path("proposal").isObject()?(ObjectNode)output.path("proposal"):null;
+        finish(r,proposal==null?"answered":"proposed","",proposal);
+        if(proposal!=null&&r.persisted){diagramProposals.storeReview(r.project,r.id,(ObjectNode)proposal.path("review"));r.phase="proposed";}
+        else if(output.path("kind").asText().equals("brief"))r.phase="awaiting_facts";
+      }
+    }catch(Exception error){synchronized(r){if(!r.active())return;boolean limited=error instanceof dev.labflow.agent.team.TeamBudget.Limit;boolean timeout=error instanceof TimeoutException||error instanceof java.net.http.HttpTimeoutException;
+      finish(r,limited||timeout?"incomplete":"failed",limited?error.getMessage():timeout?"运行超时，未交付未审稿的结构":"机制图提案未完成，请核对事实、工具协议或模型连接后重试",null);
+    }}
+  }
+
+  private void executeTeam(Run r,String prompt,ArrayNode tools){
+    try{
+      synchronized(r){if(!r.active())return;r.status="running";}
+      var port=new dev.labflow.agent.team.TeamOrchestrator.Port(){
+        public ModelProvider.Reply complete(String role,ArrayNode messages,ArrayNode allowed) throws Exception {
+          return completeRun(r,role,messages,allowed,dev.labflow.agent.team.TeamBudget.ceiling(role,r.maxTokens,r.mode.equals("review"),r.roleBudgetPercentages));
         }
         public void phase(String role,String phase){synchronized(r){if(!r.active())return;r.currentRole=role;r.phase=phase;r.trace.addObject().put("step",r.steps).put("role",role).put("phase",phase).put("event","role_start");}}
         public void end(String role,String status,String summary){synchronized(r){if(!r.active())return;r.trace.addObject().put("step",r.steps).put("role",role).put("event","role_end").put("status",status).put("summary",summary);}}

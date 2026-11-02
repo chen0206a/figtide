@@ -27,6 +27,7 @@ public class StyleTemplateService {
   }
 
   public static ObjectNode profile(JsonNode c) {
+    if(c!=null&&c.path("kind").asText().equals("diagram")){dev.labflow.diagram.DiagramValidator.fields(c,"schema_version kind style","schema_version kind style");dev.labflow.diagram.DiagramValidator.require(c.path("schema_version").isIntegralNumber()&&c.path("schema_version").asInt()==1,"风格版本无效");dev.labflow.diagram.DiagramValidator.style(c.path("style"));return (ObjectNode)c.deepCopy();}
     if (c == null || c.path("schema_version").asInt() != 1) throw ApiException.bad("不支持的图表配置");
     ConfigValidator.validate(c);
     var p = JsonNodeFactory.instance.objectNode().put("schema_version", 1);
@@ -64,6 +65,7 @@ public class StyleTemplateService {
    * Validate imported profiles using the same ranges as an actual chart, then enforce whitelist.
    */
   public static void validateProfile(JsonNode p) {
+    if(p!=null&&p.path("kind").asText().equals("diagram")){profile(p);return;}
     try {
       var c =
           (ObjectNode)
@@ -115,14 +117,16 @@ public class StyleTemplateService {
             row -> {
               var r = new LinkedHashMap<>(row);
               try {
-                r.put("profile", json.readTree(r.remove("profile_json").toString()));
+                r.put("profile", dev.labflow.review.ReviewJson.read(json,r.remove("profile_json")));
               } catch (Exception e) {
                 throw new IllegalStateException(e);
               }
               return (Map<String, Object>) r;
             })
+        .filter(row->!((JsonNode)row.get("profile")).path("kind").asText().equals("diagram"))
         .toList();
   }
+  public List<Map<String,Object>> diagrams(long p){workspace.project(p);var out=new ArrayList<Map<String,Object>>();for(var row:db.query("SELECT id,project_id,name,profile_json FROM style_templates WHERE project_id=? ORDER BY id DESC",p)){var profile=dev.labflow.review.ReviewJson.read(json,row.remove("profile_json"));if(profile.path("kind").asText().equals("diagram")){row.put("profile",profile);out.add(row);}}return out;}
 
   public Object save(long p, String name, JsonNode config) {
     workspace.project(p);

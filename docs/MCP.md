@@ -126,3 +126,17 @@ Codex CLI、Codex IDE 扩展和同一 Codex host 上的桌面客户端共享这�
 # 18-A：只读审稿工具
 
 新增 `review_chart({project_id,config,chart_id?,target?:{width_mm?,journal?}})`，通过现有 HTTP 客户端调用只读审稿接口，无数据库访问或模型调用。返回确定性问题、可预览的修复操作、通过与跳过项。MCP 不提交渲染事实，因此 R7/R8 显示「需要编辑器中的渲染信息」，不能视为通过。不会返回源文件名、原始数据行或样例；应用修复须继续走 `preview_chart_changes` 与用户确认。
+
+
+## 让外部 agent 画机制图（19-C）
+
+本版新增七个机制图工具：`list_diagrams`、`get_diagram`、`get_diagram_brief`、`review_diagram`、`preview_diagram_changes`、`save_diagram_version`、`import_diagram_svg`。前五项只读，后两项会新增版本，必须显式调用并提供最新 `base_revision`。保存操作先经过同一套只读预览和校验；冲突直接返回，不自动重试。
+
+1. 使用 `list_diagrams` 找到项目内的机制图，调用 `get_diagram_brief` 获取 Markdown 与 JSON 简报。包含已确认事实、分区/节点/连线语义、字体字号、实际线宽和配色、成品尺寸。
+2. 把简报交给外部 agent（例如装有 schematic-figure 的 Claude Code）绘制 SVG。外部 agent 使用的模型服务会看到简报内容；缺失的事实应先向用户确认。
+3. 调用 `import_diagram_svg`，传入 `project_id`、`diagram_id`、`base_revision`、`svg` 和可选 `name`。SVG 在后端经共享白名单净化器检查；不支持脚本、外部 URL、位图和 foreignObject，不支持的内容会被删除或拒绝。
+4. 打开返回的编辑器链接。在「图层」选择外部 SVG，可整体移动、调整宽高、锁定、隐藏或解锁后删除。**内部文字不能单独编辑**，需要修改原 SVG 后再导入。导入保留原生图层，便于对照；版本历史可恢复原版本。
+
+`get_diagram` 返回当前文档、revision 和版本数。`review_diagram` 不带浏览器渲染事实，因此 D4/D5 明确跳过；不会宣称外部 artwork 内部排版已通过审稿。`preview_diagram_changes` / `save_diagram_version` 通过机制图操作目录修改原生元素，也支持 `update_artwork` / `remove_artwork`，不会调用模型。图层锁定用于防误操作，不构成权限边界。
+
+artwork 为 schema v1 的可选数组；旧文档无需补字段。每层保存净化后的矢量 SVG 与毫米边框、名称、锁定/隐藏状态；备份恢复保留版本。单文档仍限 2 MB，最多30层；SVG最多20000元素、64层嵌套。导入只支持白名单 SVG 子集，字体依赖本机安装情况。

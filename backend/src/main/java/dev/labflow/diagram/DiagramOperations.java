@@ -24,7 +24,7 @@ public final class DiagramOperations {
   private static ObjectNode colors(int max){var n=JSON.createObjectNode().put("type","array").put("minItems",1).put("maxItems",max);n.set("items",COLOR);return n;}
   private static ObjectNode badges(){var n=JSON.createObjectNode().put("type","array").put("maxItems",8);n.set("items",string(16).put("pattern","^(phospho|frozen|trainable|number:([1-9]|[1-9][0-9]))$"));return n;}
   private static Map<String,JsonNode> rectFields(){return properties("x",number(0,2000),"y",number(0,2000),"w",number(.1,2000),"h",number(.1,2000));}
-  private static Map<String,JsonNode> nodeFields(){var n=rectFields();n.putAll(properties("id",ID,"kind",enumeration(NODE_KINDS.stream().filter(k->!k.equals("icon")).toList()),"label",string(200),"zone",nullable(ID),"icon",JSON.createObjectNode().put("type","null"),"role",enumeration(ROLES),"style_ref",nullable(enumeration(ROLES)),"glyph",nullable(enumeration(GLYPHS)),"label_pos",enumeration("center","below","above","left","right"),"boxed",bool(),"badges",badges()));return n;}
+  private static Map<String,JsonNode> nodeFields(){var n=rectFields();n.putAll(properties("id",ID,"kind",enumeration(NODE_KINDS),"label",string(200),"zone",nullable(ID),"icon",nullable(enumeration(BuiltinIconIds.IDS)),"role",enumeration(ROLES),"style_ref",nullable(enumeration(ROLES)),"glyph",nullable(enumeration(GLYPHS)),"label_pos",enumeration("center","below","above","left","right"),"boxed",bool(),"badges",badges()));return n;}
   private static Map<String,JsonNode> zoneFields(){var n=rectFields();n.putAll(properties("id",ID,"kind",enumeration(ZONE_KINDS),"label",string(200),"zoom_of",nullable(ID)));return n;}
   private static Map<String,JsonNode> edgeFields(){return properties("id",ID,"from",ID,"to",ID,"kind",enumeration(EDGE_KINDS),"label",string(200),"route",enumeration("straight","orthogonal","curved"));}
   private static ObjectNode overrideSchema(){return nullable(object(properties("font_family",enumeration("Arial, Helvetica, sans-serif","Inter, Arial, sans-serif","Noto Sans SC"),"font_size_pt",number(1,72),"line_width_pt",number(.1,12),"radius_mm",number(0,20),"arrow",enumeration("open","filled"),"fill",enumeration("flat","soft","outline"),"shadow",bool(),"sketch",bool(),"iso",bool(),"zone_colors",colors(6),"accent_colors",colors(3),"text_color",COLOR,"line_color",COLOR),List.of(),0));}
@@ -37,9 +37,12 @@ public final class DiagramOperations {
       new Spec("add_edge","添加连线",object(edgeFields(),List.of("id","from","to","kind"),4)),
       new Spec("update_edge","修改连线",object(edgeFields(),List.of("id"),2)),
       new Spec("remove_edge","移除连线",object(properties("id",ID),List.of("id"),1)),
-      new Spec("set_style","设置风格（覆盖项合并，null清空）",object(properties("preset",enumeration(PRESETS),"palette",enumeration(Set.of("okabe-ito","npg","aaas","nejm","lancet","jama")),"overrides",overrideSchema()),List.of(),1)),
+      new Spec("set_style","设置风格（覆盖项合并，null清空）",object(properties("preset",enumeration(PRESETS),"palette",enumeration(Set.of("okabe-ito","npg","aaas","nejm","lancet","jama")),"overrides",overrideSchema(),"role_colors",nullable(object(properties("actor",COLOR,"process",COLOR,"data",COLOR,"model",COLOR,"output",COLOR,"note",COLOR),List.of("actor","process","data","model","output","note"),6))),List.of(),1)),
       new Spec("set_canvas","设置成品画布",object(properties("width_mm",number(10,2000),"height_mm",number(10,2000),"background",COLOR),List.of(),1)),
       new Spec("set_legend","设置图例",object(properties("mode",enumeration("auto","off"),"position",enumeration("bottom-right","bottom-left","top-right","top-left")),List.of(),1)),
+      new Spec("update_artwork","移动、缩放、锁定或隐藏外部图层",object(properties("id",ID,"name",string(120),"x",number(0,2000),"y",number(0,2000),"w",number(.1,2000),"h",number(.1,2000),"locked",bool(),"hidden",bool()),List.of("id"),2)),
+      new Spec("remove_artwork","移除外部图层（保留版本历史）",object(properties("id",ID),List.of("id"),1)),
+      new Spec("set_attribution","设置图标导出署名",object(properties("enabled",bool()),List.of("enabled"),1)),
       new Spec("add_annotation","添加注释",object(properties("id",ID,"kind",enumeration("panel_letter","callout","note"),"target",ID,"text",string(200)),List.of("id","kind","target","text"),4)));
   public static ObjectNode catalog(){var out=JSON.createObjectNode().put("protocol_version",1).put("schema_version",1).put("execution","preview-only");var tools=out.putArray("tools");for(var s:SPECS){var t=tools.addObject().put("name",s.name()).put("label",s.label());t.set("input_schema",s.schema().deepCopy());}return out;}
   private static void check(JsonNode value,JsonNode schema){
@@ -65,9 +68,12 @@ public final class DiagramOperations {
         case "add_edge"->{var e=copy(args);if(!e.has("label"))e.put("label","");if(!e.has("route"))e.put("route","straight");((ArrayNode)doc.path("edges")).add(e);}
         case "update_edge"->patch((ObjectNode)find(doc.path("edges"),id),args);
         case "remove_edge"->{find(doc.path("edges"),id);remove((ArrayNode)doc.path("edges"),id);}
-        case "set_style"->{var style=(ObjectNode)doc.path("style");if(args.has("palette"))style.set("palette",args.get("palette").deepCopy());if(args.has("preset"))style.set("preset",args.get("preset").deepCopy());if(args.has("overrides")){if(args.get("overrides").isNull())style.putObject("overrides");else ((ObjectNode)style.path("overrides")).setAll(copy(args.get("overrides")));}}
+        case "set_style"->{var style=(ObjectNode)doc.path("style");if(args.has("palette")){style.set("palette",args.get("palette").deepCopy());style.remove("role_colors");}if(args.has("role_colors")){if(args.get("role_colors").isNull())style.remove("role_colors");else style.set("role_colors",args.get("role_colors").deepCopy());}if(args.has("preset"))style.set("preset",args.get("preset").deepCopy());if(args.has("overrides")){if(args.get("overrides").isNull())style.putObject("overrides");else ((ObjectNode)style.path("overrides")).setAll(copy(args.get("overrides")));}}
         case "set_canvas"->patch((ObjectNode)doc.path("canvas"),args);
         case "set_legend"->patch((ObjectNode)doc.path("legend"),args);
+        case "update_artwork"->{var layer=(ObjectNode)find(doc.path("artworks"),id);if(layer.path("locked").asBoolean()&&(!args.has("locked")||args.path("locked").asBoolean()))for(String key:List.of("x","y","w","h"))require(!args.has(key),"请先解锁外部图层");patch(layer,args);}
+        case "remove_artwork"->{var layer=find(doc.path("artworks"),id);require(!layer.path("locked").asBoolean(),"请先解锁外部图层");remove((ArrayNode)doc.path("artworks"),id);}
+        case "set_attribution"->((ObjectNode)doc.path("meta")).put("include_icon_attribution",args.path("enabled").asBoolean());
         case "add_annotation"->((ArrayNode)doc.path("annotations")).add(copy(args));
         default->throw new IllegalStateException("目录与实现不一致");
       }

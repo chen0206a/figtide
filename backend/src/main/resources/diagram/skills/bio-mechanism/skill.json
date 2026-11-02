@@ -1,0 +1,45 @@
+{
+  "id": "bio-mechanism",
+  "version": "1.0.1",
+  "name": "生物医学机制图",
+  "description": "区分激活、抑制与跨膜转运；只使用已确认的分子和通路。",
+  "patterns": [
+    "comparison",
+    "mechanism"
+  ],
+  "templates": [
+    "mechanism",
+    "signal-cascade",
+    "comparison",
+    "immune-response"
+  ],
+  "recommended_styles": [
+    "nature-flat"
+  ],
+  "allowed_nodes": [
+    "box",
+    "pill",
+    "ellipse",
+    "glyph",
+    "text",
+    "icon"
+  ],
+  "allowed_edges": [
+    "flow",
+    "activate",
+    "inhibit",
+    "transport",
+    "bind",
+    "indirect"
+  ],
+  "icon_tags": [
+    "biology",
+    "cell",
+    "protein"
+  ],
+  "checks": {
+    "provenance": true,
+    "zones": true,
+    "depth": true
+  }
+}

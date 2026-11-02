@@ -1,0 +1,33 @@
+{
+  "source": "e5c7c8e",
+  "frontend": {
+    "passed": 637,
+    "files": 71
+  },
+  "h2": {
+    "passed": 456,
+    "skipped": 2,
+    "failed": 0
+  },
+  "mysql": {
+    "passed": 461,
+    "skipped": 2,
+    "failed": 0
+  },
+  "mcp": {
+    "unit": 16,
+    "integration": 3
+  },
+  "desktop": {
+    "passed": 102,
+    "failed": 0,
+    "skipped": 3,
+    "flaky": 0
+  },
+  "geometry": {
+    "total": 240,
+    "errors": 0
+  },
+  "real_model_calls": 0,
+  "evaluation_reports": "local only, excluded"
+}

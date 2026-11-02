@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108.52433 190.51467">
+  <defs>
+    
+    <linearGradient gradientUnits="userSpaceOnUse" id="linear-gradient" x1="97.62637" x2="97.62637" y1="157.6802" y2="172.0548">
+      <stop offset="0" stop-color="#111"/>
+      <stop offset=".10981" stop-color="#0d0d0d" stop-opacity=".74588"/>
+      <stop offset=".49461" stop-color="#040404" stop-opacity=".17906"/>
+      <stop offset="1" stop-color="#020202" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient href="#linear-gradient" id="linear-gradient-2" x1="84.47633" x2="84.47633" y1="156.52793" y2="181.2115"/>
+    <linearGradient gradientUnits="userSpaceOnUse" id="linear-gradient-3" x1="103.63875" x2="103.63875" y1="156.24662" y2="182.44623">
+      <stop offset="0" stop-color="#111"/>
+      <stop offset=".10981" stop-color="#4d4d4d" stop-opacity=".74588"/>
+      <stop offset=".49461" stop-color="#d4d4d4" stop-opacity=".17906"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient href="#linear-gradient-3" id="linear-gradient-4" x1="91.10295" x2="91.10295" y1="156.95138" y2="188.1114"/>
+    <linearGradient href="#linear-gradient-3" id="linear-gradient-5" x1="77.518" x2="77.63002" y1="159.01105" y2="189.03201"/>
+    <linearGradient href="#linear-gradient-3" id="linear-gradient-6" x1="36.17446" x2="35.72889" y1="159.43432" y2="188.17378"/>
+    <linearGradient gradientUnits="userSpaceOnUse" id="linear-gradient-7" x1="1.63895" x2="50.09054" y1="60.06443" y2="11.61283">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <g id="Layer_2">
+      <g id="_01">
+        <g>
+          <g style="opacity:.4">
+            <polygon points="96.49957 156.1822 96.49957 185.80753 98.75318 185.37615 98.75318 155.75083 96.49957 156.1822" style="stroke-width:0px;fill:url(#linear-gradient)"/>
+            <polygon points="83.24632 158.71904 83.24632 188.34437 85.70633 187.87349 85.70633 158.24816 83.24632 158.71904" style="stroke-width:0px;fill:url(#linear-gradient-2)"/>
+            <polygon points="107.39652 153.80612 98.75318 155.75083 98.75318 185.37615 108.52433 183.50585 108.52433 154.74244 107.39652 153.80612" style="stroke-width:0px;fill:url(#linear-gradient-3)"/>
+            <polygon points="85.70633 158.24816 85.70633 187.87349 96.49957 185.80753 96.49957 156.1822 85.70633 158.24816" style="stroke-width:0px;fill:url(#linear-gradient-4)"/>
+            <polygon points="71.90615 160.88934 71.90615 190.51467 83.24632 188.34437 83.24632 158.71904 71.90615 160.88934" style="stroke-width:0px;fill:url(#linear-gradient-5)"/>
+            <polygon points="71.90615 160.88934 0 156.91276 0 186.53809 71.90615 190.51467 71.90615 160.88934" style="fill:url(#linear-gradient-6);stroke-width:0px"/>
+          </g>
+          <g>
+            <polygon points="96.49957 10.96937 96.49957 156.61721 98.75318 156.69646 98.75318 10.80478 96.49957 10.96937" style="stroke-width:0px;fill:#3c3c3c"/>
+            <polygon points="0 9.13743 0 158.14377 71.26704 162.13674 71.90613 162.01024 71.90613 1.42333 0 9.13743" style="stroke-width:0px;fill:#111"/>
+            <polygon points="83.2463 5.36081 83.2463 159.09585 85.70631 159.2788 85.70631 6.22444 83.2463 5.36081" style="stroke-width:0px;fill:#070707"/>
+            <polygon points="108.52433 14.1996 98.75318 10.80478 98.75318 156.69646 108.52433 154.74244 108.52433 14.1996" style="stroke-width:0px;fill:#717171"/>
+            <polygon points="85.70631 6.22444 85.70631 159.2788 96.49957 157.1425 96.49957 10.01362 85.70631 6.22444" style="stroke-width:0px;fill:#252525"/>
+            <polygon points="72.0013 1.41303 71.90613 1.42333 71.90613 162.01024 83.2463 159.7657 83.2463 5.36081 72.0013 1.41303" style="stroke-width:0px;fill:#0f0f0f"/>
+            <path d="m87.83194.00733c.18047-.01974.36308.00053.53483.05938l1.15063.39426c.3076.12188.50961.41921.50961.75008v14.74045c0,.39118-.29728.71829-.68667.7556l-5.50451.52738V5.56777l-9.45359-3.31886v-.12585c0-.36679.27613-.67477.64075-.71465L87.83194.00733Z" style="stroke-width:0px;fill:#56bedd"/>
+            <polygon points="68.41925 5.22903 2.57094 12.29816 2.57094 72.89673 68.41925 69.86444 68.41925 5.22903" style="stroke-width:0px;fill:#222"/>
+            <g style="opacity:.1">
+              <polygon points="2.57094 12.29816 2.57094 72.89673 37.23729 71.30035 51.37874 7.0584 2.57094 12.29816" style="stroke-width:0px;fill:url(#linear-gradient-7)"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

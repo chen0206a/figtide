@@ -1,0 +1,20 @@
+{
+  "before": {
+    "source_commit": "943429e",
+    "name": "DiagramWorkspace-DrSJ40Ze.js",
+    "bytes": 2709712,
+    "gzip_bytes": 606989
+  },
+  "after": {
+    "name": "DiagramWorkspace-Dw0vZTA9.js",
+    "bytes": 206946,
+    "gzip_bytes": 74503,
+    "source_commit": "98e3047d5296c7b6b52106186d78938399715a49"
+  },
+  "reduction_percent": {
+    "raw": 92.36280460801738,
+    "gzip": 87.72580722220667
+  },
+  "method": "active DiagramWorkspace chunk resolved from current HTML/main bundle; Node zlib.gzipSync; no SVG payload moved into another JS chunk",
+  "runtime": "catalog metadata only; visible thumbnails and used document icons fetch existing /api/diagram-icons/{id}.svg; shared in-flight/success memory cache; exports wait and inline all used SVG"
+}

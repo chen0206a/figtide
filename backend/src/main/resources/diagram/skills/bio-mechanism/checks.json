@@ -1,0 +1,5 @@
+{
+  "require_zones": true,
+  "max_depth": 8,
+  "max_nodes": 40
+}

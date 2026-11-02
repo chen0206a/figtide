@@ -31,20 +31,20 @@ public class DiagramReviewService {
     double minFont=rule.path("min_font_pt").isNumber()?rule.path("min_font_pt").asDouble():6,minLine=rule.path("min_line_pt").isNumber()?rule.path("min_line_pt").asDouble():.5;
     double nativeFont=style.path("font_size_pt").asDouble();
     List<ReviewIssue> issues=new ArrayList<>();var skipped=json.createArrayNode();double font=style.path("font_size_pt").asDouble();if(!doc.path("zones").isEmpty()||doc.path("nodes").findValuesAsText("glyph").contains("dimer"))font=Math.min(font,nativeFont*6/7);if(facts!=null)for(var text:facts.path("texts"))font=Math.min(font,text.path("font_pt").asDouble());
-    if(font*scale<minFont-1e-3)issues.add(issue("D1","font","error","成品文字字号太小","成品最小字号为 "+String.format(Locale.ROOT,"%.2f",font*scale)+" pt，要求至少 "+minFont+" pt。",nativeFont*minFont/(font*scale)<=72?op("set_style","overrides",Map.of("font_size_pt",nativeFont*minFont/(font*scale))):List.of(),"canvas",0));
+    if(font*scale<minFont-1e-3)issues.add(issue("D1","font","error","成品文字字号太小","成品最小字号为 "+String.format(Locale.ROOT,"%.2f",font*scale)+" pt，要求至少 "+minFont+" pt。",Math.max(catalog.style(doc.at("/style/preset").asText()).path("font_size_pt").asDouble(),nativeFont*minFont/(font*scale))<=72?op("set_style","overrides",Map.of("font_size_pt",Math.max(catalog.style(doc.at("/style/preset").asText()).path("font_size_pt").asDouble(),nativeFont*minFont/(font*scale)))):List.of(),"canvas",0));
     boolean fine=doc.path("zones").findValuesAsText("kind").contains("membrane")||doc.path("nodes").findValuesAsText("glyph").stream().anyMatch(g->Set.of("dimer","phospho","number").contains(g));for(var node:doc.path("nodes"))for(var badge:node.path("badges"))fine|=badge.asText().equals("phospho");
     double line=style.path("line_width_pt").asDouble(),detailRatio=fine?.5:doc.path("zones").findValuesAsText("kind").contains("zoom")?.6:doc.path("zones").isEmpty()?1:.75;
-    if(line*detailRatio*scale<minLine-1e-6)issues.add(issue("D2","line","error","成品线宽太细","成品线宽要求至少 "+minLine+" pt。",minLine/(detailRatio*scale)<=12?op("set_style","overrides",Map.of("line_width_pt",minLine/(detailRatio*scale))):List.of(),"canvas",0));
+    if(line*detailRatio*scale<minLine-1e-6)issues.add(issue("D2","line","error","成品线宽太细","成品线宽要求至少 "+minLine+" pt。",Math.max(catalog.style(doc.at("/style/preset").asText()).path("line_width_pt").asDouble(),minLine/(detailRatio*scale))<=12?op("set_style","overrides",Map.of("line_width_pt",Math.max(catalog.style(doc.at("/style/preset").asText()).path("line_width_pt").asDouble(),minLine/(detailRatio*scale)))):List.of(),"canvas",0));
     var audit=json.valueToTree(catalog.paletteAudit(doc));
     for(var pair:audit.path("failing_pairs")){
       String a=pair.path("roles").get(0).asText(),b=pair.path("roles").get(1).asText();var names=Map.of("actor","参与者","process","过程","data","数据","model","模型","output","输出","note","注释");
       List<Map<String,Object>> fix=List.of();
       // The default palette's failing pairs are an explicit owner decision, never silently recoloured.
-      if(!doc.at("/style/palette").asText("okabe-ito").equals("okabe-ito"))for(var p:catalog.palettes()){
+      if(pair.path("severity").asText().equals("warning")&&!doc.at("/style/palette").asText("okabe-ito").equals("okabe-ito"))for(var p:catalog.palettes()){
         var candidate=doc.deepCopy();((ObjectNode)candidate.path("style")).put("palette",p.path("id").asText());
         if(json.valueToTree(catalog.paletteAudit(candidate)).path("safe").asBoolean()){fix=op("set_style","palette",p.path("id").asText());break;}
       }
-      issues.add(issue("D3",a+"-"+b,"warning",names.get(a)+" / "+names.get(b)+" 轮廓色区分不足","实际轮廓 "+pair.path("colors")+"；三种色觉模拟最小 ΔE "+String.format(Locale.ROOT,"%.6f",pair.path("minimum_delta_e").asDouble())+"，要求 ≥ 20。保留原色值，用标签与形状辅助；是否换配色由你决定。",fix,"canvas",0));
+      issues.add(issue("D3",a+"-"+b,pair.path("severity").asText(),pair.path("colors").get(0).asText().equalsIgnoreCase(pair.path("colors").get(1).asText())?names.get(a)+"和"+names.get(b)+"用了相同颜色":names.get(a)+" / "+names.get(b)+(pair.path("severity").asText().equals("info")?" 轮廓色接近（参考）":" 轮廓色区分不足"),"实际轮廓 "+pair.path("colors")+"；三种色觉模拟最小 ΔE "+String.format(Locale.ROOT,"%.6f",pair.path("minimum_delta_e").asDouble())+"。< 10 提示风险；10–20 仅审稿 info。保留原色值，用标签与形状辅助；是否换配色由你决定。",fix,"canvas",0));
     }
     if(facts==null){for(String id:List.of("D4","D5"))skipped.addObject().put("rule",id).put("status","skipped").put("reason","需要同一渲染器采集的完整几何信息");}
     else {
@@ -69,7 +69,21 @@ public class DiagramReviewService {
     if(flow)for(int i=0;i<doc.path("nodes").size();i++){var node=doc.path("nodes").get(i);if(node.path("role").asText().equals("note")||node.path("kind").asText().equals("text")||Set.of("phospho","number","frozen","trainable").contains(node.path("glyph").asText()))continue;boolean linked=false;for(var e:doc.path("edges"))linked|=e.path("from").equals(node.path("id"))||e.path("to").equals(node.path("id"));if(!linked)issues.add(issue("D7","isolated-"+i,"warning","流程中有孤立节点","请确认该节点应连接到哪一步；审稿不会猜测或添加关系。",List.of(),"node",i));}
     List<ReviewIssue> checked=new ArrayList<>();for(var issue:issues){if(issue.fixable())try{if(DiagramOperations.changes(doc,DiagramOperations.apply(doc,json.valueToTree(issue.fix()))).isEmpty())issue=issue.advice(" 当前修复没有变化，请手动检查。");}catch(dev.labflow.api.ApiException e){issue=issue.advice(" 当前区域无法安全放大或调整，请手动修改。");}checked.add(issue);}
     checked.sort(Comparator.comparingInt((ReviewIssue i)->i.severity().equals("error")?0:1).thenComparingInt(i->Integer.parseInt(i.rule().substring(1))).thenComparing(ReviewIssue::id));var passed=json.createArrayNode();for(int i=1;i<=7;i++){String id="D"+i;if(facts==null&&(i==4||i==5))continue;if(checked.stream().noneMatch(issue->issue.rule().equals(id)))passed.add(id);}
-    for(String id:List.of("D8","D9"))skipped.addObject().put("rule",id).put("status","skipped").put("reason",id.equals("D8")?"AI来源追溯在19-B启用":"外部图标署名在19-C启用");
-    var result=json.createObjectNode().put("protocol_version",1).put("rules_version","diagram-review-v1").put("journal",journal);result.set("issues",json.valueToTree(checked));result.set("passed",passed);result.set("skipped",skipped);return result;
+    if(doc.path("meta").has("ai_labels")){
+      String source=doc.at("/meta/source_text").asText();for(var f:doc.at("/meta/facts"))source+="\n"+f.asText();
+      boolean clean=true;
+      for(var label:doc.at("/meta/ai_labels"))for(int i=0;i<doc.path("nodes").size();i++){
+        var node=doc.path("nodes").get(i);String value=node.path("label").asText();
+        if(!node.path("id").equals(label.path("id"))||!node.path("label").equals(label.path("label"))||value.isBlank())continue;
+        String quoted=java.util.regex.Pattern.quote(value);boolean latin=value.matches("[A-Za-z0-9][A-Za-z0-9 ._+()/-]*");
+        if(!java.util.regex.Pattern.compile(latin?"(?<![\\p{L}\\p{N}_])"+quoted+"(?![\\p{L}\\p{N}_])":quoted,java.util.regex.Pattern.CASE_INSENSITIVE|java.util.regex.Pattern.UNICODE_CASE).matcher(source).find()){
+          checked.add(issue("D8","source-"+i,"warning","请确认这项内容有依据","此AI标签未在用户描述或已确认事实中找到明确出处，请核对科学依据。",List.of(),"node",i));clean=false;
+        }
+      }
+      if(clean)passed.add("D8");
+    }else skipped.addObject().put("rule","D8").put("status","skipped").put("reason","仅检查具有AI来源标记的标签");
+    if(!catalog.icons().attribution(doc).isBlank()&&!doc.at("/meta/include_icon_attribution").asBoolean(true))checked.add(issue("D9","attribution","warning","需要附上图标署名","图中使用CC BY 4.0图标，请在导出时附作者、来源链接、许可和修改说明。",op("set_attribution","enabled",true),"canvas",0));else passed.add("D9");
+
+    var result=json.createObjectNode().put("protocol_version",1).put("rules_version","diagram-review-v3").put("journal",journal);result.set("issues",json.valueToTree(checked));result.set("passed",passed);result.set("skipped",skipped);return result;
   }
 }

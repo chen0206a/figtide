@@ -1,0 +1,109 @@
+{
+  "outlines": {
+    "actor": "#0069A4",
+    "process": "#00916A",
+    "data": "#616161",
+    "model": "#BC6F9A",
+    "output": "#00916A",
+    "note": "#C45600"
+  },
+  "safe": false,
+  "info_threshold": 20,
+  "preset": "nature-flat",
+  "threshold": 10,
+  "id": "okabe-ito",
+  "failing_pairs": [
+    {
+      "colors": [
+        "#0069A4",
+        "#00916A"
+      ],
+      "minimum_delta_e": 11.802929479926393,
+      "roles": [
+        "actor",
+        "process"
+      ],
+      "severity": "info",
+      "delta_e": [
+        36.660111482595106,
+        32.66979278818927,
+        11.802929479926393
+      ]
+    },
+    {
+      "colors": [
+        "#0069A4",
+        "#BC6F9A"
+      ],
+      "minimum_delta_e": 11.72481721271584,
+      "roles": [
+        "actor",
+        "model"
+      ],
+      "severity": "info",
+      "delta_e": [
+        11.72481721271584,
+        24.333468074436304,
+        53.88971758424254
+      ]
+    },
+    {
+      "colors": [
+        "#00916A",
+        "#BC6F9A"
+      ],
+      "minimum_delta_e": 15.103759646541059,
+      "roles": [
+        "process",
+        "model"
+      ],
+      "severity": "info",
+      "delta_e": [
+        26.468016112168506,
+        15.103759646541059,
+        53.23829889358917
+      ]
+    },
+    {
+      "colors": [
+        "#00916A",
+        "#C45600"
+      ],
+      "minimum_delta_e": 17.863662225794837,
+      "roles": [
+        "process",
+        "note"
+      ],
+      "severity": "info",
+      "delta_e": [
+        17.863662225794837,
+        20.223497716395624,
+        60.40148835289835
+      ]
+    },
+    {
+      "colors": [
+        "#BC6F9A",
+        "#C45600"
+      ],
+      "minimum_delta_e": 13.643553588182037,
+      "roles": [
+        "model",
+        "note"
+      ],
+      "severity": "info",
+      "delta_e": [
+        39.609739313887964,
+        33.1262535842298,
+        13.643553588182037
+      ]
+    }
+  ],
+  "used_roles": [
+    "model",
+    "actor",
+    "process",
+    "note"
+  ],
+  "template": "mechanism"
+}

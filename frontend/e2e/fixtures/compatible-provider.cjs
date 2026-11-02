@@ -58,7 +58,21 @@ const server = http.createServer(async (req, res) => {
   const recommending = payload.tools?.some(
     (t) => t.function?.name === "recommend_charts",
   );
-  const message = teamRole ? teamMessage() : recommending
+  const diagramBrief=system.includes('本阶段只返回JSON对象');
+  const diagramStructure=names.has('get_current_diagram');
+  const diagramMessage=()=>{
+    if(diagramBrief){const sentences=prompt.match(/[^.!?]+[.!?]?/g)?.map(s=>s.trim()).filter(Boolean)||[prompt];return {role:'assistant',content:JSON.stringify({brief:'EGF通过EGFR激活RAS，化合物抑制RAS。',cannot_imply:'未提供的剂量、时间及额外通路',facts:sentences.map(text=>({text,quote:text}))})};}
+    if(afterTools)return {role:'assistant',content:'已按勾选事实提出结构；Ruxolitinib未在原文中出现，请确认或取消相关事实。'};
+    const context=JSON.parse(prompt);
+    if(context.current_doc.nodes.some(n=>n.id==='pEGF'))return {role:'assistant',content:null,tool_calls:[tool('refine-ligand','update_node',{id:'pEGF',label:'Ligand',fact_indices:[0]})]};
+    const selected=context.facts.map(f=>f.index),calls=[];
+    calls.push(tool('cytoplasm','add_zone',{id:'pCytoplasm',kind:'panel',label:'Pathway overview',fact_indices:selected}));
+    const add=(id,label,glyph,role,fact_indices)=>calls.push(tool(id,'add_node',{id,label,kind:'glyph',glyph,label_pos:'below',role,zone:'pCytoplasm',fact_indices}));
+    add('pEGF','EGF','ligand','model',[0]);add('pEGFR','EGFR','receptor','actor',[0,1]);add('pRAS','RAS','protein','process',[1,2]);add('pDrug','Ruxolitinib','small-molecule','note',[2]);
+    for(const [id,from,to,kind,index] of [['pBind','pEGF','pEGFR','bind',0],['pActivate','pEGFR','pRAS','activate',1],['pInhibit','pDrug','pRAS','inhibit',2]])calls.push(tool(id,'add_edge',{id,from,to,kind,fact_indices:[index]}));
+    calls.push(tool('low-style','set_style',{overrides:{font_size_pt:3,line_width_pt:.2}}),tool('no-legend','set_legend',{mode:'off'}));return {role:'assistant',content:null,tool_calls:calls};
+  };
+  const message = diagramBrief||diagramStructure?diagramMessage():teamRole ? teamMessage() : recommending
     ? afterTools
       ? {
           role: "assistant",
@@ -148,7 +162,7 @@ const server = http.createServer(async (req, res) => {
           {
             message,
             finish_reason:
-              teamRole ? (message.tool_calls?'tool_calls':'stop') : afterTools || question || connectionChat ? "stop" : "tool_calls",
+              (teamRole||diagramBrief||diagramStructure) ? (message.tool_calls?'tool_calls':'stop') : afterTools || question || connectionChat ? "stop" : "tool_calls",
           },
         ],
         usage: { prompt_tokens: 200, completion_tokens: 50 },

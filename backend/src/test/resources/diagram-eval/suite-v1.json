@@ -1,0 +1,1267 @@
+{
+  "version": "1.0.0",
+  "synthetic": true,
+  "description": "Synthetic scientific descriptions; gold is the requested schematic, not evidence of scientific truth. Not real user data.",
+  "cases": [
+    {
+      "id": "bio-mechanism-01",
+      "skill_id": "bio-mechanism",
+      "synthetic": true,
+      "description": "Synthetic schematic: EGF activates EGFR. EGFR activates ERK. Place all entities in Cytosol. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "EGF",
+          "EGFR",
+          "ERK"
+        ],
+        "edges": [
+          {
+            "from": "EGF",
+            "to": "EGFR",
+            "kind": "activate"
+          },
+          {
+            "from": "EGFR",
+            "to": "ERK",
+            "kind": "activate"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "EGF": "Cytosol",
+          "EGFR": "Cytosol",
+          "ERK": "Cytosol"
+        }
+      }
+    },
+    {
+      "id": "bio-mechanism-02",
+      "skill_id": "bio-mechanism",
+      "synthetic": true,
+      "description": "Synthetic schematic: Gefitinib inhibits EGFR. EGFR activates ERK. Place all entities in Cytosol. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Gefitinib",
+          "EGFR",
+          "ERK"
+        ],
+        "edges": [
+          {
+            "from": "Gefitinib",
+            "to": "EGFR",
+            "kind": "inhibit"
+          },
+          {
+            "from": "EGFR",
+            "to": "ERK",
+            "kind": "activate"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Gefitinib": "Cytosol",
+          "EGFR": "Cytosol",
+          "ERK": "Cytosol"
+        }
+      }
+    },
+    {
+      "id": "bio-mechanism-03",
+      "skill_id": "bio-mechanism",
+      "synthetic": true,
+      "description": "Synthetic schematic: Cytokine activates JAK. JAK activates STAT3. Place all entities in Cytosol. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Cytokine",
+          "JAK",
+          "STAT3"
+        ],
+        "edges": [
+          {
+            "from": "Cytokine",
+            "to": "JAK",
+            "kind": "activate"
+          },
+          {
+            "from": "JAK",
+            "to": "STAT3",
+            "kind": "activate"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Cytokine": "Cytosol",
+          "JAK": "Cytosol",
+          "STAT3": "Cytosol"
+        }
+      }
+    },
+    {
+      "id": "bio-mechanism-04",
+      "skill_id": "bio-mechanism",
+      "synthetic": true,
+      "description": "Synthetic schematic: Insulin activates IRS. IRS activates AKT. Place all entities in Cytosol. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Insulin",
+          "IRS",
+          "AKT"
+        ],
+        "edges": [
+          {
+            "from": "Insulin",
+            "to": "IRS",
+            "kind": "activate"
+          },
+          {
+            "from": "IRS",
+            "to": "AKT",
+            "kind": "activate"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Insulin": "Cytosol",
+          "IRS": "Cytosol",
+          "AKT": "Cytosol"
+        }
+      }
+    },
+    {
+      "id": "bio-mechanism-05",
+      "skill_id": "bio-mechanism",
+      "synthetic": true,
+      "description": "Synthetic schematic: TNF binds TNFR. TNFR activates NFkB. Place all entities in Cytosol. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "TNF",
+          "TNFR",
+          "NFkB"
+        ],
+        "edges": [
+          {
+            "from": "TNF",
+            "to": "TNFR",
+            "kind": "bind"
+          },
+          {
+            "from": "TNFR",
+            "to": "NFkB",
+            "kind": "activate"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "TNF": "Cytosol",
+          "TNFR": "Cytosol",
+          "NFkB": "Cytosol"
+        }
+      }
+    },
+    {
+      "id": "bio-mechanism-06",
+      "skill_id": "bio-mechanism",
+      "synthetic": true,
+      "description": "Synthetic schematic: Cyclin binds CDK. CDK inhibits RB. Place all entities in Cytosol. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Cyclin",
+          "CDK",
+          "RB"
+        ],
+        "edges": [
+          {
+            "from": "Cyclin",
+            "to": "CDK",
+            "kind": "bind"
+          },
+          {
+            "from": "CDK",
+            "to": "RB",
+            "kind": "inhibit"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Cyclin": "Cytosol",
+          "CDK": "Cytosol",
+          "RB": "Cytosol"
+        }
+      }
+    },
+    {
+      "id": "ml-framework-01",
+      "skill_id": "ml-framework",
+      "synthetic": true,
+      "description": "Synthetic schematic: Image flows to Encoder. Encoder flows to Embedding. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Image",
+          "Encoder",
+          "Embedding"
+        ],
+        "edges": [
+          {
+            "from": "Image",
+            "to": "Encoder",
+            "kind": "flow"
+          },
+          {
+            "from": "Encoder",
+            "to": "Embedding",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Image": null,
+          "Encoder": null,
+          "Embedding": null
+        }
+      }
+    },
+    {
+      "id": "ml-framework-02",
+      "skill_id": "ml-framework",
+      "synthetic": true,
+      "description": "Synthetic schematic: Text flows to Tokenizer. Tokenizer flows to Tokens. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Text",
+          "Tokenizer",
+          "Tokens"
+        ],
+        "edges": [
+          {
+            "from": "Text",
+            "to": "Tokenizer",
+            "kind": "flow"
+          },
+          {
+            "from": "Tokenizer",
+            "to": "Tokens",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Text": null,
+          "Tokenizer": null,
+          "Tokens": null
+        }
+      }
+    },
+    {
+      "id": "ml-framework-03",
+      "skill_id": "ml-framework",
+      "synthetic": true,
+      "description": "Synthetic schematic: Video flows to Attention. Attention flows to Answer. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Video",
+          "Attention",
+          "Answer"
+        ],
+        "edges": [
+          {
+            "from": "Video",
+            "to": "Attention",
+            "kind": "flow"
+          },
+          {
+            "from": "Attention",
+            "to": "Answer",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Video": null,
+          "Attention": null,
+          "Answer": null
+        }
+      }
+    },
+    {
+      "id": "ml-framework-04",
+      "skill_id": "ml-framework",
+      "synthetic": true,
+      "description": "Synthetic schematic: Audio flows to Fusion. Fusion flows to Prediction. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Audio",
+          "Fusion",
+          "Prediction"
+        ],
+        "edges": [
+          {
+            "from": "Audio",
+            "to": "Fusion",
+            "kind": "flow"
+          },
+          {
+            "from": "Fusion",
+            "to": "Prediction",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Audio": null,
+          "Fusion": null,
+          "Prediction": null
+        }
+      }
+    },
+    {
+      "id": "ml-framework-05",
+      "skill_id": "ml-framework",
+      "synthetic": true,
+      "description": "Synthetic schematic: Dataset flows to Training. Training flows to Model. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Dataset",
+          "Training",
+          "Model"
+        ],
+        "edges": [
+          {
+            "from": "Dataset",
+            "to": "Training",
+            "kind": "flow"
+          },
+          {
+            "from": "Training",
+            "to": "Model",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Dataset": null,
+          "Training": null,
+          "Model": null
+        }
+      }
+    },
+    {
+      "id": "ml-framework-06",
+      "skill_id": "ml-framework",
+      "synthetic": true,
+      "description": "Synthetic schematic: Query flows to Retriever. Retriever flows to Context. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Query",
+          "Retriever",
+          "Context"
+        ],
+        "edges": [
+          {
+            "from": "Query",
+            "to": "Retriever",
+            "kind": "flow"
+          },
+          {
+            "from": "Retriever",
+            "to": "Context",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Query": null,
+          "Retriever": null,
+          "Context": null
+        }
+      }
+    },
+    {
+      "id": "workflow-01",
+      "skill_id": "workflow",
+      "synthetic": true,
+      "description": "Synthetic schematic: Sample flows to Dissociation. Dissociation flows to Library. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Sample",
+          "Dissociation",
+          "Library"
+        ],
+        "edges": [
+          {
+            "from": "Sample",
+            "to": "Dissociation",
+            "kind": "flow"
+          },
+          {
+            "from": "Dissociation",
+            "to": "Library",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Sample": null,
+          "Dissociation": null,
+          "Library": null
+        }
+      }
+    },
+    {
+      "id": "workflow-02",
+      "skill_id": "workflow",
+      "synthetic": true,
+      "description": "Synthetic schematic: Tissue flows to RNA. RNA flows to Reads. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Tissue",
+          "RNA",
+          "Reads"
+        ],
+        "edges": [
+          {
+            "from": "Tissue",
+            "to": "RNA",
+            "kind": "flow"
+          },
+          {
+            "from": "RNA",
+            "to": "Reads",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Tissue": null,
+          "RNA": null,
+          "Reads": null
+        }
+      }
+    },
+    {
+      "id": "workflow-03",
+      "skill_id": "workflow",
+      "synthetic": true,
+      "description": "Synthetic schematic: Cells flows to Staining. Staining flows to Imaging. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Cells",
+          "Staining",
+          "Imaging"
+        ],
+        "edges": [
+          {
+            "from": "Cells",
+            "to": "Staining",
+            "kind": "flow"
+          },
+          {
+            "from": "Staining",
+            "to": "Imaging",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Cells": null,
+          "Staining": null,
+          "Imaging": null
+        }
+      }
+    },
+    {
+      "id": "workflow-04",
+      "skill_id": "workflow",
+      "synthetic": true,
+      "description": "Synthetic schematic: Sample flows to Extraction. Extraction flows to Analysis. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Sample",
+          "Extraction",
+          "Analysis"
+        ],
+        "edges": [
+          {
+            "from": "Sample",
+            "to": "Extraction",
+            "kind": "flow"
+          },
+          {
+            "from": "Extraction",
+            "to": "Analysis",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Sample": null,
+          "Extraction": null,
+          "Analysis": null
+        }
+      }
+    },
+    {
+      "id": "workflow-05",
+      "skill_id": "workflow",
+      "synthetic": true,
+      "description": "Synthetic schematic: Material flows to Preparation. Preparation flows to Measurement. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Material",
+          "Preparation",
+          "Measurement"
+        ],
+        "edges": [
+          {
+            "from": "Material",
+            "to": "Preparation",
+            "kind": "flow"
+          },
+          {
+            "from": "Preparation",
+            "to": "Measurement",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Material": null,
+          "Preparation": null,
+          "Measurement": null
+        }
+      }
+    },
+    {
+      "id": "workflow-06",
+      "skill_id": "workflow",
+      "synthetic": true,
+      "description": "Synthetic schematic: Protein flows to Purification. Purification flows to Assay. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Protein",
+          "Purification",
+          "Assay"
+        ],
+        "edges": [
+          {
+            "from": "Protein",
+            "to": "Purification",
+            "kind": "flow"
+          },
+          {
+            "from": "Purification",
+            "to": "Assay",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Protein": null,
+          "Purification": null,
+          "Assay": null
+        }
+      }
+    },
+    {
+      "id": "chem-materials-01",
+      "skill_id": "chem-materials",
+      "synthetic": true,
+      "description": "Synthetic schematic: Substrate binds Catalyst. Catalyst flows to Product. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Substrate",
+          "Catalyst",
+          "Product"
+        ],
+        "edges": [
+          {
+            "from": "Substrate",
+            "to": "Catalyst",
+            "kind": "bind"
+          },
+          {
+            "from": "Catalyst",
+            "to": "Product",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Substrate": null,
+          "Catalyst": null,
+          "Product": null
+        }
+      }
+    },
+    {
+      "id": "chem-materials-02",
+      "skill_id": "chem-materials",
+      "synthetic": true,
+      "description": "Synthetic schematic: Donor transports to Interface. Interface transports to Acceptor. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Donor",
+          "Interface",
+          "Acceptor"
+        ],
+        "edges": [
+          {
+            "from": "Donor",
+            "to": "Interface",
+            "kind": "transport"
+          },
+          {
+            "from": "Interface",
+            "to": "Acceptor",
+            "kind": "transport"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Donor": null,
+          "Interface": null,
+          "Acceptor": null
+        }
+      }
+    },
+    {
+      "id": "chem-materials-03",
+      "skill_id": "chem-materials",
+      "synthetic": true,
+      "description": "Synthetic schematic: Ground activates Excited. Excited indirectly affects Relaxed. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Ground",
+          "Excited",
+          "Relaxed"
+        ],
+        "edges": [
+          {
+            "from": "Ground",
+            "to": "Excited",
+            "kind": "activate"
+          },
+          {
+            "from": "Excited",
+            "to": "Relaxed",
+            "kind": "indirect"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Ground": null,
+          "Excited": null,
+          "Relaxed": null
+        }
+      }
+    },
+    {
+      "id": "chem-materials-04",
+      "skill_id": "chem-materials",
+      "synthetic": true,
+      "description": "Synthetic schematic: Reactant flows to Intermediate. Intermediate flows to Product. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Reactant",
+          "Intermediate",
+          "Product"
+        ],
+        "edges": [
+          {
+            "from": "Reactant",
+            "to": "Intermediate",
+            "kind": "flow"
+          },
+          {
+            "from": "Intermediate",
+            "to": "Product",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Reactant": null,
+          "Intermediate": null,
+          "Product": null
+        }
+      }
+    },
+    {
+      "id": "chem-materials-05",
+      "skill_id": "chem-materials",
+      "synthetic": true,
+      "description": "Synthetic schematic: Polymer transports to Interface. Interface transports to Electrode. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Polymer",
+          "Interface",
+          "Electrode"
+        ],
+        "edges": [
+          {
+            "from": "Polymer",
+            "to": "Interface",
+            "kind": "transport"
+          },
+          {
+            "from": "Interface",
+            "to": "Electrode",
+            "kind": "transport"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Polymer": null,
+          "Interface": null,
+          "Electrode": null
+        }
+      }
+    },
+    {
+      "id": "chem-materials-06",
+      "skill_id": "chem-materials",
+      "synthetic": true,
+      "description": "Synthetic schematic: Exciton flows to Transfer. Transfer flows to Emission. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Exciton",
+          "Transfer",
+          "Emission"
+        ],
+        "edges": [
+          {
+            "from": "Exciton",
+            "to": "Transfer",
+            "kind": "flow"
+          },
+          {
+            "from": "Transfer",
+            "to": "Emission",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Exciton": null,
+          "Transfer": null,
+          "Emission": null
+        }
+      }
+    },
+    {
+      "id": "physics-device-01",
+      "skill_id": "physics-device",
+      "synthetic": true,
+      "description": "Synthetic schematic: Laser flows to Lens. Lens flows to Detector. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Laser",
+          "Lens",
+          "Detector"
+        ],
+        "edges": [
+          {
+            "from": "Laser",
+            "to": "Lens",
+            "kind": "flow"
+          },
+          {
+            "from": "Lens",
+            "to": "Detector",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Laser": null,
+          "Lens": null,
+          "Detector": null
+        }
+      }
+    },
+    {
+      "id": "physics-device-02",
+      "skill_id": "physics-device",
+      "synthetic": true,
+      "description": "Synthetic schematic: Laser flows to Splitter. Splitter flows to Sample. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Laser",
+          "Splitter",
+          "Sample"
+        ],
+        "edges": [
+          {
+            "from": "Laser",
+            "to": "Splitter",
+            "kind": "flow"
+          },
+          {
+            "from": "Splitter",
+            "to": "Sample",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Laser": null,
+          "Splitter": null,
+          "Sample": null
+        }
+      }
+    },
+    {
+      "id": "physics-device-03",
+      "skill_id": "physics-device",
+      "synthetic": true,
+      "description": "Synthetic schematic: Source flows to Aperture. Aperture flows to Camera. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Source",
+          "Aperture",
+          "Camera"
+        ],
+        "edges": [
+          {
+            "from": "Source",
+            "to": "Aperture",
+            "kind": "flow"
+          },
+          {
+            "from": "Aperture",
+            "to": "Camera",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Source": null,
+          "Aperture": null,
+          "Camera": null
+        }
+      }
+    },
+    {
+      "id": "physics-device-04",
+      "skill_id": "physics-device",
+      "synthetic": true,
+      "description": "Synthetic schematic: Emitter flows to Waveguide. Waveguide flows to Receiver. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Emitter",
+          "Waveguide",
+          "Receiver"
+        ],
+        "edges": [
+          {
+            "from": "Emitter",
+            "to": "Waveguide",
+            "kind": "flow"
+          },
+          {
+            "from": "Waveguide",
+            "to": "Receiver",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Emitter": null,
+          "Waveguide": null,
+          "Receiver": null
+        }
+      }
+    },
+    {
+      "id": "physics-device-05",
+      "skill_id": "physics-device",
+      "synthetic": true,
+      "description": "Synthetic schematic: Pump flows to Cavity. Cavity flows to Output. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Pump",
+          "Cavity",
+          "Output"
+        ],
+        "edges": [
+          {
+            "from": "Pump",
+            "to": "Cavity",
+            "kind": "flow"
+          },
+          {
+            "from": "Cavity",
+            "to": "Output",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Pump": null,
+          "Cavity": null,
+          "Output": null
+        }
+      }
+    },
+    {
+      "id": "physics-device-06",
+      "skill_id": "physics-device",
+      "synthetic": true,
+      "description": "Synthetic schematic: Input flows to Modulator. Modulator flows to Sensor. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Input",
+          "Modulator",
+          "Sensor"
+        ],
+        "edges": [
+          {
+            "from": "Input",
+            "to": "Modulator",
+            "kind": "flow"
+          },
+          {
+            "from": "Modulator",
+            "to": "Sensor",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Input": null,
+          "Modulator": null,
+          "Sensor": null
+        }
+      }
+    },
+    {
+      "id": "concept-abstract-01",
+      "skill_id": "concept-abstract",
+      "synthetic": true,
+      "description": "Synthetic schematic: Stress flows to Adaptation. Adaptation flows to Resilience. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Stress",
+          "Adaptation",
+          "Resilience"
+        ],
+        "edges": [
+          {
+            "from": "Stress",
+            "to": "Adaptation",
+            "kind": "flow"
+          },
+          {
+            "from": "Adaptation",
+            "to": "Resilience",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Stress": null,
+          "Adaptation": null,
+          "Resilience": null
+        }
+      }
+    },
+    {
+      "id": "concept-abstract-02",
+      "skill_id": "concept-abstract",
+      "synthetic": true,
+      "description": "Synthetic schematic: Observation flows to Hypothesis. Hypothesis flows to Experiment. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Observation",
+          "Hypothesis",
+          "Experiment"
+        ],
+        "edges": [
+          {
+            "from": "Observation",
+            "to": "Hypothesis",
+            "kind": "flow"
+          },
+          {
+            "from": "Hypothesis",
+            "to": "Experiment",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Observation": null,
+          "Hypothesis": null,
+          "Experiment": null
+        }
+      }
+    },
+    {
+      "id": "concept-abstract-03",
+      "skill_id": "concept-abstract",
+      "synthetic": true,
+      "description": "Synthetic schematic: Evidence flows to Reasoning. Reasoning flows to Conclusion. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Evidence",
+          "Reasoning",
+          "Conclusion"
+        ],
+        "edges": [
+          {
+            "from": "Evidence",
+            "to": "Reasoning",
+            "kind": "flow"
+          },
+          {
+            "from": "Reasoning",
+            "to": "Conclusion",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Evidence": null,
+          "Reasoning": null,
+          "Conclusion": null
+        }
+      }
+    },
+    {
+      "id": "concept-abstract-04",
+      "skill_id": "concept-abstract",
+      "synthetic": true,
+      "description": "Synthetic schematic: Signal activates Response. Response inhibits Control. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Signal",
+          "Response",
+          "Control"
+        ],
+        "edges": [
+          {
+            "from": "Signal",
+            "to": "Response",
+            "kind": "activate"
+          },
+          {
+            "from": "Response",
+            "to": "Control",
+            "kind": "inhibit"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Signal": null,
+          "Response": null,
+          "Control": null
+        }
+      }
+    },
+    {
+      "id": "concept-abstract-05",
+      "skill_id": "concept-abstract",
+      "synthetic": true,
+      "description": "Synthetic schematic: Problem flows to Intervention. Intervention flows to Outcome. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Problem",
+          "Intervention",
+          "Outcome"
+        ],
+        "edges": [
+          {
+            "from": "Problem",
+            "to": "Intervention",
+            "kind": "flow"
+          },
+          {
+            "from": "Intervention",
+            "to": "Outcome",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Problem": null,
+          "Intervention": null,
+          "Outcome": null
+        }
+      }
+    },
+    {
+      "id": "concept-abstract-06",
+      "skill_id": "concept-abstract",
+      "synthetic": true,
+      "description": "Synthetic schematic: Diversity flows to Complementarity. Complementarity flows to Robustness. Do not introduce numerical measurements or additional entities.",
+      "gold": {
+        "entities": [
+          "Diversity",
+          "Complementarity",
+          "Robustness"
+        ],
+        "edges": [
+          {
+            "from": "Diversity",
+            "to": "Complementarity",
+            "kind": "flow"
+          },
+          {
+            "from": "Complementarity",
+            "to": "Robustness",
+            "kind": "flow"
+          }
+        ],
+        "forbidden": [
+          "Invented molecule",
+          "unprovided instrument",
+          "99%"
+        ],
+        "zones": {
+          "Diversity": null,
+          "Complementarity": null,
+          "Robustness": null
+        }
+      }
+    }
+  ]
+}

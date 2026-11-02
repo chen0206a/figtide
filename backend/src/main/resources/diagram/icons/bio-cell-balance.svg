@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="15.666821mm" id="svg1" viewBox="0 0 38.237782 15.666821" width="38.237782mm">
+  
+  <defs id="defs1">
+    
+  </defs>
+  <g id="layer1" transform="translate(-125.48215,-65.899383)">
+    <g id="g183" transform="translate(0.33587373,4.5342954)">
+      <g id="g115" transform="matrix(0.81685308,0,0,0.81685308,29.923287,10.830775)">
+        <path d="m 50.033738,58.012867 c -0.06696,0.115978 -13.325009,0.115978 -13.391969,0 -0.06696,-0.115978 6.562065,-11.597785 6.695984,-11.597785 0.13392,0 6.762945,11.481807 6.695985,11.597785 z" id="path4" style="fill:#8c8ce9;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none" transform="matrix(0.43424819,0,0,0.56448405,120.43433,48.247671)"/>
+        <rect height="2" id="rect5" rx="0.5" style="fill:#8c8ce9;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none" width="40" x="119.25363" y="72.580788"/>
+      </g>
+      <g id="g58" transform="matrix(0.62415613,0,0,0.62415613,106.46494,23.261478)">
+        <path d="m 49.767233,53.842493 c -1.763258,-6.795713 2.597994,-10.339609 8.122365,-14.282404 5.52437,-3.942795 6.957732,-0.450377 12.824476,3.647334 5.866744,4.097712 5.88879,7.058606 2.796987,13.237254 -3.091803,6.178647 -3.719563,5.761361 -10.388804,5.686225 -6.669242,-0.07513 -11.591767,-1.492695 -13.355024,-8.288409 z" id="path57" style="fill:#f4b183;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none" transform="matrix(0.79964264,0,0,0.48653344,-9.5479851,43.81764)"/>
+        <ellipse cx="42.731632" cy="68.749779" id="ellipse57" rx="4.7479591" ry="2.5814145" style="fill:#c55a11;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none"/>
+      </g>
+      <g id="g59" transform="matrix(1.0891374,0,0,1.0891374,76.162622,-3.0433197)">
+        <path d="m 73.993371,57.592441 c -4.103455,6.618284 -6.85739,7.742163 -14.41979,5.884708 -7.5624,-1.857456 -9.482286,-4.129306 -10.052651,-11.895561 -0.570365,-7.766256 0.997016,-10.294215 8.206911,-13.236569 7.209896,-2.942355 10.098475,-2.23287 15.124801,3.714911 5.026325,5.94778 5.244185,8.914226 1.140729,15.532511 z" id="path58" style="fill:#8acb5f;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none" transform="matrix(0.43713202,0,0,0.28033464,46.482601,48.860271)"/>
+        <ellipse cx="72.90612" cy="63.354534" id="ellipse58" rx="3" ry="1.6310679" style="fill:#528a2d;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none"/>
+      </g>
+      <path d="m 148.5763,66.119624 h -8.21277" id="path148" style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.898539;stroke-linecap:butt;stroke-dasharray:none;stroke-opacity:1"/>
+    </g>
+  </g>
+</svg>

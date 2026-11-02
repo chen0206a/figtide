@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="297mm" id="svg8025" viewBox="0 0 210 297" width="210mm">
+  <defs id="defs8022"/>
+  <g id="layer1">
+    <path d="m 104.9969,32.422827 a 24.138124,23.229696 0 0 0 -24.138576,23.22959 24.138124,23.229696 0 0 0 0.0072,0.185518 V 201.27505 A 41.039909,39.495396 0 0 0 63.96013,233.18577 41.039909,39.495396 0 0 0 105,272.68155 41.039909,39.495396 0 0 0 146.03987,233.18577 41.039909,39.495396 0 0 0 129.13496,201.24405 V 55.652417 A 24.138124,23.229696 0 0 0 104.9969,32.422827 Z" id="path8561" style="fill:#ffffff;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"/>
+    <ellipse cx="105" cy="233.1859" id="ellipse9703" rx="28.677271" ry="27.598015" style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:3.44696;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"/>
+    <rect height="113.86231" id="rect10442" style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:7.21192;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000" width="24.15361" x="92.923195" y="106.38203"/>
+    <circle cx="105" cy="106.38203" id="path10496" r="12.076807" style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:5.62128;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"/>
+  </g>
+</svg>

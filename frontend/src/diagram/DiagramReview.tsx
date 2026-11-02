@@ -1,14 +1,13 @@
+import {diagramReviewMarker} from './reviewMarkers';
 import {useEffect,useRef,useState} from 'react';
 import {api,send} from '../lib/api';
 import {Button} from '../components/ui/button';
 import {ReviewIssues} from '../editor/ReviewIssues';
 import {selectedOperations,type ReviewResult} from '../editor/review';
 import {NumberMarker} from '../editor/workbench/NumberMarker';
-import type {CanvasMarker} from '../editor/workbench/proposalMarkers';
 import type {DiagramCatalog,DiagramDoc,DiagramRecord} from './model';
 import {collectDiagramFacts} from './collectFacts';
 import {makeDiagramOperation,type DiagramOperationCatalog,type DiagramOperation} from './operations';
-import {edgePoints} from './render/geometry';
 import '../editor/review.css';
 
 type DiagramReviewResult=ReviewResult<DiagramOperation>;
@@ -36,21 +35,20 @@ export function useDiagramReview(doc:DiagramDoc,record:DiagramRecord,revision:nu
     <Button disabled={busy||width<40||width>300} onClick={()=>void review()}>{busy?'正在检查…':'运行审稿'}</Button>
     <p className="tiny-note">确定性规则检查，不调用模型。修复先预览，确认后手动保存。</p>
     {error&&<p role="alert">{error}</p>}
-    {report&&<p role="status">{report.issues.filter(i=>i.severity==='error').length} 个 error · {report.issues.filter(i=>i.severity==='warning').length} 个 warning</p>}
+    {report&&<p role="status">{report.issues.filter(i=>i.severity==='error').length} 个 error · {report.issues.filter(i=>i.severity==='warning').length} 个 warning · {report.issues.filter(i=>i.severity==='info').length} 个 info</p>}
     <div className="diagram-review-scroll">{report&&<ReviewIssues report={report} selected={selected} ignored={ignored} onSelect={id=>toggle(setSelected,id)} onIgnore={id=>toggle(setIgnored,id)} describeOperation={op=>labels[op.tool]?.replace(/[（(].*$/,'')||"调整机制图"}/>}</div>
     {report&&<footer>{candidate?<div className="diagram-repair-confirm"><strong>修复预览 · {candidate.changes.length} 项变化</strong><p className="tiny-note">画布显示候选结果，尚未应用或保存。</p><ul>{candidate.changes.map(change=><li key={change.path}>{changeDescription(change)}</li>)}</ul><Button onClick={()=>{if(current.current===candidate.base){edit(candidate.doc);setCandidate(null);setReport(null);}}}>应用修复</Button><Button variant="outline" onClick={()=>setCandidate(null)}>取消预览</Button></div>:<Button disabled={busy||!selectedOperations(report,selected,ignored).length} onClick={()=>void preview()}>预览选中修复</Button>}</footer>}
   </section>:null;
-  return {open:()=>setOpen(true),panel,candidate:candidate?.doc||null,report,ignored,reviewErrors:report?report.issues.filter(i=>i.severity==='error').length:undefined};
+  return {open:()=>setOpen(true),close,panel,candidate:candidate?.doc||null,report,ignored,reviewErrors:report?report.issues.filter(i=>i.severity==='error').length:undefined};
 }
 
 /** NumberMarker is shared with chart review; the scale converts its pixel vocabulary to mm. */
 export function DiagramReviewMarkers({doc,report,ignored}:{doc:DiagramDoc;report:DiagramReviewResult|null;ignored:Set<string>}){
   if(!report)return null;
+  let global=0;
   return <g className="review-markers diagram-review-markers" transform="scale(.25)">{report.issues.map((issue,index)=>{
-    if(ignored.has(issue.id))return null;const ref=Number(issue.anchor.ref);let box={x:3+(index%8)*6,y:7,w:0,h:0};
-    if(issue.anchor.kind==='node'&&doc.nodes[ref])box=doc.nodes[ref];
-    if(issue.anchor.kind==='edge'&&doc.edges[ref]){const points=edgePoints(doc,doc.edges[ref]),p=points[Math.floor(points.length/2)];if(p)box={...p,w:0,h:0};}
-    const marker:CanvasMarker={number:index+1,kind:'title',x:box.x*4,y:box.y*4,width:box.w*4,height:box.h*4,paths:[]};
+    if(issue.severity==='info'||ignored.has(issue.id))return null;
+    const marker=diagramReviewMarker(doc,issue,index+1,global++);
     return <NumberMarker key={issue.id} marker={marker} width={doc.canvas.width_mm*4} height={doc.canvas.height_mm*4}/>;
   })}</g>;
 }

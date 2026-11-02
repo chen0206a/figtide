@@ -399,3 +399,40 @@ GET /api/diagram-catalog兼容增加palettes（原始a/b/c/d/n色值及非官方
 D3复用ColorVision，只检查图中实际使用的语义角色轮廓，不比较浅填充。色对返回角色名、轮廓色和最小ΔE；阈值20保留。默认Okabe–Ito失败仅给意见，等待主人决定；其他配色仅在存在所有当前角色色对均达标的目录配色时提供可选set_style.palette修复，不改任何原色值。
 
 修复使用现有`GET /api/diagram-tools/catalog`目录和只读`POST /api/projects/{p}/diagram-tools/preview`；DiagramOperations→DiagramValidator同一校验链。返回候选doc和逐项changes；只有用户确认后才加入本机撤销栈，另行手动保存。
+
+### 机制图AI提案（19-B）
+
+复用`POST /api/projects/{p}/agent/runs`：`protocol_version:1, mode:"diagram", diagram_id, base_revision, doc, skill_id, diagram_stage:"brief", prompt, share_metadata:true`。可带既有request_id、max_steps/max_tokens/timeout_seconds和新会话session_budget，或既有session_id。机制图不能混入chart_id/config/parent_run_id。
+
+简报返回`diagram:{kind:"brief",brief,facts:[{text,quote}],question?}`，阶段awaiting_facts。用户确认后以同一session_id提交`diagram_stage:"structure",facts_confirmed:true,brief,facts,source_prompt`；每个quote须来自source_prompt。模型输出仅语义操作，用户改写事实属于明确确认。
+
+轮询原runs/{id}，awaiting_render时取得proposal.doc，在浏览器排版后向原`POST .../runs/{id}/review`发送`{doc,render_facts,target?}`。文档只能改变x/y，不允许替换标签、结构或其他属性。完成后proposal包含doc/config、差异、操作和确定性review。
+
+原`POST .../runs/{id}/decision`接受`{outcome:"accepted",proposal_hash,review_hash,accepted_fixes:[id...]}`，返回已选修复后的doc，但不保存机制图。拒绝沿用outcome/reason/proposal_hash。原cancel/resume/audit接口复用；旧revision、不同修复集合及历史应用返回409。图表模式原协议不变。
+
+
+### 机制图素材与外部绘制（19-C）
+
+- `GET /api/diagram-icons/{id}.svg`：内置净化矢量，ID来自catalog，不接受路径。
+- `GET/POST /api/projects/{p}/diagram-style-templates`：查询/保存仅参数的 `kind:diagram` 风格模板；`POST .../preview` 接受 `{doc,profile}`，只读返回文档和审稿。
+- `GET /api/projects/{p}/diagrams/{id}/brief`：`{json,markdown}`，含revision、用户事实、语义规格、风格及物理尺寸。
+- `POST /api/projects/{p}/diagrams/{id}/import-svg`：`{base_revision,svg,name?}`，净化后追加artworks并保存新版本。项目归属、Host/Origin、revision保护沿用原接口；过期409。artworks可选，文档总量2MB，最多30层；直接保存与备份恢复也必须通过SVG规范校验。
+
+无新增迁移或依赖；style_templates沿用现有表，SVG使用JDK安全XML解析器。
+
+
+2026-11-02：机制图catalog的palette_audits与项目内paletteAudit保持原颜色/角色结构，threshold=10、info_threshold=20；failing_pairs保留所有<20的实际色对并新增severity（warning/info），safe表示没有<10的色对。diagram-review-v2报告相同分档；数据图R3及ColorVision.MIN_DELTA_E=20不变。
+图标清单不包含SVG内容，前端按需调用原GET /api/diagram-icons/{id}.svg并在内存缓存；没有新增接口、迁移或依赖。
+
+### 2026-11-02：助手事实选择与默认样式
+
+机制图运行兼容增加 `selected_facts?: number[]`（原始事实数组的唯一、有效索引，结构生成至少一条）、`cannot_imply?: string`（最多500字符）、`allow_below_style_defaults?: boolean`（默认false）。简报响应可带cannot_imply，文档meta同名可选字段保留用户约束；schema_version仍为1。
+
+diagram-assistant-v2语义工具以fact_indices记录事实归属，服务器生成私有fact_bindings（包括旧值与原位置）。结构生成只向模型提供所选事实；决定请求兼容增加 `accepted_facts?: number[]`。前端预览与服务端确认独立执行筛选：删除被取消事实独占的新元素、还原对应旧元素、清理悬空引用，保留仍被其他事实使用的共享元素。确认不能上传替代文档；事实集合与修复集合一起进入既有幂等指纹，不同集合的重复确认返回409。旧提案保持原路径，无新迁移。
+
+未明确允许更小值时，助手生成的有效字号/线宽至少为当前风格默认值（目前7pt/1pt）。排版回传仍仅允许x/y变化；JSON数字7与7.0语义等价，标签、结构及w/h变化仍拒绝。审稿规则版本为diagram-review-v3。
+
+
+### 2026-11-02：D8人工用词确认
+
+机制图决定兼容增加 `label_choices?: [{node_id,action:"keep"|"source",label?}]`。仅允许当前D8报告锚定且尚未被事实取消/还原的节点。keep不接受label；source的label最多200字符，必须逐字来自该节点关联且仍被选中的事实原文（旧提案无事实归属时回退已确认原文）。不能通过此参数编辑其他节点或补造名称。预览走既有update_node；服务端确认从私有提案/报告重新校验，作为一次草稿应用返回，不保存。选择集合连同原修复/事实集合写入既有accepted_fixes_json幂等记录，改变选择的重复确认409，无新迁移。标签选择为用户明确操作，不调用模型。

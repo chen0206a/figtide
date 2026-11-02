@@ -14,7 +14,7 @@ export function nodeLayout(node:DiagramNode,fontMm=ptToMm(6.5)):{body:DiagramRec
     else if(position==="left"||position==="right"){body.w=Math.min(node.h,node.w*.42);label={x:position==="right"?node.x+body.w+1.2:node.x,y:node.y,w:Math.max(.1,node.w-body.w-1.2),h:node.h};if(position==="left"){body.x=node.x+node.w-body.w;label.y=node.y+2.4;label.h=fontMm*1.3;}}
 
   }
-  const bounds=node.kind==="glyph"&&!node.boxed?glyphBounds(node.glyph||"",body.w,body.h):{x:0,y:0,w:node.w,h:node.h};
+  const bounds=node.kind==="glyph"&&!node.boxed?glyphBounds(node.glyph||"",body.w,body.h):node.kind==="icon"?{x:0,y:0,w:body.w,h:body.h}:{x:0,y:0,w:node.w,h:node.h};
   const anchor=node.boxed?{x:node.x,y:node.y,w:node.w,h:node.h}:{x:body.x+bounds.x,y:body.y+bounds.y,w:bounds.w,h:bounds.h};
   return {body,label,anchor};
 }

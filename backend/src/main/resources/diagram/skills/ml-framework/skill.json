@@ -1,0 +1,46 @@
+{
+  "id": "ml-framework",
+  "version": "1.0.1",
+  "name": "方法框架图",
+  "description": "先明确输入、模块边界和输出，再连接数据流。",
+  "patterns": [
+    "framework",
+    "pipeline",
+    "teaser"
+  ],
+  "templates": [
+    "framework",
+    "pipeline",
+    "teaser",
+    "multimodal-fusion"
+  ],
+  "recommended_styles": [
+    "conference-framework"
+  ],
+  "allowed_nodes": [
+    "box",
+    "pill",
+    "ellipse",
+    "glyph",
+    "text",
+    "icon"
+  ],
+  "allowed_edges": [
+    "flow",
+    "activate",
+    "inhibit",
+    "transport",
+    "bind",
+    "indirect"
+  ],
+  "icon_tags": [
+    "ml",
+    "encoder",
+    "dataset"
+  ],
+  "checks": {
+    "provenance": true,
+    "zones": false,
+    "depth": true
+  }
+}

@@ -1,0 +1,223 @@
+{
+  "id": "multimodal-fusion",
+  "name": "多模态特征融合",
+  "pattern": "framework",
+  "documents": {
+    "en": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "en",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "Multimodal fusion",
+          "x": 4,
+          "y": 10,
+          "w": 172,
+          "h": 88,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "input-frames",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Image",
+          "x": 10,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "actor",
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "attention",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Fusion",
+          "x": 67,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "process",
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "tokens",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "Answer",
+          "x": 124,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "output",
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "ml-framework",
+        "skill_version": "1.0.0",
+        "template": "multimodal-fusion",
+        "brief": "",
+        "facts": []
+      }
+    },
+    "zh": {
+      "schema_version": 1,
+      "canvas": {
+        "width_mm": 180,
+        "height_mm": 110,
+        "background": "#FFFFFF"
+      },
+      "style": {
+        "preset": "nature-flat",
+        "overrides": {}
+      },
+      "label_language": "zh",
+      "zones": [
+        {
+          "id": "z1",
+          "kind": "panel",
+          "label": "多模态融合",
+          "x": 4,
+          "y": 10,
+          "w": 172,
+          "h": 88,
+          "zoom_of": null
+        }
+      ],
+      "nodes": [
+        {
+          "id": "n1",
+          "kind": "glyph",
+          "glyph": "input-frames",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "图像",
+          "x": 10,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "actor",
+          "style_ref": null
+        },
+        {
+          "id": "n2",
+          "kind": "glyph",
+          "glyph": "attention",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "特征融合",
+          "x": 67,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "process",
+          "style_ref": null
+        },
+        {
+          "id": "n3",
+          "kind": "glyph",
+          "glyph": "tokens",
+          "label_pos": "below",
+          "boxed": false,
+          "badges": [],
+          "label": "回答",
+          "x": 124,
+          "y": 32,
+          "w": 46,
+          "h": 44,
+          "zone": "z1",
+          "icon": null,
+          "role": "output",
+          "style_ref": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "n1",
+          "to": "n2",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        },
+        {
+          "id": "e2",
+          "from": "n2",
+          "to": "n3",
+          "kind": "flow",
+          "label": "",
+          "route": "straight"
+        }
+      ],
+      "annotations": [],
+      "legend": {
+        "mode": "auto",
+        "position": "bottom-right"
+      },
+      "meta": {
+        "skill": "ml-framework",
+        "skill_version": "1.0.0",
+        "template": "multimodal-fusion",
+        "brief": "",
+        "facts": []
+      }
+    }
+  }
+}

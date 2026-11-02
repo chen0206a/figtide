@@ -136,7 +136,7 @@ public class AgentAuditRepository {
     }
   }
 
-  public void createSession(long project, String id, Long chart, long dataset, int budget) {
+  public void createSession(long project, String id, Long chart, Long dataset, int budget) {
     db.update(
         "INSERT INTO agent_sessions(session_id,project_id,chart_id,dataset_version_id,max_budget)"
             + " VALUES (?,?,?,?,?)",
@@ -146,6 +146,10 @@ public class AgentAuditRepository {
         dataset,
         budget);
   }
+
+  public void bindDiagramSession(long project,String id,long diagram){db.update("UPDATE agent_sessions SET diagram_id=? WHERE project_id=? AND session_id=?",diagram,project,id);}
+  public void bindDiagramRun(long project,String id,long diagram,String skill,String version){db.update("UPDATE agent_runs SET diagram_id=?,skill_id=?,skill_version=? WHERE project_id=? AND run_id=?",diagram,skill,version,project,id);}
+  public int diagramRevision(long project,long diagram){var rows=db.queryForList("SELECT revision FROM diagrams WHERE project_id=? AND id=? FOR UPDATE",project,diagram);if(rows.isEmpty())throw new dev.labflow.api.ApiException(409,"源机制图不存在或不属于当前项目");return ((Number)rows.getFirst().get("revision")).intValue();}
 
   public Map<String, Object> session(long project, String id) {
     var rows =

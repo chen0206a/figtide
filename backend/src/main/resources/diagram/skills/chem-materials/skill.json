@@ -1,0 +1,46 @@
+{
+  "id": "chem-materials",
+  "version": "1.0.1",
+  "name": "化学 / 材料机理",
+  "description": "仅使用用户给出的物质、反应方向、能级和数值。",
+  "patterns": [
+    "comparison",
+    "conceptual",
+    "pipeline"
+  ],
+  "templates": [
+    "concept-abstract",
+    "reaction-path",
+    "energy-transfer",
+    "material-interface"
+  ],
+  "recommended_styles": [
+    "nature-flat"
+  ],
+  "allowed_nodes": [
+    "box",
+    "pill",
+    "ellipse",
+    "glyph",
+    "text",
+    "icon"
+  ],
+  "allowed_edges": [
+    "flow",
+    "activate",
+    "inhibit",
+    "transport",
+    "bind",
+    "indirect"
+  ],
+  "icon_tags": [
+    "chemistry",
+    "materials",
+    "molecule"
+  ],
+  "checks": {
+    "provenance": true,
+    "zones": false,
+    "depth": true
+  }
+}

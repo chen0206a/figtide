@@ -15,9 +15,9 @@ test('diagram initially fits width, manual zoom and fit button reflect actual sc
   const width=(await canvas.boundingBox())!.width;
   await page.getByRole('button',{name:'适应宽度',exact:true}).click();await fit();
   expect((await canvas.boundingBox())!.width).toBeLessThan(width);
-  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-step1"}/fit-1440.png`),fullPage:true});
+  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-step1"}/fit-1440.png`),fullPage:false});
   await page.setViewportSize({width:1920,height:1080});await fit();
-  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-step1"}/fit-1920.png`),fullPage:true});
+  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-step1"}/fit-1920.png`),fullPage:false});
 });
 test('capture final creation page, export preview and actual interaction frames',async({page,request},info)=>{
   test.skip(process.env.LABFLOW_CAPTURE!=='1','Explicit visual capture');
@@ -40,7 +40,7 @@ test('capture final creation page, export preview and actual interaction frames'
   const canvas=page.getByTestId('diagram-canvas');await expect(canvas).toBeVisible();
   const id=page.url().split('/').pop(),endpoint=`/api/projects/${project.id}/diagrams/${id}`;
   await expect.poll(async()=>Math.abs((await canvas.boundingBox())!.width-Math.max(720,(await page.locator('.diagram-stage').boundingBox())!.width*.9))).toBeLessThan(2);
-  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/mechanism-1440.png`),fullPage:true});
+  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/mechanism-1440.png`),fullPage:false});
   const original=(await(await request.get(endpoint)).json()).doc;
   // Direct click adds at canvas centre; undo is a single reversible edit.
   await page.getByRole('button',{name:'插入蛋白',exact:true}).click();
@@ -68,11 +68,11 @@ test('capture final creation page, export preview and actual interaction frames'
   await page.getByRole('button',{name:'撤销',exact:true}).click();await expect(page.getByRole('combobox',{name:'机制图配色',exact:true})).toHaveValue('okabe-ito');await capture();
   await page.getByRole('button',{name:'保存机制图',exact:true}).click();await expect.poll(async()=>(await(await request.get(endpoint)).json()).revision).toBe(2);await capture();await capture();
   await page.getByRole('button',{name:'导出机制图',exact:true}).click();await expect(page.getByRole('dialog',{name:'导出机制图'}).getByLabel('导出预览')).toBeVisible();
-  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/export-dialog.png`),fullPage:true});
+  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/export-dialog.png`),fullPage:false});
   const framework=await(await request.post(`/api/projects/${project.id}/diagrams`,{data:{name:'视频问答方法总览',template:'framework',style:'conference-framework'}})).json();
   await page.goto(`/projects/${project.id}/diagrams/${framework.id}`);await expect(canvas).toBeVisible();
   expect(await page.locator('.diagram-glyph-grid button span').evaluateAll(labels=>labels.every(label=>label.scrollWidth<=label.clientWidth+1))).toBe(true);
-  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/framework-1440.png`),fullPage:true});
+  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/framework-1440.png`),fullPage:false});
   const optics=await(await request.post(`/api/projects/${project.id}/diagrams`,{data:{name:'光路图元分类验收',template:'architecture',style:'nature-flat'}})).json();
   await page.goto(`/projects/${project.id}/diagrams/${optics.id}`);await expect(page.getByRole('combobox',{name:'图元分类',exact:true})).toHaveValue('experiment');
   const opticsRect=(await canvas.boundingBox())!,pt=(x:number,y:number)=>({x:opticsRect.x+x/180*opticsRect.width,y:opticsRect.y+y/110*opticsRect.height});
@@ -80,7 +80,7 @@ test('capture final creation page, export preview and actual interaction frames'
   await expect(canvas.locator('[data-node-id="las"]')).toHaveAttribute('data-body-x','7');
   await page.getByRole('button',{name:'撤销',exact:true}).click();await expect(canvas.locator('[data-node-id="las"]')).toHaveAttribute('data-body-x','6');
 
-  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/10-optics-editor.png`),fullPage:true});
+  await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-checkpoint-c"}/10-optics-editor.png`),fullPage:false});
 
 });
 test('capture flagship templates at reference viewport',async({page,request},info)=>{

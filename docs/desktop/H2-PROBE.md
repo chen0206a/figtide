@@ -96,3 +96,7 @@
 E2E 里的现象与此一致：重启后 Flyway 报 `Current version of schema "public": 8`（旧数据早已落盘），但强杀前最后写入的项目 94 和两条运行记录没了，`GET /projects/94/agent/runs/{id}/audit` 返回 404。
 
 结论：`application-desktop.yml` 和 `test-agent.ps1` 的 H2 文件库 URL 统一带 `WRITE_DELAY=0`（提交即落盘）。桌面应用写入频率是人手速级别，同步写盘的代价可以忽略；换来的是崩溃/强杀不丢已提交数据。
+
+## V11 机制图运行绑定（2026-11-01）
+
+新增七条MySQL迁移语句由同一探针逐条执行：两条MODIFY将数据版本改可空、四条ADD绑定/skill字段、一条CREATE INDEX。H2 2.3.232实测均支持；H2产品迁移仍采用明确的ALTER COLUMN DROP NOT NULL。既有V1–V10结果和断言保持原样；本次只补新迁移的七条期望。

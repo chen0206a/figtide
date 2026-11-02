@@ -1,0 +1,43 @@
+{
+  "id": "physics-device",
+  "version": "1.0.1",
+  "name": "物理装置 / 光路",
+  "description": "先核对元件顺序、方向、路径与分支，不猜测器件参数。",
+  "patterns": [
+    "architecture",
+    "conceptual"
+  ],
+  "templates": [
+    "architecture",
+    "interferometer"
+  ],
+  "recommended_styles": [
+    "line-minimal"
+  ],
+  "allowed_nodes": [
+    "box",
+    "pill",
+    "ellipse",
+    "glyph",
+    "text",
+    "icon"
+  ],
+  "allowed_edges": [
+    "flow",
+    "activate",
+    "inhibit",
+    "transport",
+    "bind",
+    "indirect"
+  ],
+  "icon_tags": [
+    "physics",
+    "optics",
+    "device"
+  ],
+  "checks": {
+    "provenance": true,
+    "zones": false,
+    "depth": true
+  }
+}

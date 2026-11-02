@@ -23,7 +23,7 @@ class DiagramCatalogTest {
     ((ObjectNode)doc.path("style")).put("preset","sketch");assertTrue(catalog.effective(doc).path("sketch").asBoolean());assertEquals(nodes,doc.path("nodes"));
     ((ObjectNode)catalog.style("nature-flat")).put("font_size_pt",72);assertEquals(7,catalog.style("nature-flat").path("font_size_pt").asDouble());
   }
-  @Test void paletteWarningsReportUnmodifiedColorsAtTheExistingThreshold(){
+  @Test void paletteWarningsAndInfoPreserveRawColorsAndChartThreshold(){
     assertEquals(20,ColorVision.MIN_DELTA_E);
     var data=json.valueToTree(catalog.all());assertEquals(6,data.path("palettes").size());assertEquals(36,catalog.paletteAudits().size());
     for(var p:data.path("palettes")){
@@ -33,14 +33,20 @@ class DiagramCatalogTest {
     }
     var scoped=catalog.template("mechanism","en");var audit=json.valueToTree(catalog.paletteAudit(scoped));var used=DiagramPaletteAudit.usedRoles(scoped);
     for(var pair:audit.path("failing_pairs"))for(var r:pair.path("roles"))assertTrue(used.contains(r.asText()));
+    assertEquals(10,audit.path("threshold").asDouble());assertEquals(20,audit.path("info_threshold").asDouble());assertTrue(audit.path("safe").asBoolean());assertTrue(audit.path("failing_pairs").size()>0);assertEquals(11.72481721271584,java.util.stream.StreamSupport.stream(audit.path("failing_pairs").spliterator(),false).mapToDouble(v->v.path("minimum_delta_e").asDouble()).min().orElseThrow(),1e-9);for(var pair:audit.path("failing_pairs"))assertEquals("info",pair.path("severity").asText());
     assertEquals("#0069A4",audit.at("/outlines/actor").asText());
     ((ArrayNode)scoped.path("nodes")).removeAll();assertTrue(json.valueToTree(catalog.paletteAudit(scoped)).path("safe").asBoolean());
     var doc=DiagramValidatorTest.doc();DiagramValidator.validate(doc);((ObjectNode)doc.path("style")).put("palette","npg");DiagramValidator.validate(doc);((ObjectNode)doc.path("style")).put("palette","invalid");assertThrows(RuntimeException.class,()->DiagramValidator.validate(doc));
   }
-  @Test void allTwelveTemplatesUseRequestedPatternsAndValidateBothLanguages() {
-    assertEquals(12,catalog.templates().size());var patterns=new java.util.HashSet<String>();
+  @Test void allTwentyTemplatesUseRequestedPatternsAndValidateBothLanguages() {
+    assertEquals(20,catalog.templates().size());var patterns=new java.util.HashSet<String>();
     for(var template:catalog.templates()){patterns.add(template.path("pattern").asText());for(String language:java.util.List.of("en","zh")){var doc=template.at("/documents/"+language);DiagramValidator.validate(doc);assertEquals(language,doc.path("label_language").asText());}}
     assertEquals("conceptual",catalog.templates().stream().filter(t->t.path("id").asText().equals("architecture")).findFirst().orElseThrow().path("pattern").asText());
     assertEquals(java.util.Set.of("conceptual","framework","pipeline","taxonomy","teaser","mechanism","workflow","comparison"),patterns);
   }
+  @Test void mechanismThresholdBoundariesAndIdenticalOutlines(){
+    assertEquals("warning",DiagramPaletteAudit.severity(9.999999));assertEquals("info",DiagramPaletteAudit.severity(10));assertEquals("info",DiagramPaletteAudit.severity(19.999999));assertEquals("passed",DiagramPaletteAudit.severity(20));assertEquals(20,ColorVision.MIN_DELTA_E);
+    var audit=json.valueToTree(DiagramPaletteAudit.auditOutlines("custom","nature-flat",java.util.Map.of("actor","#0072B2","model","#0072B2")));assertFalse(audit.path("safe").asBoolean());assertEquals("warning",audit.at("/failing_pairs/0/severity").asText());assertEquals(0,audit.at("/failing_pairs/0/minimum_delta_e").asDouble());
+  }
+
 }

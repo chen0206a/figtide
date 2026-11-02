@@ -1,3 +1,6 @@
+import type {IconAssets} from '../iconCache';
+import {artworkMarkup} from "../artwork";
+import {iconMarkup} from "../assets";
 import {roleColor,paletteOf} from "../palettes";
 import { effectiveStyle, type DiagramDoc, type DiagramStyle, type DiagramRect } from "../model";
 import { edgePoints, nodeLayout, ptToMm, wrapLabel } from "./geometry";
@@ -21,7 +24,7 @@ export function edgeSymbol(start:{x:number;y:number},end:{x:number;y:number},kin
   return `<path data-edge-symbol="arrow" d="M${fmt(end.x)} ${fmt(end.y)} L${fmt(bx+vx*a*.45)} ${fmt(by+vy*a*.45)} L${fmt(bx-vx*a*.45)} ${fmt(by-vy*a*.45)} Z" fill="${ink}" stroke="none"/>`;
 }
 /** The only SVG renderer: editor, thumbnails, exports and geometry collection use this output. */
-export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=false): string {
+export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=false,icons:IconAssets={}): string {
   const style=effectiveStyle(doc,preset),font=ptToMm(style.font_size_pt),line=ptToMm(style.line_width_pt)*(style.sketch?1.3:1),edgeLine=ptToMm(1.25)*style.line_width_pt*(style.sketch?1.3:1),zoneLine=ptToMm(.75)*style.line_width_pt;
   const prefix="dg"+stableSeed(JSON.stringify(style));
   const text=(label:string,box:DiagramRect,fill=style.text_color,align:"center"|"left"="center",reference="",size=font)=>{
@@ -35,7 +38,7 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
     <filter id="${prefix}-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="0.5" stdDeviation="0.4" flood-opacity="0.12"/></filter>
     ${style.accent_colors.map((c,i)=>`<linearGradient id="${prefix}-soft${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${esc(c)}" stop-opacity="0.32"/><stop offset="1" stop-color="${esc(c)}" stop-opacity="0.13"/></linearGradient>`).join("")}
   </defs>`;
-  const P=paletteOf(doc.style.palette),minimal=style.id==="line-minimal";
+  const basePalette=paletteOf(doc.style.palette),custom=doc.style.role_colors,P=custom?{...basePalette,a:custom.actor,b:custom.process,c:custom.note,d:custom.model,n:custom.data}:basePalette,minimal=style.id==="line-minimal";
   const zoneSkin=style.id==="soft-illustration"?["#F2F6FB","#DCE5F0"]:style.id==="conference-framework"?["#EEF4FB","#BFD3EA"]:style.id==="sketch"?["#FBF7EA","#8C877A"]:style.id==="isometric"?["#F5F7FA","#D5DAE1"]:["#F7F8FA","#C9D0D9"];
   const zones=doc.zones.map(z=>{
     const membraneFill=minimal?"#FFFFFF":tintColor(P.a,"#FFFFFF",.9),membraneStroke=minimal?"#0E1116":tintColor(P.a,"#FFFFFF",.35);
@@ -73,12 +76,13 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
   }).join("");
   const nodes=doc.nodes.map(n=>{
     const index=(roleColors[n.style_ref||n.role]||0)%style.accent_colors.length;
-    const resolved=roleColor(n.style_ref||n.role,doc.style.palette),color=style.id==="line-minimal"?((n.style_ref||n.role)==="note"?"#D55E00":"#0E1116"):resolved.stroke,bodyFill=style.id==="line-minimal"?"#FFFFFF":resolved.fill,layout=nodeLayout(n,font),body=layout.body;
+    const resolved=roleColor(n.style_ref||n.role,doc.style.palette),customColor=doc.style.role_colors?.[n.style_ref||n.role],color=customColor||(style.id==="line-minimal"?((n.style_ref||n.role)==="note"?"#D55E00":"#0E1116"):resolved.stroke),bodyFill=style.id==="line-minimal"?"#FFFFFF":customColor?tintColor(customColor,"#FFFFFF",.9):resolved.fill,layout=nodeLayout(n,font),body=layout.body;
     const fill=style.fill==="outline"||n.kind==="text"?"none":bodyFill;
     const stroke=color,rx=n.kind==="pill"?body.h/2:Math.min(style.radius_mm,body.w/4,body.h/4);
     const palette={...style,body_fill:bodyFill,line_color:stroke,accent_colors:[color,...style.accent_colors.filter(c=>c!==color)]};
     let shape="",frame="";
-    if(n.kind==="glyph") {
+    if(n.kind==="icon"&&n.icon){shape=`<g data-scientific-icon="${esc(n.icon)}" data-icon-ready="${!!icons[n.icon]}" transform="translate(${body.x} ${body.y})">${icons[n.icon]?iconMarkup(n.icon,body.w,body.h,color,prefix+"-"+n.id,icons):`<rect width="${body.w}" height="${body.h}" fill="none" stroke="${esc(color)}" stroke-dasharray="1 1"><title>图标载入中</title></rect>`}</g>`;}
+    else if(n.kind==="glyph") {
       shape=`<g data-scientific-glyph="${esc(n.glyph)}" transform="translate(${body.x} ${body.y})"><title>Schematic vector glyph</title>${glyphMarkup(n.glyph as GlyphKind,body.w,body.h,palette,n.id)}</g>`;
       if(n.boxed)frame=`<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="${style.radius_mm}" fill="${esc(bodyFill)}" stroke="${esc(color)}" stroke-width="${line}"/>`;
       if(n.boxed&&style.iso){const d=2.2;frame=`<path d="M${n.x} ${n.y} H${n.x+n.w} L${n.x+n.w+d} ${n.y-d} H${n.x+d} Z" fill="${tintColor(bodyFill,"#FFFFFF",.35)}" stroke="${stroke}" stroke-width="${line}"/><path d="M${n.x+n.w} ${n.y} L${n.x+n.w+d} ${n.y-d} V${n.y+n.h-d} L${n.x+n.w} ${n.y+n.h} Z" fill="${tintColor(bodyFill,stroke,.35)}" stroke="${stroke}" stroke-width="${line}"/>`+frame;}
@@ -102,5 +106,5 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
     const x=doc.legend.position.endsWith("right")?doc.canvas.width_mm-w-2:2,y=doc.legend.position.startsWith("bottom")?doc.canvas.height_mm-h-2:2;
     return `<g data-diagram-legend="true"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${esc(doc.canvas.background)}" fill-opacity="0.96"/>${kinds.map((kind,i)=>{const cy=y+2+(i+.5)*(font*1.4+1);return `<path d="M${x+1} ${cy} H${x+(["inhibit","bind"].includes(kind)?8:5.875)}" stroke="${esc(kind==="inhibit"?paletteOf(doc.style.palette).c:style.line_color)}" stroke-width="${edgeLine}"${["indirect","transport"].includes(kind)?' stroke-dasharray="1.5 1"':""}/>${edgeSymbol({x:x+1,y:cy},{x:x+8,y:cy},kind,kind==="inhibit"?paletteOf(doc.style.palette).c:style.line_color,edgeLine)}${text(edgeNames[kind],{x:x+9,y:cy-font*.8,w:w-10,h:font*1.5},style.text_color,"left")}`;}).join("")}</g>`;
   })():"";
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${doc.canvas.width_mm}mm" height="${doc.canvas.height_mm}mm" viewBox="0 0 ${doc.canvas.width_mm} ${doc.canvas.height_mm}" role="img" aria-label="机制图" font-family="${esc(style.font_family)}" font-weight="${style.id==="sketch"?700:["soft-illustration","conference-framework","isometric"].includes(style.id)?600:500}"><title>Mechanism diagram</title>${defs}${thumbnail?'<style>path,rect,ellipse,circle{vector-effect:non-scaling-stroke;stroke-width:1px}</style>':""}<rect width="100%" height="100%" fill="${esc(doc.canvas.background)}"/>${zones}${edges}${nodes}${annotations}${legend}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${doc.canvas.width_mm}mm" height="${doc.canvas.height_mm}mm" viewBox="0 0 ${doc.canvas.width_mm} ${doc.canvas.height_mm}" role="img" aria-label="机制图" font-family="${esc(style.font_family)}" font-weight="${style.id==="sketch"?700:["soft-illustration","conference-framework","isometric"].includes(style.id)?600:500}"><title>Mechanism diagram</title>${defs}${thumbnail?'<style>path,rect,ellipse,circle{vector-effect:non-scaling-stroke;stroke-width:1px}</style>':""}<rect width="100%" height="100%" fill="${esc(doc.canvas.background)}"/>${zones}${edges}${nodes}${annotations}${legend}${(doc.artworks||[]).filter(a=>!a.hidden).map(a=>`<g data-artwork-id="${esc(a.id)}">${artworkMarkup(a,prefix+"-art-"+a.id)}</g>`).join("")}</svg>`;
 }

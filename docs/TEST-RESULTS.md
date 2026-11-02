@@ -1,3 +1,148 @@
+## 2026-11-02 · PR #7合并前D8小修与CI换行修复
+
+- 前端 `npm.cmd --prefix frontend test -- --run --maxWorkers=2`：658/658、78文件；`npm.cmd --prefix frontend run build`（tsc/Vite）通过。新增keep/source两条前端交互测试，断言D3 info只留报告、D8显示节点/原文、禁止补造用词、两种操作在最终决定传递、一次草稿编辑。
+- 隔离H2相关后端 `mvn.cmd -B -f backend/pom.xml -Dtest=DiagramAgentRunTest,DiagramIconsTest,SvgSanitizerTest,DiagramReviewTest test`：20/20，0失败/跳过；覆盖原文归属、拒绝替换非D8节点/补造词、同选择重试、不同选择409，以及全部151图标安全/净化/实际字节哈希和LF规范化。
+- 原 `scripts/test-agent.ps1 -Desktop -Specs @('e2e/diagram-agent.spec.ts','e2e/diagram-review.spec.ts','e2e/diagram-assets.spec.ts') -FixturePort 18770`：9/9，0失败/跳过；生产JAR+独立H2，真实JVM审计重启/中断恢复通过，240模板几何0error。D8真实预览→服务端确认→一次撤销/重做→手动保存后标签确为Our compound，追改通过。
+- 上轮远端CI失败根因：67项图标清单SHA按Windows工作副本CRLF计算，而Git实际保存LF；Windows干净检出另暴露净化器使用系统换行。现在固定净化输出LF、按Git暂存的151个实际SVG字节核对清单，原安全/哈希断言不降级，另加跨换行一致性测试。
+- 本轮早期前端测试有一次预览尚未就绪的同步查询失败，改为等待预览后通过；tsc暴露测试使用ES2023 findLast，改用现有目标支持的reverse/find。首次LF修复尝试仍受系统序列化换行影响，改为显式规范LF后20项通过。
+- 两张1440×960视口截图已自检，见 `docs/test-evidence/diagram-19-BC-final/`。新版提案中没有D3 info，D8节点、关联原句、两项操作和选择状态均可见。
+- 本轮本地未重跑后端双库全量/完整桌面/MCP（范围内专项已通过，最终完整验证由PR CI执行）；draw.io人工交互、真实模型评测仍未执行，不访问真实工作区，不上传自己的真实模型结果。主人已通过第二轮视觉并明确授权最新追加提交CI全绿后普通merge；不发布、不改写历史。
+
+## 2026-11-02 · 19-B/C第二轮视觉返工
+
+- `npm.cmd --prefix frontend test -- --run --maxWorkers=2`：656/656，78文件；生产构建由原`build-desktop.ps1`完成，tsc/Vite通过。
+- `LABFLOW_TEST_DB=h2; mvn.cmd -B -f backend/pom.xml test`：476总数，474通过、2跳过、0失败；同命令mysql：481总数，479通过、2跳过、0失败。隔离33316 task19-mysql/labflow_test，完成后已核对PID/数据目录并关闭；未访问真实库。跳过为需显式开启的ServerEvaluationTest和DiagramEvaluationTest。
+- `npm.cmd --prefix mcp run check`、`test`、`run build`、`run test:integration`：类型/构建通过，18单测、4真实stdio集成通过；隔离生产JAR/H2。
+- `LABFLOW_CAPTURE=1; LABFLOW_DIAGRAM_CAPTURE_PHASE=diagram-19-C-review2; LABFLOW_CAPTURE_PREFIX=<本轮目录>; ./scripts/test-agent.ps1 -Desktop -All -FixturePort 18770`：111总数，108通过、3迁移fixture跳过，0失败/0 flaky；真实JVM重启审计/中断恢复通过。测试名的MySQL为历史名称，本次实际桌面H2。
+- 全240模板/风格/语言的实际浏览器几何审稿0error；事实取消/恢复、共享节点、修复取消、单次撤销/保存/追改、151图标安全/哈希、居中比例、懒加载缓存及导出内联均覆盖。最终小鼠图标空白规范化后`-Dtest=DiagramIconsTest`另跑2/2。
+- 首轮定向E2E 8过/1失败：新节点7.0/7被错误视作语义变化；修正后定向7/7及上述完整桌面全部通过。初始后端旧3pt期望按本轮要求改为7pt；图标规范化曾因尾部换行失败，重新规范化后保留原安全/哈希断言通过。
+- 证据：`docs/test-evidence/diagram-19-C-review2/VISUAL-PACKAGE.md`、`acceptance.json`。所有交付截图/GIF1440×960非full-page；截图逐张自检，主人视觉确认待进行。
+- 未执行：draw.io人工交互编辑/保存重开（CLI渲染既往通过不能替代人工）；真实模型评测/收费调用；真实工作区/托盘/SmartScreen重验。自己的真实模型报告/输出/费用未上传。
+
+
+## 2026-11-02 · 19-B/C视觉收尾1–3最终验收
+
+产品代码98e3047，后续只整理报告/证据；本轮无收费模型调用。所有结果为实际执行，不将人工待确认计为通过。
+
+| 命令/范围 | 结果 |
+| --- | --- |
+| LABFLOW_TEST_DB=h2 / mysql 分别 `mvn -B -f backend/pom.xml test` | H2 470总/468通过/2跳过；MySQL475总/473通过/2跳过，0失败 |
+| `npm --prefix frontend test -- --run --maxWorkers=2` | 652/652，76文件；补强图标ID一致性2/2、固定最低色差H2专项5/5 |
+| `scripts/test-agent.ps1 -Desktop -All -FixturePort 18770` | 110总，107通过/3跳过，0失败/0 flaky；生产构建通过、真实JVM审计重启通过 |
+| MCP check/test/build/test:integration | 类型/构建通过，18单测/4实际stdio集成通过 |
+| 20模板×6风格×2语言实际审稿 | 240组0 error |
+| 图标按需请求/缓存/导出内联 | 新浏览器E2E通过；模块加载不请求SVG，面板不加载全部150个，重复/切风格/导出共用缓存 |
+| SVG安全/复杂源像素比较 | 150个图标安全断言及缓存攻击/失败重试通过；复杂SVG净化前后200×120 RGBA一致 |
+
+后端两项跳过为显式服务/真实模型评测；桌面三项为需要独立迁移夹具与LABFLOW_MIGRATION_E2E=1。原R3测试原样通过，ColorVision.MIN_DELTA_E仍20。当前D3 rules_version为v2；默认分区机制图最低ΔE00=11.72481721271584（actor/model，protan），0 warning、5 info，配色区无提示。完整六色对见diagram-19-C/okabe-ito-all-pairs.json。
+
+活动机制图chunk 2709712→206946字节（−92.36%），gzip606989→74503字节（−87.73%）；从活动HTML/main定位，未把旧残留块当结果。SVG未移入其他JS块，而由原本机API按需提供。
+
+10张指定页面、助手流程及3段GIF已重新捕获；打包脚本断言全部为1440×960、非full-page，提供逐文件SHA256与ZIP完整性检查。正确验收记录在docs/test-evidence/diagram-19-C/acceptance.json，源码/命令/日志SHA256明确。真实模型评测成绩/输出/费用不入包、不上传。
+
+首次专项创建页一屏失败已修复，首轮前端3项失败及专项桌面12/13仍留本地日志；终轮全量全绿，旧助手/数据图断言未修改。只本地提交，未推送；视觉验收和draw.io打开编辑/保存重开仍待主人确认；托盘/SmartScreen未重做。
+
+## 2026-11-02 · 19-C收尾：按需图标
+
+- 移除前端SVG全集；仅生成150个ID，面板可视区域、当前文档按需请求原接口。成功/在途缓存复用；导出与审稿等待图标，失败报错，SVG内联。
+- 前端全量 `npm --prefix frontend test -- --run --maxWorkers=2` 652/652（76文件）；补强ID/清单一致性后专项2/2。缓存专项覆盖零初始请求、并发合并、重复命中、路径/恶意响应拒绝、失败显式重试及导出必需资产。
+- H2全量470总/468通过/2显式模式跳过；MySQL475总/473通过/2显式模式跳过，0失败。最小色差固定值断言H2专项5/5。R3/ColorVision代码未修改。
+- MCP类型/构建、18单测、4实际stdio集成通过。桌面相关懒加载与内联导出测试已通过，完整桌面终轮及截图打包继续；终轮结果见后续顶段。
+- 活动机制图chunk：2,709,712→206,946 bytes，gzip606,989→74,503 bytes；分别下降92.36%、87.73%。通过当前HTML/main动态依赖定位，未选取残留文件。
+- 首轮发现无风险文案造成创建右栏溢出，已移除并保留原一屏断言；150 SVG安全遍历在并发重任务下超过5秒，将本项设20秒并保留全部断言；旧助手取消追改用例首轮出现异步竞争，未改原断言，终轮前端全量通过。原始失败日志仍留.runtime/19-C-followup-*。
+- 无新增接口、迁移或依赖，无收费模型调用。完整人工验收仍等待主人。
+
+## 2026-11-02 · 19-C收尾：机制图D3分档
+
+- H2相关后端：DiagramCatalogTest、DiagramReviewTest、DiagramStyleIntegrationTest、ColorVisionTest共17/17；新边界测试覆盖<10、=10、<20、=20，原ColorVision阈值20断言保留。数据图R3未改；后续全量回归覆盖。
+- PaletteSelect单测2/2；构建结果见本轮最终验收。
+- 按主人明确要求覆盖机制图旧统一20提示：<10 warning，10–20 info仅审稿；颜色值不变。同色不同角色仍如实报告0。diagram rules_version升级v2。
+- 桌面E2E与双库全量在图标按需加载完成后统一执行；此处尚未执行。
+
+## 2026-11-01 · 19-C最终自动验收（连同19-B回归）
+
+产品代码a59b303，后续只补文档与测试证据。没有收费模型调用，自己的模型评测报告/输出/费用仍仅本地。
+
+| 实际执行 | 结果 |
+| --- | --- |
+| `LABFLOW_TEST_DB=h2; mvn -B -f backend/pom.xml test` | 469总，467通过、2跳过、0失败 |
+| `LABFLOW_TEST_DB=mysql; mvn -B -f backend/pom.xml test` | 474总，472通过、2跳过、0失败；只用33316/task19-mysql/labflow_test |
+| `npm --prefix frontend test -- --run --maxWorkers=2` | 649/649，75文件；旧图表快照未刷新 |
+| `npm --prefix frontend run build` | 通过；已知SVG图标chunk体积提示 |
+| MCP check/test/build/test:integration | 类型/构建通过；18单测、4实际stdio集成通过 |
+| `scripts/test-agent.ps1 -Desktop -All -FixturePort 18770` | 109总，106通过、3跳过、0失败/0 flaky；生产JAR+隔离H2 |
+| 真实JVM审计重启 | 通过；测试夹具清理 |
+| 20模板×6风格×2语言实际几何 | 240组0 error；D3警告保留 |
+| SVG攻击与正常复杂SVG | 攻击断言通过；渐变/clip/use/CSS/文字净化前后RGBA逐像素一致 |
+| draw.io.exe实际CLI打开和渲染 | 通过；主人交互编辑确认未执行，见SMOKE-14-5.md |
+
+后端跳过：现有ServerEvaluationTest显式服务评测、新增DiagramEvaluationTest显式真实模型模式；桌面跳过：migration.spec.ts三项需要另行预置迁移夹具及LABFLOW_MIGRATION_E2E=1。均未计通过。系统托盘/SmartScreen人工项未重跑。
+
+证据docs/test-evidence/diagram-19-C/README.md、acceptance.json、1440截图、operations.gif、review-repair.gif、assets-operations.gif和.drawio样例；测试原始日志保留.runtime，规范化SHA256在acceptance.json。测试创建的临时项目和服务已清理，专用MySQL验证datadir/PID后关闭。
+
+变更、共享方法、API、V11双库迁移、许可来源和人工清单见DIAGRAMS.md、API.md、MCP.md与两个B/C验收README。19-C没有新增迁移/依赖。19-A已PR/CI合并；B/C仅本地逐节提交，不推送。
+
+## 2026-11-01 · 19-15 draw.io导出
+
+- 前端导出专项4/4：合法XML、原生元素数量、父子关系、特殊字符/换行、边类型、内嵌SVG及artwork状态；build通过。
+- 桌面 `./scripts/test-agent.ps1 -Desktop -Specs diagram-assets.spec.ts -FixturePort 18770` 4/4，真实JVM审计重启通过；包括真实.drawio下载与解析，导出不保存版本。
+- 本机draw.io.exe `--export --format png --scale 2` 实际解析jak-stat.drawio并成功输出jak-stat-drawio.png，已查看渲染图；主人手工修改标签/拖动节点清单未执行，见desktop/SMOKE-14-5.md。
+- 证据docs/test-evidence/diagram-19-C/：drawio-export.png、exports/jak-stat.drawio、exports/editor-mechanism.drawio、exports/jak-stat-drawio.png及8张实际操作帧组装的assets-operations.gif。
+- 后端/MySQL本节未单独执行：没有后端改动，随后C总验收覆盖。无新依赖/迁移/接口、无共享图表方法修改。
+
+## 2026-11-01 · 19-14 外部agent通道
+
+- H2：`mvn -B -f backend/pom.xml -Dtest=DiagramExternalIntegrationTest,DiagramOperationsTest,SvgSanitizerTest test` 26/26。
+- 前端：`npm --prefix frontend test -- --run src/diagram/artwork.test.ts src/diagram/editing.test.ts --maxWorkers=2` 11/11；build通过（已知chunk体积提示）。
+- MCP：check/build通过；单测18/18；真实stdio集成4/4，使用隔离desktop JAR与临时H2。
+- 桌面：`./scripts/test-agent.ps1 -Desktop -Specs diagram-assets.spec.ts -FixturePort 18770` 3/3，真实JVM审计重启通过；含MCP简报→SVG导入→尺寸/锁定/隐藏→保存→恢复，复杂SVG净化前后200×120 RGBA逐像素一致。
+- MySQL本节未单跑，纳入C总验收。没有收费模型调用。证据docs/test-evidence/diagram-19-C/external-artwork.png。
+- 共享变更：editorUrl新增可选diagrams路由，旧默认figures保留；AgentRunService仅修正diagram模式trace的prompt_version来源。原预算/幂等/取消/恢复路径不变。新增接口见API.md；无新增依赖/迁移。
+
+## 2026-11-01 · 19-13：本地参考图提取与参数模板
+
+PNG/JPG使用浏览器内确定性加权k-means提取最多6色并排除背景/透明像素；SVG本地统计显式颜色、CSS、物理线宽/圆角/字体。只向本机API发送风格参数及当前文档，不发送参考图片、文件名或像素；原图不保存。新增可选style.role_colors保存六角色原色值，实际渲染与共享ColorVision按相同轮廓检查；默认六套配色与ΔE20阈值不变。复用style_templates，kind=diagram；旧图表列表过滤此类型，备份恢复兼容，无新表/迁移/依赖。
+
+相关后端6/6（含模板备份往返、只读预览、未知图片字段拒绝和精确轮廓ΔE）；前端131/131及构建通过；桌面资产/参考图E2E2/2和JVM重启通过，包含自生成SVG/PNG、本地图片不外传、SVG外链不请求、保存参数、应用/撤销/重开。截图docs/test-evidence/diagram-19-C/reference-style.png。尚未运行C全量，将在MCP/图层/drawio完成后统一验收。
+
+## 2026-11-01 · 19-11：150图标、配色显示与署名
+
+150个净化后SVG入库（131 CC0、19 CC BY 4.0），固定Bioicons提交d29e766ea7580b8063c4f47b29e872db40a4d979；逐项来源/作者/许可/修改/哈希和许可全文完整。前端与验证器ID由相同资源生成；内置图标渲染无远程请求。左栏支持中英文搜索、按skill标签推荐和点击/拖拽；D9可预览set_attribution修复，导出默认附署名TXT或要求复制图注。相关后端30/30；更新skill可用节点版本1.0.1后的兼容专项7/7；前端129/129及构建通过。桌面真实E2E1/1（插图→D9→修复→SVG+署名TXT两项下载），JVM审计重启通过。截图docs/test-evidence/diagram-19-C/icon-library.png、icon-export-attribution.png。继续C其它部分和全量验收；无新增依赖/迁移。原始候选中SVG包装的位图、重复ID等8项被拒绝，已换用其它合规矢量，不放宽净化器。
+
+## 2026-11-01 · 19-12：统一SVG净化边界（先于图标入库的依赖）
+
+新增SvgSanitizer，仅使用JDK XML，不新增依赖。实际运行SvgSanitizerTest 4/4，覆盖XXE/DOCTYPE/实体、2MB/20000元素/64层限制、脚本/foreignObject/iframe/image、事件属性、外部和javascript链接、CSS外链/@import、递归use、重复ID，以及正常渐变/clip/use/文字和幂等。安全CSS展平成元素属性，防止选择器影响宿主界面。图标入库与SVG导入将复用本类；复杂SVG视觉前后对照E2E尚未执行，留待19-C接线后验收，不以字符串测试代替视觉检查。19-12作为19-11的入库前置依赖先单独提交。
+
+## 2026-11-01 · 19-B总验收
+
+前端637/637及构建；H2 456通过+2真实模式跳过；MySQL 461通过+2跳过；MCP单测16/16、真实stdio集成3/3；完整桌面102通过、0失败、3原迁移夹具条件跳过、0 flaky，真实JVM审计恢复通过。240模板真实几何0 error。原任务18/suite回放未改判据，随双库原样通过。报告与截图见test-evidence/diagram-19-B/README.md；自己的模型评测成绩/输出/费用仅留.runtime。此前失败和复跑原因在报告中保留。按主人授权不停在B，继续19-C；B/C仅本地提交。
+
+## 2026-11-01 · 19-10：合成描述、人工协议回放与真实模式入口
+
+新增36条synthetic描述、每skill两条共12条人工协议夹具。DiagramEvaluationTest在隔离H2中运行完整AgentRunService流程，12条回放通过；真实模式测试按显式开关跳过1项，没有收费调用。生成成绩/费用报告仅在.runtime/diagram-eval，不提交或上传；AGENT-EVALUATION只写方法、缺失值和D4/D5跳过局限。复用EvaluationSpendBudget调用前检查/审计结算与TeamBootstrap，不修改任务18题集或判据。
+
+## 2026-11-01 · 19-9：事实确认、结构提案与D8
+
+改动：机制图语义引擎、原AgentRunService模式分流及共享模型调用端口、元数据兼容扩展、确定性D8、确认修复服务、前端助手与蓝色编号。相关后端32/32（含原单助手/协作）；前端全量637/637、构建通过；相关桌面E2E4/4，含事实编辑、取消修复、应用、一次撤销、追改、240模板真实几何，以及JVM审计重启。截图在docs/test-evidence/diagram-19-B/。首轮夹具finish_reason误标，修正夹具后复跑；截图发现未加载编号框样式，补透明边框及可读文字断言后复跑。随后补了忽略/恢复真实交互，将在B全量验收覆盖。
+
+首次H2全量458项中1失败、2跳过：新V11尚未登记到H2兼容探针。仅追加V11七条实测期望，原V1–V10和旧业务断言不变；探针/机制图/协议专项复跑8通过+1明确真实模型跳过。双库与完整桌面总验收继续，不提前标全绿。无新依赖，不调用收费模型。
+
+## 2026-11-01 · 19-9a：V11机制图绑定与共享账本
+
+按19-B0方案A新增V11 MySQL/H2配对迁移，既有迁移不改。AgentAuditService/Repository兼容可空数据版本、独立机制图会话绑定与revision核验；直接调用既有预留和结算方法。H2执行DiagramAgentLedgerTest、MigrationParityTest及原样AgentAuditIntegrationTest：14/14，含迁移、不可跨图重用会话和重复完成不重复结算。MySQL未执行：留给B总验收；前端/E2E未执行：本节仅数据库与审计接入，19-9继续实现。
+
+## 2026-11-01 · 19-8：六skill与20个真实科研示例
+
+在已通过的12模板上增加8个独立示例，覆盖免疫识别、多模态融合、RNA建库、催化反应、光激发、材料界面、干涉光路和负反馈；新建页分类读取skill目录。相关后端5/5；前端renderer/export 127/127，新模板新增48份快照，旧快照未更新；前端生产构建通过（既有chunk-size提示）。相关E2E未执行：待19-9接线后统一运行；模板几何验收将扩展为20×6×2=240组，不将快照当视觉验收。
+
+## 2026-11-01 · 19-7：版本化skill方案包
+
+新增六个skill的格式、独立中文规划、检查参数和固定提交来源；目录经diagram-catalog下发。H2环境执行 `mvn -B -f backend/pom.xml -Dtest=DiagramSkillsTest,DiagramCatalogTest test`：5/5，无失败；类型引用、来源、版本、40连续字符独立编写检查通过。本节无UI变更，前端和E2E未执行（后续19-B总验收统一运行）；无迁移和新依赖。
+
+## 2026-11-01 · 19-A集成 / 19-B0审计
+
+PR #6的Test LabFlow（41278919309）和Windows desktop package（41278919185）均成功，包含双库、前端、跨平台MCP、真实EXE探针、窗口探针和完整打包E2E；按主人授权普通合并main。19-B0为只读审计，未新增运行测试；选择方案A，完整代码假定位置及验证计划见development/19-B0-AUDIT.md。真实模型评测结果和旧评测分支历史未推送。
+
 # 2026-10-31 · 19-A-7补验后的完整19-A回归
 
 # 19-A-7补充与19-A最终回归 · 2026-10-31
