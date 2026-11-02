@@ -1,0 +1,121 @@
+{
+  "date": "2026-11-02",
+  "scope": "19-B/C second visual review: assistant, icon grids, review defaults; automated acceptance and agent screenshot self-check",
+  "source_commit": "862390ba9f92a768d5e72a44b25477fd00672d84",
+  "frontend": {
+    "passed": 656,
+    "files": 78,
+    "failed": 0,
+    "build": "passed: original desktop staging build"
+  },
+  "h2": {
+    "total": 476,
+    "passed": 474,
+    "skipped": 2,
+    "failed": 0
+  },
+  "mysql": {
+    "total": 481,
+    "passed": 479,
+    "skipped": 2,
+    "failed": 0
+  },
+  "mcp": {
+    "typecheck": "passed",
+    "build": "passed",
+    "unit_passed": 18,
+    "stdio_passed": 4
+  },
+  "desktop": {
+    "total": 111,
+    "passed": 108,
+    "skipped": 3,
+    "failed": 0,
+    "flaky": 0,
+    "mode": "original scripts/test-agent.ps1 -Desktop -All; production JAR, isolated H2",
+    "audit_restart": "passed"
+  },
+  "skip_reasons": {
+    "backend": [
+      "ServerEvaluationTest requires explicit service evaluation mode",
+      "DiagramEvaluationTest requires explicit real-model opt-in"
+    ],
+    "desktop": [
+      "3 migration.spec.ts cases require a separate seeded migration fixture and LABFLOW_MIGRATION_E2E=1"
+    ]
+  },
+  "geometry": {
+    "total": 240,
+    "errors": 0
+  },
+  "d3": {
+    "rules_version": "diagram-review-v3",
+    "warning_below": 10,
+    "info_below": 20,
+    "chart_R3_threshold_unchanged": 20,
+    "default_template": "mechanism / nature-flat / okabe-ito",
+    "minimum_delta_e": 11.72481721271584,
+    "minimum_roles": [
+      "actor",
+      "model"
+    ],
+    "minimum_colors": [
+      "#0069A4",
+      "#BC6F9A"
+    ],
+    "warning_pairs": 0,
+    "info_pairs": 5,
+    "palette_values_unchanged": true,
+    "all_pairs_file": "../diagram-19-C/okabe-ito-all-pairs.json"
+  },
+  "icons": {
+    "total": 151,
+    "cc0": 132,
+    "cc_by_4": 19,
+    "original_ids_retained": 150,
+    "unsearched_category_grid_screenshots": 3,
+    "content_fit_long_axis_minimum": 0.9,
+    "content_fit_center_error_maximum": 0.03,
+    "benchmark_file": "icon-loading-benchmark.json",
+    "raw_bytes_before": 2709712,
+    "raw_bytes_after": 216712,
+    "gzip_bytes_before": 606989,
+    "gzip_bytes_after": 77869
+  },
+  "assistant": {
+    "prompt_version": "diagram-assistant-v2",
+    "fact_exclusion": "preview and server confirmation independently filter nodes, edges and shared entities; undo and refinement passed",
+    "default_font_pt": 7,
+    "default_outline_pt": 1,
+    "explicit_smaller_style_consent_test": "passed",
+    "one_primary_action_per_stage": "passed"
+  },
+  "source_note": "Final mouse-vector whitespace normalization is render-equivalent to the full desktop run; original sanitizer/id/hash assertions re-run separately: DiagramIconsTest 2/2 passed. No application logic changed after full runs.",
+  "owner_visual_review": "pending owner review of this second-round package; agent inspected every curated PNG",
+  "owner_drawio_edit_smoke": "not executed: manual owner interaction/edit/save/reopen confirmation remains pending",
+  "real_model_evaluation": "not executed; no paid model calls",
+  "real_model_calls": 0,
+  "evaluation_reports": "own real-model reports, raw outputs and costs remain local; excluded from Git and package",
+  "screenshot_viewport": {
+    "width": 1440,
+    "height": 960,
+    "full_page": false
+  },
+  "publication": {
+    "push_and_pr_authorized": true,
+    "merge": false,
+    "release": false
+  },
+  "logs": "local only; hashes are raw file SHA256, not uploaded log contents",
+  "log_sha256": {
+    ".runtime/19-C-review2-h2-final.log": "17bb620b87153c71067e441d0822b7785cc73c65eb83af83f032b86fdf365907",
+    ".runtime/19-C-review2-mysql-final.log": "db29f9c94da2c8e4a239d070c34d16f335f5bdb74c615369d66748983cbc7a4f",
+    ".runtime/19-C-review2-front-final.log": "00fe7f011f15a92294e6ad499b4df9c28f60d7e126538bcb2a0d6547e63413bc",
+    ".runtime/19-C-review2-desktop-final.log": "5c24aa28ef16091518e9b2d4a54dc1a917eacc6d167beb77c89a983df69a3f5a",
+    ".runtime/19-C-review2-mcp-check.log": "76188e578f893e6d373aef6e6d115a87a315df52847d2df72d64c8708609ebc5",
+    ".runtime/19-C-review2-mcp-unit.log": "6454d529d58920d9c9e95bf1b94964002daebb5e99e413d6ce5772ed8b20e220",
+    ".runtime/19-C-review2-mcp-build.log": "50bd7ad2ea9be28a455e26a45a48af2f56adee715aabe5cc90ec158f7ffd3e40",
+    ".runtime/19-C-review2-mcp-stdio.log": "11800207012c2a93d8865fe4bca5a34f4f8734a7b77fd37ec05e9c001e782145",
+    ".runtime/19-C-review2-icons-canonical-final2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

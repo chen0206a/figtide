@@ -1,5 +1,17 @@
 ## 2026-11-02 · 19-B/C视觉收尾1–3最终验收
 
+## 2026-11-02 · 19-B/C第二轮视觉返工
+
+- `npm.cmd --prefix frontend test -- --run --maxWorkers=2`：656/656，78文件；生产构建由原`build-desktop.ps1`完成，tsc/Vite通过。
+- `LABFLOW_TEST_DB=h2; mvn.cmd -B -f backend/pom.xml test`：476总数，474通过、2跳过、0失败；同命令mysql：481总数，479通过、2跳过、0失败。隔离33316 task19-mysql/labflow_test，完成后已核对PID/数据目录并关闭；未访问真实库。跳过为需显式开启的ServerEvaluationTest和DiagramEvaluationTest。
+- `npm.cmd --prefix mcp run check`、`test`、`run build`、`run test:integration`：类型/构建通过，18单测、4真实stdio集成通过；隔离生产JAR/H2。
+- `LABFLOW_CAPTURE=1; LABFLOW_DIAGRAM_CAPTURE_PHASE=diagram-19-C-review2; LABFLOW_CAPTURE_PREFIX=<本轮目录>; ./scripts/test-agent.ps1 -Desktop -All -FixturePort 18770`：111总数，108通过、3迁移fixture跳过，0失败/0 flaky；真实JVM重启审计/中断恢复通过。测试名的MySQL为历史名称，本次实际桌面H2。
+- 全240模板/风格/语言的实际浏览器几何审稿0error；事实取消/恢复、共享节点、修复取消、单次撤销/保存/追改、151图标安全/哈希、居中比例、懒加载缓存及导出内联均覆盖。最终小鼠图标空白规范化后`-Dtest=DiagramIconsTest`另跑2/2。
+- 首轮定向E2E 8过/1失败：新节点7.0/7被错误视作语义变化；修正后定向7/7及上述完整桌面全部通过。初始后端旧3pt期望按本轮要求改为7pt；图标规范化曾因尾部换行失败，重新规范化后保留原安全/哈希断言通过。
+- 证据：`docs/test-evidence/diagram-19-C-review2/VISUAL-PACKAGE.md`、`acceptance.json`。所有交付截图/GIF1440×960非full-page；截图逐张自检，主人视觉确认待进行。
+- 未执行：draw.io人工交互编辑/保存重开（CLI渲染既往通过不能替代人工）；真实模型评测/收费调用；真实工作区/托盘/SmartScreen重验。自己的真实模型报告/输出/费用未上传。
+
+
 产品代码98e3047，后续只整理报告/证据；本轮无收费模型调用。所有结果为实际执行，不将人工待确认计为通过。
 
 | 命令/范围 | 结果 |
