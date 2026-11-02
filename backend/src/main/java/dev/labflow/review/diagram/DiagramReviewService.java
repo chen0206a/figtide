@@ -40,11 +40,11 @@ public class DiagramReviewService {
       String a=pair.path("roles").get(0).asText(),b=pair.path("roles").get(1).asText();var names=Map.of("actor","参与者","process","过程","data","数据","model","模型","output","输出","note","注释");
       List<Map<String,Object>> fix=List.of();
       // The default palette's failing pairs are an explicit owner decision, never silently recoloured.
-      if(!doc.at("/style/palette").asText("okabe-ito").equals("okabe-ito"))for(var p:catalog.palettes()){
+      if(pair.path("severity").asText().equals("warning")&&!doc.at("/style/palette").asText("okabe-ito").equals("okabe-ito"))for(var p:catalog.palettes()){
         var candidate=doc.deepCopy();((ObjectNode)candidate.path("style")).put("palette",p.path("id").asText());
         if(json.valueToTree(catalog.paletteAudit(candidate)).path("safe").asBoolean()){fix=op("set_style","palette",p.path("id").asText());break;}
       }
-      issues.add(issue("D3",a+"-"+b,"warning",names.get(a)+" / "+names.get(b)+" 轮廓色区分不足","实际轮廓 "+pair.path("colors")+"；三种色觉模拟最小 ΔE "+String.format(Locale.ROOT,"%.6f",pair.path("minimum_delta_e").asDouble())+"，要求 ≥ 20。保留原色值，用标签与形状辅助；是否换配色由你决定。",fix,"canvas",0));
+      issues.add(issue("D3",a+"-"+b,pair.path("severity").asText(),names.get(a)+" / "+names.get(b)+(pair.path("severity").asText().equals("info")?" 轮廓色接近（参考）":" 轮廓色区分不足"),"实际轮廓 "+pair.path("colors")+"；三种色觉模拟最小 ΔE "+String.format(Locale.ROOT,"%.6f",pair.path("minimum_delta_e").asDouble())+"。< 10 提示风险；10–20 仅审稿 info。保留原色值，用标签与形状辅助；是否换配色由你决定。",fix,"canvas",0));
     }
     if(facts==null){for(String id:List.of("D4","D5"))skipped.addObject().put("rule",id).put("status","skipped").put("reason","需要同一渲染器采集的完整几何信息");}
     else {
@@ -84,6 +84,6 @@ public class DiagramReviewService {
     }else skipped.addObject().put("rule","D8").put("status","skipped").put("reason","仅检查具有AI来源标记的标签");
     if(!catalog.icons().attribution(doc).isBlank()&&!doc.at("/meta/include_icon_attribution").asBoolean(true))checked.add(issue("D9","attribution","warning","需要附上图标署名","图中使用CC BY 4.0图标，请在导出时附作者、来源链接、许可和修改说明。",op("set_attribution","enabled",true),"canvas",0));else passed.add("D9");
 
-    var result=json.createObjectNode().put("protocol_version",1).put("rules_version","diagram-review-v1").put("journal",journal);result.set("issues",json.valueToTree(checked));result.set("passed",passed);result.set("skipped",skipped);return result;
+    var result=json.createObjectNode().put("protocol_version",1).put("rules_version","diagram-review-v2").put("journal",journal);result.set("issues",json.valueToTree(checked));result.set("passed",passed);result.set("skipped",skipped);return result;
   }
 }

@@ -29,7 +29,7 @@ class DiagramReviewTest {
     var scaled=service.review(doc(),facts(doc()),json.createObjectNode().put("width_mm",88));assertFalse(issues(scaled,"D1").isEmpty());assertFalse(issues(scaled,"D2").isEmpty());
   }
   @Test void paletteChecksOnlyUsedOutlinesAndRetainsDefaultOwnerDecision(){
-    var d=(ObjectNode)catalog.template("mechanism","en");var r=review(d,null);assertFalse(issues(r,"D3").isEmpty());for(var i:issues(r,"D3")){assertFalse(i.path("fixable").asBoolean());assertTrue(i.path("detail").asText().contains("20"));assertTrue(i.path("detail").asText().contains("#"));}
+    var d=(ObjectNode)catalog.template("mechanism","en");var r=review(d,null);assertFalse(issues(r,"D3").isEmpty());for(var i:issues(r,"D3")){assertFalse(i.path("fixable").asBoolean());assertTrue(i.path("detail").asText().contains("20"));assertEquals("info",i.path("severity").asText());assertTrue(i.path("detail").asText().contains("#"));}
     for(var n:d.path("nodes"))((ObjectNode)n).put("role","actor");assertTrue(issues(review(d,null),"D3").isEmpty());assertFalse(r.path("passed").toString().contains("D4"));assertEquals(3,r.path("skipped").size());assertTrue(r.path("passed").toString().contains("D9"));
   }
   @Test void overflowAndOverlappingTextTriggerAndSafeTextPasses(){
@@ -65,7 +65,7 @@ class DiagramReviewTest {
       ((ObjectNode)d.path("style")).put("palette",palette.path("id").asText());
       for(var i:issues(review(d,null),"D3"))if(i.path("fixable").asBoolean()){
         var repaired=DiagramOperations.apply(d,i.path("fix"));var chosen=catalog.palettes().stream().filter(p->p.path("id").asText().equals(repaired.at("/style/palette").asText())).findFirst().orElseThrow();
-        assertTrue(ColorVision.minimum(DiagramPaletteAudit.outline(chosen,"nature-flat","actor"),DiagramPaletteAudit.outline(chosen,"nature-flat","model"))>=20);found=true;
+        assertTrue(ColorVision.minimum(DiagramPaletteAudit.outline(chosen,"nature-flat","actor"),DiagramPaletteAudit.outline(chosen,"nature-flat","model"))>=10);found=true;
       }
     }
     assertTrue(found,"At least one nondefault palette supports a validated actor/model repair");

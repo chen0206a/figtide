@@ -69,3 +69,10 @@ V9 配对迁移增加 mode（默认 single，18-A 不启用协作）、review_js
 ![审稿编号与未应用的修复预览](screenshots/review-markers.png)
 
 ![助手提案的三组内容](screenshots/review-proposal-groups.png)
+
+
+## 2026-11-02：机制图D3两档提示
+
+机制图只比较当前实际使用的语义角色轮廓（含style_ref或自定义role_colors），不比较浅填充；排除纯文字和独立标记。仍使用既有ColorVision三种Machado严重度1.0模拟及CIEDE2000，取三种模拟中的最小ΔE00。低于10为warning，配色区注明两个角色与数值；10≤ΔE00<20仅在审稿报告列为info，配色区及画布不提示，无自动修复；达到20不报告。相同色值的不同角色仍按0报告，不去重或偷改映射。默认分区机制图（nature-flat/Okabe–Ito）四角色的最小值重新用Java计算，具体见本轮验收材料。其他模板若包含同色角色仍按规则报告。
+
+数据图R3不变，ColorVision.MIN_DELTA_E仍为20；配色原色值、旧文档和用户确认/保存流程不变。

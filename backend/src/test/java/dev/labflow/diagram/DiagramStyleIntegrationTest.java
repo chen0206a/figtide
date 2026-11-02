@@ -27,7 +27,7 @@ class DiagramStyleIntegrationTest {
   @Test void previewIsReadOnlyAndAuditsExactUsedOutlineColors()throws Exception{
     long p=json.valueToTree(workspace.createProject("Style preview synthetic","No reference files uploaded")).path("id").asLong();var doc=(ObjectNode)catalog.template("mechanism","en");var input=json.createObjectNode();input.set("doc",doc);input.set("profile",profile());
     var response=mvc.perform(post("/api/projects/"+p+"/diagram-style-templates/preview").contentType("application/json").content(input.toString())).andExpect(status().isOk()).andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);var preview=json.readTree(response).path("doc");assertTrue(styles.diagrams(p).isEmpty());assertFalse(doc.path("style").has("role_colors"));
-    var audit=json.valueToTree(catalog.paletteAudit(preview));assertEquals("#0072B2",audit.at("/outlines/actor").asText());assertEquals(20,audit.path("threshold").asInt());for(var pair:audit.path("failing_pairs"))assertEquals(ColorVision.minimum(pair.path("colors").get(0).asText(),pair.path("colors").get(1).asText()),pair.path("minimum_delta_e").asDouble());
+    var audit=json.valueToTree(catalog.paletteAudit(preview));assertEquals("#0072B2",audit.at("/outlines/actor").asText());assertEquals(10,audit.path("threshold").asInt());for(var pair:audit.path("failing_pairs"))assertEquals(ColorVision.minimum(pair.path("colors").get(0).asText(),pair.path("colors").get(1).asText()),pair.path("minimum_delta_e").asDouble());
     input.put("image","private-original.png");mvc.perform(post("/api/projects/"+p+"/diagram-style-templates/preview").contentType("application/json").content(input.toString())).andExpect(status().isBadRequest());
   }
 }

@@ -1,3 +1,10 @@
+## 2026-11-02 · 19-C收尾：机制图D3分档
+
+- H2相关后端：DiagramCatalogTest、DiagramReviewTest、DiagramStyleIntegrationTest、ColorVisionTest共17/17；新边界测试覆盖<10、=10、<20、=20，原ColorVision阈值20断言保留。数据图R3未改；后续全量回归覆盖。
+- PaletteSelect单测2/2；构建结果见本轮最终验收。
+- 按主人明确要求覆盖机制图旧统一20提示：<10 warning，10–20 info仅审稿；颜色值不变。同色不同角色仍如实报告0。diagram rules_version升级v2。
+- 桌面E2E与双库全量在图标按需加载完成后统一执行；此处尚未执行。
+
 ## 2026-11-01 · 19-C最终自动验收（连同19-B回归）
 
 产品代码a59b303，后续只补文档与测试证据。没有收费模型调用，自己的模型评测报告/输出/费用仍仅本地。
