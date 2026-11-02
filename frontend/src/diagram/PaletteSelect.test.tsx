@@ -15,5 +15,5 @@ it('offers six compact chips without warning for 10–20 info pairs',()=>{
  const audits=[{id:'okabe-ito',preset:'nature-flat',safe:false,threshold:20,outlines:{},failing_pairs:[{roles:['actor','model'],colors:['#0069A4','#BC6F9A'],minimum_delta_e:11.724817,delta_e:[]}]}] as PaletteAudit[];
  const doc={style:{preset:'nature-flat'},nodes:[{kind:'glyph',glyph:'protein',role:'actor'},{kind:'glyph',glyph:'ligand',role:'model'}]} as DiagramDoc;
  const onChange=()=>{};render(<PaletteSelect compact doc={doc} audits={audits} onChange={onChange}/>);
- expect(screen.getByRole('group',{name:'机制图配色'}).querySelectorAll('button')).toHaveLength(6);expect(screen.getByRole('status')).toHaveTextContent('当前角色轮廓未发现低于 ΔE 10 的色对');expect(screen.queryByText(/色觉提示/)).toBeNull();
+ expect(screen.getByRole('group',{name:'机制图配色'}).querySelectorAll('button')).toHaveLength(6);expect(screen.queryByRole('status')).toBeNull();expect(screen.queryByText(/色觉提示/)).toBeNull();
 });

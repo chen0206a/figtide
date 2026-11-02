@@ -1,3 +1,4 @@
+import {prepareDiagramIcons} from './iconCache';
 import type {DiagramDoc,DiagramRect,DiagramStyle} from './model';
 import {renderDiagram} from './render/renderDiagram';
 
@@ -5,7 +6,8 @@ export type DiagramFacts={kind:'diagram';version:1;canvas:{width:number;height:n
 const rect=(r:DOMRect|SVGRect):DiagramRect=>({x:r.x,y:r.y,w:r.width,h:r.height});
 /** Measure a fresh rendering, including a repair candidate, never editor overlays. Only numeric facts leave this function. */
 export async function collectDiagramFacts(doc:DiagramDoc,style:DiagramStyle):Promise<DiagramFacts>{
-  const host=document.createElement('div');host.style.cssText='position:fixed;left:-20000px;top:0;pointer-events:none';host.innerHTML=renderDiagram(doc,style);document.body.append(host);
+  const icons=await prepareDiagramIcons(doc);
+  const host=document.createElement('div');host.style.cssText='position:fixed;left:-20000px;top:0;pointer-events:none';host.innerHTML=renderDiagram(doc,style,false,icons);document.body.append(host);
   try{
     await document.fonts.ready;const svg=host.querySelector('svg')!;
     const box=(el:SVGGraphicsElement):DiagramRect=>{const b=el.getBBox(),m=svg.getCTM()!.inverse().multiply(el.getCTM()!);const points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>new DOMPoint(x,y).matrixTransform(m)),xs=points.map(p=>p.x),ys=points.map(p=>p.y);return {x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)};};

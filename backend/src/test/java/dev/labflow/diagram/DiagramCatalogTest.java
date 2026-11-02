@@ -33,7 +33,7 @@ class DiagramCatalogTest {
     }
     var scoped=catalog.template("mechanism","en");var audit=json.valueToTree(catalog.paletteAudit(scoped));var used=DiagramPaletteAudit.usedRoles(scoped);
     for(var pair:audit.path("failing_pairs"))for(var r:pair.path("roles"))assertTrue(used.contains(r.asText()));
-    assertEquals(10,audit.path("threshold").asDouble());assertEquals(20,audit.path("info_threshold").asDouble());assertTrue(audit.path("safe").asBoolean());assertTrue(audit.path("failing_pairs").size()>0);for(var pair:audit.path("failing_pairs"))assertEquals("info",pair.path("severity").asText());
+    assertEquals(10,audit.path("threshold").asDouble());assertEquals(20,audit.path("info_threshold").asDouble());assertTrue(audit.path("safe").asBoolean());assertTrue(audit.path("failing_pairs").size()>0);assertEquals(11.72481721271584,java.util.stream.StreamSupport.stream(audit.path("failing_pairs").spliterator(),false).mapToDouble(v->v.path("minimum_delta_e").asDouble()).min().orElseThrow(),1e-9);for(var pair:audit.path("failing_pairs"))assertEquals("info",pair.path("severity").asText());
     assertEquals("#0069A4",audit.at("/outlines/actor").asText());
     ((ArrayNode)scoped.path("nodes")).removeAll();assertTrue(json.valueToTree(catalog.paletteAudit(scoped)).path("safe").asBoolean());
     var doc=DiagramValidatorTest.doc();DiagramValidator.validate(doc);((ObjectNode)doc.path("style")).put("palette","npg");DiagramValidator.validate(doc);((ObjectNode)doc.path("style")).put("palette","invalid");assertThrows(RuntimeException.class,()->DiagramValidator.validate(doc));

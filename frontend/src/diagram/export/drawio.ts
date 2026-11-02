@@ -1,3 +1,4 @@
+import type {IconAssets} from '../iconCache';
 import {effectiveStyle,type DiagramDoc,type DiagramStyle} from '../model';
 import {nodeLayout,ptToMm,edgePoints} from '../render/geometry';
 import {roleColor} from '../palettes';
@@ -9,7 +10,8 @@ const px=(mm:number)=>Number((mm*96/25.4).toFixed(4));
 const geom=(x:number,y:number,w:number,h:number)=>`<mxGeometry x="${px(x)}" y="${px(y)}" width="${px(w)}" height="${px(h)}" as="geometry"/>`;
 const image=(svg:string)=>'data:image/svg+xml,'+encodeURIComponent(svg);
 /** Uncompressed draw.io XML. Native structures remain distinct cells; labels are editable text. */
-export function diagramDrawio(doc:DiagramDoc,preset:DiagramStyle,name='FigTide mechanism'):string {
+export function diagramDrawio(doc:DiagramDoc,preset:DiagramStyle,name='FigTide mechanism',icons:IconAssets={}):string {
+  if(doc.nodes.some(n=>n.kind==='icon'&&n.icon&&!icons[n.icon]))throw new Error('图标尚未载入，请重试导出');
   const style=effectiveStyle(doc,preset),font=ptToMm(style.font_size_pt),fontPx=style.font_size_pt*96/72,line=style.line_width_pt*96/72;
   const cells=['<mxCell id="0"/>','<mxCell id="1" parent="0"/>'];
   const add=(id:string,value:string,skin:string,parent:string,geometry:string,kind:string,extra='')=>cells.push(`<mxCell id="${xml(id)}" value="${xml(value)}" style="${xml(skin)}" parent="${xml(parent)}" data-kind="${kind}" ${extra}>${geometry}</mxCell>`);
@@ -23,7 +25,7 @@ export function diagramDrawio(doc:DiagramDoc,preset:DiagramStyle,name='FigTide m
     add('node-'+n.id,'','group;html=0;container=0;resizeChildren=1;',parent?'zone-'+parent.id:'1',geom(n.x-(parent?.x||0),n.y-(parent?.y||0),n.w,n.h),'node','vertex="1"');
     if(n.kind==='glyph'||n.kind==='icon'){
       const isolated:DiagramDoc={...doc,nodes:[{...n,label:''}],zones:[],edges:[],annotations:[],legend:{...doc.legend,mode:'off'},artworks:[]};
-      const svg=renderDiagram(isolated,preset).replace(/width="[^"]*" height="[^"]*"/,`width="${n.w}mm" height="${n.h}mm"`).replace(/viewBox="[^"]*"/,`viewBox="${n.x} ${n.y} ${n.w} ${n.h}"`).replace(/<rect width="100%" height="100%"[^>]*\/>/,'');
+      const svg=renderDiagram(isolated,preset,false,icons).replace(/width="[^"]*" height="[^"]*"/,`width="${n.w}mm" height="${n.h}mm"`).replace(/viewBox="[^"]*"/,`viewBox="${n.x} ${n.y} ${n.w} ${n.h}"`).replace(/<rect width="100%" height="100%"[^>]*\/>/,'');
       add('visual-'+n.id,'',`shape=image;imageAspect=0;image=${image(svg)};`,'node-'+n.id,geom(0,0,n.w,n.h),'visual','vertex="1"');
     }else if(n.kind!=='text')add('visual-'+n.id,'',`${n.kind==='ellipse'?'ellipse;':n.kind==='pill'?'rounded=1;arcSize=50;':'rounded=1;'}strokeColor=${ink};fillColor=${fill};strokeWidth=${line};`,'node-'+n.id,geom(body.x-n.x,body.y-n.y,body.w,body.h),'visual','vertex="1"');
     add('label-'+n.id,n.label,textStyle,'node-'+n.id,geom(label.x-n.x,label.y-n.y,label.w,label.h),'label','vertex="1"');

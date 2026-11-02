@@ -5,7 +5,7 @@ test('capture current diagram pages for visual acceptance',async({page,request},
   test.skip(process.env.LABFLOW_CAPTURE!=='1','Explicit screenshot capture only');
   await page.setViewportSize({width:1920,height:1080});
   const project=await(await request.post('/api/projects',{data:{name:'任务19新版界面验收',description:'Isolated synthetic screenshot fixtures; no user data or model calls.'}})).json();
-  async function shot(name:string){await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:artifactPath(testInfo,`../docs/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE?"test-evidence/"+process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE:"screenshots/task19-latest"}/${name}.png`),fullPage:true});}
+  async function shot(name:string){await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:artifactPath(testInfo,`../docs/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE?"test-evidence/"+process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE:"screenshots/task19-latest"}/${name}.png`),fullPage:false});}
   await page.goto(`/projects/${project.id}/diagrams`);
   await expect(page.getByRole('button',{name:'新建机制图',exact:true})).toBeVisible();
   await shot('01-diagram-list');

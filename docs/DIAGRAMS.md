@@ -18,7 +18,7 @@ V10新建diagrams/diagram_versions；MySQL文档为JSON、H2为CLOB，显式UTC�
 
 ## 风格（19-2）
 
-六种预设参数只存在后端`diagram/styles/*.json`，`GET /api/diagram-catalog`下发副本、期刊尺寸表及当前模板/skill/图标目录。Nature扁平、柔和插画、线稿极简、会议框架、等距3D、手绘草图；均为矢量。预设正文7pt、轮廓1pt、连线1.25pt、分区0.75pt；语义角色色来自可选style.palette，色觉检查复用既有ColorVision；原始配色并非所有使用色对都能满足严格的ΔE≥20门槛，实际失败色对如实提示。UI颜色仍使用lf tokens，图形颜色来自预设。
+六种预设参数只存在后端`diagram/styles/*.json`，`GET /api/diagram-catalog`下发副本、期刊尺寸表及当前模板/skill/图标目录。Nature扁平、柔和插画、线稿极简、会议框架、等距3D、手绘草图；均为矢量。预设正文7pt、轮廓1pt、连线1.25pt、分区0.75pt；语义角色色来自可选style.palette，色觉检查复用既有ColorVision；原始配色并非所有使用色对都能满足严格的ΔE≥20门槛，按2026-11-02规则，<10的色对在界面提示、10–20仅审稿info。UI颜色仍使用lf tokens，图形颜色来自预设。
 
 `style.overrides`只接受字体、字号/线宽/圆角、箭头/填充、阴影/sketch/iso开关、分区/强调调色板和文字/线色。换预设只改preset；overrides继续保留，用户可显式清空。字体单项限制为目录使用的Arial/Helvetica、Inter或内嵌Noto Sans SC组合，避免任意URL。
 
@@ -87,7 +87,7 @@ PDF复用jspdf+svg2pdf.js与现有Noto Sans SC本地子集/字形检查及文字
 
 style.palette为新增可选字段，省略使用okabe-ito，旧文档无需迁移。六配色数值统一维护在backend/src/main/resources/diagram/palettes.json，TypeScript直接引用同一JSON；隔离桌面构建复制该资源。NPG/AAAS/NEJM/Lancet/JAMA只引用规范中整理的ggsci配色色值，未复制ggsci实现代码。界面全部标“风格（非官方）”。色值来源说明见各项source，参考https://nanx.me/ggsci/。
 
-palette_audits使用原ColorVision和MIN_DELTA_E=20，按六配色×六风格枚举语义角色轮廓色对及三种色觉缺陷，界面只保留当前图实际使用的角色；低于20的色对返回真实minimum_delta_e并在界面提示，不改变色值、不降低阈值。“色盲友好”是Okabe–Ito惯用名称，不等于本图所有选用色对均满足严格20门槛。
+（19-A历史规则，现已由文末2026-11-02两档规则覆盖。）palette_audits曾使用原ColorVision和MIN_DELTA_E=20，按六配色×六风格枚举语义角色轮廓色对及三种色觉缺陷，界面只保留当前图实际使用的角色；低于20的色对返回真实minimum_delta_e并在界面提示，不改变色值、不降低阈值。“色盲友好”是Okabe–Ito惯用名称，不等于本图所有选用色对均满足严格20门槛。
 
 
 ## A–C返工交付状态
@@ -140,7 +140,7 @@ D1按目标宽度换算成品最小字号（默认6pt）；正文默认7pt，分
 
 通过“参考风格”选择自有PNG/JPG/SVG，参考图仅在浏览器本地分析。位图使用确定性加权k-means、排除边界背景与透明像素、最多6色；SVG统计显式颜色/安全CSS及物理线宽、圆角和字体。不保留图像、原文、文件名或像素，只保存经确认的风格参数到既有style_templates（profile.kind=diagram）。未内置字体明确提示并保留当前字体。
 
-可选style.role_colors含actor/process/data/model/output/note六个明确色值，覆盖角色轮廓但不修改内置期刊调色板；无此字段的旧文档渲染保持原样。D3比较同一组实际轮廓值，仍使用三种模拟和ΔE≥20，只提示原始色对，不偷改提取色值。选择内置配色会明确取消自定义覆盖。预览、保存风格参数和应用为独立动作；应用一次可撤销，不自动保存机制图。
+可选style.role_colors含actor/process/data/model/output/note六个明确色值，覆盖角色轮廓但不修改内置期刊调色板；无此字段的旧文档渲染保持原样。D3比较同一组实际轮廓值，使用三种模拟，<10警告、10–20仅审稿info，保留原始色对，不偷改提取色值。选择内置配色会明确取消自定义覆盖。预览、保存风格参数和应用为独立动作；应用一次可撤销，不自动保存机制图。
 
 
 ## 外部绘制与可编辑draw.io导出
@@ -154,6 +154,15 @@ D1按目标宽度换算成品最小字号（默认6pt）；正文默认7pt，分
 
 ## 2026-11-02：机制图D3两档提示
 
-机制图只比较当前实际使用的语义角色轮廓（含style_ref或自定义role_colors），不比较浅填充；排除纯文字和独立标记。仍使用既有ColorVision三种Machado严重度1.0模拟及CIEDE2000，取三种模拟中的最小ΔE00。低于10为warning，配色区注明两个角色与数值；10≤ΔE00<20仅在审稿报告列为info，配色区及画布不提示，无自动修复；达到20不报告。相同色值的不同角色仍按0报告，不去重或偷改映射。默认分区机制图（nature-flat/Okabe–Ito）四角色的最小值重新用Java计算，具体见本轮验收材料。其他模板若包含同色角色仍按规则报告。
+机制图只比较当前实际使用的语义角色轮廓（含style_ref或自定义role_colors），不比较浅填充；排除纯文字和独立标记。仍使用既有ColorVision三种Machado严重度1.0模拟及CIEDE2000，取三种模拟中的最小ΔE00。低于10为warning，配色区注明两个角色与数值；10≤ΔE00<20仅在审稿报告列为info，配色区及画布不提示，无自动修复；达到20不报告。相同色值的不同角色仍按0报告，不去重或偷改映射。默认分区机制图（nature-flat/Okabe–Ito）四角色经Java ColorVision复核最小ΔE00=11.72481721271584：actor #0069A4 / model #BC6F9A（protan）；六色对中5组info、0组warning，因此配色区不提示。其他模板若包含同色角色仍按规则报告。
 
 数据图R3不变，ColorVision.MIN_DELTA_E仍为20；配色原色值、旧文档和用户确认/保存流程不变。
+
+
+## 2026-11-02：图标按需加载与导出
+
+前端仅打包150个许可图标的ID（验证草稿所需），catalog仅下发清单。面板缩略图进入可视范围才通过原GET /api/diagram-icons/{id}.svg请求SVG；内存缓存共享成功与在途请求，切换风格、画布与预览复用缓存。缓存入口校验固定ID和安全SVG，失败可显式重试，不能用任意路径加载资源。
+
+纯渲染器接收显式IconAssets参数，不发网络请求；画布与参考预览在载入后重绘，缺失时显示占位和失败提示。审稿几何与SVG/PNG/PDF/draw.io导出先等待文档所用全部图标，载入失败会报错，不静默省略。所有导出仍内联矢量，不含本机API链接；图标SVG不写入机制图文档。
+
+本轮构建前后字节数记录在diagram-19-C/icon-loading-benchmark.json，机制图异步chunk从约2.71MB下降至约207KB；完整原始许可资源仍由本地后端提供。

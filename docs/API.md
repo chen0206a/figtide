@@ -419,3 +419,7 @@ D3复用ColorVision，只检查图中实际使用的语义角色轮廓，不比�
 - `POST /api/projects/{p}/diagrams/{id}/import-svg`：`{base_revision,svg,name?}`，净化后追加artworks并保存新版本。项目归属、Host/Origin、revision保护沿用原接口；过期409。artworks可选，文档总量2MB，最多30层；直接保存与备份恢复也必须通过SVG规范校验。
 
 无新增迁移或依赖；style_templates沿用现有表，SVG使用JDK安全XML解析器。
+
+
+2026-11-02：机制图catalog的palette_audits与项目内paletteAudit保持原颜色/角色结构，threshold=10、info_threshold=20；failing_pairs保留所有<20的实际色对并新增severity（warning/info），safe表示没有<10的色对。diagram-review-v2报告相同分档；数据图R3及ColorVision.MIN_DELTA_E=20不变。
+图标清单不包含SVG内容，前端按需调用原GET /api/diagram-icons/{id}.svg并在内存缓存；没有新增接口、迁移或依赖。

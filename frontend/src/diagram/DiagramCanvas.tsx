@@ -1,3 +1,4 @@
+import {useDiagramIcons} from "./useIconAssets";
 import { useEffect,useMemo, useRef, useState, type PointerEvent } from "react";
 import type { DiagramDoc, DiagramRect, DiagramStyle } from "./model";
 import { contains,nodeLayout,ptToMm } from "./render/geometry";
@@ -10,7 +11,7 @@ export function DiagramCanvas({doc,style,selected,onSelect,onEdit,onConnect,zoom
   const scroll=useRef<HTMLDivElement>(null),surface=useRef<HTMLDivElement>(null),drag=useRef<Drag|null>(null);
   const [preview,setPreview]=useState<DiagramDoc|null>(null),[box,setBox]=useState<DiagramRect|null>(null);
   const [connection,setConnection]=useState<{x:number;y:number;toX:number;toY:number}|null>(null);
-  const shown=preview||doc,svg=useMemo(()=>renderDiagram(shown,style),[shown,style]);
+  const shown=preview||doc,icons=useDiagramIcons(shown),svg=useMemo(()=>renderDiagram(shown,style,false,icons.assets),[shown,style,icons.assets]);
   useEffect(()=>{const element=scroll.current;if(!element)return;const wheel=(e:WheelEvent)=>{if(e.ctrlKey){e.preventDefault();onZoom(Math.max(.25,Math.min(10,zoom*(e.deltaY>0?.9:1.1))));}};element.addEventListener("wheel",wheel,{passive:false});return()=>element.removeEventListener("wheel",wheel);},[zoom,onZoom]);
   const point=(e:PointerEvent)=>{const r=surface.current!.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*doc.canvas.width_mm,y:(e.clientY-r.top)/r.height*doc.canvas.height_mm};};
   const down=(e:PointerEvent<HTMLDivElement>)=>{
@@ -43,6 +44,7 @@ export function DiagramCanvas({doc,style,selected,onSelect,onEdit,onConnect,zoom
     drag.current=null;setPreview(null);setBox(null);setConnection(null);if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);
   };
   return <div className="diagram-canvas-scroll" ref={scroll} tabIndex={0} aria-label="机制图画布，方向键移动，Alt拖动平移">
+    {icons.failed.length>0&&<p role="alert">科研图标未完整载入。<button onClick={icons.retry}>重试图标</button></p>}
     <div className="diagram-surface" data-testid="diagram-canvas" ref={surface} style={{width:doc.canvas.width_mm*96/25.4*zoom,height:doc.canvas.height_mm*96/25.4*zoom}} onDragOver={e=>{if(e.dataTransfer.types.includes("application/x-figtide-glyph")||e.dataTransfer.types.includes("application/x-figtide-icon")){e.preventDefault();e.dataTransfer.dropEffect="copy";}}} onDrop={e=>{if(readOnly)return;const icon=e.dataTransfer.getData("application/x-figtide-icon"),id=icon||e.dataTransfer.getData("application/x-figtide-glyph");if(!id)return;e.preventDefault();const r=surface.current!.getBoundingClientRect();(icon?onDropIcon:onDropGlyph)?.(id,{x:(e.clientX-r.left)/r.width*doc.canvas.width_mm,y:(e.clientY-r.top)/r.height*doc.canvas.height_mm});}} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={()=>{drag.current=null;setPreview(null);setBox(null);setConnection(null);}}>
       <div className="diagram-svg" dangerouslySetInnerHTML={{__html:svg}}/>
       <svg className="diagram-overlay" viewBox={`0 0 ${doc.canvas.width_mm} ${doc.canvas.height_mm}`} aria-hidden="true">

@@ -11,7 +11,7 @@ test('skill → attributed facts → user edit → semantic proposal → deselec
   await panel.getByLabel('绘图方案',{exact:true}).selectOption('workflow');expect(catalog.skills).toHaveLength(6);
   await panel.getByLabel('机制图绘图需求').fill('RNA enters a library.');await expect(panel.getByRole('button',{name:'生成简报与事实',exact:true})).toBeDisabled();
   await panel.getByRole('checkbox',{name:'同意将当前文档和描述发送至已配置的模型服务'}).check();
-  async function screenshot(name:string){if(process.env.LABFLOW_CAPTURE==='1')await page.screenshot({path:artifactPath(info,`../docs/test-evidence/diagram-19-B/${name}.png`),fullPage:false});}
+  async function screenshot(name:string){if(process.env.LABFLOW_CAPTURE==='1')await page.screenshot({path:artifactPath(info,`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||"diagram-19-B"}/agent-${name}.png`),fullPage:false});}
   await screenshot('skill-selection');await panel.getByRole('button',{name:'生成简报与事实',exact:true}).click();
   await expect(panel.getByLabel('事实 1',{exact:true})).toBeVisible();await panel.getByLabel('事实 1',{exact:true}).fill('RNA enters a library. Confirmed by user.');await panel.getByRole('button',{name:'删除事实 2',exact:true}).click();await screenshot('facts');
   expect((await(await request.get(endpoint)).json()).revision).toBe(1);
@@ -23,8 +23,9 @@ test('skill → attributed facts → user edit → semantic proposal → deselec
   await expect(page.locator('.diagram-agent-markers text').first()).toHaveCSS('fill','rgb(255, 255, 255)');
   await screenshot('structure-proposal');
   await panel.getByRole('button',{name:'预览这组调整',exact:true}).click();await expect(panel.getByRole('button',{name:'应用这组调整',exact:true})).toBeEnabled();
-  await expect(panel.getByRole('button',{name:'应用这组调整',exact:true})).toBeInViewport();await panel.getByRole('button',{name:'应用这组调整',exact:true}).click();
+  await expect(panel.getByRole('button',{name:'应用这组调整',exact:true})).toBeInViewport();await screenshot('structure-apply');await panel.getByRole('button',{name:'应用这组调整',exact:true}).click();
   await expect(page.locator('[data-node-id="n1"] text').first()).toContainText('RNA');expect((await(await request.get(endpoint)).json()).revision).toBe(1);
+  await screenshot('applied');
   await page.getByRole('button',{name:'撤销',exact:true}).click();await expect(page.locator('[data-node-id="n1"] text').first()).not.toContainText('RNA');
   await page.getByRole('button',{name:'重做',exact:true}).click();await expect(page.locator('[data-node-id="n1"] text').first()).toContainText('RNA');
   await page.getByRole('button',{name:'保存机制图',exact:true}).click();await expect.poll(async()=>(await(await request.get(endpoint)).json()).revision).toBe(2);

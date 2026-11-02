@@ -21,7 +21,7 @@ test('19-A-7 scientific examples, outline warnings and unobstructed creation bar
   expect(await page.locator('.diagram-wizard-preview-scroll').evaluate(el=>el.scrollHeight<=el.clientHeight+1)).toBe(true);
   expect((await panel.boundingBox())!.y+(await panel.boundingBox())!.height).toBeLessThanOrEqual(960);
   const bar=await page.locator('.diagram-create-actions').boundingBox(),fields=await page.locator('.diagram-wizard-preview-scroll').boundingBox();expect(fields!.y+fields!.height).toBeLessThanOrEqual(bar!.y+1);
-  await expect(page.locator('.diagram-palette-audit')).toHaveCount(0);await expect(wizard.getByRole('status')).toContainText('低于 ΔE 10');
+  await expect(page.locator('.diagram-palette-audit')).toHaveCount(0);await expect(wizard.getByRole('status')).toHaveCount(0);
   const doc=catalog.templates.find((t:{id:string})=>t.id==='mechanism').documents.en,roles=new Set(doc.nodes.filter((n:{kind:string;glyph:string})=>n.kind!=='text'&&!['phospho','number','frozen','trainable'].includes(n.glyph)).map((n:{style_ref:string;role:string})=>n.style_ref||n.role));
   const audit=catalog.palette_audits.find((a:{id:string;preset:string})=>a.id==='okabe-ito'&&a.preset==='nature-flat');audit.failing_pairs=audit.failing_pairs.filter((p:{roles:string[]})=>p.roles.every(r=>roles.has(r)));audit.used_roles=[...roles];audit.template='mechanism';
   if(process.env.LABFLOW_CAPTURE==='1'){

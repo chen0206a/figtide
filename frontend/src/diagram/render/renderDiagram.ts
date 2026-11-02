@@ -1,3 +1,4 @@
+import type {IconAssets} from '../iconCache';
 import {artworkMarkup} from "../artwork";
 import {iconMarkup} from "../assets";
 import {roleColor,paletteOf} from "../palettes";
@@ -23,7 +24,7 @@ export function edgeSymbol(start:{x:number;y:number},end:{x:number;y:number},kin
   return `<path data-edge-symbol="arrow" d="M${fmt(end.x)} ${fmt(end.y)} L${fmt(bx+vx*a*.45)} ${fmt(by+vy*a*.45)} L${fmt(bx-vx*a*.45)} ${fmt(by-vy*a*.45)} Z" fill="${ink}" stroke="none"/>`;
 }
 /** The only SVG renderer: editor, thumbnails, exports and geometry collection use this output. */
-export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=false): string {
+export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=false,icons:IconAssets={}): string {
   const style=effectiveStyle(doc,preset),font=ptToMm(style.font_size_pt),line=ptToMm(style.line_width_pt)*(style.sketch?1.3:1),edgeLine=ptToMm(1.25)*style.line_width_pt*(style.sketch?1.3:1),zoneLine=ptToMm(.75)*style.line_width_pt;
   const prefix="dg"+stableSeed(JSON.stringify(style));
   const text=(label:string,box:DiagramRect,fill=style.text_color,align:"center"|"left"="center",reference="",size=font)=>{
@@ -80,7 +81,7 @@ export function renderDiagram(doc: DiagramDoc, preset: DiagramStyle,thumbnail=fa
     const stroke=color,rx=n.kind==="pill"?body.h/2:Math.min(style.radius_mm,body.w/4,body.h/4);
     const palette={...style,body_fill:bodyFill,line_color:stroke,accent_colors:[color,...style.accent_colors.filter(c=>c!==color)]};
     let shape="",frame="";
-    if(n.kind==="icon"&&n.icon){shape=`<g data-scientific-icon="${esc(n.icon)}" transform="translate(${body.x} ${body.y})">${iconMarkup(n.icon,body.w,body.h,color,prefix+"-"+n.id)}</g>`;}
+    if(n.kind==="icon"&&n.icon){shape=`<g data-scientific-icon="${esc(n.icon)}" data-icon-ready="${!!icons[n.icon]}" transform="translate(${body.x} ${body.y})">${icons[n.icon]?iconMarkup(n.icon,body.w,body.h,color,prefix+"-"+n.id,icons):`<rect width="${body.w}" height="${body.h}" fill="none" stroke="${esc(color)}" stroke-dasharray="1 1"><title>图标载入中</title></rect>`}</g>`;}
     else if(n.kind==="glyph") {
       shape=`<g data-scientific-glyph="${esc(n.glyph)}" transform="translate(${body.x} ${body.y})"><title>Schematic vector glyph</title>${glyphMarkup(n.glyph as GlyphKind,body.w,body.h,palette,n.id)}</g>`;
       if(n.boxed)frame=`<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="${style.radius_mm}" fill="${esc(bodyFill)}" stroke="${esc(color)}" stroke-width="${line}"/>`;

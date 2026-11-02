@@ -1,5 +1,5 @@
 import {safeArtwork} from "./artwork";
-import {builtinIcons} from "./builtinIcons";
+import {builtinIconIds} from "./builtinIconIds";
 import type { DiagramDoc, DiagramRect } from "./model";
 import { contains } from "./render/geometry";
 import {glyphKinds} from "./render/glyphs";
@@ -15,7 +15,7 @@ export function readDiagramDraft(storage: Pick<Storage,"getItem">, key: string):
     if(d?.schema_version!==1||!Number.isSafeInteger(draft.revision)||draft.revision<1||!d.canvas||!d.style?.overrides||!d.legend||!d.meta||![d.nodes,d.zones,d.edges,d.annotations].every(Array.isArray)||!withinBounds(d))return null;
     if(d.nodes.length>120||d.zones.length>30||d.edges.length>200||d.annotations.length>120)return null;
     if([...d.nodes,...d.zones].some(n=>typeof n.id!=="string"||typeof n.label!=="string")||d.edges.some((e:any)=>typeof e.label!=="string")||d.annotations.some((a:any)=>typeof a.text!=="string"))return null;
-    if(d.nodes.some((n:any)=>!["box","pill","ellipse","text","glyph","icon"].includes(n.kind)||n.kind==="icon"&&!builtinIcons[n.icon]||n.kind==="glyph"&&!glyphKinds.includes(n.glyph)||n.badges&&(!Array.isArray(n.badges)||n.badges.some((b:any)=>typeof b!=="string"||!(["phospho","frozen","trainable"].includes(b)||/^number:([1-9]|[1-9][0-9])$/.test(b))))))return null;
+    if(d.nodes.some((n:any)=>!["box","pill","ellipse","text","glyph","icon"].includes(n.kind)||n.kind==="icon"&&!builtinIconIds.has(n.icon)||n.kind==="glyph"&&!glyphKinds.includes(n.glyph)||n.badges&&(!Array.isArray(n.badges)||n.badges.some((b:any)=>typeof b!=="string"||!(["phospho","frozen","trainable"].includes(b)||/^number:([1-9]|[1-9][0-9])$/.test(b))))))return null;
     for(const k of ["zone_colors","accent_colors"])if(k in d.style.overrides&&(!Array.isArray(d.style.overrides[k])||!d.style.overrides[k].length||d.style.overrides[k].some((c:any)=>typeof c!=="string"||!/^#[\da-f]{6}$/i.test(c))))return null;
     for(const k of ["font_size_pt","line_width_pt","radius_mm"])if(k in d.style.overrides&&!Number.isFinite(d.style.overrides[k]))return null;
     if(d.artworks!==undefined&&(!Array.isArray(d.artworks)||d.artworks.length>30||d.artworks.some((a:any)=>typeof a.id!=="string"||typeof a.name!=="string"||typeof a.locked!=="boolean"||typeof a.hidden!=="boolean"||!safeArtwork(a.svg))))return null;

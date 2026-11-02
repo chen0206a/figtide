@@ -44,7 +44,7 @@ test('review → ignore → readonly fix preview → confirm → one undo → ex
   await expect(page.locator('.diagram-review-markers [data-change-number]')).not.toHaveCount(0);
   const line=panel.locator('article').filter({hasText:'成品线宽太细'});await line.getByRole('button',{name:'忽略',exact:true}).click();await expect(line.getByRole('checkbox')).toBeDisabled();await line.getByRole('button',{name:'恢复',exact:true}).click();
   let frame=0;const folder=`../docs/test-evidence/${process.env.LABFLOW_DIAGRAM_CAPTURE_PHASE||'diagram-19-5'}`;
-  async function shot(name:string){if(process.env.LABFLOW_CAPTURE==='1')await page.screenshot({path:artifactPath(info,`${folder}/${name}.png`),fullPage:true});}
+  async function shot(name:string){if(process.env.LABFLOW_CAPTURE==='1')await page.screenshot({path:artifactPath(info,`${folder}/${name}.png`),fullPage:false});}
   async function capture(){if(process.env.LABFLOW_CAPTURE==='1')await page.screenshot({path:artifactPath(info,`${folder}/review-gif-frames/${String(frame++).padStart(3,'0')}.png`)});}
   await shot('review-panel');await capture();
   await panel.getByRole('button',{name:'预览选中修复',exact:true}).click();await expect(panel.getByRole('button',{name:'应用修复',exact:true})).toBeInViewport();await expect(panel.getByRole('button',{name:'取消预览',exact:true})).toBeInViewport();await shot('repair-preview');await capture();
